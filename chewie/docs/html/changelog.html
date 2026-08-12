@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>変更履歴 — Cynovela</title>
+  <style>
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+/* ダークモード禁止: @media prefers-color-scheme は一切書かない */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* docs/html/_tokens.txt から確定値を採用（frontend/style.css の :root と一致） */
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+/* スライドデッキ */
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+/* スライド本体（16:9） */
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px; /* nav-bar の高さ分 */
+}
+.slide.active { display: flex; }
+/* カバースライド */
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+/* スライドヘッダー */
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+/* コンテンツエリア */
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* テキスト要素 */
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+/* 箇条書き */
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+/* コードブロック */
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+/* テーブル */
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+/* 引用ブロック（免責・注意書き） */
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+/* 続きスライドの小バッジ */
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+/* フッター */
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+/* リンク */
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* 章タイトル（manual-complete 用） */
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+/* ナビバー */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+/* 印刷 */
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+  </style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+
+<div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">変更履歴（Changelog）</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">このドキュメントについて</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>このドキュメントについて</strong><br>
+      Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
+    </blockquote>
+    <p>Cynovela の主要な変更内容を時系列で記録します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Alpha GA（2026-05-26）— 概要</span>
+  </div>
+  <div class="slide-body">
+    <p>Alpha GA は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。</p>
+    <h3>Stage 0: 起動基盤</h3>
+    <ul>
+      <li>argparse による CLI 引数定義の整理</li>
+      <li><code>--mode</code>（full / text / lite / lite-en / minimal）の 5 種を導入</li>
+      <li>起動時 preflight（必要モデルの存在確認、未取得時のダウンロード or 代替モード提案）</li>
+      <li><code>CYNOVELA_NONINTERACTIVE=1</code> でスクリプト実行時の対話スキップ</li>
+      <li><code>cynovela.yaml</code> による設定の一元化と環境変数オーバーライド</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Stage 1: データ永続化と FK 整合性</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>SQLite スキーマの整備（<code>workspaces</code>、<code>collections</code>、<code>sources</code>、<code>files</code>、<code>chunks</code>、<code>audit_logs</code> 等）</li>
+      <li><code>PRAGMA foreign_keys = ON</code> の全接続適用</li>
+      <li>削除時に SQLite と ChromaDB の両方をクリーンアップする <code>_purge_chunks_for_*()</code> 系ヘルパー</li>
+      <li>再スキャン後の <code>file_id</code> 安定性のための <code>_stable_fid(path)</code> 導入</li>
+      <li>監査記録ヘルパー <code>_log_audit(conn, action, target, detail)</code> の徹底</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Stage 2: ガードレール・PII</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>4 種のガードレールアクション（<code>mask</code> / <code>exclude_from_rag</code> / <code>log_only</code> / <code>allow</code>）</li>
+      <li>8 種類の PII パターン検出（URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4）</li>
+      <li>Dual-tier 保管（raw / masked）の Publish 時生成</li>
+      <li>Fernet 暗号化による raw 本文保護（<code>vault_enc.py</code>）</li>
+      <li>3 層プロンプトインジェクション対策（入力検査・retrieval 後検査・出力検査）</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Stage 3: RAG パイプライン</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>BM25 + ベクター検索のハイブリッド統合（既定: RRF、k=60）</li>
+      <li>BAAI/bge-m3 ベクター埋め込み</li>
+      <li>Reranker の差し替え（CrossEncoder、FlashRank、Ollama、HTTP）</li>
+      <li>高度な検索機能（MMR、Parent-Child チャンキング、Multi-Query、CRAG、HyDE、Adaptive RAG）</li>
+      <li>信頼度閾値（cosine similarity 0.50）を採用</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Stage 4: Smart Ingestion</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>14 種類のドキュメントカテゴリ自動分類</li>
+      <li>3 種類の分類エンジン（軽量、LLM、ハイブリッド）</li>
+      <li>DataSyncService によるパス単位のハッシュ差分同期（既定 60 秒間隔）</li>
+      <li>Contextual Chunking（メタデータをチャンク冒頭に付加）</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Stage 5: RBAC・監査</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>3 ロール（admin / curator / viewer）の SQL CHECK 制約適用</li>
+      <li>RBAC ヘルパー関数 4 種の整備（<code>_require_admin</code>、<code>_require_authenticated</code>、<code>_require_role</code>、<code>_require_admin_or_self</code>）</li>
+      <li>33 ルーター（242 箇所）への RBAC チェック適用</li>
+      <li>audit_logs の API 経由変更・削除を禁止</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Stage 6: 外部連携</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>MCP サーバー（11 ツール）の公開</li>
+      <li>LM Studio / Ollama / OpenAI 互換 API 接続</li>
+      <li>LAN 共有・Tailscale 共有のフラグ整備（<code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code>）</li>
+      <li>IP アローリストミドルウェア</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">主要修正履歴 — セキュリティ強化</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li><strong>user_id 単独ログインの完全撤去</strong>: レガシーパスを削除し、username/password 必須化。</li>
+      <li><strong><code>/api/auth/users</code> の admin 必須化</strong>: デモモードでの未認証許可を撤廃。</li>
+      <li><strong>PII 検出履歴の admin 限定化</strong>: <code>/api/guardrails/pii-detections</code> を admin 専用に変更。</li>
+      <li><strong>Chat popup ルートの廃止</strong>: <code>/chat-popup</code> を 410 Gone に変更。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">主要修正履歴 — バグ修正</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li><strong><code>/api/sources</code> の path バリデーション強化</strong>: システムパスへの参照を防止。</li>
+      <li><strong><code>llm_endpoint</code> のバリデーション</strong>: 内部ネットワーク参照変更の制限。</li>
+      <li><strong>システムプロンプト配置順序の修正</strong>: retrieved_content の後に配置（文書による上書き防止）。</li>
+      <li><strong><code>INSERT OR REPLACE</code> の排除</strong>: FK CASCADE 誤発火を防ぐため <code>ON CONFLICT DO UPDATE</code> に統一。</li>
+      <li><strong><code>_publish_semaphore</code> のテスト容易性</strong>: モジュールスコープから依存注入化（Stage-3 引き継ぎ）。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">主要修正履歴 — 品質改善</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>pyright エラーを 16 件から 0 件に削減</li>
+      <li>import-linter による依存関係制約の全 contracts 保護</li>
+      <li>pytest スイートを 14 PHASE / 405 アサーション以上に拡充</li>
+      <li>console エラー 0 件を維持</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Beta GA に向けた予定事項 — 認証・RAG</span>
+  </div>
+  <div class="slide-body">
+    <p>Beta GA は「個人学習に加えて簡易な共同利用にも耐えうる状態」をゴールとして検討中の節目です。</p>
+    <h3>認証・認可</h3>
+    <ul>
+      <li>JWT 認証の本格導入（全モードでの RBAC 強制）</li>
+      <li>ユーザー単位の API キー発行</li>
+    </ul>
+    <h3>RAG 品質</h3>
+    <ul>
+      <li>Reranker 実体テスト（CrossEncoder 等の品質検証）</li>
+      <li>チャンク戦略の調整（Contextual Chunking のデフォルト化検討）</li>
+      <li>構造化回答テンプレートの導入検討</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">Changelog</span>
+    <span class="slide-title">Beta GA に向けた予定事項 — 安定性・連携</span>
+  </div>
+  <div class="slide-body">
+    <h3>安定性</h3>
+    <ul>
+      <li>Embedding / Reranker 設定の YAML 永続化（現状はメモリのみ）</li>
+      <li>エラー回復経路の堅牢化</li>
+      <li>DataSyncService の publish 連携統合（現状は noop）</li>
+    </ul>
+    <h3>連携拡張</h3>
+    <ul>
+      <li>MCP サーバーの公開ツール拡充</li>
+      <li>KnowledgeCatalog の Chunks ビューア拡張（メタデータ検索、出典追跡）</li>
+    </ul>
+    <h3>バックエンド多様化</h3>
+    <ul>
+      <li>Qdrant / LanceDB のベクターストア対応（現状は骨格のみ）</li>
+      <li>MLX Embedding / Reranker の実装（Apple Silicon 最適化）</li>
+    </ul>
+    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+</div>
+<nav class="nav-bar">
+  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+  <span id="slide-counter">1 / 14</span>
+  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+# Keep the build context lean. store/models (9GB) is mounted read-only at runtime.
+.git
+reports
+# v5 鍵衛生: Fernet 秘密鍵をイメージレイヤに焼き込まない (配布=鍵流出・全配備同一鍵を防ぐ)。
+# コンテナは起動時に CYNOVELA_SECRET_KEY env または volume 上の secret.key を使う (config.py)。
+store/secret.key
+**/secret.key
+store/models
+store/logs
+store/backups
+# multi-ingest-roots-20260728: 取り込み元の控え (ホスト側パス一覧) をイメージに焼き込まない。
+store/ingest-roots.json
+# ga-close-v3 PartA (2026-07-27): アップロード保管領域は廃止。万一ツリーに残っても
+# イメージに焼き込まないよう二重の守りとして除外する。
+store/uploads
+store/server.pid
+**/__pycache__
+**/*.pyc
+._*
+**/._*
+.DS_Store
+**/.DS_Store
+.deepeval
+_artifacts
+node_modules
+tests/__snapshots__
+# v3 最適化(挙動不変): ランタイム未使用の検証用DBコピー・キャッシュをビルドコンテキストから除外。
+# コンテナは /app/store/db/demo.db (copy-up) を使うため db-standalone/db-container は不要。
+store/db-standalone
+store/db-container
+# ga-close-v3 PartG (2026-07-27): demo.db の WAL/SHM/journal を焼き込まない。
+#   hansolo 側は Phase 3 の finding #4 で既に除いていたが falcon には無く、
+#   `COPY . /app` はビルド時にツリーに在る副ファイルをそのまま拾う。書込中の
+#   不整合な WAL が焼き付くと展開先で SQLite が壊れる (hansolo で再現済み)。
+#   本体 demo.db だけを焼き、道連れファイルは除く。
+store/db/*.db-wal
+store/db/*.db-shm
+store/db/*-journal
+**/*.db-wal
+**/*.db-shm
+# 死蔵の写しもイメージに入れない (hansolo と揃える)。
+*.bak
+*.bak*
+**/*.bak
+**/*.bak*
+.hypothesis
+.pytest_cache
+.git
+.ruff_cache
+# slim-20260718: ランタイム未使用のため除外 (docs はコード参照0件を grep 実証済み。
+# /docs ヒットは Swagger URL・docstring 例のみでディレクトリ読取ではない)
+tests
+docs

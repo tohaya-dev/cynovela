@@ -1,0 +1,185 @@
+# Third-Party Notices
+
+この配布物に含まれる第三者の部品の一覧です。実環境から機械で作成しています。
+
+## Python 実行環境 (.venv-cynovela) の部品
+
+- accelerate 1.14.0 — Apache
+- aiohappyeyeballs 2.7.1 — PSF-2.0
+- aiohttp 3.14.3 — Apache-2.0 AND MIT
+- aiosignal 1.4.0 — Apache 2.0
+- annotated-doc 0.0.5 — MIT
+- annotated-types 0.8.0 — MIT
+- anyio 4.14.2 — MIT
+- APScheduler 3.11.3 — MIT
+- attrs 26.1.0 — MIT
+- bcrypt 5.0.0 — Apache-2.0
+- beautifulsoup4 4.15.0 — MIT License
+- blis 1.3.3 — BSD
+- build 1.5.0 — MIT
+- catalogue 2.0.10 — MIT
+- certifi 2026.7.22 — MPL-2.0
+- cffi 2.1.1 — MIT-0
+- charset-normalizer 3.4.9 — MIT
+- chromadb 1.5.9 — Apache Software License
+- click 8.4.2 — BSD-3-Clause
+- cloudpathlib 0.24.0 — MIT License
+- confection 1.3.3 — MIT
+- cryptography 46.0.7 — Apache-2.0 OR BSD-3-Clause
+- cymem 2.0.13 — MIT
+- datasets 5.0.1 — Apache 2.0
+- Deprecated 1.3.1 — MIT
+- dill 0.4.1 — BSD-3-Clause
+- durationpy 0.10 — MIT
+- en_core_web_sm 3.8.0 — MIT
+- et_xmlfile 2.0.0 — MIT
+- fastapi 0.139.2 — MIT
+- filelock 3.32.2 — MIT
+- FlagEmbedding 1.4.0 — 採れなかった
+- FlashRank 0.2.10 — Apache 2.0
+- flatbuffers 25.12.19 — Apache 2.0
+- frozenlist 1.8.0 — Apache-2.0
+- fsspec 2026.6.0 — BSD-3-Clause
+- fugashi 1.5.2 — MIT AND BSD-3-Clause
+- ginza 5.2.0 — MIT
+- googleapis-common-protos 1.75.1 — Apache 2.0
+- grpcio 1.83.0 — Apache-2.0
+- h11 0.16.0 — MIT
+- hf-xet 1.6.0 — Apache-2.0
+- httpcore 1.0.9 — BSD-3-Clause
+- httptools 0.8.0 — MIT
+- httpx 0.28.1 — BSD-3-Clause
+- huggingface_hub 1.27.0 — Apache-2.0
+- idna 3.18 — BSD-3-Clause
+- importlib_resources 7.1.0 — Apache-2.0
+- ir_datasets 0.6.3 — MIT License
+- ja-ginza 5.2.0 — MIT License
+- ja_core_news_sm 3.8.0 — CC BY-SA 4.0
+- Jinja2 3.1.6 — BSD License
+- joblib 1.5.3 — BSD-3-Clause
+- jsonschema 4.26.0 — MIT
+- jsonschema-specifications 2025.9.1 — MIT
+- kubernetes 36.0.3 — Apache License Version 2.0
+- limits 5.8.0 — MIT
+- lxml 6.0.4 — BSD-3-Clause
+- lz4 4.4.5 — BSD License
+- markdown-it-py 4.2.0 — MIT License
+- MarkupSafe 3.0.3 — BSD-3-Clause
+- mdurl 0.1.2 — MIT License
+- mmh3 5.2.1 — MIT License
+- mpmath 1.3.0 — BSD
+- multidict 6.7.1 — Apache License 2.0
+- multiprocess 0.70.19 — BSD-3-Clause
+- murmurhash 1.0.15 — MIT
+- narwhals 2.24.0 — MIT
+- networkx 3.6.1 — BSD-3-Clause
+- numpy 2.4.6 — BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0
+- oauthlib 3.3.1 — BSD-3-Clause
+- onnxruntime 1.28.0 — MIT License
+- openpyxl 3.1.5 — MIT
+- opentelemetry-api 1.44.0 — Apache-2.0
+- opentelemetry-exporter-otlp-proto-common 1.44.0 — Apache-2.0
+- opentelemetry-exporter-otlp-proto-grpc 1.44.0 — Apache-2.0
+- opentelemetry-proto 1.44.0 — Apache-2.0
+- opentelemetry-sdk 1.44.0 — Apache-2.0
+- opentelemetry-semantic-conventions 0.65b0 — Apache-2.0
+- orjson 3.11.9 — MPL-2.0 AND (Apache-2.0 OR MIT)
+- overrides 7.7.0 — Apache License, Version 2.0
+- packaging 26.3 — Apache-2.0 OR BSD-2-Clause
+- pandas 3.0.5 — BSD License
+- pdfminer.six 20260107 — MIT
+- pdfplumber 0.11.10 — MIT License
+- peft 0.20.0 — Apache
+- phonenumbers 9.0.36 — Apache-2.0
+- pillow 12.3.0 — MIT-CMU
+- pip 26.2.1 — MIT
+- plac 1.4.5 — BSD License
+- preshed 3.0.13 — MIT
+- presidio_analyzer 2.2.363 — MIT
+- presidio_anonymizer 2.2.363 — MIT
+- prometheus-fastapi-instrumentator 8.0.2 — ISC
+- prometheus_client 0.26.0 — Apache-2.0 AND BSD-2-Clause
+- propcache 0.5.2 — Apache-2.0
+- protobuf 7.35.1 — 3-Clause BSD License
+- psutil 7.2.2 — BSD-3-Clause
+- pyarrow 25.0.1 — Apache-2.0
+- pybase64 1.5.0 — BSD-2-Clause
+- pycparser 3.0 — BSD-3-Clause
+- pydantic 2.13.4 — MIT
+- pydantic-settings 2.15.0 — MIT
+- pydantic_core 2.46.4 — MIT
+- Pygments 2.20.0 — BSD-2-Clause
+- PyJWT 2.13.0 — MIT
+- pypdf 6.14.2 — BSD-3-Clause
+- pypdfium2 5.12.1 — BSD-3-Clause, Apache-2.0, dependency licenses
+- PyPika 0.51.1 — Apache License Version 2.0
+- pyproject_hooks 1.2.0 — MIT License
+- python-dateutil 2.9.0.post0 — Dual License
+- python-docx 1.2.0 — MIT
+- python-dotenv 1.2.2 — BSD-3-Clause
+- python-multipart 0.0.32 — Apache-2.0
+- python-pptx 1.0.2 — MIT
+- PyYAML 6.0.3 — MIT
+- rank-bm25 0.2.2 — Apache2.0
+- referencing 0.37.0 — MIT
+- regex 2026.7.19 — Apache-2.0 AND CNRI-Python
+- requests 2.34.2 — Apache-2.0
+- requests-file 3.0.1 — Apache 2.0
+- requests-oauthlib 2.0.0 — ISC
+- rich 15.0.0 — MIT
+- rpds-py 2026.6.3 — MIT
+- safetensors 0.8.0 — Apache Software License
+- scikit-learn 1.9.0 — BSD-3-Clause
+- scipy 1.18.0 — BSD License
+- sentence-transformers 5.6.0 — Apache-2.0
+- sentencepiece 0.2.2 — Apache-2.0
+- setuptools 84.0.0 — MIT
+- shellingham 1.5.4 — ISC License
+- six 1.17.0 — MIT
+- slowapi 0.1.10 — MIT
+- smart_open 8.0.1 — MIT License
+- soupsieve 2.9.2 — MIT
+- spacy 3.8.13 — MIT
+- spacy-legacy 3.0.12 — MIT
+- spacy-loggers 1.0.5 — MIT
+- srsly 2.5.3 — MIT
+- starlette 1.3.1 — BSD-3-Clause
+- SudachiDict-core 20260723 — Apache-2.0
+- SudachiPy 0.6.11 — Apache-2.0
+- sympy 1.14.0 — BSD
+- tenacity 9.1.4 — Apache 2.0
+- thinc 8.3.13 — MIT
+- threadpoolctl 3.6.0 — BSD-3-Clause
+- tldextract 5.3.2 — BSD-3-Clause
+- tokenizers 0.22.2 — Apache Software License
+- torch 2.13.0 — Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause 
+- tqdm 4.70.0 — MPL-2.0 AND MIT
+- transformers 5.15.0 — Apache 2.0 License
+- typer 0.27.1 — MIT
+- typing-inspection 0.4.3 — MIT
+- typing_extensions 4.16.0 — PSF-2.0
+- tzlocal 5.4.4 — MIT
+- unidic-lite 1.0.8 — MIT License
+- urllib3 2.7.0 — MIT
+- uvicorn 0.51.0 — BSD-3-Clause
+- uvloop 0.22.1 — MIT License
+- wasabi 1.1.3 — MIT
+- watchdog 6.0.0 — Apache-2.0
+- watchfiles 1.2.0 — MIT
+- weasel 1.0.0 — MIT
+- websocket-client 1.9.0 — Apache-2.0
+- websockets 17.0.1 — BSD-3-Clause
+- wrapt 2.3.0 — BSD-2-Clause
+- xlsxwriter 3.2.9 — BSD-2-Clause
+- xxhash 3.8.1 — BSD-2-Clause
+- yarl 1.24.5 — Apache-2.0
+
+## 同梱モデル
+
+- BAAI/bge-m3 — 出どころ: Hugging Face (BAAI/bge-m3) — ライセンス: mit（同梱 README.md の license 行から機械抽出）
+- BAAI/bge-reranker-v2-m3 — 出どころ: Hugging Face (BAAI/bge-reranker-v2-m3) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
+- sentence-transformers/paraphrase-MiniLM-L3-v2 — 出どころ: Hugging Face (sentence-transformers/paraphrase-MiniLM-L3-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
+- sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 — 出どころ: Hugging Face (sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
+
+---
+件数: Python の部品 169 件・同梱モデル 4 件

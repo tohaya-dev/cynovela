@@ -1,0 +1,15 @@
+# Mac Accelerator Service (外の口) をホスト側で動かすための部品。
+#
+# なぜ requirements.txt と別にするか:
+#   requirements.txt は本体アプリ用で 39 件在り、その中には spaCy のモデルを
+#   GitHub の直リンクから取るものも含まれる。MAS が読むのは埋め込みモデルだけで
+#   あり、本体アプリの部品は要らない。
+#   environment.yml は name: cynovela の形で conda の共有の場所へ作るものであり、
+#   配布物専用の環境を作る道には使えない (決定 14-5)。
+#
+# 版は requirements.txt の記載に合わせている。本体アプリと同じ版を使うことで、
+# 埋め込みの計算に使う部品の版が食い違わないようにしている。
+torch==2.13.0
+sentence-transformers==5.6.0
+fastapi==0.139.2
+uvicorn==0.51.0

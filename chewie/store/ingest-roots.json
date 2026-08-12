@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "roots": [
+    {
+      "name": "chewie-dummy-corpus",
+      "host_path": "@app/dummy-corpus",
+      "label": "dummy-corpus"
+    },
+    {
+      "name": "tocchi-downloads",
+      "host_path": "/Users/tocchi/Downloads",
+      "label": "Downloads"
+    }
+  ],
+  "used_names": {
+    "chewie-dummy-corpus": "@app/dummy-corpus",
+    "scratchpad-dd0094-test-folder": "/private/tmp/claude-501/-Users-tocchi-Documents-Claude-Claude-Projects/06426e62-b4ed-4329-9a0a-5d1ebd8f2002/scratchpad/dd0094-test-folder",
+    "tocchi-downloads": "/Users/tocchi/Downloads"
+  }
+}

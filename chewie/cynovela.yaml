@@ -1,0 +1,165 @@
+# DD-CYN-0053: 設定の置き場は このファイル1本だけとする。環境変数では受け取らない。
+#   port  = ブラウザで開く番号。空いていないときは自動でずらす (起動時に知らせる)
+#   host  = 外部アクセス。0.0.0.0 は同じネットワークの他の端末からも開ける (既定)。
+#           127.0.0.1 にすると、この Mac の中からだけ開ける
+server:
+  host: 0.0.0.0
+  port: 8765
+  log_level: INFO
+  cors_origins:
+  - http://localhost:8765
+  - http://127.0.0.1:8765
+llm:
+  provider: lmstudio
+  base_url: http://localhost:1234
+  api_key: ''
+  model: ''
+  max_concurrent: 3
+  timeout_seconds: 120
+rag:
+  strategy: hybrid_bm25
+  default_n_results: 5
+  confidence_threshold: 0.4
+  vector_weight: 0.7
+  bm25_weight: 0.3
+  reranker_enabled: true
+  reranker_url: null
+  citation_enabled: true
+  mmr_enabled: true
+  mmr_lambda: 0.7
+  mmr_fetch_k: 20
+  parent_child_enabled: true
+  child_chunk_size: 256
+  child_chunk_overlap: 32
+  parent_chunk_size: 1000
+  hybrid_method: rrf
+  rrf_k: 60
+  multi_query_enabled: true
+  multi_query_count: 3
+  crag_enabled: true
+  crag_max_loops: 1
+  hyde_enabled: false
+  adaptive_enabled: true
+  adaptive_threshold: 2.0
+  agentic_max_loops: 3
+circuit_breaker:
+  enabled: true
+  failure_threshold: 3
+  recovery_timeout_seconds: 30
+ui:
+  default_rag_display_mode: normal
+notifications:
+  smtp:
+    enabled: false
+    host: smtp.gmail.com
+    port: 587
+    username: ''
+    password: ''
+    from_address: ''
+    to_addresses: []
+    notify_on:
+    - scan_completed
+    - scan_error
+    - circuit_breaker_opened
+# ga-finish-20260727: 再ランクも外の口 (Mac Accelerator Service) を既定にする (埋め込みと同型)。
+# device 本体側指定値: external。口が居ないときは重みがあれば本体内で再ランク、
+# 無ければ再ランクなしで素通し (どちらもログ1行 + 設定画面に状態表示)。
+reranker:
+  provider: cross_encoder
+  model: BAAI/bge-reranker-v2-m3
+  device: external
+  base_url: http://localhost:18850
+  api_key: ''
+  top_n: 5
+classifier:
+  provider: rule_based
+  api_url: ''
+  api_key: ''
+pii_mode: standard
+# 初期 admin 認証。admin_initial_password を指定すると初回シードでその値を使う。
+# 未指定 (空) なら起動時にランダム生成し、平文を標準出力へ 1 回表示する。
+# DD-CYN-0067 G-1: どちらの場合も管理者には初回変更を求める印が立つ (配布仕様書 §5-4)。
+# DD-CYN-0067 G-2: 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
+auth:
+  admin_initial_password: 'Cynovela1!'
+  # DD-CYN-0070 N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) に
+  #   案内 (STARTUP.md) と同じ値が書かれる。空のままだと初回起動時に乱数が使われる。
+  viewer_initial_password: 'demo1234'
+vector_store:
+  provider: chromadb
+  path: ''
+  qdrant_url: http://localhost:6333
+  qdrant_api_key: ''
+# mas-device-20260725: chewie (ホスト直) の既定は自分の中の MPS。外へは寄せない
+# (埋め込みは既に主要因ではなく、通信のぶん遅くなりうるため)。外の口へ寄せられる
+# ことの確認は設定画面から provider=openai_compat + base_url で行える。
+# device 本体側指定値: auto / cpu / mps / external
+embedding:
+  provider: local
+  device: mps
+  model: BAAI/bge-m3
+  base_url: ''
+  api_key: ''
+models:
+  embedding:
+    path: ''
+    name: BAAI/bge-m3
+  reranker:
+    path: ''
+    name: BAAI/bge-reranker-v2-m3
+chunking:
+  chunk_size: 300
+  chunk_overlap: 50
+  contextual: false
+logging:
+  level: INFO
+  request_id: true
+features:
+  metadata_engine: true
+  data_guardrails: true
+  data_sync: true
+  audit_log: true
+  pipeline_visualization: true
+  session_history: true
+  feedback: true
+sync:
+  auto_poll: false
+  poll_interval_seconds: 3600
+  auto_publish: true
+  notify_on_change: true
+execution:
+  llm_provider: local
+  llm_base_url: http://localhost:1234
+  openrouter_api_key: ''
+  claude_api_key: ''
+  multimodal: false
+  vlm_model: ''
+# DD-CYN-0069 M-4: python を用意する場所は、--setup がターミナルの画面で聞いて
+#   受け取り手に選ばせる (決定 14-3・追記274 274-4)。conda が在れば conda の選択肢を
+#   先に出す (決定 14-2・14-4)。聞かずに決めたいときは ./launch.sh --setup --base <conda|venv|none>。
+#   下の prefer は DD-CYN-0053 世代の名残で、現行の選び方はこの値を読まない (互換のため残置)。
+base:
+  prefer: conda
+paths:
+  data_dir: ./store
+  db:
+    clean: db/cynovela.db
+    demo: db/demo.db
+  vector:
+    default: vector/default/chroma
+    demo: vector/demo/chroma
+  secret_key: secret.key
+  # ga-close-v3 PartA (2026-07-27): uploads: を廃止。アップロード受け口の撤去に伴い
+  # アプリ内部の資料保管領域そのものを無くした (この鍵はどのコードからも読まれていなかった)。
+  backups: backups
+  logs: logs
+  models: models
+
+# masking-parallel (PDF公開の伏字並列化): NER 伏字を遊休コアで並列実行する。
+#   出力は逐次と完全一致（各チャンクの伏字は決定的純関数）。埋め込み/リランクのモデル指定
+#   (上の embedding: / models:) には一切影響しない独立セクション。
+# parallelism: 0=自動(min(コア数-1, 4))。1=逐次(従来挙動と等価)。N=最大ワーカ数。
+# parallel_min_chunks: このチャンク数未満は逐次（ワーカ起動コストの方が高い小規模を回避）。
+masking:
+  parallelism: 0
+  parallel_min_chunks: 64

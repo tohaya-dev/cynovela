@@ -1,0 +1,91 @@
+# Cynovela UI Design Tokens
+# 抽出元: frontend/style.css, frontend/index.html
+# 抽出日: 2026-05-26
+
+## CSS変数（frontend/style.css :root より、確定値）
+--bg-base:            #f5f6f8     /* ページ背景 */
+--bg-surface:         #ffffff
+--bg-card:            #ffffff
+--bg-sidebar:         #ffffff
+--bg-sidebar-hover:   #f0f4f8
+--bg-sidebar-active:  #e8f2fc
+--bg-input:           #f5f7fa
+--bg-hover:           #f0f4f8
+--bg-stripe:          #f8fafc
+--border:             #e0e7ef
+--border-light:       #edf1f7
+--text-1:             #0f1923     /* 本文・見出し */
+--text-2:             #3a4f68
+--text-3:             #637a96     /* muted */
+--text-4:             #94a8c0
+--text-sidebar:       #3a4f68
+--text-sidebar-active:#0078d4
+--accent:             #0078d4     /* Cynovela ブランドブルー */
+--accent-hover:       #006abc
+--accent-glow:        rgba(0,120,212,0.12)
+--accent-light:       #e6f3fc
+--success:            #0e8a4a
+--success-bg:         #eaf7f0
+--success-border:     #b3e2ca
+--warning:            #b45309
+--warning-bg:         #fef9ec
+--warning-border:     #fcd68a
+--error:              #c0392b
+--error-bg:           #fef2f2
+--error-border:       #fbc8c4
+
+## フォント
+font-family (body): 'Inter', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif
+font-family (mono): 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace
+font-family (system fallback): system-ui, -apple-system, sans-serif
+
+## ボタン色
+btn-primary:   bg #0078d4 / color #fff / hover #006abc
+btn-secondary: bg #ffffff / color #0f1923 / border #e0e7ef
+btn-ghost:     bg transparent / color #3a4f68 / border #e0e7ef
+btn-danger:    bg #fef2f2  / color #c0392b / border #fbc8c4
+btn-success:   bg #eaf7f0  / color #0e8a4a / border #b3e2ca
+
+## ロゴ表記
+Topbar logo: "Data" + "Tap" (アイコン📊 + テキスト)
+
+## 半径・影
+card border-radius: 10px
+soft shadow: 0 2px 8px rgba(0,120,212,0.3)  (btn-primary hover)
+
+## 頻出カラーコード（index.html + style.css の grep 集計）
+   54 #fff
+   44 #e2e8f0   (ダッシュボード・補助境界線)
+   28 #1e293b   (本文濃色のサブ)
+   22 #94a3b8
+   22 #475569
+   19 #f8fafc
+   19 #cbd5e1
+   19 #64748b
+   13 #f1f5f9
+   13 #166534
+   12 #fef3c7
+   11 #eff6ff
+   11 #92400e
+   11 #334155
+   10 #2563eb
+   10 #0078d4   ← Cynovela ブランドブルー（CSS変数 --accent と一致）
+    9 #f0fdf4
+    8 #16a34a
+    7 #fef2f2
+    7 #d97706
+
+## 結論（スライドCSSで採用する値）
+--cyn-bg:           #f5f6f8
+--cyn-surface:      #ffffff
+--cyn-border:       #e0e7ef
+--cyn-text:         #0f1923
+--cyn-muted:        #637a96
+--cyn-accent:       #0078d4
+--cyn-accent-light: #e6f3fc
+--cyn-success:      #0e8a4a
+--cyn-warn:         #b45309
+--cyn-error:        #c0392b
+--cyn-radius:       10px
+--cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif
+--cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace

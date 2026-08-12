@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>guardrails — Cynovela</title>
+  <style>
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px;
+}
+.slide.active { display: flex; }
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+  </style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+
+<div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Cynovela ガードレール</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">このドキュメントについて</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>このドキュメントについて</strong><br>
+      Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
+    </blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">1. ガードレールの仕組み</span>
+  </div>
+  <div class="slide-body">
+    <p>ガードレール（guardrail：LLM 経路で不適切な入力・出力を検出して止める仕組み）は、Cynovela において次の 3 つの目的で機能します。</p>
+    <ol>
+      <li><strong>取込フェーズ</strong>: Publish のときに各 chunk の本文に含まれる PII（個人情報）を検出し、ポリシーに応じて「マスクする」「ベクター DB から除外する」「ログだけ残す」「通す」のいずれかを選びます。</li>
+      <li><strong>クエリ受付フェーズ</strong>: ユーザのクエリにプロンプトインジェクションの兆候があれば即座に 400 で遮断します。</li>
+      <li><strong>回答生成フェーズ</strong>: LLM の応答テキストから機密情報持ち出し文言を検査し、検出時には記録します。</li>
+    </ol>
+    <p><strong>廃止（2026-07-24）</strong>: かつて存在した「伏字なしで取り込む（Raw モード・<code>collections.raw_only</code>）」は廃止されました。取り込みは常に伏字を経由し、検索は常に伏字済みの層を引きます。過去データの列は保全のため残っています。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">1.1 入口・1.2 ポリシー構造</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>1.1 入口</h3>
+    <table>
+      <thead><tr><th>経路</th><th>設定対象</th><th>操作 API</th></tr></thead>
+      <tbody>
+        <tr><td>Workspace ポリシー</td><td>Workspace に紐付くポリシーで分類×アクションを定義</td><td><code>/api/policies/*</code>（admin 限定）</td></tr>
+        <tr><td>禁止トピック</td><td>クエリに含まれた文字列を block / warn</td><td><code>/api/guardrails/blocked-topics</code>（admin 限定）</td></tr>
+        <tr><td>プロンプトインジェクション検査</td><td>コード組み込みの英日 14 パターン + 出力 4 パターン</td><td>コード固定（<code>routers/chat.py:55-91</code>）</td></tr>
+      </tbody>
+    </table>
+    <h3>1.2 ポリシー × 分類 × アクションの三項</h3>
+    <p>1 つのポリシー（例: <code>pol-pii</code>）は、分類クラスごとにアクションを定めた JSON で表現されます。</p>
+<pre><code>[
+  {"classifier": "PII", "action": "mask"},
+  {"classifier": "Financial", "action": "exclude_from_rag"}
+]</code></pre>
+    <p>ポリシーは Workspace に紐付き（<code>workspace_policies</code> テーブル）、その Workspace 配下の Publish に対して適用されます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">2. カテゴリ（分類クラス）</span>
+  </div>
+  <div class="slide-body">
+    <p><code>db.py:855 / 861 / 867</code> のシードデータから確認できる分類クラスは 3 件です。</p>
+    <table>
+      <thead><tr><th>分類名</th><th>意味</th><th>使われ方の例</th></tr></thead>
+      <tbody>
+        <tr><td><code>PII</code></td><td>個人情報全般（氏名・連絡先・口座番号など）</td><td><code>pol-pii</code>・<code>pol-strict</code>・<code>pol-log</code> の全 3 シードポリシーで対象</td></tr>
+        <tr><td><code>Financial</code></td><td>財務・取引情報（クレジットカード番号等）</td><td>同上</td></tr>
+        <tr><td><code>HR</code></td><td>人事情報</td><td><code>pol-strict</code> のみで対象（<code>exclude_from_rag</code>）</td></tr>
+      </tbody>
+    </table>
+    <p>旧 <code>classifier.py</code> には PII / Financial / HR / Legal / Healthcare / Sales / Technical / Marketing の 8 カテゴリ定義もありますが、これは Smart Ingestion（取込時の文書種別分類）とは別系統で、ガードレール側で実際に使われているシードは上記 3 件です。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">3. 初期ポリシー（シード）</span>
+  </div>
+  <div class="slide-body">
+    <p><code>db.py:851-870</code> で 3 件の初期ポリシーがシードされます。</p>
+    <table>
+      <thead><tr><th>ポリシー ID</th><th>表示名</th><th>定義</th></tr></thead>
+      <tbody>
+        <tr><td><code>pol-pii</code></td><td>PII 保護ポリシー</td><td>PII: mask, Financial: exclude_from_rag</td></tr>
+        <tr><td><code>pol-strict</code></td><td>厳格管理ポリシー</td><td>PII: mask, Financial: exclude_from_rag, HR: exclude_from_rag</td></tr>
+        <tr><td><code>pol-log</code></td><td>ログのみポリシー</td><td>PII: log_only, Financial: log_only</td></tr>
+      </tbody>
+    </table>
+    <p>既定ではどのワークスペースにも紐付いていません。ワークスペースを作成するときに割り当てて使います。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">4. アクション種別</span>
+  </div>
+  <div class="slide-body">
+    <p><code>routers/policies.py:201</code> の <code>valid_actions</code> が権威定義です。</p>
+<pre><code>valid_actions = {"mask", "exclude_from_rag", "log_only", "allow"}</code></pre>
+    <table>
+      <thead><tr><th>アクション</th><th>動作</th><th>ユースケース</th></tr></thead>
+      <tbody>
+        <tr><td><code>mask</code></td><td>該当箇所を <code>[MASKED:XXX]</code> に置換してから保管</td><td>文書本文の大半を活かしつつ、個人情報だけ伏せたい</td></tr>
+        <tr><td><code>exclude_from_rag</code></td><td>該当 chunk をベクター DB に投入しない</td><td>「そもそも検索対象に含めたくない」分類</td></tr>
+        <tr><td><code>log_only</code></td><td>検出するがマスクも除外もしない、<code>audit_logs</code> にだけ記録</td><td>学習・統計収集目的</td></tr>
+        <tr><td><code>allow</code></td><td>何もしない</td><td>例外的に通したい分類</td></tr>
+      </tbody>
+    </table>
+    <p>実際の振り分けは <code>guardrail.py:31-90</code> で行われます（<code>exclude_from_rag</code> / <code>mask</code> 分岐）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">4.1 禁止トピック側のアクション</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p><code>/api/guardrails/blocked-topics</code> で追加する禁止トピックは別系統のアクションを取ります。</p>
+<pre><code>if act not in ("block", "warn"):
+    raise api_error("BAD_REQUEST", "action must be 'block' or 'warn'", status=400)</code></pre>
+    <table>
+      <thead><tr><th>アクション</th><th>動作</th></tr></thead>
+      <tbody>
+        <tr><td><code>block</code></td><td>該当パターンを含むクエリを遮断</td></tr>
+        <tr><td><code>warn</code></td><td>通すが警告として記録</td></tr>
+      </tbody>
+    </table>
+    <p>正規表現での登録も可能（<code>is_regex=true</code>）で、コンパイル時にエラーがあると <code>INVALID_REGEX</code> で 400 を返します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">5. プロンプトインジェクション 3 層防御</span>
+  </div>
+  <div class="slide-body">
+    <p><code>routers/chat.py</code> には次の 3 段階の検査が実装されています。</p>
+    <h3>5.1 入力検査（detect_prompt_injection）</h3>
+    <p><code>routers/chat.py:55-91</code>。クエリに次の英日 14 パターンが含まれていれば即時 400 で遮断し、<code>audit_logs</code> に <code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
+<pre><code>INJECTION_PATTERNS = [
+    r"ignore\s+(previous|all|prior)\s+instructions?",
+    r"forget\s+(everything|all|previous)",
+    r"you\s+are\s+now\s+",
+    r"new\s+instructions?:",
+    r"system\s*:\s*",
+    r"&lt;\s*system\s*&gt;",
+    r"\[\s*system\s+override\s*\]",
+    r"jailbreak",
+    r"pretend\s+you\s+are",
+    r"act\s+as\s+(?:if\s+)?(?:you\s+(?:have\s+no|are\s+without))",
+    r"reveal\s+(all|your|the)\s+(documents?|data|instructions?|prompt)",
+    r"ignore\s+(safety|security|guardrail)",
+    r"これまでの指示を(無視|忘れて)",
+    r"(全ての|すべての)(ドキュメント|文書|データ)を(教えて|表示)",
+]</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">5.2 取得結果検査 / 5.3 出力検査</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>5.2 取得結果検査（filter_poisoned_chunks）</h3>
+    <p><code>routers/chat.py:94-111</code>。検索結果として取得した chunk 本文に対しても同じパターン検査を行い、context を組み立てる前に該当 chunk を除外します（<code>routers/chat.py:1268</code>）。これは「ドキュメント本文に注入文言を仕込まれる間接攻撃」への対策です。</p>
+    <h3>5.3 出力検査（detect_output_exfiltration）</h3>
+    <p><code>routers/chat.py:114-125</code>。LLM の応答テキストから次の 4 パターンを検査し、検出時に記録します。</p>
+<pre><code>EXFILTRATION_PATTERNS = [
+    r"\bHACKED\b",
+    r"\bPWNED\b",
+    r"SECRET-ALPHA-TOKEN",
+    r"\[\s*SYSTEM\s+OVERRIDE\s*\]",
+]</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">5.4-5.5 検証と LLM judge</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>5.4 セキュリティ検証</h3>
+    <p>国際的な AI セキュリティ評価指標に基づき検証済み、ドキュメント経由の間接攻撃対策を含みます。</p>
+    <h3>5.5 補助手段：LLM judge</h3>
+    <p><code>utils/metadata/pii.py:263</code> の <code>llm_judge_pi(text)</code> で、正規表現では拾いきれないパターンを LLM judge ベースで追加判定する機構も用意されています（Stage R7 C-5 で導入）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">6. システムプロンプトの配置</span>
+  </div>
+  <div class="slide-body">
+    <p>設計上の重要原則として、<strong>システムプロンプト（事前指定された LLM の動作指示）は retrieved content（取得した文書本文）の「後」に配置します</strong>。</p>
+    <p>前に置くとドキュメント本文の中に書かれた <code>[SYSTEM OVERRIDE]</code> などの文言で上書きされる経路ができてしまうためです。</p>
+    <blockquote><strong>原則</strong>: システムプロンプトは retrieved_content の「後」に配置すること。前に置くと文書で上書き可能になる。</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">7. 監査ログ（audit_logs）</span>
+  </div>
+  <div class="slide-body">
+    <p>ガードレールが発火したイベントは <code>audit_logs</code> テーブルに記録されます。<code>core/audit.py:15</code> の <code>_AUDIT_CATEGORY_MAP</code> で <code>PROMPT_INJECTION_BLOCKED</code> と <code>pii_detected</code> は <code>security</code> カテゴリにマップされます。</p>
+    <blockquote><code>audit_logs</code> は <strong>API 経由での削除・変更ができない</strong>ようになっており、改ざん防止が設計に組み込まれています。</blockquote>
+    <p>集計エンドポイントは次の 2 系統です（いずれも admin 限定）：</p>
+    <ul>
+      <li><code>/api/guardrails/pii-detections</code>（GET）: <code>audit_logs</code> から PII 検出を集計</li>
+      <li><code>/api/pii-detections</code>（GET）: <code>chunks</code> テーブルからドキュメント単位で集計</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">8. カスタム検出器の追加方法</span>
+  </div>
+  <div class="slide-body">
+    <h3>8.1 PII 正規表現の追加</h3>
+    <p><code>guardrail.py:137-153</code> のリストに <code>(entity_type, re.compile(pattern), mask_token)</code> のタプルを追加します。</p>
+<pre><code>("CUSTOM_ID", re.compile(r"\bCUST-\d{6}\b"), "[MASKED:CUSTOMID]"),</code></pre>
+    <p>検出件数は audit_logs に集計され、<code>/api/guardrails/pii-detections</code> から確認できます。</p>
+    <h3>8.2 ガードレールカテゴリの追加</h3>
+    <p>新しい分類クラスを追加したい場合は、ポリシー JSON に新規分類名を含めて <code>/api/policies</code> に POST します。</p>
+<pre><code>{
+  "id": "pol-custom",
+  "name": "カスタムポリシー",
+  "rules": [
+    {"classifier": "PII", "action": "mask"},
+    {"classifier": "CustomConfidential", "action": "exclude_from_rag"}
+  ],
+  "status": "active"
+}</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">guardrails</span>
+    <span class="slide-title">8.3-8.4 禁止トピック・インジェクション</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>8.3 禁止トピックの追加</h3>
+    <p><code>/api/guardrails/blocked-topics</code>（POST、admin 限定）にパターン文字列とアクション（<code>block</code> / <code>warn</code>）、必要なら <code>is_regex=true</code> を付けて投げます。</p>
+<pre><code>{
+  "pattern": "社外秘プロジェクトX",
+  "action": "block",
+  "is_regex": false
+}</code></pre>
+    <p>正規表現として登録する場合は事前に <code>re.compile()</code> 相当でコンパイルされ、無効なら <code>INVALID_REGEX</code> で 400 が返ります。</p>
+    <h3>8.4 プロンプトインジェクションパターンの追加</h3>
+    <p><code>routers/chat.py:55-91</code> の <code>INJECTION_PATTERNS</code> / <code>EXFILTRATION_PATTERNS</code> リストに正規表現を追加します。コード組み込みのため、追加後は再起動が必要です。</p>
+    <blockquote>最終更新: 2026-05-26 / Alpha GA 対応版</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+</div>
+<nav class="nav-bar">
+  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+  <span id="slide-counter">1 / 15</span>
+  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

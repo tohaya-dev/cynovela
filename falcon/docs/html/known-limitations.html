@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>このツールにできないこと — Cynovela</title>
+  <style>
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+/* ダークモード禁止: @media prefers-color-scheme は一切書かない */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* docs/html/_tokens.txt から確定値を採用（frontend/style.css の :root と一致） */
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+/* スライドデッキ */
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+/* スライド本体（16:9） */
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px; /* nav-bar の高さ分 */
+}
+.slide.active { display: flex; }
+/* カバースライド */
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+/* スライドヘッダー */
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+/* コンテンツエリア */
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* テキスト要素 */
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+/* 箇条書き */
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+/* コードブロック */
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+/* テーブル */
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+/* 引用ブロック（免責・注意書き） */
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+/* 続きスライドの小バッジ */
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+/* フッター */
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+/* リンク */
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* 章タイトル（manual-complete 用） */
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+/* ナビバー */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+/* 印刷 */
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+  </style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+
+<div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">このツールにできないこと</div>
+  <div class="cover-sub">Cynovela 1.0.0-alpha — 2026-07-31 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">このドキュメントについて</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>このドキュメントについて</strong><br>
+      Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。
+      実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。
+      会社・製品の公式見解を一切代表しません。
+    </blockquote>
+    <p>この文書は、Cynovela に <strong>できないこと</strong> を書いたものです。できることの説明は <code>README.md</code> と <code>QUICKSTART.md</code> にあります。ここには、期待すると外れることだけを書きます。</p>
+    <p>版は <code>1.0.0-alpha</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の出どころで、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">1. 伏字でできないこと</span>
+    <span class="continued">(1/7)</span>
+  </div>
+  <div class="slide-body">
+    <p><strong>この節がいちばん重い節です。</strong> 伏字は「個人情報を隠す仕組み」ですが、隠せる範囲にははっきりした限界があります。<strong>伏字が当たったからといって、資料の中の個人情報がすべて消えたわけではありません。</strong> 隠しきれないものが必ず残ります。</p>
+    <h3>1.1 決まった形をした 13 種類しか、規則では取れない</h3>
+    <p><code>guardrail.py</code> の <code>PII_PATTERNS</code> に書かれている種別は、次の 13 種類だけです。</p>
+    <table>
+      <thead><tr><th>種別</th><th>何を指すか</th><th>種別</th><th>何を指すか</th></tr></thead>
+      <tbody>
+        <tr><td><code>URL</code></td><td>http / https で始まるアドレス</td><td><code>PASSWORD</code></td><td>「パスワード: ○○」のようなラベル付きの値</td></tr>
+        <tr><td><code>EMAIL</code></td><td>電子メールアドレス</td><td><code>APIKEY</code></td><td>API キー・アクセストークン</td></tr>
+        <tr><td><code>PHONE_JP</code></td><td>携帯電話番号（070 / 080 / 090）</td><td><code>PRIVATEKEY</code></td><td>秘密鍵のブロック</td></tr>
+        <tr><td><code>PHONE_LAND</code></td><td>固定電話番号</td><td><code>SSN</code></td><td>米国の社会保障番号（3-2-4 の形）</td></tr>
+        <tr><td><code>CREDIT</code></td><td>クレジットカード番号</td><td><code>IBAN</code></td><td>国際銀行口座番号</td></tr>
+        <tr><td><code>MYNUMBER</code></td><td>マイナンバー（個人番号）</td><td><code>PASSPORT</code></td><td>旅券番号（英字 2 + 数字 7）</td></tr>
+        <tr><td><code>IPV4</code></td><td>IPv4 アドレス</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+    <p>これ以外のものは、規則では 1 件も伏字になりません。たとえば社員番号・顧客番号・契約番号・口座番号（IBAN 以外）・車両番号・保険証番号などは、対象外です。</p>
+    <p>規則は「形」で当てています。形が崩れていれば当たりません。逆に、形が偶然一致した無関係な数字は伏字になります。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">1.2 / 1.3 氏名・住所・組織名・地名</span>
+    <span class="continued">(2/7)</span>
+  </div>
+  <div class="slide-body">
+    <h3>1.2 氏名と住所は言語解析まかせ。<code>lite</code> にすると一切伏字にならない</h3>
+    <p>氏名と住所は、上の 13 種類には入っていません。形が決まっていないので規則では取れず、言語解析（NER）の側で扱っています。</p>
+    <ul>
+      <li>設定は <code>cynovela.yaml</code> の <code>pii_mode</code> です。既定は <code>standard</code> です。</li>
+      <li><code>standard</code> のときだけ、<code>PERSON_JP</code>（氏名）と <code>ADDRESS_JP</code>（住所）が働きます。</li>
+      <li><strong><code>pii_mode</code> を <code>lite</code> にすると、氏名も住所も一切伏字になりません。</strong> <code>lite</code> は正規表現だけで判定する道へ切り替わり、氏名・住所の認識器はそもそも組み立てられません（<code>utils/metadata/pii.py</code> の <code>get_active_recognizers()</code> と <code>detect_pii()</code>）。</li>
+    </ul>
+    <p>氏名の判定は、姓名として登録のある語しか当たりません。珍しい姓名、外国人名のカタカナ表記、あだ名、役職と一体になった書き方などは取りこぼします。住所も、都道府県から始まる書き方と郵便番号の形しか見ておらず、「本社ビル 3 階」「◯◯支店」のような書き方は住所として扱いません。</p>
+    <h3>1.3 組織名と地名は、名前だけあって中身がない</h3>
+    <p><code>get_active_recognizers()</code> は <code>ORG_JP</code>（組織名）と <code>LOC_JP</code>（地名）も返します。名前は返りますが、<strong>それを供給する認識器は 1 つも登録されていません</strong>（ツリー全体で、この 2 つの語はこの 1 行にしか出てきません）。</p>
+    <p><strong>つまり組織名も地名も伏字になりません。</strong> 一覧に名前があるからといって、働いていると思わないでください。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">1.4 / 1.5 退行と、値が切れる条件</span>
+    <span class="continued">(3/7)</span>
+  </div>
+  <div class="slide-body">
+    <h3>1.4 言語モデルが入っていないと、<code>standard</code> でも規則だけに退行する</h3>
+    <p>氏名・住所の判定には spaCy / GiNZA の言語モデルが要ります。これが入っていない環境では、<code>pii_mode</code> が <code>standard</code> のままでも、判定は正規表現だけに退行します。起動時に <code>launch.sh</code> が存在を確かめ、無ければ次の警告を出します。</p>
+    <pre>⚠️  spaCy モデル '...' が未導入です (standard PII が regex フォールバックします)。'pip install -r requirements.txt' を実行してください。</pre>
+    <p><strong>この警告が出ているときは、氏名も住所も伏字になっていません。</strong> 起動は止まらないので、警告を読み飛ばすと、伏字が効いているつもりのまま使ってしまいます。</p>
+    <h3>1.5 パスワードと API キーは、空白・日本語・改行で切れる</h3>
+    <p><code>PASSWORD</code> と <code>APIKEY</code> の規則は、値の部分を ASCII の図形文字だけで拾います（<code>guardrail.py</code> に「値は ASCII 図形文字 <code>[!-~]</code> のみ（空白・CJK で必ず切れる）」と明記してあります）。このため、次のものは取れません。</p>
+    <ul>
+      <li>値の途中に空白が入っているもの（<code>パスワード: abc def</code>）→ <code>abc</code> までで切れます</li>
+      <li>値の途中に日本語が入っているもの</li>
+      <li>改行をまたぐ値（ラベルと値の間の空白はタブと空白だけに限られ、改行はまたぎません）</li>
+    </ul>
+    <p>また、ラベルと値の間に区切り（<code>:</code> <code>：</code> <code>=</code> <code>＝</code> または「は」）が無いものは対象外です。<code>password protection</code> のような一般的な語を巻き込まないための設計で、その代償として「パスワード　abcdefgh」のような空白区切りは取れません。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">1.6 PDF の空白が伏字を逃れる</span>
+    <span class="continued">(4/7)</span>
+  </div>
+  <div class="slide-body">
+    <p>PDF は文字の並びではなく、文字を置く位置の情報として組まれています。そこから文字を取り出すとき、元の見た目には無かった空白が語の途中に入ることがあります。</p>
+    <p>伏字の規則は文字の並びを見ているので、空白が 1 個入るだけで当たらなくなります。電子メールアドレスの場合、次のようになります。</p>
+    <table>
+      <thead><tr><th>取り出された文字列</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td><code>taro.yamada@example.co.jp</code></td><td>伏字になる</td></tr>
+        <tr><td><code>taro.yamada @example.co.jp</code></td><td><strong>伏字にならない</strong>（<code>@</code> の前で切れる）</td></tr>
+        <tr><td><code>taro.yamada@ example.co.jp</code></td><td><strong>伏字にならない</strong>（<code>@</code> の後ろで切れる）</td></tr>
+        <tr><td><code>taro. yamada@example.co.jp</code></td><td><code>yamada@example.co.jp</code> の部分だけが伏字になり、<code>taro.</code> は残る</td></tr>
+      </tbody>
+    </table>
+    <p>同じことは電話番号・カード番号など、他の種別でも起こり得ます。<strong>PDF を取り込んだときは、伏字が当たっているかどうかを目で確かめてください。</strong> 取り込み後のチャンク一覧から実際の本文を見られます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">1.7 管理者が原文を見られる条件</span>
+    <span class="continued">(5/7)</span>
+  </div>
+  <div class="slide-body">
+    <p>役割が <code>admin</code> のときは、伏字前の原文を見られる設計です（<code>rag.py</code> の <code>tier_for_role</code>）。ただし、次の 3 つの場合は管理者でも伏字済みのものしか出ません。</p>
+    <ol>
+      <li><strong>回答用 LLM の宛先が外部を向いているとき。</strong> <code>routers/chat.py</code> の <code>_effective_send_tier</code> は、送り先が自マシン内・コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらず伏字済みへ落とします。宛先を判定できないときも伏字済みに倒します。</li>
+      <li><strong>金庫（暗号化された保管）の鍵が合わないとき。</strong> 原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行は伏字済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
+      <li><strong>質問文そのもの。</strong> 質問文への伏字は役割で分けていません。管理者が質問文に IP アドレスを書いても、その IP は伏字になってから検索と LLM へ渡ります。</li>
+    </ol>
+    <p>以前の版のこの文書には「管理者でも IP が伏字になる（調査中）」と書いてありましたが、上の 3 つが理由です。不具合ではありません。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">2. 読み込めない資料の形式</span>
+    <span class="continued">(6/7)</span>
+  </div>
+  <div class="slide-body">
+    <p>取り込める形式は <code>rag.py</code> の <code>SUPPORTED_EXTENSIONS</code> に書いてあるものだけです。</p>
+    <table>
+      <thead><tr><th>種類</th><th>拡張子</th></tr></thead>
+      <tbody>
+        <tr><td>文書</td><td><code>.txt</code> <code>.md</code> <code>.csv</code> <code>.pdf</code> <code>.docx</code></td></tr>
+        <tr><td>表計算・プレゼン</td><td><code>.xlsx</code> <code>.xls</code> <code>.pptx</code></td></tr>
+        <tr><td>ウェブ・メール</td><td><code>.html</code> <code>.htm</code> <code>.eml</code></td></tr>
+        <tr><td>書庫</td><td><code>.zip</code></td></tr>
+        <tr><td>画像</td><td><code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.heic</code> <code>.webp</code> <code>.gif</code></td></tr>
+      </tbody>
+    </table>
+    <p>これ以外は取り込みの対象から外れます。よく持ち込まれるもので、<strong>扱えない</strong>ものを挙げます。</p>
+    <ul>
+      <li>古い Office 形式: <code>.doc</code> <code>.ppt</code>（<code>.xls</code> だけは扱えます）、<code>.rtf</code></li>
+      <li>OpenDocument 系: <code>.odt</code> <code>.ods</code> <code>.odp</code></li>
+      <li>構造化データ: <code>.json</code> <code>.xml</code> <code>.yaml</code></li>
+      <li>メール: <code>.msg</code>（Outlook 形式。<code>.eml</code> のみ対応）／電子書籍: <code>.epub</code></li>
+      <li>音声・動画: <code>.mp3</code> <code>.wav</code> <code>.m4a</code> <code>.mp4</code> <code>.mov</code> など</li>
+      <li>画像の一部: <code>.tif</code> <code>.tiff</code> <code>.bmp</code> <code>.svg</code>／書庫の一部: <code>.7z</code> <code>.rar</code> <code>.tar</code> <code>.gz</code></li>
+    </ul>
+    <p>そのほか: <strong>zip の入れ子は 1 段だけです</strong>（zip の中の zip は開きません）。<strong>画像は既定では本文を読みません</strong>（既定は <code>filename_only</code>＝ファイル名だけを索引に入れる。画像の中の文字は読みません）。スキャンしただけの PDF は文字が 1 つも取れません（OCR は入っていません）。暗号化された PDF や壊れた文書は「読めない/空」として飛ばされます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">3. / 4. 音声入力と、資料の受け口</span>
+    <span class="continued">(7/7)</span>
+  </div>
+  <div class="slide-body">
+    <h3>3. 音声で話しかけること</h3>
+    <ul>
+      <li>旧来の経路 <code>/api/transcribe</code> は<strong>もう繋がっていません</strong>。<code>server.py</code> で <code>include_router</code> を外してあります（伏字前の文字起こしがそのまま返る穴だったため、あえて外したものです）。</li>
+      <li>音声の機能は撤去済みです。この配布物に音声からの文字起こしはありません。</li>
+    </ul>
+    <h3>4. 資料をアップロードする受け口はない</h3>
+    <p>画面やAPIからファイルを送りつける受け口は<strong>撤去済み</strong>です（<code>routers/sources.py</code> の冒頭に「アップロード保存先 <code>_uploads_root</code> と <code>/api/sources/upload</code> を撤去した。取り込みは取り込みフォルダ経由に一本化する」とあります）。</p>
+    <p>資料は、あらかじめ決めた<strong>取り込みフォルダに置いてから</strong>画面で選びます。アプリの中に資料の写しを作る場所はもうありません。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">5. 外部への送出が止まる条件</span>
+  </div>
+  <div class="slide-body">
+    <p>これは「できないこと」というより「あえて止めていること」です。判定できないときは必ず止める側に倒します。そのぶん、機能が働かないように見えます。</p>
+    <ul>
+      <li><strong>CRAG の下読み。</strong> 検索結果が質問に足りているかを LLM に下読みさせる処理は、宛先が自マシン内でないとき、および<strong>宛先を判定できないとき</strong>は実行しません（<code>rag.py</code>）。実行しない場合は「検索結果をそのまま採用」に落ちます。画面には <code>[CRAG] 非ローカル宛のため下読みをスキップします</code> と出ます。</li>
+      <li><strong>会話の要約と、回答からの手がかり抽出。</strong> どちらも同じ判定を使い、外部宛（判定不能を含む）では送らずに空を返します（<code>routers/chat.py</code>）。</li>
+      <li><strong>役割による原文送出。</strong> 宛先が外部なら、管理者であっても伏字済みのものだけを送ります（<code>_effective_send_tier</code>）。</li>
+      <li><strong>伏字が失敗したら止まる。</strong> 質問文・回答のいずれも、伏字処理が例外で落ちた場合は 503 を返して処理を打ち切ります。伏字前のものを代わりに返すことはしません（<code>routers/chat.py</code>）。</li>
+      <li><strong>伏字なし取り込みと外部埋め込みの組み合わせは拒否します。</strong> 古い版で作られた「伏字なし」のコレクションは、外部の埋め込みを有効にしている間は公開（publish）できません（<code>rag.py</code>）。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">6. 同時に使うときの制約</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li><strong>公開（Publish）は同時に 2 件までです。</strong> 3 件目は 5 秒待って空きが出なければ失敗として返します（<code>server.py</code>。画面には「他のPublishが多すぎます。少し待ってから再試行してください。」と出ます）。</li>
+      <li><strong>LLM の同時実行は既定で 3 件までです</strong>（<code>cynovela.yaml</code> の <code>llm.max_concurrent</code>。<code>server.py</code> がこの値でセマフォを作ります）。4 件目は前の呼び出しが終わるまで待ちます。</li>
+      <li><strong>保管は単一の SQLite ファイルです</strong>（WAL 方式）。書き込みが重なる場面では待ちが発生します。何十人も同時に取り込みを回す使い方は想定していません。</li>
+      <li>ベクター索引（ChromaDB）も同じマシンのファイルです。複数のプロセスから同じ索引を書き換えないでください。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">7. モデルの差し替えの制約</span>
+  </div>
+  <div class="slide-body">
+    <p>詳しい手順は <code>SETUP-ACCELERATOR.md</code> にあります。要点だけ書きます。</p>
+    <ul>
+      <li><strong>埋め込みモデルは、版（snapshot）まで一致していなければなりません。</strong> <code>BAAI/bge-m3</code> の snapshot 版まで揃える必要があります。<strong>版が違うとベクトルの数値が変わり、同梱済みの索引と混ざって検索順位が壊れます。</strong> 版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるか索引を全部作り直してください。</li>
+      <li><strong>軽量版（AIモデルを含みません。約 2.4 MB）はモデルを同梱していません。</strong> モデルを置かないまま起動用スクリプトを実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。取得しない場合は、<strong>起動する前に止まります</strong>。</li>
+      <li><strong><code>host.containers.internal</code> はコンテナの外では名前解決できません。</strong> ホスト側で直接起動する場合は <code>127.0.0.1</code> に書き換えてください（コンテナ版の配布物は、この 1 語だけは自動で読み替えます。別のホスト名や IP を書いた場合は読み替えず、書いたとおりに使います）。</li>
+      <li><strong>外部アクセラレータの画像の受け口は未実装です。</strong> 呼ぶと 501 を返します。</li>
+      <li><strong>起動時の <code>--mode</code> は、実際には切り替わらないものがあります。</strong> <code>--mode</code> の説明文にそのまま書いてあります。<code>lite</code> と <code>lite-en</code> は軽量モデルへの切り替えが未配線で、現状は既定の <code>text</code> と同じ <code>bge-m3</code> で動きます。<code>minimal</code> は TF-IDF が未統合で、こちらも <code>bge-m3</code> が要ります（モデルを置いていない環境では取り込みができません）。<strong>どのモードを選んでも、必要なモデルの大きさは変わりません。</strong></li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">8. 骨組みだけで中身がない機能</span>
+  </div>
+  <div class="slide-body">
+    <p>呼ぶと <code>NotImplementedError</code> になるもの、または抽象宣言だけのものです。（行番号は書きません。すぐにずれるためです。）</p>
+    <table>
+      <thead><tr><th>ファイル</th><th>クラス・メソッド</th><th>状態</th></tr></thead>
+      <tbody>
+        <tr><td><code>providers/classifier.py</code></td><td><code>ClassifierProvider.classify</code></td><td>抽象（差し替え用の口）</td></tr>
+        <tr><td><code>providers/embedding.py</code></td><td><code>EmbeddingProvider.embed</code> / <code>.test_connection</code></td><td>抽象</td></tr>
+        <tr><td><code>providers/embedding.py</code></td><td><code>MLXEmbeddingProvider.embed</code></td><td>未実装（将来）</td></tr>
+        <tr><td><code>providers/reranker.py</code></td><td><code>RerankerProvider.rerank</code> / <code>.test_connection</code></td><td>抽象</td></tr>
+        <tr><td><code>providers/reranker.py</code></td><td><code>MLXReranker.rerank</code></td><td>未実装（将来）</td></tr>
+        <tr><td><code>providers/vector_store.py</code></td><td><code>VectorStoreProvider.add</code> / <code>.search</code> / <code>.delete_collection</code> / <code>.export</code> / <code>.import_data</code> / <code>.test_connection</code></td><td>抽象</td></tr>
+        <tr><td><code>providers/vector_store.py</code></td><td><code>QdrantVectorStore.add</code> / <code>.search</code> / <code>.delete_collection</code> / <code>.export</code> / <code>.import_data</code></td><td>未実装（骨格のみ）</td></tr>
+        <tr><td><code>services/rag_strategies.py</code></td><td><code>GraphRAGStrategy.retrieve</code> / <code>.build_graph</code> / <code>.traverse_with_acl</code></td><td>未実装（将来）</td></tr>
+        <tr><td><code>services/agent_runtime.py</code></td><td><code>AgentRuntime.run</code> / <code>.call_tool</code> / <code>.available_tools</code></td><td>抽象宣言のみ。実装したクラスは 1 つもありません</td></tr>
+      </tbody>
+    </table>
+    <p>つまり: <strong>ベクターの保管先を Qdrant に替えることはできません</strong>（動くのは ChromaDB だけです）。<strong>Apple Silicon 向けの MLX 経路は使えません</strong>（Apple Silicon の GPU を使いたい場合は外部アクセラレータ経由になります）。<strong>グラフを使った検索（GraphRAG）は使えません。</strong> <strong>エージェントに作業をさせることはできません</strong>（型の宣言だけがあります）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">9. Kubernetes / 起動の形態とデータの置き場</span>
+  </div>
+  <div class="slide-body">
+    <h3>9. Kubernetes 一式は、そのままでは動かない</h3>
+    <ul>
+      <li><strong>コンテナ版の配布物には <code>deploy/k8s/20-deployment.yaml</code> が入っていません。</strong> 配布物を作る <code>tools/build-dist.sh</code> が、梱包の直前にこのファイルを落としています。残りの 3 つ（namespace / pvc / service）だけでは、アプリのコンテナが 1 つも立ちません。</li>
+      <li><strong>ホスト直起動版には <code>deploy/</code> そのものがありません。</strong></li>
+    </ul>
+    <p>Kubernetes で動かしたい場合は、Deployment の定義を自分で書く必要があります。</p>
+    <h3>10.1 起動の形態とデータの置き場</h3>
+    <ul>
+      <li><code>--demo</code> を付けると、同梱のダミー資料が載ったデモのデータベースで起動します（<code>store/db/demo.db</code> と <code>store/vector/demo/chroma</code>）。</li>
+      <li>何も付けなければ本番で、<strong>空のデータベース</strong>で起動します（<code>store/db/cynovela.db</code> と <code>store/vector/default/chroma</code>）。</li>
+      <li><strong>どちらも再起動で消えません。</strong> 起動のたびに初期化されることはありません。消したい場合は自分でファイルを消してください。</li>
+      <li>同梱の索引とデータベースは、配布物を作るときに<strong>配布物の中の <code>dummy-corpus/</code> だけ</strong>から作っています。作った側の作業用の資料は 1 件も入っていません。実際に何が何件入っているかは、配布物の <code>BUNDLED-DATA.md</code> に書き出してあります。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">10.2 横断検索 / MCP / 回答の作り</span>
+  </div>
+  <div class="slide-body">
+    <h3>横断検索</h3>
+    <p>MCP のツールには <code>search_across_collections</code>（複数のコレクションをまたぐ検索）がありますが、<strong>画面（GUI）には横断検索の入口がありません。</strong> 画面からはワークスペースを 1 つ選んで検索します。</p>
+    <h3>MCP</h3>
+    <ul>
+      <li><code>mcp_server.py</code> は 11 個のツールを提供します。</li>
+      <li>MCP サーバーは、内部で Cynovela の REST API に認証付きで問い合わせる作りです。つまり <strong>本体が動いていないと MCP も動きません。</strong></li>
+      <li>MCP を動かす Python の実行ファイルは、環境変数 <code>CYNOVELA_MCP_PYTHON</code> で指定できます。指定が無ければ、いま動いている Python をそのまま使います（<code>routers/mcp.py</code>）。</li>
+    </ul>
+    <h3>回答の作り</h3>
+    <ul>
+      <li><strong>構造化された回答は返せません。</strong> 回答は自由形式（必要に応じて Markdown）です。JSON や決まったタグでの応答は用意していません。出典の引用（<code>[1][2]</code> の形）は実装済みです。</li>
+      <li><strong>信頼度の低いときの自動切り替えはありません。</strong> <code>cynovela.yaml</code> に <code>confidence_threshold</code>（既定 <code>0.4</code>）がありますが、下回ったときに一般知識モードへ自動で切り替えるような動きは組み込まれていません。</li>
+      <li><strong>回答の自己評価は単純な規則です。</strong> <code>adaptive_rag.py</code> の <code>evaluate_answer_quality()</code> は「回答が空」「60 文字未満でヒットも少ない」「否定的な言い回しを含む」で足りているかを決めます。LLM に評価させてはいません。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-16">
+  <div class="slide-header">
+    <span class="doc-name">このツールにできないこと</span>
+    <span class="slide-title">10.3 廃止した機能 / 通行証 / 落とし穴</span>
+  </div>
+  <div class="slide-body">
+    <h3>廃止した機能</h3>
+    <table>
+      <thead><tr><th>機能</th><th>状態</th></tr></thead>
+      <tbody>
+        <tr><td><code>--mock</code> 起動</td><td>撤去済み。起動の選択肢に存在しません。モデル不要の起動もできません</td></tr>
+        <tr><td><code>/chat-popup</code></td><td>410 Gone を返します。全画面のチャットへ移行しました</td></tr>
+        <tr><td><code>user_id</code> だけのログイン</td><td>撤去済み。<code>username</code> と <code>password</code> が必要です</td></tr>
+        <tr><td><code>/api/auth/users</code> の未認証許可</td><td>撤去済み。常に管理者の認証が要ります</td></tr>
+        <tr><td><code>--pii-mode</code> の起動指定</td><td>廃止。<code>cynovela.yaml</code> の <code>pii_mode</code> で指定します</td></tr>
+        <tr><td>旧 <code>/api/transcribe</code></td><td>撤去済み。音声の機能はありません</td></tr>
+        <tr><td><code>/api/sources/upload</code></td><td>撤去済み。取り込みフォルダ経由に一本化しました</td></tr>
+      </tbody>
+    </table>
+    <h3>通行証（ログイン用のトークン）</h3>
+    <p>通行証は <code>POST /api/auth/login</code> が発行する JWT です。署名鍵は<strong>配布物には入っていません</strong>。受け取った側で初回起動時に暗号乱数から自動生成し、<code>store/db/jwt/secret.key</code> に保存します（<code>config.py</code> の <code>_load_or_create_jwt_signing_key</code>）。配布物を作るときに、この鍵は必ず落とします（共有すると、よそで発行された通行証が通ってしまうためです）。鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります（再起動すると発行済みの通行証は無効になり、再ログインで通ります）。</p>
+    <h3>落とし穴</h3>
+    <ul>
+      <li>ChromaDB の <code>PersistentClient</code> は、間違ったパスを渡してもエラーになりません。空のデータベースを黙って作ります。<strong>検索が 0 件になったときは、まず索引の置き場が合っているかを疑ってください。</strong></li>
+      <li>LM Studio の API に <code>max_tokens</code> を渡さないでください。思考する型のモデルで、考えるためのトークンを使い切ってしまいます。</li>
+    </ul>
+    <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">最終更新: 2026-07-31 / 版 1.0.0-alpha</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / 1.0.0-alpha</span>
+  </div>
+</div>
+</div>
+<nav class="nav-bar">
+  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+  <span id="slide-counter">1 / 16</span>
+  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

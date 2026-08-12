@@ -1,0 +1,43 @@
+# ============================================================================
+# environment.windows.yml — Windows (win-64) 用 conda env 草案
+# fixall-B7 20260602 / ★★ UNVERIFIED DRAFT — Windows 実機で未検証 ★★
+# ----------------------------------------------------------------------------
+# なぜ別ファイルか:
+#   本体 environment.yml は osx-arm64 のビルドハッシュ固定 (例 python=3.12.13=h8561d8f_0_cpython,
+#   *=h8088a28_2 等) のため win-64 では `conda env create` が solve 不能。
+#   そこで Windows 用は「conda はインタプリタ層 (python + pip) のみをビルドハッシュ無しで作り、
+#   実依存はクロスプラットフォームな requirements.txt (レンジ指定) に委譲」する方針にする。
+#   requirements.txt は mlx を含まず torch/fugashi 等もレンジなので Windows wheel が選ばれる。
+#
+# 使い方 (Windows, 未検証):
+#   conda env create -f environment.windows.yml
+#   conda activate cynovela
+#   # GPU を使う場合は torch を CUDA ビルドへ差し替え (下記 NOTE 参照) してから:
+#   pip install -r requirements.txt
+#
+# Windows 固有の確認事項 (実機検証タスク・後日):
+#   - torch: requirements.txt は torch>=2.0,<3.0。Windows では既定で CPU wheel が入る。
+#       CUDA 利用時は事前に
+#         pip install torch --index-url https://download.pytorch.org/whl/cu124
+#       で目的の CUDA ビルドを固定してから requirements.txt を入れる (上書き回避)。
+#   - mlx / mlx-lm / mlx-metal / mlx-vlm: Apple Silicon 専用。environment.yml では darwin+arm64
+#       マーカ付き、かつ requirements.txt 未収載 → Windows では導入されない (providers 側は
+#       NotImplementedError スタブ)。LLM は --lmstudio-url / yaml llm.base_url で差替。
+#   - 日本語形態素: requirements.txt の fugashi>=1.3.0 + unidic-lite>=1.0.8 は Windows wheel あり。
+#       ビルド不調なら ja-ginza が内部で使う SudachiPy 系へ寄せる案を検討 (要実機検証)。
+#   - opencv-python / onnxruntime / chromadb: いずれも win-64 wheel 提供あり (要バージョン実測)。
+#   - spaCy 基盤モデル (en_core_web_sm / ja_core_news_sm): requirements.txt の wheel 直URLピンで
+#       Windows でも同一取得 (fixall-B3)。
+#
+# ⚠ 本ファイルは Mac 環境では検証不可。Windows 実機での `conda env create` → 起動までを
+#   別タスクで実機検証し、必要なら conda 層へ最小限の追補 (例: vc ランタイム) を行うこと。
+# ============================================================================
+name: cynovela
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12       # ビルドハッシュ無し: win-64 で conda に解決させる
+  - pip
+  - pip:
+      # 実依存はクロスプラットフォームな正本マニフェストに委譲 (mlx 非収載・レンジ指定)
+      - -r requirements.txt

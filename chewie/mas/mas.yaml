@@ -1,0 +1,20 @@
+# Mac Accelerator Service (外の口) 設定 — ga-mas-20260725
+# 環境変数は使わない。設定はこのファイルのみ。
+server:
+  host: 127.0.0.1        # コンテナから呼ぶ場合も host.containers.internal 経由でここへ届く
+  port: 18850
+device: auto             # auto / cpu / mps (auto = MPS が使えれば MPS)
+models:
+  embedding:
+    name: BAAI/bge-m3
+    path: ''             # '' = 本流と同じ置き場 (store/models) から読み取り専用で解決
+  reranker:
+    name: BAAI/bge-reranker-v2-m3
+    path: ''
+batch:
+  max_texts: 512
+ane:
+  enabled: false         # ベータ。既定オフ (正式統合は hansolo 側)
+  rerank_mlpackage: ''
+policy:
+  allow_raw_content: true  # 複数 Mac にまたがる配置 (=外部送出) では false にする (伏字済みのみ)

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クイックスタート — Cynovela</title>
+  <style>
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+/* ダークモード禁止: @media prefers-color-scheme は一切書かない */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* docs/html/_tokens.txt から確定値を採用（frontend/style.css の :root と一致） */
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+/* スライドデッキ */
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+/* スライド本体（16:9） */
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px; /* nav-bar の高さ分 */
+}
+.slide.active { display: flex; }
+/* カバースライド */
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+/* スライドヘッダー */
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+/* コンテンツエリア */
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* テキスト要素 */
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+/* 箇条書き */
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+/* コードブロック */
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+/* テーブル */
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+/* 引用ブロック（免責・注意書き） */
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+/* 続きスライドの小バッジ */
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+/* フッター */
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+/* リンク */
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* 章タイトル（manual-complete 用） */
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+/* ナビバー */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+/* 印刷 */
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+  </style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+
+<div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">クイックスタート</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">このドキュメントについて</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>このドキュメントについて</strong><br>
+      Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
+    </blockquote>
+    <p>このドキュメントでは、Cynovela を初めて起動し、最初の RAG（Retrieval-Augmented Generation：検索拡張生成）質問を投げるまでの最短手順をご案内します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">1. 前提環境</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela はローカル PC 上で動作します。以下が事前に整っている必要があります。</p>
+    <table>
+      <thead><tr><th>項目</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>Python</td><td>conda（Anaconda / Miniforge）環境を利用します</td></tr>
+        <tr><td>ローカル LLM</td><td>LM Studio もしくは OpenAI 互換 API を提供するローカルサービス</td></tr>
+        <tr><td>推奨 RAM</td><td>起動モード（<code>--mode</code>）に応じて 4GB〜128GB</td></tr>
+        <tr><td>ネットワーク</td><td>初回起動時のモデルダウンロードに必要</td></tr>
+      </tbody>
+    </table>
+    <p>質問への答えを作るには実 LLM が要ります。以前あった <code>--mock</code>（モック LLM）は撤去済みで、いま指定するとエラーで止まります。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">2. conda 環境のセットアップ</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela は conda 環境上で動作確認しています。以下の手順で環境を作成してください。</p>
+    <pre><code># conda 環境を作成（任意の名前。例: cynovela）
+conda create -n cynovela python=3.11 -y
+conda activate cynovela
+
+# 依存ライブラリをインストール
+pip install -r requirements.txt</code></pre>
+    <blockquote><strong>補足</strong>: 必要なライブラリは <code>requirements.txt</code> に列挙されています。FastAPI、SQLite、ChromaDB、cryptography（Fernet 暗号化）、huggingface_hub（モデルダウンロード）などが含まれます。</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">3. 初回モデルダウンロード（モード別）</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela は起動時に「Preflight チェック」というモデル存在確認を行います。起動モード（<code>--mode</code>）に応じて必要な Embedding（埋め込み：テキストをベクトル化するモデル）が異なります。</p>
+    <h4>モード別のモデルサイズ</h4>
+    <table>
+      <thead><tr><th>モード</th><th>必要モデル</th><th>サイズ目安</th></tr></thead>
+      <tbody>
+        <tr><td><code>text</code>（既定）</td><td>BAAI/bge-m3</td><td>約 2.3GB</td></tr>
+        <tr><td><code>lite</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td></tr>
+        <tr><td><code>lite-en</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <blockquote><strong>重要</strong>: 初回起動で <code>text</code> 以上のモードを選んだ場合、約 2.3GB のダウンロードが発生します。回線状況によっては数分〜十数分かかります。</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">3. Preflight チェックの流れ</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>モデルが未取得の場合、起動時に対話プロンプトが表示されます。</p>
+    <pre><code>[1] 今すぐダウンロードして起動する
+[2] 代替モードで起動する（例: text / lite / mock）
+[3+] キャンセル</code></pre>
+    <p><code>[1]</code> を選ぶと、<code>~/.cynovela/models/</code> 配下に HuggingFace Hub からダウンロードされます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">4. 起動コマンド</span>
+  </div>
+  <div class="slide-body">
+    <p>最初は「デモデータ投入 + モック LLM」モードで起動するのが安全です。LLM 不要・モデルダウンロード不要で動作します。</p>
+    <pre><code>python server.py --demo</code></pre>
+    <p>オプションの意味は以下のとおりです。</p>
+    <table>
+      <thead><tr><th>フラグ</th><th>効果</th></tr></thead>
+      <tbody>
+        <tr><td><code>--demo</code></td><td>デモデータを投入した状態で起動（再起動でリセット）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">4. 起動コマンド（実 LLM 利用時）</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>実 LLM を使う場合は、LM Studio を <code>http://localhost:1234</code> で立ち上げてから次のコマンドを実行します。</p>
+    <pre><code>python server.py --demo</code></pre>
+    <p>LM Studio が別ポートやリモートにある場合は次のように指定します。</p>
+    <pre><code>python server.py --demo --lmstudio-url http://localhost:1234</code></pre>
+    <p>起動に成功すると、デフォルトでは <code>http://127.0.0.1:8765</code> で GUI と API が公開されます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">5. デモアカウントでログイン</span>
+  </div>
+  <div class="slide-body">
+    <p>ブラウザで <code>http://127.0.0.1:8765</code> を開きます。<code>--demo</code> で起動した場合、デモ用のユーザーが自動投入されています。</p>
+    <p>DB が保持するロールは <code>admin</code> / <code>viewer</code> の 2 値です。</p>
+    <table>
+      <thead><tr><th>ロール</th><th>権限</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>全機能。ユーザー管理・システム設定・PII 検出履歴の閲覧などフル権限</td></tr>
+        <tr><td><code>viewer</code></td><td>閲覧のみ。RAG 検索・レポート閲覧</td></tr>
+      </tbody>
+    </table>
+    <blockquote><code>curator</code> / <code>data-scientist</code> 等の名称は内部的に <code>viewer</code> へ正規化されます。</blockquote>
+    <p>出荷 <code>demo.db</code> の実ログイン情報:</p>
+    <table>
+      <thead><tr><th>ユーザー名</th><th>ロール</th><th>パスワード</th></tr></thead>
+      <tbody>
+        <tr><td><code>cynovela</code></td><td>admin</td><td>初回ログイン時に変更を強制（固定 PW は配布しません）</td></tr>
+        <tr><td><code>demo</code></td><td>viewer</td><td>同梱の資格情報ファイル（配布物の tar とは別便で受け取る <code>*.admin-password.txt</code>）の <code>viewer_password</code> を参照。固定 PW は配布しません</td></tr>
+      </tbody>
+    </table>
+    <p>ログイン後、ロールに応じて表示される画面と操作可能な範囲が変わります。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">6. 最初のワークスペース作成</span>
+  </div>
+  <div class="slide-body">
+    <p>「ワークスペース（Workspace）」は、ユーザー・ポリシー・コレクションをまとめる管理単位です。<code>--demo</code> 起動では、同梱のダミー資料が入ったワークスペースが 1 件だけ入っています（空のシード WS 3 件は 2026-07-30 に撤去済みで、起動時に取り除かれます）。ガードレールポリシー 3 件はシードされるので、作成したワークスペースに割り当てて使います。</p>
+    <p>新規ワークスペースを作る場合は、GUI の「ワークスペース管理」画面から作成できます。後述の「ハンズオン（基礎編）」で詳しい手順をご案内します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">7. 最初のファイル取り込み</span>
+  </div>
+  <div class="slide-body">
+    <p>ワークスペースの下に「コレクション（Collection）」を作り、そこに対象ファイルを取り込みます。コレクションはファイル群とチャンク（分割）戦略の単位で、<code>draft → ingested → ready</code> という状態遷移を持ちます。</p>
+    <p>GUI 上では以下の順で操作します。</p>
+    <ol>
+      <li>ワークスペースを選択</li>
+      <li>「コレクション作成」ボタンを押し、名前と RAG 戦略（<code>simple</code> / <code>hybrid_bm25</code> / <code>contextual</code>）を指定</li>
+      <li>ファイルをアップロード（ドラッグ＆ドロップ可）</li>
+      <li>「Publish（公開）」を実行し、<code>ready</code> 状態にする</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">7. Publish で行われる処理</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>Publish の過程で以下が行われます。</p>
+    <ul>
+      <li>テキスト抽出（PDF / DOCX / 画像 OCR ほか）</li>
+      <li>チャンク分割（既定 500 文字、オーバーラップ 50 文字）</li>
+      <li>PII 検出とマスキング（取込時マスキング）</li>
+      <li>Embedding 生成と ChromaDB への保存</li>
+      <li>BM25 インデックス構築</li>
+    </ul>
+    <blockquote><strong>補足</strong>: Publish はバックグラウンドで動き、SSE（Server-Sent Events）で進捗を返します。完了時には <code>publish_history</code> テーブルに件数や所要時間が記録されます。</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">8. 最初の質問</span>
+  </div>
+  <div class="slide-body">
+    <p><code>ready</code> 状態のコレクションに対して、GUI 上の「RAG Chat」画面から質問を投げます。</p>
+    <p>たとえば次のように尋ねます。</p>
+    <pre><code>このドキュメントで扱われている主なトピックは何ですか？</code></pre>
+    <p>回答とともに、出典として <code>[1][2]</code> のような引用番号付きでチャンクが表示されます（<code>config.rag.citation_enabled = true</code> の場合）。</p>
+    <p>ロールによる違いも体験できます。</p>
+    <ul>
+      <li><code>admin</code> ログイン時: 生本文（raw）保管庫を検索。出力にもマスクは入りません。</li>
+      <li><code>viewer</code> ログイン時: マスク済み本文（masked）保管庫を検索。LLM 出力にも出口マスクが適用され、PII（Personally Identifiable Information：個人情報）は伏字に置換されます（<code>curator</code> / <code>data-scientist</code> 等は <code>viewer</code> に正規化）。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">クイックスタート</span>
+    <span class="slide-title">9. ここまでで体験できた要素</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>要素</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>起動モード</td><td><code>--demo</code> でダミー資料入りのデモを起動</td></tr>
+        <tr><td>ロール権限</td><td><code>admin</code> / <code>viewer</code> の見え方の違い</td></tr>
+        <tr><td>RAG パイプライン</td><td>取込 → チャンク分割 → 埋め込み → 検索 → LLM 回答</td></tr>
+        <tr><td>ガードレール</td><td>取込時マスキング（Tier1）と回答時マスキング（Tier2）の二重防御</td></tr>
+      </tbody>
+    </table>
+    <p>次のステップは「ハンズオン（基礎編）」へ進んでください。スコアの読み方、監査ログ、ガードレールの挙動を順に体験します。</p>
+    <p style="margin-top:18px; color:var(--cyn-muted); font-size:13px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+</div>
+<nav class="nav-bar">
+  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+  <span id="slide-counter">1 / 14</span>
+  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

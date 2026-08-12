@@ -1,0 +1,55 @@
+# --- models (kept on disk, never tracked) ---
+store/models/
+**/store/models/
+*.safetensors
+*.onnx
+*.bin
+*.gguf
+# --- keys and secrets ---
+keys/
+**/keys/
+secret.key
+**/secret.key
+*.pem
+*.key
+# --- databases and indexes ---
+store/db/
+**/store/db/
+store/vector/
+**/store/vector/
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+# --- runtime environments ---
+.venv-cynovela/
+**/.venv-cynovela/
+.mas-env/
+**/.mas-env/
+.venv/
+venv/
+# --- python intermediates ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+# --- logs, evidence, backups ---
+store/logs/
+**/store/logs/
+*.log
+*.bak
+*.bak-*
+reports/
+evidence/
+# --- distributables ---
+*.tar
+*.tar.gz
+*.tar.gz.part*
+*.zip
+SHA256SUMS
+# --- macOS ---
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes

@@ -1,0 +1,73 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+test-results/
+*.log
+!reports/stage2/*.log
+*.bak*
+outputs/
+eval/results/
+.claude/scheduled_tasks.lock
+
+# === auto-commit 除外ルール (2026-05-12追加) ===
+v11-mock/
+cynovela-mock/
+v11-chromadb/
+.claude/worktrees/
+test_data/
+
+# v13: 配布パッケージ用ディレクトリ・ランタイム成果物（git管理外）
+# release/v1.0.0-alpha: root の models/ db/ のみ除外 (store/db/ は別、negation 有効化のため)
+/models/
+/db/
+.coverage
+data/chroma/
+.DS_Store
+data/*.db
+
+# === alpha-ga-final (2026-05-24): 新規 untracked の reports / .claude 系を以後追加しない ===
+# (既に tracked のファイルはこの追加では untrack されない)
+reports/
+.claude/
+
+# ランタイムデータ（コミット対象外）
+store/db/*.db
+store/db/tenants/*.db
+store/vector/default/**
+store/vector/demo/**
+store/vector/tenants/**
+# ga-close-v3 PartA (2026-07-27): アップロード保管領域は廃止。ツリーに復活させないための守り。
+# data/uploads は 2026-06 に store/uploads へ移された旧保管領域。残骸を追跡下に戻さない。
+store/uploads/**
+data/uploads/**
+store/backups/**
+store/logs/**
+store/secret.key
+# part6-20260726: 通行証(JWT)の署名鍵。金庫鍵と同じくリポジトリに入れない。
+store/db/jwt/secret.key
+store/models/**
+# ただし .gitkeep / README.md はディレクトリ構造維持のため tracked
+!store/db/.gitkeep
+!store/db/tenants/README.md
+!store/vector/default/.gitkeep
+!store/vector/tenants/README.md
+!store/backups/.gitkeep
+!store/logs/.gitkeep
+# 開発成果物
+reports/
+archive/
+.pre-commit-config.yaml
+store/demo.db
+cynovela.db
+data/cynovela.db
+
+# macOS AppleDouble sidecar files
+._*
+**/._*
+
+# pretar-inspect-20260729: 検査値ファイル (文字数+sha256のみ・値なし) は追跡させない
+tools/dist-check-values.local
+tools/dist-initial-credentials.local
+
+# DD-CYN-0037: アイコンから起動する形は梱包のときに組み立てる (原稿は tools/launcher-app/)
+Cynovela をはじめる.app/
