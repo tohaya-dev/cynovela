@@ -305,7 +305,7 @@ on stoppedMenu(repo, stTxt)
 		runCheckFlow(repo)
 		return true
 	else if ch starts with "ターミナルから使う" then
-		runSh("open -e " & quoted form of (repo & "/ターミナルから使う.txt"))
+		runSh("open -e " & quoted form of (repo & "/USE-FROM-TERMINAL.txt"))
 		return true
 	else
 		aboutFlow(repo)

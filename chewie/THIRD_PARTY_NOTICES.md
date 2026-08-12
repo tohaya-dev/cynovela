@@ -181,5 +181,9 @@
 - sentence-transformers/paraphrase-MiniLM-L3-v2 — 出どころ: Hugging Face (sentence-transformers/paraphrase-MiniLM-L3-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
 - sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 — 出どころ: Hugging Face (sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
 
+軽量版（モデルを同梱しない形）には、上のモデルは入っていません。初回の起動で
+「いま取り寄せる」を選んだ場合に、同じ出どころ（Hugging Face）から同じモデルを
+取り寄せます。ライセンスの扱いは同梱する場合と同じです。
+
 ---
 件数: Python の部品 169 件・同梱モデル 4 件

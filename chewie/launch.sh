@@ -228,8 +228,23 @@ _find_conda() {
 }
 HAVE_CONDA=0
 _find_conda && HAVE_CONDA=1
+# 3.10 以上の python を探す (新しい版から順に。順序と書き方は falcon 側 tools/mas-phase.sh の原文と同じ)
+_find_python() {
+    local c
+    for c in python3.13 python3.12 python3.11 python3.10; do
+        if command -v "$c" >/dev/null 2>&1; then command -v "$c"; return 0; fi
+    done
+    # 版のついた名前が無いときは python3 の版を見る
+    if command -v python3 >/dev/null 2>&1; then
+        if python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
+            command -v python3; return 0
+        fi
+    fi
+    return 1
+}
 HAVE_PY=0
-command -v python3 >/dev/null 2>&1 && HAVE_PY=1
+FOUND_PY=""
+FOUND_PY="$(_find_python)" && HAVE_PY=1
 
 FORM_SEL=""      # conda / venv / custom
 FORM_DISP=""     # 画面に出す名前
@@ -237,7 +252,7 @@ CUSTOM_PY=""
 choose_form() {
     local vc="" vpy="" ans
     [ "$HAVE_CONDA" = "1" ] && vc="$("$CONDA_BIN" --version 2>/dev/null | /usr/bin/grep -oE '[0-9]+(\.[0-9]+)+' | head -1)"
-    [ "$HAVE_PY" = "1" ] && vpy="$(python3 --version 2>/dev/null | /usr/bin/grep -oE '[0-9]+(\.[0-9]+)+' | head -1)"
+    [ "$HAVE_PY" = "1" ] && vpy="$("$FOUND_PY" --version 2>/dev/null | /usr/bin/grep -oE '[0-9]+(\.[0-9]+)+' | head -1)"
     while true; do
         echo ""
         echo "使えるものを調べました。"
@@ -282,8 +297,9 @@ choose_form() {
             2)
                 if [ "$HAVE_PY" = "1" ]; then FORM_SEL="venv"; FORM_DISP="この配布物の中の Python"; return 0; fi
                 echo ""
-                echo "Python が見つかりませんでした。"
-                echo "  入れ方: https://github.com/conda-forge/miniforge/releases/latest から Miniforge を入れてください"
+                echo "3.10 以上の python3 が見つかりませんでした。"
+                echo "  入れ方: https://www.python.org/downloads/ から 3.12 を入れてください"
+                echo "  または 1) の conda を選んでください"
                 echo "  入れ終えたら、もう一度このファイルを押してください"
                 echo "このターミナルは開いたままにしてあります。"
                 exit 1

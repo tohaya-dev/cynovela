@@ -1156,18 +1156,33 @@ setup_conda() {
     install_requirements
 }
 
+# venv を作れる python を探す (新しい版から順に。順序と書き方は falcon 側 tools/mas-phase.sh の原文と同じ)
+venv_base_python() {
+    local c
+    for c in python3.13 python3.12 python3.11 python3.10; do
+        if command -v "$c" >/dev/null 2>&1; then command -v "$c"; return 0; fi
+    done
+    # 版のついた名前が無いときは python3 の版を見る
+    if command -v python3 >/dev/null 2>&1; then
+        if python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
+            command -v python3; return 0
+        fi
+    fi
+    return 1
+}
+
 # この配布物の中だけに置き場を作る。
 setup_venv() {
     local base_py=""
     echo ""
     echo "  この配布物の中に置き場を作ります: $VENV_DIR"
     echo "  共有の conda 環境 '$SHARED_ENV_NAME' には書き込みません。"
-    if command -v python3 >/dev/null 2>&1; then
-        base_py="$(command -v python3)"
+    base_py="$(venv_base_python || true)"
+    if [ -n "$base_py" ]; then
         echo "  使う Python: $base_py ($("$base_py" -V 2>&1))"
     else
-        echo "❌ python が見つかりません。miniforge を入れてから、もう一度実行してください:"
-        echo "   https://github.com/conda-forge/miniforge/releases/latest"
+        echo "❌ 3.10 以上の python3 が見つかりませんでした。"
+        echo "   入れ方: https://www.python.org/downloads/ から 3.12 を入れてください"
         exit 1
     fi
 
