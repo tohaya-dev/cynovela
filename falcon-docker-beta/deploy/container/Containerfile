@@ -1,0 +1,62 @@
+# settlement-allforms — Cynovela container (full source build, 4 fixes incl. lite-boot + PyJWT)
+# Build context = repo root.  store/models is NOT copied (9GB) — mount it read-only at runtime.
+# demo.db + store/vector ARE copied so a fresh named volume is seeded on first run (copy-up).
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    ANONYMIZED_TELEMETRY=False \
+    HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1
+
+WORKDIR /app
+
+# 1) deps layer (cached unless requirements change). spacy model URLs need network at BUILD time.
+# slim-20260718: apt(ビルド用ツールチェーン)→pip→purge を単一レイヤへ統合。
+#  - torch は CPU wheel の取得先 (download.pytorch.org/whl/cpu) を明示して先行インストールし、
+#    PyPI 版 Linux wheel が連鎖させる NVIDIA CUDA/Triton 一式 (約3.9GiB) の取得を止める。
+#    このコンテナ (arm64 Linux VM) では CUDA は実行され得ない。バージョン制約は requirements.txt と同一。
+#  - build-essential/gcc/g++ (ソースビルド用) は pip 完了後に purge し、最終レイヤに残さない。
+#  - site-packages の __pycache__/*.pyc を同一レイヤで削除 (再生成可能なキャッシュ)。
+COPY requirements.txt /app/requirements.txt
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential gcc g++ \
+        libgomp1 zlib1g-dev libjpeg-dev \
+        curl ca-certificates \
+ && pip install --upgrade pip \
+ && pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.0,<3.0" \
+ && pip install -r /app/requirements.txt \
+ && apt-get purge -y build-essential gcc g++ \
+ && apt-get autoremove -y \
+ && rm -rf /var/lib/apt/lists/* \
+ && find /usr/local/lib/python3.12 -depth -type d -name __pycache__ -exec rm -rf {} + \
+ && find /usr/local/lib/python3.12 -name '*.pyc' -delete
+
+# 2) app source (.containerignore excludes store/models, .git, reports, caches)
+COPY . /app
+
+# bundled-config-20260731: 自分が作った入れ物であることの目印。
+#   起動用スクリプトは、この目印が付いた入れ物だけを置き換える。目印の無い同名の入れ物
+#   (受け取り手が別の目的で作ったもの) は消さずに止まる。
+LABEL org.cynovela.artifact="cynovela-container"
+
+EXPOSE 8765
+
+# distclean 20260630: 起動モードは起動引数 --mode で選択する（環境変数 $MODE 依存を廃止）。
+#   既定は server.py argparse の default="text"。別モード例: podman run ... <img> --mode full
+# C-B3 20260729: 起動引数をイメージへ焼き込まない。
+#   焼き込みをやめた引数: --demo / --lan / --allow-subnet ×3。
+#   これらは run-container.sh の podman run 行から明示的に渡す（既定の渡し値は従来と同一）。
+#   --port 8765 だけは残す: EXPOSE 8765 と publish の対応先 (…:8765) がイメージ側の約束であり、
+#   引数なしで起動しても中の待ち受けポートが約束とずれないようにするため。
+# bundled-config-20260731: --host の焼き込みをやめた。
+#   従来は ENTRYPOINT に --host 127.0.0.1 を焼き、run-container.sh が同じ --host を
+#   0.0.0.0 で後ろに重ねて上書きしていた。実際に走る命令には --host が2回並び、
+#   「後勝ち」という argparse の解釈に依存して初めて成立していた (--allow-subnet は
+#   action="append" で積み上がるのに対し --host は store で上書き、という差に依存)。
+#   起動用スクリプトを通さない素の podman run では焼き込みの 127.0.0.1 がそのまま効き、
+#   publish しても中まで届かない (実測 HTTP 000)。イメージ単体で正しくないのが欠陥。
+#   よって --host を書かず、server.py の既定 0.0.0.0 に委ねる (LAN-RESTORE 20260724 の元仕様)。
+#   自マシン内へ絞る境界は従来どおり publish 側 (run-container.sh の PUBLISH) が受け持つ。
+#   --local-only は撤去しない (決定 7-3)。待ち受けを絞る変更ではない (決定 1-2)。
+ENTRYPOINT ["python", "server.py", "--port", "8765"]

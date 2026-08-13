@@ -1,0 +1,193 @@
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+/* ダークモード禁止: @media prefers-color-scheme は一切書かない */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* docs/html/_tokens.txt から確定値を採用（frontend/style.css の :root と一致） */
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+/* スライドデッキ */
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+/* スライド本体（16:9） */
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px; /* nav-bar の高さ分 */
+}
+.slide.active { display: flex; }
+/* カバースライド */
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+/* スライドヘッダー */
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+/* コンテンツエリア */
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* テキスト要素 */
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+/* 箇条書き */
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+/* コードブロック */
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+/* テーブル */
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+/* 引用ブロック（免責・注意書き） */
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+/* 続きスライドの小バッジ */
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+/* フッター */
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+/* リンク */
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* 章タイトル（manual-complete 用） */
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+/* ナビバー */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+/* 印刷 */
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}

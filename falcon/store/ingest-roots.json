@@ -5,16 +5,9 @@
       "name": "falcon-dummy-corpus",
       "host_path": "@app/dummy-corpus",
       "label": "dummy-corpus"
-    },
-    {
-      "name": "tmp-cyn95-t-docs",
-      "host_path": "/private/tmp/cyn95-T-docs",
-      "label": "cyn95-T-docs"
     }
   ],
   "used_names": {
-    "falcon-dummy-corpus": "@app/dummy-corpus",
-    "scratchpad-dd0094-test-folder": "/private/tmp/claude-501/-Users-tocchi-Documents-Claude-Claude-Projects/06426e62-b4ed-4329-9a0a-5d1ebd8f2002/scratchpad/dd0094-test-folder",
-    "tmp-cyn95-t-docs": "/private/tmp/cyn95-T-docs"
+    "falcon-dummy-corpus": "@app/dummy-corpus"
   }
 }

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI コンセプトガイド — Cynovela</title>
+  <style>
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+/* ダークモード禁止: @media prefers-color-scheme は一切書かない */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* docs/html/_tokens.txt から確定値を採用（frontend/style.css の :root と一致） */
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+/* スライドデッキ */
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+/* スライド本体（16:9） */
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px; /* nav-bar の高さ分 */
+}
+.slide.active { display: flex; }
+/* カバースライド */
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+/* スライドヘッダー */
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+/* コンテンツエリア */
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* テキスト要素 */
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+/* 箇条書き */
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+/* コードブロック */
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+/* テーブル */
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+/* 引用ブロック（免責・注意書き） */
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+/* 続きスライドの小バッジ */
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+/* フッター */
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+/* リンク */
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* 章タイトル（manual-complete 用） */
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+/* ナビバー */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+/* 印刷 */
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+  </style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+
+<div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">AI コンセプトガイド</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">このドキュメントについて</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>このドキュメントについて</strong><br>
+      Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
+    </blockquote>
+    <p>Cynovela を動かして理解するための、RAG 周辺概念の解説です。公開情報と本リポジトリの実装のみを根拠としています。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">1. RAG の概念</span>
+  </div>
+  <div class="slide-body">
+    <p>RAG（Retrieval-Augmented Generation: 検索拡張生成）は、ユーザーの質問に対して外部の文書を検索し、検索結果を文脈として LLM に渡してから回答を生成する方式です。LLM 単体が知らない社内固有の情報（規程・手順・議事録）に答えさせる際に使います。</p>
+    <p>Cynovela では <code>rag.py</code> の <code>rag_retrieve()</code> がメインの検索関数で、以下のパイプラインを実行します（A-3 §10）。</p>
+    <ol>
+      <li><strong>Vector Search</strong>: 質問を BGE-M3 で Embedding（密ベクトル）化し、ChromaDB に対してコサイン類似度で近いチャンクを取得。</li>
+      <li><strong>BM25 Search</strong>: メモリ上の BM25Okapi インデックス（fugashi/MeCab トークナイズ）で語彙的に近いチャンクを取得。</li>
+      <li><strong>Hybrid Integration</strong>: 既定では RRF（Reciprocal Rank Fusion: 相互順位融合、k=60）で両系統を統合。<code>weighted</code> 方式（Vector 0.7 + BM25 0.3）も選べます。</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">1. RAG の概念</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <ol start="4">
+      <li><strong>Parent-Child Resolution</strong>: 検索でヒットした子チャンクを親チャンクに差し替え（A-3 PHASE A-3、<code>rag.py:2251-2281</code>）。</li>
+      <li><strong>Reranker</strong>（オプション）: Reranker プロバイダーが設定されていれば、上位を CrossEncoder 等で再順序付け。</li>
+      <li><strong>Final Ranking</strong>: 上位 <code>n_results</code> 件を返却。</li>
+    </ol>
+    <p>検索結果は引用番号付きでコンテキスト文字列に組み立てられ（<code>build_context_with_citations</code>、A-3 行 291）、LLM プロンプトの末尾に配置されます（CLAUDE.md 「retrieved_content の後にシステムプロンプト」原則）。</p>
+    <p>応用機能として Multi-Query RAG（A-5 §3）、CRAG（Corrective RAG: 検索結果の自己評価 → 再検索、A-6）、HyDE（Hypothetical Document Embeddings: 仮想文章生成 → その Embedding で検索、A-7）、Adaptive RAG（クエリ複雑度に応じた agentic ループ、<code>adaptive_rag.py</code>）がすべて実装済みです。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">2. クラウドに送信できない理由（データ主権）</span>
+  </div>
+  <div class="slide-body">
+    <p>社内ドキュメントを外部 API に送信できない代表的な理由を列挙します。</p>
+    <ul>
+      <li><strong>データ主権</strong>: 文書を国境・組織境界の外に持ち出さない原則。</li>
+      <li><strong>監査要件</strong>: 「いつ・誰が・どの文書を・どのクエリで参照したか」を内部監査ログとして保全したい。Cynovela では <code>_log_audit(conn, action, target, detail)</code> を重要操作（Source 作成・削除、Publish、Chat、PII 検出、プロンプトインジェクション遮断）で必ず呼びます（CLAUDE.md、A-2 §1）。</li>
+      <li><strong>PII / 機密情報</strong>: 個人情報や営業秘密を含む文書を外部学習データに混ぜたくない。</li>
+      <li><strong>再現性</strong>: 外部 LLM はモデルバージョンが運営者都合で変わります。社内検証では同一モデルを使い続けたいケースがあります。</li>
+    </ul>
+    <p>Cynovela はこれらの要請に応えるため、既定で loopback 以外を拒否する IP アローリストミドルウェア（A-5 §4）、Fernet による保管庫暗号化（A-2 §8）、ローカル LLM（OpenAI 互換 /v1 API）への接続を採用しています。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">3. PII 保護</span>
+  </div>
+  <div class="slide-body">
+    <p>PII（Personally Identifiable Information: 個人情報）保護は二段構えです（A-2 §6, §7）。</p>
+    <h4>Tier1: 取込時マスキング</h4>
+    <p>Publish の際、各チャンクに対して <code>_mtws_publish</code>（<code>guardrail.mask_text_with_spans</code>）が動き、<code>raw</code> と <code>masked</code> の両系統を生成します。SQLite の <code>chunks</code> テーブルには <code>__masked</code> サフィックス付きの行が、ChromaDB には <code>{collection_id}__raw</code> と <code>{collection_id}__masked</code> の 2 つの Collection が作られます。</p>
+    <h4>Tier2: 回答時マスキング</h4>
+    <p>チャット応答経路 4 箇所（通常応答 / compare A / compare B / SSE ストリーミング）で <code>_mask_for_viewer(text, user)</code> が呼ばれます。<code>tier_for_role(role)</code> の判定で <code>admin</code> のみ素通し、それ以外（<code>curator</code> / <code>viewer</code> / 未設定）は出口マスクを必ず適用します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">3. PII 保護</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h4>検出方式と検出種別</h4>
+    <p>一次系（<code>guardrail.py</code>、正規表現）で URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4 の 8 種類を検出し、それぞれ <code>[MASKED:URL]</code> <code>[MASKED:EMAIL]</code> などのトークンに置換します。二次系（<code>utils/metadata/pii.py</code>、presidio + GiNZA フォールバック）で PERSON_JP / ORG_JP / LOC_JP / ADDRESS_JP / DATE_TIME などを追加検出します。</p>
+    <p>PII 検出モードは <code>cynovela.yaml</code> の <code>pii_mode</code> キーで <code>lite</code>（正規表現のみ）/ <code>standard</code>（既定）/ <code>quality</code>（全機能）から選択できます（A-1 §3）。</p>
+    <h4>保管庫暗号化</h4>
+    <p><code>raw</code> tier の本文は <code>vault_enc.enc_raw()</code> を通り、<code>enc:</code> プレフィックス付きで Fernet 暗号化されて保存されます。<code>masked</code> 側は暗号化しません（検索性能を確保し、二重防御は raw 側で達成）。鍵は <code>CYNOVELA_SECRET_KEY</code> 環境変数から読み込みます（A-2 §8）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">4. スコアの意味（Vector / BM25）</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela の検索ではスケールの異なる複数のスコアが登場します。混同しないことが重要です。</p>
+    <h4>Vector Score（コサイン類似度）</h4>
+    <p>0〜1 のスケール。BGE-M3 が文をベクトル化し、ChromaDB の距離（distance）を <code>_dist_to_sim()</code> で類似度に変換した値（A-3 §11、<code>rag.py:1701</code>）。BGE-M3 のノイズフロアは 0.35〜0.45 で、実存クエリ（資料に答えがあるもの）は典型的に 0.55〜0.75 程度になります。低信頼度フォールバックの閾値 <code>confidence_threshold</code> は既定 0.50 です（<code>config.py:131-135</code>）。</p>
+    <h4>BM25 Score</h4>
+    <p>単語の出現頻度に基づく語彙的スコア。<code>[0, 1]</code> に正規化してから統合されます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">4. スコアの意味（RRF / Rerank）</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h4>RRF Score</h4>
+    <p>相互順位融合のスコア。各順位（rank）に対して <code>1 / (k + rank)</code>（k=60 既定）を足し合わせる方式で、最大値はおおむね 0.033 程度の小さな値になります。<strong>RRF スコアでコサイン類似度の閾値判定を行ってはいけません</strong>（CLAUDE.md 教訓 2、桁が違うため全クエリで Abstention が誤発火した過去あり）。</p>
+    <h4>Rerank Score</h4>
+    <p>Reranker プロバイダーがクエリと候補チャンクのペアを評価して付与するスコア。<code>pipeline_types.py:71</code> で <code>rerank_score: float = 0.0</code> として保持され、0 なら未適用を意味します。既定は <code>NoReranker</code>（無効）で、<code>yaml.reranker.provider</code> を <code>cross_encoder</code> / <code>flashrank</code> / <code>ollama</code> / <code>cohere</code> / <code>jina</code> / <code>voyage</code> / <code>openai_compat</code> から選んで有効化します（A-1）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">5. RBAC（ロールベースアクセス制御）</span>
+  </div>
+  <div class="slide-body">
+    <p>ロールは 3 種類です（A-5 §2、<code>db.py</code> 行 18 の CHECK 制約）。</p>
+    <table>
+      <thead><tr><th>ロール</th><th>役割</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>フル管理権限。ユーザー管理・システム設定変更・PII 検出履歴閲覧。生本文（raw tier）を見られる唯一のロール。</td></tr>
+        <tr><td><code>viewer</code></td><td>閲覧のみ。RAG 検索・レポート閲覧。</td></tr>
+      </tbody>
+    </table>
+    <blockquote><code>curator</code> / <code>data-scientist</code> 等の名称は後方互換の値として受理されますが、現行実装では <code>viewer</code> に正規化され、固有権限はありません（実効ロールは <code>admin</code> / <code>viewer</code> の 2 値）。</blockquote>
+    <p>API 側では <code>core/auth.py</code> の 4 つのヘルパーで認可します（A-5 §2）。</p>
+    <ul>
+      <li><code>_require_admin(request)</code>: <code>role == 'admin'</code> を要求</li>
+      <li><code>_require_authenticated(request)</code>: 認証済みであればロール不問</li>
+      <li><code>_require_role(request, allowed)</code>: 指定集合のロールを要求</li>
+      <li><code>_require_admin_or_self(request, user_id)</code>: 管理者または本人</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">5. RBAC（続き：ACL フィルター）</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>RBAC チェックは routers/ 配下に 242 箇所、<code>_require_admin</code> 適用ルーターは 13 個あります（A-5 §2）。</p>
+    <p>検索パイプライン内部にも ACL（Access Control List）フィルターがあり、<code>rag_retrieve()</code> の Vector / BM25 両経路で <code>metadata.allowed_roles</code> に <code>user_role</code> が含まれないチャンクを除外します（A-3 §10、<code>rag.py</code> <code>_filter_hits_by_role</code>）。ACL フィルターは常時有効です。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">6. 監査ログ</span>
+  </div>
+  <div class="slide-body">
+    <p>監査ログは <code>audit_logs</code> テーブルに記録され、API 経由での削除・変更は禁止されています（CLAUDE.md セキュリティ）。記録対象は以下のような重要操作です。</p>
+    <ul>
+      <li>Source / Workspace / Collection の作成・削除</li>
+      <li>Publish の開始・完了</li>
+      <li>Chat（クエリと参照ソース、低信頼度フォールバックの発火）</li>
+      <li>PII 検出（<code>PII_DETECTED</code> / <code>pii_detected</code>、A-2 §1）</li>
+      <li>プロンプトインジェクション遮断（<code>PROMPT_INJECTION_BLOCKED</code>、A-2 §9）</li>
+      <li>認証失敗（<code>user_id_only_login_removed</code> など、A-6 §2）</li>
+    </ul>
+    <p>PII 検出履歴は <code>/api/guardrails/pii-detections</code> から取得可能で、<code>_require_admin</code> が掛かっています（A-2 §2、FIX-026 で admin 限定化）。</p>
+    <p><code>core/audit.py</code> の <code>_AUDIT_CATEGORY_MAP</code> で各 action がカテゴリ（<code>security</code> 等）に分類されています。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">7. Smart Ingestion（賢い取り込み）</span>
+  </div>
+  <div class="slide-body">
+    <p>Smart Ingestion は文書を 14 のカテゴリに自動分類する仕組みです（A-4 §1、<code>utils/metadata/classification.py</code>）。</p>
+    <h4>カテゴリ（14 種類）</h4>
+    <p><code>governance_policy</code> / <code>incident_report</code> / <code>technical_guide</code> / <code>case_study</code> / <code>meeting_minutes</code> / <code>audit_report</code> / <code>poc_report</code> / <code>faq</code> / <code>whitepaper</code> / <code>checklist</code> / <code>proposal_rfp</code> / <code>newsletter</code> / <code>reference</code> / <code>other</code></p>
+    <p>別系統で文書タイプ（<code>contract</code> / <code>technical_spec</code> / <code>email</code> / <code>report</code> / <code>manual</code> の 5 種類）の分類もあります。</p>
+    <h4>分類エンジン（3 種類）</h4>
+    <table>
+      <thead><tr><th>エンジン</th><th>仕組み</th><th>信頼度</th></tr></thead>
+      <tbody>
+        <tr><td><code>LightweightClassifier</code></td><td>ファイル名 + 先頭 500 文字のキーワードマッチ</td><td>0.85（ファイル名）/ 0.65（コンテンツ）</td></tr>
+        <tr><td><code>LLMClassifier</code></td><td>ローカル Ollama でゼロショット分類、JSON 出力強制</td><td>LLM 出力</td></tr>
+        <tr><td><code>HybridClassifier</code></td><td>Lightweight 優先、信頼度 0.65 未満で LLM フォールバック</td><td>統合</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">7. Smart Ingestion（続き：チャンク戦略）</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>加えて PII 専用の <code>RuleBasedClassifier</code>（EMAIL / PHONE / MYNUMBER）と外部委譲 <code>APIClassifier</code> が <code>providers/classifier.py</code> にあります。</p>
+    <h4>チャンク分割戦略（A-4 §6）</h4>
+    <p>既定でスライディングウィンドウ方式（<code>chunk_size=500</code>、<code>overlap=50</code>、<code>split_chunks()</code>）。<code>chunking.contextual=true</code> を設定すると、チャンク冒頭にメタデータ（ファイル名・種別・感度・部門・位置・タグ）を [コンテキスト] として付加する Contextual Chunking が走ります（<code>chunker.py</code>、<code>build_context_prefix</code>）。</p>
+    <p>RAG 戦略は <code>simple</code> / <code>hybrid_bm25</code> / <code>contextual</code> の 3 種類です。</p>
+    <h4>RAG プリセット（5 種類、A-3 §4）</h4>
+    <p>技術文書 / 機密文書 / 個人メモ / マルチメディア / クイックスタート。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">AI コンセプトガイド</span>
+    <span class="slide-title">8. 参照元との関係</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela は、参照元の AI 基盤ツールが解こうとしているコンセプト（社内ドキュメントを安全にローカル LLM につなぐ RAG 基盤）を、個人の学習目的で OSS だけで再実装したものです。</p>
+    <ul>
+      <li><strong>実装はすべてオリジナル</strong>: ソースコード・API 仕様・データモデルに参照元との互換性はありません。FastAPI / SQLite / ChromaDB / BGE-M3 / ローカル LLM の OSS 部品で組み立てています。</li>
+      <li><strong>公式見解を代表しない</strong>: 設計判断・トレードオフ・実装内容はすべて個人の責任で、参照元の AI 基盤ツール・関連会社の公式な仕様や見解を一切代表しません。</li>
+      <li><strong>目的</strong>: コンセプトを「手を動かして」理解すること。商用利用・本番運用は想定していません。</li>
+    </ul>
+    <p>参照元の AI 基盤ツールの正式な仕様や機能については、その提供元の公式ドキュメントを参照してください。</p>
+    <p style="margin-top:18px; color:var(--cyn-muted); font-size:13px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+</div>
+<nav class="nav-bar">
+  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+  <span id="slide-counter">1 / 15</span>
+  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

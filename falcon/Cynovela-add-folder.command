@@ -8,6 +8,12 @@
 set -u
 cd "$(dirname "$0")"
 
+# DD-CYN-0107 F-c: 表示用の JSON 読みも、動作要件 (3.12 系) を満たす python で行う。
+#   実処理 (--add) の側は tools/launch-body.sh が同じ決めで検査する。
+CONF_REPO="$PWD"
+. tools/conf.sh
+_PY="$(conf_pick_py "$PWD" || true)"
+
 # 形態の見分け: deploy/container が在れば入れ物 (コンテナ) で動く形。
 #   在れば「起動し直すと読み込める」、無ければ「すぐに選べる」を出し分ける。
 _IN_CONTAINER_FORM=0
@@ -40,13 +46,13 @@ if [ -z "$_NAME" ]; then
 fi
 
 # 場所は控えから実測で引く (--list は JSON を返す。python3 は --add 自体が使うものと同じ)
-_PLACE="$(./launch.sh --list 2>/dev/null | python3 -c 'import json,sys
+_PLACE="$(./launch.sh --list 2>/dev/null | "$_PY" -c 'import json,sys
 name = sys.argv[1]
 roots = json.load(sys.stdin)
 print(next((r.get("host_path", "") for r in roots if r.get("name") == name), ""))' "$_NAME")"
 
 # 足す前から同じ名前が居たなら、控えには何も書かれていない (足す側が冪等なため)
-if printf '%s' "$_BEFORE" | python3 -c 'import json, sys
+if printf '%s' "$_BEFORE" | "$_PY" -c 'import json, sys
 name = sys.argv[1]
 try:
     roots = json.load(sys.stdin)

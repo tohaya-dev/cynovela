@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cynovela 体験デモ（一般向け）</title>
+<style>
+  :root {
+    color-scheme: light only;
+    --cyn-bg:            #f5f6f8;
+    --cyn-surface:       #ffffff;
+    --cyn-border:        #e0e7ef;
+    --cyn-border-light:  #edf1f7;
+    --cyn-text:          #0f1923;
+    --cyn-text-2:        #3a4f68;
+    --cyn-muted:         #637a96;
+    --cyn-accent:        #0078d4;
+    --cyn-accent-hover:  #006abc;
+    --cyn-accent-light:  #e6f3fc;
+    --cyn-accent-glow:   rgba(0,120,212,0.12);
+    --cyn-success:       #0e8a4a;
+    --cyn-success-bg:    #eaf7f0;
+    --cyn-success-border:#b3e2ca;
+    --cyn-warning:       #b45309;
+    --cyn-warning-bg:    #fef9ec;
+    --cyn-warning-border:#fcd68a;
+    --cyn-error:         #c0392b;
+    --cyn-error-bg:      #fef2f2;
+    --cyn-error-border:  #fbc8c4;
+    --cyn-stripe:        #f8fafc;
+    --cyn-input-bg:      #f5f7fa;
+    --cyn-radius:        10px;
+    --cyn-font:          'Inter','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic UI',system-ui,-apple-system,sans-serif;
+    --cyn-mono:          'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--cyn-bg);
+  }
+  body {
+    font-family: var(--cyn-font);
+    color: var(--cyn-text-2);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ヘッダー */
+  header {
+    background: var(--cyn-surface);
+    color: var(--cyn-text);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--cyn-border);
+  }
+  header .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  header .logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cyn-text);
+    letter-spacing: -0.2px;
+  }
+  header .logo .accent { color: var(--cyn-accent); }
+  header .tagline {
+    font-size: 12px;
+    color: var(--cyn-muted);
+    padding-left: 12px;
+    margin-left: 4px;
+    border-left: 1px solid var(--cyn-border);
+  }
+  .mode-switch {
+    display: flex;
+    gap: 6px;
+    background: var(--cyn-bg);
+    padding: 4px;
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+  }
+  .mode-switch button {
+    background: transparent;
+    color: var(--cyn-text);
+    border: 1px solid transparent;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  }
+  .mode-switch button:hover:not(.active) {
+    background: var(--cyn-surface);
+  }
+  .mode-switch button.active {
+    background: var(--cyn-accent);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,120,212,0.25);
+  }
+
+  /* ステッパー */
+  .stepper-wrap {
+    background: var(--cyn-surface);
+    border-bottom: 1px solid var(--cyn-border);
+    padding: 18px 32px 14px;
+  }
+  .stepper-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .progress-container {
+    background: var(--cyn-border-light);
+    height: 3px;
+    width: 100%;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .progress-bar {
+    background: var(--cyn-accent);
+    height: 100%;
+    transition: width 0.4s ease;
+    border-radius: 3px;
+  }
+  .progress-labels {
+    display: flex;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--cyn-muted);
+  }
+  .progress-labels span {
+    flex: 1;
+    text-align: center;
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1.3;
+  }
+  .progress-labels span .dot {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--cyn-border);
+    background: var(--cyn-surface);
+    color: var(--cyn-muted);
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .progress-labels span.done .dot {
+    border-color: var(--cyn-success);
+    background: var(--cyn-success-bg);
+    color: var(--cyn-success);
+  }
+  .progress-labels span.active {
+    color: var(--cyn-accent);
+    font-weight: 600;
+  }
+  .progress-labels span.active .dot {
+    border-color: var(--cyn-accent);
+    background: var(--cyn-accent);
+    color: #fff;
+  }
+
+  /* メイン */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+  .step {
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: var(--cyn-radius);
+    padding: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    display: none;
+  }
+  .step.active { display: block; }
+  .step h2 {
+    font-size: 22px;
+    color: var(--cyn-text);
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 3px solid var(--cyn-accent);
+    padding-left: 12px;
+    line-height: 1.3;
+  }
+  .step-number {
+    background: var(--cyn-accent-light);
+    color: var(--cyn-accent);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-desc {
+    color: var(--cyn-text-2);
+    margin: 12px 0 22px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* 解説モードのガイド */
+  .explain-panel {
+    background: var(--cyn-warning-bg);
+    border-left: 4px solid var(--cyn-warning);
+    padding: 14px 16px;
+    margin-bottom: 22px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #92400e;
+    display: none;
+  }
+  body.explain-mode .explain-panel { display: block; }
+  .explain-panel strong { color: #7a3d05; font-weight: 700; }
+
+  /* コンテンツブロック */
+  .content-block {
+    background: var(--cyn-bg);
+    border: 1px solid var(--cyn-border-light);
+    border-radius: var(--cyn-radius);
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+
+  /* フォーム */
+  .form-row { margin-bottom: 16px; }
+  .form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--cyn-text);
+    font-size: 13px;
+  }
+  .form-row input, .form-row select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--cyn-border);
+    background: var(--cyn-input-bg);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--cyn-text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .form-row input:focus, .form-row select:focus {
+    outline: none;
+    border-color: var(--cyn-accent);
+    box-shadow: 0 0 0 3px var(--cyn-accent-glow);
+    background: #fff;
+  }
+
+  /* ボタン */
+  .btn {
+    background: var(--cyn-accent);
+    color: #fff;
+    border: 1px solid var(--cyn-accent);
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+    transition: background 0.15s, box-shadow 0.15s, transform 0.05s;
+  }
+  .btn:hover {
+    background: var(--cyn-accent-hover);
+    border-color: var(--cyn-accent-hover);
+    box-shadow: 0 2px 8px rgba(0,120,212,0.3);
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled {
+    background: var(--cyn-border);
+    border-color: var(--cyn-border);
+    color: var(--cyn-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .btn-secondary {
+    background: var(--cyn-surface);
+    color: var(--cyn-text);
+    border: 1px solid var(--cyn-border);
+    box-shadow: none;
+  }
+  .btn-secondary:hover {
+    background: var(--cyn-surface);
+    color: var(--cyn-text);
+    border-color: var(--cyn-accent);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--cyn-border-light);
+  }
+
+  /* ファイル選択 */
+  .file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .file-item {
+    border: 1px solid var(--cyn-border);
+    background: var(--cyn-surface);
+    border-radius: 8px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .file-item:hover {
+    border-color: var(--cyn-accent);
+    box-shadow: 0 1px 3px rgba(0,120,212,0.08);
+  }
+  .file-item.selected {
+    border-color: var(--cyn-accent);
+    background: var(--cyn-accent-light);
+    box-shadow: 0 0 0 2px rgba(0,120,212,0.15);
+  }
+  .file-item .icon { font-size: 28px; color: var(--cyn-muted); margin-bottom: 6px; line-height: 1; }
+  .file-item.selected .icon { color: var(--cyn-accent); }
+  .file-item .name { font-size: 13px; color: var(--cyn-text); word-break: break-all; line-height: 1.4; }
+
+  /* 比較グリッド (Step3) */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .compare-col h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    letter-spacing: 0.2px;
+  }
+  .compare-col.raw h3 {
+    background: var(--cyn-warning-bg);
+    color: var(--cyn-warning);
+    border: 1px solid var(--cyn-warning-border);
+  }
+  .compare-col.masked h3 {
+    background: var(--cyn-error-bg);
+    color: var(--cyn-error);
+    border: 1px solid var(--cyn-error-border);
+  }
+  .doc-content {
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: var(--cyn-text);
+    min-height: 220px;
+  }
+  /* 原文 PII：注意喚起のあるテキスト */
+  .pii {
+    background: var(--cyn-warning-bg);
+    color: var(--cyn-warning);
+    padding: 1px 5px;
+    border-radius: 3px;
+    text-decoration: underline;
+    text-decoration-color: var(--cyn-warning);
+    text-underline-offset: 2px;
+    font-weight: 500;
+  }
+  /* マスク後 */
+  .masked {
+    background: var(--cyn-error-bg);
+    color: var(--cyn-error);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--cyn-mono);
+    font-size: 12.5px;
+    border: 1px solid var(--cyn-error-border);
+  }
+
+  /* パイプライン (Step4) */
+  .pipeline-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    opacity: 0.55;
+  }
+  .pipeline-step.active {
+    opacity: 1;
+    border-color: var(--cyn-accent);
+    background: var(--cyn-accent-light);
+    box-shadow: 0 1px 3px rgba(0,120,212,0.12);
+  }
+  .pipeline-step.done {
+    opacity: 1;
+    border-color: var(--cyn-success-border);
+    background: var(--cyn-success-bg);
+  }
+  .pipeline-step .number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--cyn-border-light);
+    color: var(--cyn-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .pipeline-step.active .number { background: var(--cyn-accent); color: #fff; }
+  .pipeline-step.done .number { background: var(--cyn-success); color: #fff; }
+  .pipeline-step .label { font-weight: 600; color: var(--cyn-text); font-size: 14px; }
+  .pipeline-step .detail { font-size: 13px; color: var(--cyn-muted); margin-left: auto; }
+
+  /* RAG チャット (Step5) */
+  .chat-window {
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    height: 320px;
+    overflow-y: auto;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .chat-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  .chat-bubble.user {
+    background: var(--cyn-accent);
+    color: #fff;
+    margin-left: auto;
+  }
+  .chat-bubble.bot {
+    background: var(--cyn-bg);
+    color: var(--cyn-text);
+    border: 1px solid var(--cyn-border-light);
+  }
+  .chat-input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .chat-input-row input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--cyn-border);
+    background: var(--cyn-input-bg);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--cyn-text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .chat-input-row input:focus {
+    outline: none;
+    border-color: var(--cyn-accent);
+    box-shadow: 0 0 0 3px var(--cyn-accent-glow);
+    background: #fff;
+  }
+  .quick-questions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .quick-questions button {
+    background: var(--cyn-accent-light);
+    color: var(--cyn-accent);
+    border: 1px solid #c5e3f7;
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .quick-questions button:hover {
+    background: #d3eafa;
+    border-color: var(--cyn-accent);
+  }
+
+  /* 警告ボックス */
+  .warning-box {
+    border: 2px solid var(--cyn-error);
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: var(--cyn-error-bg);
+    color: #7f1d1d;
+    font-size: 14px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.6;
+  }
+
+  /* 根拠スコア (Step6) */
+  .source-card {
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--cyn-text);
+    line-height: 1.7;
+  }
+  .source-card strong { color: var(--cyn-accent); }
+  .source-card small { color: var(--cyn-muted); font-size: 13px; }
+  .score-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .score-card {
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .score-card .label {
+    font-size: 12px;
+    color: var(--cyn-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .score-card .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cyn-accent);
+    font-family: var(--cyn-mono);
+  }
+  .section-heading {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--cyn-text);
+    letter-spacing: 0.2px;
+  }
+  .answer-bubble {
+    background: var(--cyn-bg);
+    border: 1px solid var(--cyn-border-light);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    color: var(--cyn-text);
+    line-height: 1.75;
+    font-size: 14.5px;
+  }
+  .answer-bubble sup {
+    color: var(--cyn-accent);
+    font-weight: 700;
+  }
+
+  /* 比較表 (Step7) */
+  .table-wrap {
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .compare-table th, .compare-table td {
+    border-bottom: 1px solid var(--cyn-border);
+    padding: 11px 14px;
+    text-align: left;
+    color: var(--cyn-text);
+  }
+  .compare-table tr:last-child th,
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table th {
+    background: var(--cyn-accent-light);
+    color: var(--cyn-accent);
+    font-weight: 700;
+    border-bottom: 1px solid var(--cyn-border);
+    letter-spacing: 0.2px;
+  }
+  .compare-table tbody tr:nth-child(even) { background: var(--cyn-stripe); }
+  .compare-table td.original-feature { color: var(--cyn-text-2); }
+  .compare-table tr.cynovela-only {
+    background: var(--cyn-error-bg) !important;
+  }
+  .compare-table tr.cynovela-only td {
+    color: #7f1d1d;
+    font-weight: 500;
+  }
+  .compare-table tr.cynovela-only td.cynovela-extra {
+    font-weight: 700;
+  }
+  .table-note {
+    font-size: 13px;
+    color: var(--cyn-muted);
+    margin-top: 4px;
+  }
+
+  /* まとめ (Step8) */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .summary-card {
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-left: 3px solid var(--cyn-accent);
+    border-radius: 8px;
+    padding: 18px;
+    text-align: left;
+    transition: box-shadow 0.15s, transform 0.05s;
+  }
+  .summary-card:hover {
+    box-shadow: 0 2px 8px rgba(0,120,212,0.08);
+  }
+  .summary-card .icon-big { font-size: 28px; margin-bottom: 8px; line-height: 1; }
+  .summary-card h4 {
+    color: var(--cyn-text);
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .summary-card p {
+    font-size: 13px;
+    color: var(--cyn-text-2);
+    line-height: 1.6;
+  }
+
+  /* SVG イラスト */
+  .svg-illust {
+    display: block;
+    margin: 14px auto 4px;
+    max-width: 100%;
+  }
+
+  /* footer */
+  footer {
+    background: var(--cyn-surface);
+    color: var(--cyn-text-2);
+    padding: 22px 32px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.7;
+    border-top: 1px solid var(--cyn-border);
+    margin-top: 28px;
+  }
+  footer .disclaimer-title {
+    color: var(--cyn-text);
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+  footer p { margin-bottom: 4px; }
+  footer .stamp {
+    margin-top: 10px;
+    color: var(--cyn-muted);
+    font-size: 11px;
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 720px) {
+    header {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    header .tagline { display: none; }
+    .progress-labels span {
+      font-size: 0;
+    }
+    .progress-labels span .dot { font-size: 10px; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .score-grid { grid-template-columns: 1fr; }
+    main { padding: 18px; }
+    .step { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">Cyno<span class="accent">vela</span></div>
+    <div class="tagline">体験デモ（一般向け） / AI 基盤ツールのコンセプトを 8 ステップで</div>
+  </div>
+  <div class="mode-switch">
+    <button id="mode-demo" class="active" onclick="setMode('demo')">デモモード</button>
+    <button id="mode-explain" onclick="setMode('explain')">解説モード</button>
+  </div>
+</header>
+
+<div class="stepper-wrap">
+  <div class="stepper-inner">
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar" style="width: 12.5%;"></div>
+    </div>
+    <div class="progress-labels" id="progress-labels">
+      <span class="active"><span class="dot">1</span>WS作成</span>
+      <span><span class="dot">2</span>ファイル選択</span>
+      <span><span class="dot">3</span>PIIマスク</span>
+      <span><span class="dot">4</span>ベクター化</span>
+      <span><span class="dot">5</span>質問入力</span>
+      <span><span class="dot">6</span>回答表示</span>
+      <span><span class="dot">7</span>比較表</span>
+      <span><span class="dot">8</span>まとめ</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- Step 1: Workspace 作成 -->
+<section class="step active" id="step-1">
+  <h2><span class="step-number">1</span>ワークスペースを作る</h2>
+  <p class="step-desc">Cynovela では「ワークスペース」が文書をまとめる箱になります。名前と機密レベルを決めてみましょう。</p>
+  <div class="explain-panel">
+    <strong>なぜ必要か:</strong> ワークスペースを分けると、部門や用途ごとにアクセス権限とガードレール（マスクや除外のルール）を変えられます。同じ AI 基盤ツールでも、人事資料と技術文書を一緒に検索させたくない、という要望に応えるための仕組みです。
+  </div>
+  <div class="content-block">
+    <div class="form-row">
+      <label>ワークスペース名</label>
+      <input type="text" id="ws-name" value="営業部ナレッジ" placeholder="例: 営業部ナレッジ">
+    </div>
+    <div class="form-row">
+      <label>機密レベル</label>
+      <select id="ws-level">
+        <option value="public">公開（誰でも閲覧可）</option>
+        <option value="internal" selected>社内限定</option>
+        <option value="confidential">機密（admin のみ raw 参照可）</option>
+      </select>
+    </div>
+    <svg class="svg-illust" width="400" height="120" viewBox="0 0 400 120">
+      <rect x="20" y="30" width="100" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="70" y="65" text-anchor="middle" font-size="13" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">営業WS</text>
+      <rect x="150" y="30" width="100" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="200" y="65" text-anchor="middle" font-size="13" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">人事WS</text>
+      <rect x="280" y="30" width="100" height="60" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+      <text x="330" y="65" text-anchor="middle" font-size="13" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">技術WS</text>
+      <text x="200" y="110" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">3つのワークスペースを独立管理</text>
+    </svg>
+  </div>
+  <div class="nav-row">
+    <span></span>
+    <button class="btn" onclick="next()">次へ</button>
+  </div>
+</section>
+
+<!-- Step 2: ファイル選択 -->
+<section class="step" id="step-2">
+  <h2><span class="step-number">2</span>ファイルを選ぶ</h2>
+  <p class="step-desc">取り込みたいファイルをクリックして選択します。フォルダから自動検出された想定のファイル一覧です。</p>
+  <div class="explain-panel">
+    <strong>なぜ必要か:</strong> 文書 1 つ 1 つを手作業で入れ替えるのは大変です。Cynovela はフォルダを丸ごと登録すると、配下のファイルを自動で発見し、追加・削除も差分検出します。
+  </div>
+  <div class="content-block">
+    <p style="margin-bottom: 16px; color: var(--cyn-muted); font-size: 13px;">📁 /sample/sales/ から検出された 8 ファイル</p>
+    <div class="file-list" id="file-list">
+      <div class="file-item selected" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">提案書_2026Q1.pdf</div></div>
+      <div class="file-item selected" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">顧客リスト.xlsx</div></div>
+      <div class="file-item selected" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">商談議事録.docx</div></div>
+      <div class="file-item" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">価格表.pdf</div></div>
+      <div class="file-item" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">FAQ_製品A.md</div></div>
+      <div class="file-item selected" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">事例集_2025.pdf</div></div>
+      <div class="file-item" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">研修資料.pptx</div></div>
+      <div class="file-item" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">契約テンプレ.docx</div></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="prev()">戻る</button>
+    <button class="btn" onclick="next()">次へ</button>
+  </div>
+</section>
+
+<!-- Step 3: PII マスキング -->
+<section class="step" id="step-3">
+  <h2><span class="step-number">3</span>個人情報を伏字にする</h2>
+  <p class="step-desc">ファイルの中身を取り込む前に、Cynovela は個人情報（PII）を自動検出して伏字に置き換えます。左が原文、右が伏字後です。</p>
+  <div class="explain-panel">
+    <strong>なぜ必要か:</strong> 業務文書には電話番号やメール、マイナンバーなどの個人情報がしばしば混ざります。これらを LLM の学習材料や検索結果にそのまま出すと、情報漏洩のリスクがあります。Cynovela は <strong>取り込み時</strong>と<strong>回答時</strong>の二段階で伏字化します。
+  </div>
+  <div class="content-block">
+    <div class="compare-grid">
+      <div class="compare-col raw">
+        <h3>原文（admin のみ参照可）</h3>
+        <div class="doc-content">
+          【商談議事録】<br>
+          日時: 2026年5月15日<br>
+          相手先: 山田太郎 様（株式会社サンプル）<br>
+          連絡先: <span class="pii">yamada@example.com</span><br>
+          電話: <span class="pii">090-1234-5678</span><br>
+          住所: 東京都港区六本木1-2-3<br>
+          マイナンバー控え: <span class="pii">1234-5678-9012</span><br>
+          クレジット決済: <span class="pii">4111-1111-1111-1111</span>
+        </div>
+      </div>
+      <div class="compare-col masked">
+        <h3>伏字後（一般ユーザーが参照）</h3>
+        <div class="doc-content">
+          【商談議事録】<br>
+          日時: 2026年5月15日<br>
+          相手先: 山田太郎 様（株式会社サンプル）<br>
+          連絡先: <span class="masked">[MASKED:EMAIL]</span><br>
+          電話: <span class="masked">[MASKED:PHONE]</span><br>
+          住所: 東京都港区六本木1-2-3<br>
+          マイナンバー控え: <span class="masked">[MASKED:MYNUM]</span><br>
+          クレジット決済: <span class="masked">[MASKED:CREDIT]</span>
+        </div>
+      </div>
+    </div>
+    <svg class="svg-illust" width="400" height="80" viewBox="0 0 400 80">
+      <rect x="20" y="20" width="80" height="40" rx="6" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="60" y="44" text-anchor="middle" font-size="12" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">原文</text>
+      <path d="M 110 40 L 180 40" stroke="#637a96" stroke-width="2" marker-end="url(#arr1)"/>
+      <text x="145" y="32" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">PII検出</text>
+      <rect x="200" y="20" width="80" height="40" rx="6" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
+      <text x="240" y="44" text-anchor="middle" font-size="12" fill="#c0392b" font-family="Inter, sans-serif" font-weight="600">マスク</text>
+      <path d="M 290 40 L 360 40" stroke="#637a96" stroke-width="2" marker-end="url(#arr1)"/>
+      <rect x="370" y="20" width="20" height="40" rx="6" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+      <defs>
+        <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#637a96"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="prev()">戻る</button>
+    <button class="btn" onclick="next()">次へ</button>
+  </div>
+</section>
+
+<!-- Step 4: ベクター化 -->
+<section class="step" id="step-4">
+  <h2><span class="step-number">4</span>ベクター化（数値の地図に変換）</h2>
+  <p class="step-desc">伏字化したテキストは「意味の似たもの同士が近くに集まる数値の地図」に変換されます。</p>
+  <div class="explain-panel">
+    <strong>なぜ必要か:</strong> 検索は単語の完全一致だけでは限界があります。ベクター化（埋め込み）すると、「価格について」という質問で「料金体系」を扱った文書も拾えるようになります。Cynovela は BAAI/bge-m3 という OSS の埋め込みモデルを使います。
+  </div>
+  <div class="content-block">
+    <div class="pipeline-steps" id="pipeline-steps">
+      <div class="pipeline-step" data-idx="0"><span class="number">1</span><span class="label">テキスト抽出</span><span class="detail">PDF / Word / Excel から本文を取り出し</span></div>
+      <div class="pipeline-step" data-idx="1"><span class="number">2</span><span class="label">チャンク分割</span><span class="detail">500文字ごとに切り分け</span></div>
+      <div class="pipeline-step" data-idx="2"><span class="number">3</span><span class="label">埋め込み生成</span><span class="detail">BAAI/bge-m3 で 1024 次元ベクター</span></div>
+      <div class="pipeline-step" data-idx="3"><span class="number">4</span><span class="label">ChromaDB へ保存</span><span class="detail">検索可能な状態に Publish</span></div>
+    </div>
+    <svg class="svg-illust" width="400" height="100" viewBox="0 0 400 100">
+      <text x="200" y="20" text-anchor="middle" font-size="12" fill="#637a96" font-family="Inter, sans-serif">意味空間に配置されたチャンク群</text>
+      <circle cx="80" cy="60" r="8" fill="#0078d4"/>
+      <circle cx="100" cy="55" r="8" fill="#0078d4"/>
+      <circle cx="95" cy="75" r="8" fill="#0078d4"/>
+      <text x="90" y="98" text-anchor="middle" font-size="10" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">価格関連</text>
+      <circle cx="200" cy="60" r="8" fill="#b45309"/>
+      <circle cx="220" cy="65" r="8" fill="#b45309"/>
+      <circle cx="210" cy="80" r="8" fill="#b45309"/>
+      <text x="210" y="98" text-anchor="middle" font-size="10" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">機能仕様</text>
+      <circle cx="320" cy="55" r="8" fill="#0e8a4a"/>
+      <circle cx="340" cy="70" r="8" fill="#0e8a4a"/>
+      <circle cx="325" cy="80" r="8" fill="#0e8a4a"/>
+      <text x="330" y="98" text-anchor="middle" font-size="10" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">事例集</text>
+    </svg>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="prev()">戻る</button>
+    <button class="btn" onclick="next()" id="step4-next" disabled>準備中…</button>
+  </div>
+</section>
+
+<!-- Step 5: 質問入力 -->
+<section class="step" id="step-5">
+  <h2><span class="step-number">5</span>質問する（RAG チャット）</h2>
+  <p class="step-desc">取り込んだ文書を元に、自然な日本語で質問します。下の例をクリックすると入力欄に入ります。</p>
+  <div style="border: 2px solid #c0392b; border-radius: 8px; padding: 10px 14px;
+              background: #fef2f2; color: #7f1d1d; font-size: 14px; margin-bottom: 12px;">
+    ⚠️ 参照元 AI 基盤ツールにはない Cynovela 独自の学習体験機能です
+  </div>
+  <div class="explain-panel">
+    <strong>なぜ必要か:</strong> RAG（検索拡張生成）は、質問を受けたときにまず社内文書を検索し、見つかった文書を LLM の参考材料として渡すことで「資料に基づいた回答」を実現します。LLM 単体だと事実と関係のないもっともらしい文章を生成する（ハルシネーション）リスクがあります。
+  </div>
+  <div class="content-block">
+    <div class="chat-window" id="chat-window">
+      <div class="chat-bubble bot">こんにちは。営業部ナレッジ ワークスペースに接続しました。何でも聞いてください。</div>
+    </div>
+    <div class="quick-questions">
+      <button onclick="setQ('製品Aの価格体系を教えて')">製品Aの価格体系を教えて</button>
+      <button onclick="setQ('2026Q1の提案で重視すべきポイントは？')">2026Q1の重視点</button>
+      <button onclick="setQ('顧客リストにある法人数は？')">顧客リストの法人数</button>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="質問を入力してください…">
+      <button class="btn" onclick="sendChat()">送信</button>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="prev()">戻る</button>
+    <button class="btn" onclick="next()" id="step5-next" disabled>送信後に有効化</button>
+  </div>
+</section>
+
+<!-- Step 6: 回答と根拠 -->
+<section class="step" id="step-6">
+  <h2><span class="step-number">6</span>回答と根拠スコア</h2>
+  <p class="step-desc">Cynovela は回答だけでなく、どの文書を参照したか、どの程度マッチしているかを示します。</p>
+  <div class="explain-panel">
+    <strong>なぜ必要か:</strong> ブラックボックスの回答は信用できません。Cynovela は「どこから引用したか（出典）」と「どれくらい近いか（スコア）」を明示することで、ユーザーが回答の妥当性を確認できるようにします。
+  </div>
+  <div class="content-block">
+    <div class="answer-bubble">
+      製品Aの価格体系は 3 プラン構成で、Starter（月額 ¥9,800）、Business（月額 ¥29,800）、Enterprise（個別見積）の段階制です。各プラン共通でユーザー無制限、データ容量に応じた追加料金体系があります<sup>[1][2]</sup>。
+    </div>
+    <h4 class="section-heading">📊 根拠スコア</h4>
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="label">コサイン類似度（最高）</div>
+        <div class="value">0.74</div>
+      </div>
+      <div class="score-card">
+        <div class="label">Reranker スコア（最高）</div>
+        <div class="value">0.91</div>
+      </div>
+    </div>
+    <h4 class="section-heading">📚 引用元（2 件）</h4>
+    <div class="source-card">
+      <strong>[1] 価格表.pdf</strong> / 第 2 章「料金プラン」/ コサイン類似度: 0.74 / Reranker: 0.91<br>
+      <small>「Starter プランは月額 9,800 円で、5 ユーザーまで含まれる…」</small>
+    </div>
+    <div class="source-card">
+      <strong>[2] 提案書_2026Q1.pdf</strong> / 第 3 章「料金提案」/ コサイン類似度: 0.68 / Reranker: 0.85<br>
+      <small>「Business プラン以上を推奨。Enterprise は個別カスタマイズ可能…」</small>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="prev()">戻る</button>
+    <button class="btn" onclick="next()">次へ</button>
+  </div>
+</section>
+
+<!-- Step 7: 比較表 -->
+<section class="step" id="step-7">
+  <h2><span class="step-number">7</span>参照元 AI 基盤ツールとの対応</h2>
+  <p class="step-desc">参照元のツールが提供する機能と、Cynovela での再現状況を一覧で比較します。</p>
+  <div class="explain-panel">
+    <strong>なぜ必要か:</strong> Cynovela の目的は「コンセプトの理解」であり、参照元ツールの完全な代替ではありません。何が対応していて、何が独自機能かを明示することで、誤解を避けます。
+  </div>
+  <div class="content-block">
+    <div class="table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr><th style="width: 30%;">機能</th><th style="width: 35%;">参照元 AI 基盤ツール</th><th style="width: 35%;">Cynovela</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>データ取り込み</td><td class="original-feature">対応</td><td>対応（14 カテゴリ自動分類）</td></tr>
+          <tr><td>PII マスキング</td><td class="original-feature">対応</td><td>対応（8 種類 + Dual-Tier）</td></tr>
+          <tr><td>ガードレール</td><td class="original-feature">対応</td><td>対応（4 アクション）</td></tr>
+          <tr><td>RBAC</td><td class="original-feature">対応</td><td>対応（3 ロール）</td></tr>
+          <tr><td>監査ログ</td><td class="original-feature">対応</td><td>対応（改ざん禁止）</td></tr>
+          <tr><td>MCP サーバー</td><td class="original-feature">対応</td><td>対応（11 ツール）</td></tr>
+          <tr><td>ベクター検索</td><td class="original-feature">対応</td><td>対応（BAAI/bge-m3）</td></tr>
+          <tr class="cynovela-only"><td>RAG チャット UI</td><td class="original-feature">非対応（検索 API のみ）</td><td class="cynovela-extra">独自機能（学習用 UI）</td></tr>
+          <tr class="cynovela-only"><td>ベクター化アニメーション</td><td class="original-feature">非対応</td><td class="cynovela-extra">独自機能（理解促進）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">※ 赤背景の行は参照元には無い Cynovela 独自の学習体験機能です。</p>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="prev()">戻る</button>
+    <button class="btn" onclick="next()">次へ</button>
+  </div>
+</section>
+
+<!-- Step 8: まとめ -->
+<section class="step" id="step-8">
+  <h2><span class="step-number">8</span>まとめ</h2>
+  <p class="step-desc">8 ステップで体験した内容を 4 つの観点で振り返ります。</p>
+  <div class="content-block">
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="icon-big">🗂️</div>
+        <h4>整理する</h4>
+        <p>ワークスペース・コレクションで文書を分類し、ガードレールを紐付ける。</p>
+      </div>
+      <div class="summary-card">
+        <div class="icon-big">🔒</div>
+        <h4>守る</h4>
+        <p>PII を取り込み時と回答時の二段階で伏字化。raw 本文は暗号化保管。</p>
+      </div>
+      <div class="summary-card">
+        <div class="icon-big">🔍</div>
+        <h4>探す</h4>
+        <p>BM25 + ベクター検索のハイブリッドで、単語一致と意味類似を両立。</p>
+      </div>
+      <div class="summary-card">
+        <div class="icon-big">💬</div>
+        <h4>答える</h4>
+        <p>引用元とスコアを明示し、回答の根拠を確認できる状態で返却。</p>
+      </div>
+    </div>
+    <p style="margin-top: 22px; text-align: center; color: var(--cyn-muted); font-size: 13px;">
+      ※ さらに技術的な詳細は <code style="font-family: var(--cyn-mono); background: var(--cyn-bg); padding: 2px 6px; border-radius: 4px; color: var(--cyn-accent);">demo-tech.html</code> をご覧ください。
+    </p>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="prev()">戻る</button>
+    <button class="btn" onclick="reset()">最初から</button>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p class="disclaimer-title">免責</p>
+  <p>Cynovela は AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。商用製品ではなく、参照元のソースコード・公式実装は一切含みません。</p>
+  <p>本デモのデータはすべて架空であり、いかなる実在の人物・組織・製品を表すものではありません。会社・製品の公式見解を一切代表しません。</p>
+  <p class="stamp">最終更新: 2026-05-26 / Alpha GA 対応版</p>
+</footer>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 8;
+
+  function setMode(mode) {
+    document.body.classList.toggle('explain-mode', mode === 'explain');
+    document.getElementById('mode-demo').classList.toggle('active', mode === 'demo');
+    document.getElementById('mode-explain').classList.toggle('active', mode === 'explain');
+  }
+
+  function showStep(n) {
+    for (let i = 1; i <= totalSteps; i++) {
+      const el = document.getElementById('step-' + i);
+      if (el) el.classList.toggle('active', i === n);
+    }
+    const bar = document.getElementById('progress-bar');
+    bar.style.width = (n / totalSteps * 100) + '%';
+    const labels = document.getElementById('progress-labels').children;
+    for (let i = 0; i < labels.length; i++) {
+      labels[i].classList.remove('active', 'done');
+      if (i < n - 1) labels[i].classList.add('done');
+      else if (i === n - 1) labels[i].classList.add('active');
+    }
+    currentStep = n;
+    if (n === 4) runPipeline();
+    if (n === 5) {
+      document.getElementById('step5-next').disabled = true;
+      const cw = document.getElementById('chat-window');
+      cw.innerHTML = '<div class="chat-bubble bot">こんにちは。営業部ナレッジ ワークスペースに接続しました。何でも聞いてください。</div>';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  function next() { if (currentStep < totalSteps) showStep(currentStep + 1); }
+  function prev() { if (currentStep > 1) showStep(currentStep - 1); }
+  function reset() { showStep(1); }
+
+  function toggleFile(el) { el.classList.toggle('selected'); }
+
+  function runPipeline() {
+    const steps = document.querySelectorAll('#pipeline-steps .pipeline-step');
+    steps.forEach(s => s.classList.remove('active', 'done'));
+    document.getElementById('step4-next').disabled = true;
+    document.getElementById('step4-next').textContent = '処理中…';
+    let idx = 0;
+    const tick = () => {
+      if (idx > 0) steps[idx - 1].classList.replace('active', 'done');
+      if (idx < steps.length) {
+        steps[idx].classList.add('active');
+        idx++;
+        setTimeout(tick, 900);
+      } else {
+        document.getElementById('step4-next').disabled = false;
+        document.getElementById('step4-next').textContent = '次へ';
+      }
+    };
+    setTimeout(tick, 400);
+  }
+
+  function setQ(q) { document.getElementById('chat-input').value = q; }
+
+  function sendChat() {
+    const input = document.getElementById('chat-input');
+    const q = input.value.trim();
+    if (!q) return;
+    const cw = document.getElementById('chat-window');
+    const u = document.createElement('div');
+    u.className = 'chat-bubble user';
+    u.textContent = q;
+    cw.appendChild(u);
+    input.value = '';
+    cw.scrollTop = cw.scrollHeight;
+    setTimeout(() => {
+      const b = document.createElement('div');
+      b.className = 'chat-bubble bot';
+      b.innerHTML = '検索中… <em style="color:var(--cyn-muted);">2 件の関連文書が見つかりました。次のステップで回答を表示します。</em>';
+      cw.appendChild(b);
+      cw.scrollTop = cw.scrollHeight;
+      document.getElementById('step5-next').disabled = false;
+      document.getElementById('step5-next').textContent = '次へ';
+      setTimeout(() => { if (currentStep === 5) next(); }, 2000);
+    }, 700);
+  }
+</script>
+
+</body>
+</html>

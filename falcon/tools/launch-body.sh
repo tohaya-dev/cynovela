@@ -57,6 +57,17 @@ MODE_SETUP=0
 # DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"
+# DD-CYN-0107 F-c: 取り込み元の控えは、動作要件 (3.12 系) を満たす python でのみ読み書きする。
+#   素の python3 (版の検査なし) へは倒れない。3.12 系が無いときは理由と入れ方を出して止める。
+ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" || true)"
+_roots_py() {
+    if [ -z "$ROOTS_PY" ]; then
+        echo "エラー: 3.12 系の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を扱えません。" >&2
+        echo "       ./Cynovela-start.command を一度押して「1) conda で作る」を選ぶと、この配布物の中に 3.12 の環境が作られます。" >&2
+        return 1
+    fi
+    "$ROOTS_PY" "$@"
+}
 HOSTPORT_DEFAULT="$(conf_get_num server port 8801)"
 HOSTPORT="$HOSTPORT_DEFAULT"
 CNAME_DEFAULT="$(conf_get_or container name "$CONF_DEFAULT_CNAME")"
@@ -295,7 +306,7 @@ while [ $# -gt 0 ]; do
                 echo "使い方: ./launch.sh --add-path <フォルダのパス>"
                 exit 2
             fi
-            NAME="$(python3 "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$2")"
+            NAME="$(_roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$2")"
             echo "取り込み元を追加しました (中の名前: $NAME / 入れ物の中では /app/ingest/$NAME)"
             echo "反映には起動し直し (./launch.sh) が必要です"
             exit 0
@@ -305,13 +316,13 @@ while [ $# -gt 0 ]; do
                 echo "フォルダ選択がキャンセルされました"
                 exit 1
             }
-            NAME="$(python3 "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$SEL")"
+            NAME="$(_roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$SEL")"
             echo "取り込み元を追加しました (中の名前: $NAME / 入れ物の中では /app/ingest/$NAME)"
             echo "反映には起動し直し (./launch.sh) が必要です"
             exit 0
             ;;
         --list)
-            python3 "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" list
+            _roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" list
             exit 0
             ;;
         --remove)
@@ -319,7 +330,7 @@ while [ $# -gt 0 ]; do
                 echo "使い方: ./launch.sh --remove <中の名前>"
                 exit 2
             fi
-            python3 "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" remove "$2"
+            _roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" remove "$2"
             echo "反映には起動し直し (./launch.sh) が必要です"
             exit 0
             ;;
@@ -569,7 +580,7 @@ run_interactive() {
             local _sel _name
             _sel="$(osascript -e 'POSIX path of (choose folder with prompt "読ませるフォルダを選んでください")' 2>/dev/null || true)"
             if [ -n "$_sel" ]; then
-                _name="$(python3 "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$_sel")"
+                _name="$(_roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$_sel")"
                 echo "  → 足しました: $_sel"
                 echo "     (この中の名前: $_name)"
             else
@@ -633,7 +644,15 @@ run_probe() {
         add_report "python3: $(command -v python3) / $(python3 -V 2>&1)"
     else
         add_report "python3: ありません"
-        add_blocker "python3 がありません。取り込み元の控え (store/ingest-roots.json) を扱えません。macOS の Command Line Tools を入れてください: xcode-select --install"
+    fi
+    # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 系) を満たす python だけ。有無ではなく版まで見る。
+    if [ -n "$ROOTS_PY" ]; then
+        add_report "控えに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
+    else
+        add_report "控えに使う python: ありません (3.12 系が見つかりません)"
+        if [ -s "$INGEST_ROOTS_FILE" ]; then
+            add_blocker "3.12 系の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を読めず、足したフォルダが読み込まれません。./Cynovela-start.command で「1) conda で作る」を選んでください。"
+        fi
     fi
 
     # 3. conda (この形態では使いません。写しとして記録します)

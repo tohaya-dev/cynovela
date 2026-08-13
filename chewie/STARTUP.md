@@ -66,6 +66,8 @@ python server.py --mode text --demo
 ./launch.sh --demo --ingest ~/Documents/契約 --ingest /path/to/資料
 
 # 起動せずに追加だけ行う（動いている画面からすぐに選べます）
+# ※ 追加・一覧・外すは 3.12 系の python を使います（はじめてなら先に一度
+#    Cynovela-start.command を押すと用意されます）
 ./launch.sh --add-path /path/to/新しい取り込み元
 
 # フォルダ選択画面から追加（macOS。Cynovela-add-folder.command のダブルクリックでも同じ）

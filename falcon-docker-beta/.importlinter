@@ -1,0 +1,28 @@
+[importlinter]
+# Stage-3-D: root_packages を 5 個（core / providers / routers / services / utils）に
+# 設定し、foundational layers が routers を import しない最小契約を 2 件定義。
+# 既存違反 0 件（grep -r "from routers\|import routers" core/ utils/ providers/ で確認済み）。
+# Phase 3 以降で「routers 同士の循環禁止」「services が server.py 直接触禁止」等を追加する余地あり。
+root_packages =
+    core
+    providers
+    routers
+    services
+    utils
+
+[importlinter:contract:no-routers-in-core-utils]
+name = core / utils は routers を import しない（foundational layer 保護）
+type = forbidden
+source_modules =
+    core
+    utils
+forbidden_modules =
+    routers
+
+[importlinter:contract:no-routers-in-providers]
+name = providers は routers を import しない（vector_store / classifier 等は router に依存しない）
+type = forbidden
+source_modules =
+    providers
+forbidden_modules =
+    routers

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cynovela 技術仕様 デモ</title>
+<style>
+  :root {
+    color-scheme: light only;
+    --cyn-bg:            #f5f6f8;
+    --cyn-surface:       #ffffff;
+    --cyn-border:        #e0e7ef;
+    --cyn-border-light:  #edf1f7;
+    --cyn-text:          #0f1923;
+    --cyn-text-2:        #3a4f68;
+    --cyn-muted:         #637a96;
+    --cyn-accent:        #0078d4;
+    --cyn-accent-hover:  #006abc;
+    --cyn-accent-light:  #e6f3fc;
+    --cyn-success:       #0e8a4a;
+    --cyn-success-bg:    #eaf7f0;
+    --cyn-success-border:#b3e2ca;
+    --cyn-warning:       #b45309;
+    --cyn-warning-bg:    #fef9ec;
+    --cyn-warning-border:#fcd68a;
+    --cyn-error:         #c0392b;
+    --cyn-error-bg:      #fef2f2;
+    --cyn-error-border:  #fbc8c4;
+    --cyn-stripe:        #f8fafc;
+    --cyn-code-bg:       #f1f5f9;
+    --cyn-radius:        10px;
+    --cyn-font:          'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+    --cyn-mono:          'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--cyn-bg);
+    color: var(--cyn-text);
+    font-family: var(--cyn-font);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* === ヘッダーバー === */
+  header.cyn-header {
+    background: var(--cyn-surface);
+    border-bottom: 1px solid var(--cyn-border);
+    padding: 18px 32px;
+  }
+  header.cyn-header .title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cyn-text);
+    letter-spacing: 0.2px;
+  }
+  header.cyn-header .title .brand-tap { color: var(--cyn-accent); }
+  header.cyn-header .subtitle {
+    font-size: 13px;
+    color: var(--cyn-muted);
+    margin-top: 2px;
+  }
+  /* === タブバー === */
+  .tab-bar {
+    background: var(--cyn-surface);
+    border-bottom: 1px solid var(--cyn-border);
+    display: flex;
+    padding: 0 24px;
+    gap: 4px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .tab-bar button {
+    background: transparent;
+    color: var(--cyn-text-2);
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 22px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: color .15s, background .15s, border-color .15s;
+    margin-bottom: -1px;
+  }
+  .tab-bar button:hover {
+    background: #f0f4f8;
+    color: var(--cyn-text);
+  }
+  .tab-bar button.active {
+    color: var(--cyn-accent);
+    border-bottom-color: var(--cyn-accent);
+    background: var(--cyn-accent-light);
+    font-weight: 600;
+  }
+  /* === メイン === */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  /* === パネル === */
+  .panel-section {
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: var(--cyn-radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .panel-section h2 {
+    font-size: 20px;
+    color: var(--cyn-text);
+    font-weight: 700;
+    border-left: 3px solid var(--cyn-accent);
+    padding-left: 12px;
+    margin-bottom: 14px;
+  }
+  .panel-section h3 {
+    font-size: 16px;
+    color: var(--cyn-text);
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 10px;
+  }
+  .panel-section p {
+    margin-bottom: 12px;
+    color: var(--cyn-text-2);
+    font-size: 14px;
+  }
+  /* === フォーム === */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 24px;
+    margin-bottom: 20px;
+  }
+  .form-grid label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--cyn-text);
+    font-size: 14px;
+  }
+  .form-grid select,
+  .form-grid input {
+    width: 100%;
+    background: var(--cyn-surface);
+    border: 1px solid var(--cyn-border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--cyn-text);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .form-grid select:focus,
+  .form-grid input:focus {
+    outline: none;
+    border-color: var(--cyn-accent);
+    box-shadow: 0 0 0 3px rgba(0,120,212,0.12);
+  }
+  .help-text {
+    font-size: 12px;
+    color: var(--cyn-muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  /* === コードブロック / 生成コマンド === */
+  .code-block {
+    background: var(--cyn-code-bg);
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--cyn-mono);
+    font-size: 13px;
+    color: var(--cyn-text);
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  .code-block .cmd  { color: var(--cyn-text); font-weight: 600; }
+  .code-block .flag { color: var(--cyn-accent); font-weight: 600; }
+  .code-block .val  { color: var(--cyn-success); }
+  .code-block .comment { color: var(--cyn-muted); font-style: italic; }
+  /* === 情報・警告ブロック === */
+  .info-box {
+    background: var(--cyn-accent-light);
+    border-left: 4px solid var(--cyn-accent);
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #0a4d8c;
+    line-height: 1.7;
+  }
+  .warning-box {
+    background: var(--cyn-warning-bg);
+    border-left: 4px solid var(--cyn-warning);
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #92400e;
+    line-height: 1.7;
+  }
+  .danger-box {
+    background: var(--cyn-error-bg);
+    border-left: 4px solid var(--cyn-error);
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #7f1d1d;
+    line-height: 1.7;
+  }
+  .warning-box strong, .info-box strong, .danger-box strong { font-weight: 700; }
+  /* === テーブル === */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+    border: 1px solid var(--cyn-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  thead th {
+    background: var(--cyn-accent-light);
+    color: var(--cyn-accent);
+    font-weight: 700;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--cyn-border);
+    font-size: 13px;
+  }
+  tbody td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--cyn-border-light);
+    color: var(--cyn-text-2);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: var(--cyn-stripe); }
+  tbody tr:last-child td { border-bottom: none; }
+  td strong { color: var(--cyn-text); font-weight: 600; }
+  td code, p code, li code {
+    background: var(--cyn-code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--cyn-mono);
+    font-size: 12px;
+    color: var(--cyn-accent);
+    border: 1px solid var(--cyn-border-light);
+  }
+  /* === バッジ === */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .badge.admin  { background: var(--cyn-error-bg);   color: var(--cyn-error); }
+  .badge.viewer { background: var(--cyn-success-bg); color: var(--cyn-success); }
+  .badge.curator,
+  .badge.warn,
+  .badge.standard { background: var(--cyn-warning-bg); color: var(--cyn-warning); }
+  .badge.info,
+  .badge.accent { background: var(--cyn-accent-light); color: var(--cyn-accent); }
+  .badge.full    { background: var(--cyn-error-bg);   color: var(--cyn-error); }
+  .badge.text    { background: var(--cyn-accent-light); color: var(--cyn-accent); }
+  .badge.lite    { background: var(--cyn-success-bg); color: var(--cyn-success); }
+  .badge.minimal { background: #eef2f7; color: var(--cyn-text-2); }
+  .badge.quality { background: #f3e8ff; color: #6b21a8; }
+  /* === ボタン === */
+  .btn-primary {
+    background: var(--cyn-accent);
+    color: #fff;
+    border: 1px solid var(--cyn-accent);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--cyn-accent-hover); border-color: var(--cyn-accent-hover); }
+  .btn-secondary {
+    background: var(--cyn-surface);
+    color: var(--cyn-text);
+    border: 1px solid var(--cyn-border);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { background: #f0f4f8; }
+  /* === SVG === */
+  svg.diagram {
+    display: block;
+    margin: 18px auto;
+    max-width: 100%;
+    height: auto;
+    background: var(--cyn-surface);
+  }
+  /* === フッター === */
+  footer.cyn-footer {
+    background: var(--cyn-surface);
+    border-top: 1px solid var(--cyn-border);
+    color: var(--cyn-muted);
+    padding: 24px 32px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.7;
+    margin-top: 40px;
+  }
+  footer.cyn-footer strong { color: var(--cyn-text); }
+  footer.cyn-footer p { margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<header class="cyn-header">
+  <div class="title">Cyno<span class="brand-tap">vela</span> 技術仕様 デモ</div>
+  <div class="subtitle">起動モード・アーキテクチャ・API/MCP・PII ガバナンスを 1 画面で確認できます</div>
+</header>
+
+<div class="tab-bar">
+  <button class="active" onclick="showTab(1)">起動モード</button>
+  <button onclick="showTab(2)">アーキテクチャ</button>
+  <button onclick="showTab(3)">API / MCP</button>
+  <button onclick="showTab(4)">PII とガバナンス</button>
+</div>
+
+<main>
+
+<!-- ============================================== -->
+<!-- Tab 1: 起動モード                              -->
+<!-- ============================================== -->
+<div class="tab-panel active" id="tab-1">
+
+  <div class="panel-section">
+    <h2>起動コマンドジェネレーター</h2>
+    <p>下記のセレクタを操作すると、リアルタイムで <code>python server.py</code> の起動コマンドが組み立てられます。CLI 引数の実装に基づいた表記です。</p>
+
+    <div class="form-grid">
+      <div>
+        <label>--mode（起動モード）</label>
+        <select id="opt-mode" onchange="rebuildCmd()">
+          <option value="text" selected>text（テキスト RAG・既定）</option>
+          <option value="lite">lite（軽量 Embedding 多言語）</option>
+          <option value="lite-en">lite-en（英語特化軽量）</option>
+        </select>
+        <div class="help-text" id="mode-detail">BAAI/bge-m3（約 2.3GB）を Embedding に使用。GPU 不要・汎用。</div>
+      </div>
+      <div>
+        <label>pii_mode（cynovela.yaml で管理）</label>
+        <select id="opt-pii" onchange="rebuildCmd()">
+          <option value="lite">lite（正規表現のみ・高速）</option>
+          <option value="standard" selected>standard（Regex + GiNZA NER・既定）</option>
+          <option value="quality">quality（Regex + NER + 詳細フィルタ・高精度）</option>
+        </select>
+        <div class="help-text" id="pii-detail">cynovela.yaml の <code>pii_mode</code> キーで管理（CLI 引数は廃止済み）。</div>
+      </div>
+      <div>
+        <label>LLM 接続（撤去済みの --mock は選べません）</label>
+        <select id="opt-mock" onchange="rebuildCmd()">
+          <option value="">無効（実 LLM 接続）</option>
+        </select>
+        <div class="help-text">有効時は TFIDFEmbedding + NoReranker に強制固定されます。</div>
+      </div>
+      <div>
+        <label>--demo（デモデータ）</label>
+        <select id="opt-demo" onchange="rebuildCmd()">
+          <option value="">無効（クリーン DB）</option>
+          <option value="--demo" selected>有効（デモデータ投入）</option>
+        </select>
+        <div class="help-text">再起動ごとにリセットされる検証用 DB を使用します。</div>
+      </div>
+      <div>
+        <label>--lan / --allow-tailscale</label>
+        <select id="opt-net" onchange="rebuildCmd()">
+          <option value="">既定（127.0.0.1 のみ）</option>
+          <option value="--lan">LAN 公開（host=0.0.0.0）</option>
+          <option value="--lan --allow-tailscale">LAN + Tailscale 許可</option>
+        </select>
+        <div class="help-text">既定はループバックのみ。LAN 公開時はサブネットアローリスト併用を推奨します。</div>
+      </div>
+      <div>
+        <label>--lmstudio-url（LLM ベース URL）</label>
+        <input type="text" id="opt-llm" value="http://localhost:1234" oninput="rebuildCmd()">
+        <div class="help-text">OpenAI 互換 <code>/v1</code> API を持つ任意のサービスを指定可能（LM Studio / Ollama / vLLM 等）。</div>
+      </div>
+    </div>
+
+    <h3>生成された起動コマンド</h3>
+    <div class="code-block" id="generated-cmd"><span class="cmd">python server.py</span></div>
+  </div>
+
+  <div class="panel-section">
+    <h2>--mode 別 必須モデル一覧</h2>
+    <p><code>server.py</code> 内の <code>_MODE_MODELS</code> 定義に基づきます。preflight チェックで不足モデルが検出されると、HuggingFace からのダウンロードか代替モードへの降格が選択できます。</p>
+    <table>
+      <thead>
+        <tr><th>mode</th><th>Embedding</th><th>Reranker</th><th>サイズ</th><th>推奨環境</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge text">text</span></td><td><code>BAAI/bge-m3</code></td><td>YAML <code>reranker.provider</code> で選択</td><td>約 2.3 GB</td><td>汎用</td></tr>
+        <tr><td><span class="badge lite">lite</span></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td><span class="badge lite">lite-en</span></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <h3>主要な環境変数</h3>
+    <table>
+      <thead>
+        <tr><th>環境変数</th><th>用途</th><th>デフォルト</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>CYNOVELA_DB</code></td><td>SQLite DB パス上書き</td><td><code>~/.cynovela/db/cynovela.db</code></td></tr>
+        <tr><td><code>CYNOVELA_CHROMA</code></td><td>ChromaDB ディレクトリ上書き</td><td><code>~/.cynovela/vector/default/chroma</code></td></tr>
+        <tr><td><code>CYNOVELA_SECRET_KEY</code></td><td>Fernet 暗号鍵（本番推奨）</td><td>未設定時は自動生成</td></tr>
+        <tr><td><em>（環境変数なし）</em></td><td>LLM API キーは設定UIで入力（このセッションのみ保持・保存しない）</td><td>—</td></tr>
+        <tr><td><code>CYNOVELA_NONINTERACTIVE</code></td><td>preflight モデル確認をスキップ（不足時は起動中止）</td><td>—</td></tr>
+        <tr><td><code>CYNOVELA_DISABLE_RATE_LIMIT</code></td><td>SlowAPI レートリミット無効化</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <div class="warning-box">
+      <strong>Alpha GA 既知制限:</strong> Embedding / Reranker 設定の実行時変更は YAML に永続化されません（再起動でデフォルトに戻ります）。MLX Embedding / Reranker、Qdrant VectorStore、LanceDB バックエンドは骨格のみで <code>NotImplementedError</code> が発生します。
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- Tab 2: アーキテクチャ                          -->
+<!-- ============================================== -->
+<div class="tab-panel" id="tab-2">
+
+  <div class="panel-section">
+    <h2>コンポーネント構成</h2>
+    <p>FastAPI を中心に、Provider 抽象化（LLM / Embedding / Reranker / VectorStore / Classifier）と Guardrail / RAG / 監査の各レイヤを組み合わせる構成です。</p>
+    <svg class="diagram" width="900" height="430" viewBox="0 0 900 430" role="img" aria-label="コンポーネント構成図">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
+        </marker>
+      </defs>
+
+      <!-- Frontend -->
+      <rect x="20"  y="20" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="120" y="46" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Frontend (HTML/JS)</text>
+      <text x="120" y="66" text-anchor="middle" font-size="11" fill="#3a4f68">Workspace / Collection / Chat UI</text>
+
+      <!-- MCP Client -->
+      <rect x="240" y="20" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="340" y="46" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP クライアント</text>
+      <text x="340" y="66" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / 独自ツール</text>
+
+      <line x1="120" y1="80" x2="120" y2="115" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="340" y1="80" x2="340" y2="115" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- FastAPI -->
+      <rect x="20" y="120" width="500" height="80" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="270" y="146" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="700">FastAPI Server (server.py)</text>
+      <text x="270" y="168" text-anchor="middle" font-size="11" fill="#3a4f68">36 routers / RBAC ミドルウェア / IP アローリスト</text>
+      <text x="270" y="186" text-anchor="middle" font-size="11" fill="#3a4f68">routers/: chat, workspaces, collections, sources, auth, guardrails, ...</text>
+
+      <!-- MCP Server -->
+      <rect x="540" y="120" width="180" height="80" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="630" y="146" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP Server</text>
+      <text x="630" y="166" text-anchor="middle" font-size="11" fill="#3a4f68">11 tools</text>
+      <text x="630" y="184" text-anchor="middle" font-size="11" fill="#3a4f68">(mcp_server.py)</text>
+
+      <line x1="120" y1="200" x2="120" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="340" y1="200" x2="340" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="585" y1="200" x2="585" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="630" y1="200" x2="630" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- RAG / Guardrail / Providers -->
+      <rect x="20"  y="240" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="120" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">RAG (rag.py)</text>
+      <text x="120" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">BM25 + Vector / Reranker</text>
+
+      <rect x="240" y="240" width="200" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="340" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="700">Guardrail / PII</text>
+      <text x="340" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">Dual-Tier / Fernet / Injection</text>
+
+      <rect x="460" y="240" width="250" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="585" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Providers</text>
+      <text x="585" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">LLM / Embedding / Reranker / VectorStore</text>
+
+      <line x1="120" y1="300" x2="120" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="340" y1="300" x2="340" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="585" y1="300" x2="585" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Storage row -->
+      <rect x="20"  y="340" width="200" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="120" y="368" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">SQLite (db.py)</text>
+      <text x="120" y="388" text-anchor="middle" font-size="11" fill="#3a4f68">workspaces / chunks / audit_logs</text>
+
+      <rect x="240" y="340" width="200" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="340" y="368" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">ChromaDB</text>
+      <text x="340" y="388" text-anchor="middle" font-size="11" fill="#3a4f68">{cid}__raw / {cid}__masked</text>
+
+      <rect x="460" y="340" width="250" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="585" y="368" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">External LLM</text>
+      <text x="585" y="388" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / Ollama / OpenAI 互換</text>
+    </svg>
+
+    <div class="info-box">
+      <strong>判定ロジック:</strong> 重要コンポーネント（FastAPI Server / Guardrail）は警告色で強調しています。Provider 配線は <code>_wire_providers_for_mode()</code> が <code>yaml.reranker.provider</code> → legacy の優先順で行います（<code>--mock</code> は撤去済み）。
+    </div>
+  </div>
+
+  <div class="panel-section">
+    <h2>RAG パイプラインフロー</h2>
+    <p>クエリ受信から回答返却までの 7 段階を可視化します。Hybrid 統合は RRF（k=60）で順位融合します。</p>
+
+    <svg class="diagram" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="RAG パイプラインフロー">
+      <defs>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
+        </marker>
+      </defs>
+
+      <!-- Query -->
+      <rect x="10"  y="110" width="115" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="67"  y="136" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">クエリ</text>
+      <text x="67"  y="154" text-anchor="middle" font-size="10" fill="#3a4f68">Injection 検査</text>
+
+      <line x1="125" y1="140" x2="148" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <!-- Embedding -->
+      <rect x="148" y="110" width="120" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="208" y="136" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">埋め込み</text>
+      <text x="208" y="154" text-anchor="middle" font-size="10" fill="#3a4f68">BAAI/bge-m3</text>
+
+      <line x1="268" y1="140" x2="290" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <!-- Vector -->
+      <rect x="290" y="60" width="130" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="355" y="88" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Vector 検索</text>
+      <text x="355" y="106" text-anchor="middle" font-size="10" fill="#3a4f68">ChromaDB + MMR</text>
+
+      <!-- BM25 -->
+      <rect x="290" y="160" width="130" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="355" y="188" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">BM25 検索</text>
+      <text x="355" y="206" text-anchor="middle" font-size="10" fill="#3a4f68">fugashi トークン化</text>
+
+      <line x1="420" y1="90"  x2="445" y2="125" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <line x1="420" y1="190" x2="445" y2="155" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <!-- Hybrid RRF -->
+      <rect x="445" y="110" width="120" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="505" y="136" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Hybrid 統合</text>
+      <text x="505" y="154" text-anchor="middle" font-size="10" fill="#3a4f68">RRF (k=60)</text>
+
+      <line x1="565" y1="140" x2="588" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <!-- Reranker -->
+      <rect x="588" y="110" width="120" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="648" y="132" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Reranker</text>
+      <text x="648" y="150" text-anchor="middle" font-size="10" fill="#3a4f68">CrossEncoder /</text>
+      <text x="648" y="163" text-anchor="middle" font-size="10" fill="#3a4f68">FlashRank 等</text>
+
+      <line x1="708" y1="140" x2="730" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <!-- LLM -->
+      <rect x="730" y="110" width="135" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="797" y="132" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">LLM 生成</text>
+      <text x="797" y="150" text-anchor="middle" font-size="10" fill="#3a4f68">LM Studio / Ollama</text>
+      <text x="797" y="163" text-anchor="middle" font-size="10" fill="#3a4f68">/v1/chat/completions</text>
+
+      <!-- Output guardrail -->
+      <line x1="797" y1="170" x2="797" y2="215" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <rect x="640" y="215" width="270" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="775" y="240" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">ガードレール（出口）</text>
+      <text x="775" y="260" text-anchor="middle" font-size="10" fill="#3a4f68">_mask_for_viewer / Exfil 検査</text>
+
+      <line x1="640" y1="245" x2="195" y2="245" stroke="#0078d4" stroke-width="1.5"/>
+      <line x1="195" y1="245" x2="170" y2="245" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <rect x="40" y="215" width="130" height="60" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+      <text x="105" y="240" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">回答返却</text>
+      <text x="105" y="260" text-anchor="middle" font-size="10" fill="#3a4f68">引用 + スコア</text>
+    </svg>
+
+    <div class="info-box">
+      <strong>補足:</strong> Adaptive RAG（complexity score ≥ 2.0）が起動すると Agentic ループに入り、CRAG / Multi-Query / HyDE を活用して最大 3 回の反復検索が行われます。Abstention 判定は RRF ではなく Vector cosine スコア（しきい値 0.50）で行います。
+    </div>
+
+    <div class="warning-box">
+      <strong>Alpha GA 既知制限:</strong> 構造化回答テンプレートは未実装で、自由形式回答が標準です。低信頼度フォールバック（threshold=0.50）は設定済みですが、検索 0 件時の自動切替は完全には統合されていません。
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- Tab 3: API / MCP                               -->
+<!-- ============================================== -->
+<div class="tab-panel" id="tab-3">
+
+  <div class="panel-section">
+    <h2>主なエンドポイントカテゴリ</h2>
+    <p>FastAPI 配下に 36 のルーターが配置されています。RBAC ヘルパー（<code>_require_admin</code> / <code>_require_authenticated</code> / <code>_require_role</code> / <code>_require_admin_or_self</code>）でロール検査を一元化しています。</p>
+    <table>
+      <thead>
+        <tr><th>カテゴリ</th><th>主なエンドポイント</th><th>認可</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>認証</td><td><code>/api/auth/login</code>, <code>/api/auth/users</code></td><td><span class="badge admin">admin</span> 必須（users 管理）</td></tr>
+        <tr><td>ワークスペース</td><td><code>/api/workspaces</code>, <code>/api/workspaces/{id}</code></td><td>role による</td></tr>
+        <tr><td>コレクション</td><td><code>/api/collections</code>, <code>/api/collections/{id}/publish</code></td><td><span class="badge curator">curator+</span></td></tr>
+        <tr><td>ソース</td><td><code>/api/sources</code>, <code>/api/sources/{id}/scan</code></td><td><span class="badge curator">curator+</span></td></tr>
+        <tr><td>RAG チャット</td><td><code>/api/chat</code>, <code>/api/chat/stream</code></td><td>認証済</td></tr>
+        <tr><td>ガードレール</td><td><code>/api/guardrails/pii-detections</code>, <code>/api/guardrails/blocked-topics</code></td><td><span class="badge admin">admin</span> 必須</td></tr>
+        <tr><td>ポリシー</td><td><code>/api/policies</code></td><td><span class="badge admin">admin</span> 必須</td></tr>
+        <tr><td>監査</td><td><code>/api/audit_logs</code></td><td><span class="badge admin">admin</span> 必須（変更・削除禁止）</td></tr>
+        <tr><td>設定</td><td><code>/api/settings/pii-mode</code>, <code>/api/settings/embedding</code></td><td><span class="badge admin">admin</span> 必須</td></tr>
+        <tr><td>ヘルス</td><td><code>/api/health</code></td><td>誰でも</td></tr>
+        <tr><td>MCP</td><td><code>/api/mcp/*</code></td><td>認証済</td></tr>
+      </tbody>
+    </table>
+
+    <h3>RBAC ヘルパー関数</h3>
+    <table>
+      <thead><tr><th>関数</th><th>検査内容</th></tr></thead>
+      <tbody>
+        <tr><td><code>_require_admin(request)</code></td><td><code>role == 'admin'</code> でなければ 403</td></tr>
+        <tr><td><code>_require_authenticated(request)</code></td><td>認証済であれば role 不問</td></tr>
+        <tr><td><code>_require_role(request, allowed)</code></td><td><code>allowed_roles</code> に role が合致するか検査</td></tr>
+        <tr><td><code>_require_admin_or_self(request, user_id)</code></td><td>admin または本人 user_id 一致</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel-section">
+    <h2>MCP ツール一覧（全 11 件）</h2>
+    <p><code>mcp_server.py</code> 行 15-173 の定義から抽出。RAG 検索系・情報取得系・管理系の 3 カテゴリです。</p>
+
+    <h3>RAG 検索系（4）</h3>
+    <table>
+      <thead><tr><th>ツール</th><th>必須引数</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td><code>search_collection</code></td><td>query, workspace_id, collection_id</td><td>単一コレクションの RAG 検索</td></tr>
+        <tr><td><code>search_across_collections</code></td><td>query, workspace_id, collection_ids</td><td>複数コレクション横断検索</td></tr>
+        <tr><td><code>rag_with_role</code></td><td>query, workspace_id, collection_id, style_role</td><td>ロール別回答スタイル切替</td></tr>
+        <tr><td><code>rag_general</code></td><td>query, workspace_id</td><td>RAG なし・LLM 一般知識のみ</td></tr>
+      </tbody>
+    </table>
+
+    <h3>情報取得系（4）</h3>
+    <table>
+      <thead><tr><th>ツール</th><th>必須引数</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td><code>list_workspaces</code></td><td>—</td><td>ワークスペースとコレクション一覧</td></tr>
+        <tr><td><code>get_workspace_info</code></td><td>workspace_id</td><td>ワークスペース詳細</td></tr>
+        <tr><td><code>get_collection_info</code></td><td>workspace_id, collection_id</td><td>コレクション詳細</td></tr>
+        <tr><td><code>get_audit_logs</code></td><td>workspace_id</td><td>監査ログ（limit 既定 10、上限 50）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>管理系（3）</h3>
+    <table>
+      <thead><tr><th>ツール</th><th>必須引数</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td><code>list_sources</code></td><td>workspace_id</td><td>ソース一覧（ファイルパス・状態・件数）</td></tr>
+        <tr><td><code>publish_collection</code></td><td>collection_id</td><td>コレクション公開</td></tr>
+        <tr><td><code>create_workspace</code></td><td>name</td><td>ワークスペース作成</td></tr>
+      </tbody>
+    </table>
+
+    <h3>MCP クライアント設定例</h3>
+    <div class="code-block"><span class="comment"># LM Studio 等の MCP 設定 JSON</span>
+{
+  <span class="val">"mcpServers"</span>: {
+    <span class="val">"cynovela"</span>: {
+      <span class="val">"command"</span>: <span class="val">"/path/to/python"</span>,
+      <span class="val">"args"</span>: [<span class="val">"mcp_server.py"</span>],
+      <span class="val">"env"</span>: {
+        <span class="val">"CYNOVELA_BASE_URL"</span>: <span class="val">"http://127.0.0.1:8765"</span>,
+        <span class="val">"CYNOVELA_TOKEN"</span>: <span class="val">"&lt;認証トークン&gt;"</span>,
+        <span class="val">"CYNOVELA_MCP_PYTHON"</span>: <span class="val">"~/miniforge3/envs/cynovela/bin/python"</span>
+      }
+    }
+  }
+}</div>
+
+    <div class="warning-box">
+      <strong>Alpha GA 既知制限:</strong> 認証は <code>POST /api/auth/login</code> が発行する JWT のみです（<code>--demo</code> 起動でも同じ）。旧 <code>Bearer demo-token-&lt;user_id&gt;</code> 形式は 2026-07-29 に廃止しました。
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- Tab 4: PII とガバナンス                        -->
+<!-- ============================================== -->
+<div class="tab-panel" id="tab-4">
+
+  <div class="panel-section">
+    <h2>Dual-Tier 保管設計</h2>
+    <p>同じ文書を「raw（生本文・Fernet 暗号化）」と「masked（マスク済）」の 2 系統に分離して保管します。Publish 時に <code>_mtws_publish</code> = <code>guardrail.mask_text_with_spans</code> が両 tier を生成します。</p>
+
+    <svg class="diagram" width="900" height="320" viewBox="0 0 900 320" role="img" aria-label="Dual-Tier 保管設計">
+      <defs>
+        <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
+        </marker>
+      </defs>
+
+      <!-- Source -->
+      <rect x="20"  y="130" width="150" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+      <text x="95"  y="158" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">原文ファイル</text>
+      <text x="95"  y="178" text-anchor="middle" font-size="11" fill="#3a4f68">PDF / Word / Excel</text>
+
+      <line x1="170" y1="160" x2="195" y2="160" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+      <!-- Publish hub -->
+      <rect x="195" y="130" width="170" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+      <text x="280" y="155" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Publish 時処理</text>
+      <text x="280" y="173" text-anchor="middle" font-size="10" fill="#3a4f68">_mtws_publish</text>
+      <text x="280" y="185" text-anchor="middle" font-size="10" fill="#3a4f68">(mask_text_with_spans)</text>
+
+      <line x1="365" y1="150" x2="395" y2="80" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+      <line x1="365" y1="170" x2="395" y2="250" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+      <!-- Raw branch -->
+      <rect x="395" y="40" width="180" height="60" rx="8" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
+      <text x="485" y="65" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">raw（生本文）</text>
+      <text x="485" y="83" text-anchor="middle" font-size="10" fill="#3a4f68">Fernet 暗号化（enc:...）</text>
+      <text x="485" y="95" text-anchor="middle" font-size="10" fill="#3a4f68">tier='raw'</text>
+
+      <line x1="575" y1="70" x2="600" y2="70" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+      <rect x="600" y="20" width="280" height="100" rx="8" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
+      <text x="740" y="45" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">admin ロール</text>
+      <text x="740" y="65" text-anchor="middle" font-size="11" fill="#3a4f68">→ {cid}__raw コレクション参照</text>
+      <text x="740" y="83" text-anchor="middle" font-size="11" fill="#3a4f68">→ SQLite chunks(tier='raw')</text>
+      <text x="740" y="101" text-anchor="middle" font-size="11" fill="#3a4f68">→ _mask_for_viewer は素通し</text>
+
+      <!-- Masked branch -->
+      <rect x="395" y="220" width="180" height="60" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+      <text x="485" y="245" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">masked（伏字済）</text>
+      <text x="485" y="263" text-anchor="middle" font-size="10" fill="#3a4f68">[MASKED:EMAIL] 等のトークン</text>
+      <text x="485" y="275" text-anchor="middle" font-size="10" fill="#3a4f68">tier='masked'</text>
+
+      <line x1="575" y1="250" x2="600" y2="250" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+      <rect x="600" y="200" width="280" height="100" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+      <text x="740" y="225" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">curator / viewer ロール</text>
+      <text x="740" y="245" text-anchor="middle" font-size="11" fill="#3a4f68">→ {cid}__masked コレクション参照</text>
+      <text x="740" y="263" text-anchor="middle" font-size="11" fill="#3a4f68">→ SQLite chunks(tier='masked')</text>
+      <text x="740" y="281" text-anchor="middle" font-size="11" fill="#3a4f68">→ _mask_for_viewer 強制マスク</text>
+    </svg>
+
+    <div class="info-box">
+      <strong>判定ロジック:</strong> <code>tier_for_role(role)</code> が <code>role == 'admin'</code> なら <code>'raw'</code> を、それ以外なら <code>'masked'</code> を返し、対応する保管庫へルーティングします。<code>vault_enc.enc_raw</code> / <code>dec_raw</code> が <code>enc:</code> プレフィックス付きの冪等な窓口を提供します。
+    </div>
+  </div>
+
+  <div class="panel-section">
+    <h2>RBAC ロール別 権限表</h2>
+    <p>DB 制約: <code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code>。計 3 種です。</p>
+    <table>
+      <thead>
+        <tr><th>ロール</th><th>保管庫 tier</th><th>出口マスク</th><th>主な権限</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge admin">admin</span></td>
+          <td><code>raw</code></td>
+          <td>素通し</td>
+          <td>全 API / users / policies / audit_logs / settings / pii-detections</td>
+        </tr>
+        <tr>
+          <td><span class="badge curator">curator</span></td>
+          <td><code>masked</code></td>
+          <td>強制マスク</td>
+          <td>コレクション編集 / ソース追加 / publish</td>
+        </tr>
+        <tr>
+          <td><span class="badge viewer">viewer</span></td>
+          <td><code>masked</code></td>
+          <td>強制マスク</td>
+          <td>RAG 検索 / 閲覧のみ</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel-section">
+    <h2>ガードレール カテゴリとアクション</h2>
+
+    <h3>アクション（4 種）</h3>
+    <p>権威定義: <code>routers/policies.py:201</code> の <code>valid_actions</code>。</p>
+    <table>
+      <thead><tr><th>アクション</th><th>動作</th></tr></thead>
+      <tbody>
+        <tr><td><code>mask</code></td><td>該当箇所をマスクトークンに置換</td></tr>
+        <tr><td><code>exclude_from_rag</code></td><td>RAG 検索対象から除外</td></tr>
+        <tr><td><code>log_only</code></td><td>検出のみ記録（処理は通す）</td></tr>
+        <tr><td><code>allow</code></td><td>許可（明示的にホワイトリスト化）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>分類クラスと seed ポリシー</h3>
+    <p>初期 seed には 3 種類のポリシーが登録されます（<code>db.py</code> L851-870）。</p>
+    <table>
+      <thead><tr><th>policy_id</th><th>名称</th><th>定義（抜粋）</th></tr></thead>
+      <tbody>
+        <tr><td><code>pol-pii</code></td><td>PII 保護ポリシー</td><td>PII → mask, Financial → exclude_from_rag</td></tr>
+        <tr><td><code>pol-strict</code></td><td>厳格管理ポリシー</td><td>PII → mask, Financial → exclude_from_rag, HR → exclude_from_rag</td></tr>
+        <tr><td><code>pol-log</code></td><td>ログのみポリシー</td><td>PII → log_only, Financial → log_only</td></tr>
+      </tbody>
+    </table>
+
+    <h3>PII エンティティ種別（一次・正規表現 8 種）</h3>
+    <p><code>guardrail.py:137-153</code> の定義。</p>
+    <table>
+      <thead><tr><th>entity_type</th><th>マスクトークン</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td><code>URL</code></td><td><code>[MASKED:URL]</code></td><td>https://example.com/private</td></tr>
+        <tr><td><code>EMAIL</code></td><td><code>[MASKED:EMAIL]</code></td><td>sample@example.local</td></tr>
+        <tr><td><code>PHONE_JP</code></td><td><code>[MASKED:PHONE]</code></td><td>090-1234-5678</td></tr>
+        <tr><td><code>PHONE_LAND</code></td><td><code>[MASKED:PHONE]</code></td><td>03-1234-5678</td></tr>
+        <tr><td><code>CREDIT</code></td><td><code>[MASKED:CREDIT]</code></td><td>4111-1111-1111-1111</td></tr>
+        <tr><td><code>MYNUMBER</code></td><td><code>[MASKED:MYNUM]</code></td><td>1234-5678-9012</td></tr>
+        <tr><td><code>PASSPORT</code></td><td><code>[MASKED:PASSPORT]</code></td><td>AB1234567</td></tr>
+        <tr><td><code>IPV4</code></td><td><code>[MASKED:IP]</code></td><td>192.168.1.1</td></tr>
+      </tbody>
+    </table>
+
+    <h3>二次（Presidio + GiNZA NER）対応エンティティ</h3>
+    <p><code>pii_mode</code> が <span class="badge standard">standard</span> または <span class="badge quality">quality</span> のとき、<code>utils/metadata/pii.py</code> が以下も検出します。</p>
+    <table>
+      <thead><tr><th>カテゴリ</th><th>entity_type</th></tr></thead>
+      <tbody>
+        <tr><td>人物</td><td><code>PERSON_JP</code></td></tr>
+        <tr><td>組織</td><td><code>ORG_JP</code></td></tr>
+        <tr><td>地名</td><td><code>LOC_JP</code></td></tr>
+        <tr><td>住所</td><td><code>ADDRESS_JP</code></td></tr>
+        <tr><td>メール</td><td><code>EMAIL_ADDRESS</code></td></tr>
+        <tr><td>電話番号</td><td><code>PHONE_NUMBER</code></td></tr>
+        <tr><td>日時</td><td><code>DATE_TIME</code></td></tr>
+        <tr><td>内部 URL</td><td><code>INTERNAL_URL</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel-section">
+    <h2>プロンプトインジェクション 3 層防御</h2>
+    <p><code>routers/chat.py</code> の 3 層パイプラインで、入力・取得・出力の各段階を検査します。検出時は <code>audit_logs</code> に <code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
+    <table>
+      <thead><tr><th>層</th><th>関数</th><th>動作</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>入力検査</td>
+          <td><code>detect_prompt_injection</code></td>
+          <td>14 種の英日パターンを検出 → HTTP 400 で遮断</td>
+        </tr>
+        <tr>
+          <td>Retrieval 後検査</td>
+          <td><code>filter_poisoned_chunks</code></td>
+          <td>context 構築前に該当チャンクを除外</td>
+        </tr>
+        <tr>
+          <td>出力検査</td>
+          <td><code>detect_output_exfiltration</code></td>
+          <td>LLM 応答中の <code>HACKED</code> / <code>PWNED</code> / <code>SECRET-ALPHA-TOKEN</code> / <code>[SYSTEM OVERRIDE]</code> を検知</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="danger-box">
+      <strong>Alpha GA 既知制限:</strong> 間接プロンプトインジェクション（取り込んだ文書内に仕込まれた指示）の完全検出は Phase 3 で対応予定です。現状は <code>filter_poisoned_chunks</code> のパターンマッチに依存しています。
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer class="cyn-footer">
+  <p><strong>免責</strong></p>
+  <p>Cynovela は AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。商用製品ではなく、参照元のソースコード・公式実装は一切含みません。</p>
+  <p>本デモのコマンド例・設定値はすべて Cynovela 自身の実装に基づくものであり、特定の参照元の公式見解を一切代表しません。</p>
+  <p style="margin-top: 8px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
+</footer>
+
+<script>
+  const MODE_DETAILS = {
+    'full':    'BAAI/bge-m3 + BAAI/bge-reranker-v2-m3 を使用。マルチモーダル対応。Apple Silicon / GPU 推奨。',
+    'text':    'BAAI/bge-m3（約 2.3 GB）を Embedding に使用。GPU 不要・汎用。',
+    'lite':    'paraphrase-multilingual-MiniLM-L12-v2（約 470 MB）。x86 CPU、RAM 8 GB 以上。',
+    'lite-en': 'paraphrase-MiniLM-L3-v2（約 22 MB）で英語特化。低スペック向け。',
+    'minimal': 'TFIDFEmbedding は未配線。実際には BAAI/bge-m3 と PyTorch が要ります。'
+  };
+  const PII_DETAILS = {
+    'lite':     '正規表現のみ。軽量・高速。',
+    'standard': '正規表現 + GiNZA NER（既定）。中庸・推奨。',
+    'quality':  '正規表現 + GiNZA NER + 詳細フィルタリング。高精度・低速。'
+  };
+
+  function showTab(n) {
+    for (let i = 1; i <= 4; i++) {
+      const p = document.getElementById('tab-' + i);
+      if (p) p.classList.toggle('active', i === n);
+    }
+    const btns = document.querySelectorAll('.tab-bar button');
+    btns.forEach((b, i) => b.classList.toggle('active', i === n - 1));
+    window.scrollTo(0, 0);
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function rebuildCmd() {
+    const mode = document.getElementById('opt-mode').value;
+    const pii  = document.getElementById('opt-pii').value;
+    const mock = document.getElementById('opt-mock').value;
+    const demo = document.getElementById('opt-demo').value;
+    const net  = document.getElementById('opt-net').value;
+    const llm  = document.getElementById('opt-llm').value.trim();
+
+    document.getElementById('mode-detail').textContent = MODE_DETAILS[mode] || '';
+    document.getElementById('pii-detail').textContent  = PII_DETAILS[pii]  || '';
+
+    const parts = ['<span class="cmd">python server.py</span>'];
+    parts.push('<span class="flag">--mode</span> <span class="val">' + escapeHtml(mode) + '</span>');
+    if (demo) parts.push('<span class="flag">' + escapeHtml(demo) + '</span>');
+    if (mock) parts.push('<span class="flag">' + escapeHtml(mock) + '</span>');
+    if (net) {
+      net.split(' ').forEach(p => {
+        if (p) parts.push('<span class="flag">' + escapeHtml(p) + '</span>');
+      });
+    }
+    if (!mock && llm) {
+      parts.push('<span class="flag">--lmstudio-url</span> <span class="val">' + escapeHtml(llm) + '</span>');
+    }
+
+    let cmd = parts.join(' ');
+    cmd += '\n\n<span class="comment"># cynovela.yaml で設定（CLI 引数では指定不可）</span>';
+    cmd += '\n<span class="comment"># pii_mode: ' + escapeHtml(pii) + '</span>';
+    document.getElementById('generated-cmd').innerHTML = cmd;
+  }
+  rebuildCmd();
+</script>
+
+</body>
+</html>

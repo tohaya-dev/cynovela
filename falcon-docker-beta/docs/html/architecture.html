@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>architecture — Cynovela</title>
+  <style>
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px;
+}
+.slide.active { display: flex; }
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+  </style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+
+<div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Cynovela アーキテクチャ</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">このドキュメントについて</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>このドキュメントについて</strong><br>
+      Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
+    </blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">1. コンポーネント全体図</span>
+  </div>
+  <div class="slide-body">
+<pre><code>            +-----------------------------------------------------+
+            |              フロントエンド (frontend/)              |
+            |  Pages / Workspace UI / Chat UI / Dashboard         |
+            +-----------------------------------------------------+
+                                  |  HTTP / SSE (Server-Sent Events)
+                                  v
++-----------------------------------------------------------------------+
+|                       FastAPI アプリ (server.py)                       |
+|  +----------------+   +----------------+   +----------------------+   |
+|  | IP アローリスト |   |  認証ミドル     |   |  RBAC ヘルパー        |   |
+|  | (lan/tailscale)|   |  (Bearer Token)|   |  core/auth.py        |   |
+|  +----------------+   +----------------+   +----------------------+   |
+|  +-----------------------------------------------------------------+  |
+|  |  ルーター層 (routers/) 36 個                                      |  |
+|  |  workspaces / collections / sources / chat / settings / ...     |  |
+|  +-----------------------------------------------------------------+  |
++-----------------------------------------------------------------------+</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">1. コンポーネント全体図</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>|  サービス・ドメイン層                                              |
+|  rag.py            : RAG パイプライン本体                          |
+|  guardrail.py      : PII マスク / ガードレール                     |
+|  chunker.py        : Contextual Chunking                          |
+|  adaptive_rag.py   : 複雑度判定 / Agentic ループ                   |
+|  services/data_sync.py : ハッシュ差分同期                          |
+|  vault_enc.py      : Fernet 暗号化窓口 (enc:)                     |
+
+|  Provider 抽象 (providers/)                                        |
+|  llm_adapter.py  (LMStudioAdapter / MockAdapter)                  |
+|  embedding.py    (BGE-M3 / MiniLM / TF-IDF / MLX 骨格)             |
+|  reranker.py     (NoReranker / CrossEncoder / FlashRank / ...)    |
+|  classifier.py   (RuleBased / API)                                |
+|  vector_store.py (Chroma 実装 / Qdrant 骨格)                       |</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">1. コンポーネント全体図</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>+----------------+         +-------------------+    +-------------------+
+| SQLite DB      |         | ChromaDB          |    | LM Studio (LLM)   |
+| ~/.cynovela/    |         | ~/.cynovela/       |    | (HTTP /v1)        |
+| db/*.db        |         | vector/*/chroma   |    | またはモック       |
+| 38 テーブル     |         | __raw / __masked  |    |                   |
++----------------+         +-------------------+    +-------------------+</code></pre>
+    <p>外部接続は MCP（Model Context Protocol：LLM 向け外部ツール接続規格）サーバー経由でも提供されており、<code>mcp_server.py</code> が JSON-RPC を受けて FastAPI 側のエンドポイントを叩く構成です。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">2. 各レイヤーの役割</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.1 フロントエンド層</h3>
+    <p><code>frontend/index.html</code> を起点とする静的 UI です。ワークスペース一覧・Collection 詳細・Chat・Dashboard などの画面を持ち、FastAPI が同一オリジンで配信します。一部の領域は JavaScript の初期化が終わるまで <code>display:none</code> で隠され、初期化後にロールや設定に応じて表示が切り替わります。</p>
+    <h3>2.2 ミドルウェア層（IP アローリスト・認証）</h3>
+    <ul>
+      <li><strong>IP アローリスト</strong>: 既定では <code>127.0.0.1</code> と <code>localhost</code> のみ許可。<code>--lan</code> で <code>0.0.0.0</code> バインド、<code>--allow-tailscale</code> で Tailscale ネットワーク、<code>--allow-subnet</code> で任意の CIDR を追加。許可外 IP には HTTP 403 を返します。</li>
+      <li><strong>認証</strong>: <code>Authorization: Bearer &lt;token&gt;</code> 形式で受け取り、<code>core/auth.py</code> の <code>get_user_from_token()</code> でユーザ情報を解決。認証は <code>POST /api/auth/login</code> が発行する JWT のみです（<code>--demo</code> 起動でも同じ）。かつての <code>Bearer demo-token-{user_id}</code> は廃止済みで受理しません。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">2. 各レイヤーの役割</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.3 ルーター層（routers/）</h3>
+    <p>36 個のルーターが API エンドポイントを担います。ロール検査は <code>_require_admin</code> <code>_require_authenticated</code> <code>_require_role</code> <code>_require_admin_or_self</code> の 4 ヘルパーに集約され、合計 242 箇所で利用されています。</p>
+    <h3>2.4 サービス・ドメイン層</h3>
+    <p>RAG パイプライン本体は <code>rag.py</code>（44 関数）に集約され、PII マスキングは <code>guardrail.py</code>、文脈付きチャンキングは <code>chunker.py</code>、複雑度判定と Agentic ループは <code>adaptive_rag.py</code> が担います。Fernet 暗号化は <code>vault_enc.py</code> が薄い窓口を提供し、raw tier の本文だけを暗号化します。</p>
+    <h3>2.5 Provider 抽象（providers/）</h3>
+    <p>LLM・埋め込み・Reranker・分類器・ベクターストアを差し替え可能な抽象として持ちます。実装が完了しているもの（LM Studio / BGE-M3 / Chroma / NoReranker / CrossEncoder / FlashRank / Ollama Reranker / RuleBased Classifier）と、骨格のみで <code>NotImplementedError</code> を返すもの（MLX Embedding / MLX Reranker / Qdrant VectorStore / GraphRAG Strategy）が混在しています。</p>
+    <h3>2.6 ストレージ層</h3>
+    <ul>
+      <li><strong>SQLite</strong>: 既定 <code>~/.cynovela/db/cynovela.db</code>（demo 時は <code>demo.db</code>）。<code>CYNOVELA_DB</code> で上書き可。</li>
+      <li><strong>ChromaDB</strong>: 既定 <code>~/.cynovela/vector/default/chroma</code>。<code>CYNOVELA_CHROMA</code> で上書き可。Collection ごとに <code>{cid}__raw</code> / <code>{cid}__masked</code> の 2 つ。</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">3. RAG パイプラインのフロー</span>
+  </div>
+  <div class="slide-body">
+    <p>ユーザのクエリは <code>routers/chat.py</code> を入口とし、最終的に <code>rag.py</code> の <code>rag_retrieve()</code>（非同期）を経由して LLM 応答に至ります。</p>
+<pre><code>ユーザ クエリ
+   |
+   v
+[1] 入力検査 (detect_prompt_injection)
+   |  --- 注入パターン検出 → 400 + audit_logs(PROMPT_INJECTION_BLOCKED)
+   v
+[2] クエリ展開 (任意)
+   |  Multi-Query RAG : LLM で N-1 個の言い換えを生成
+   |  HyDE           : 仮想回答を生成してその埋め込みで検索
+   v
+[3] ベクター検索 (Chroma / BGE-M3)
+   |  fetch_k 件取得 → MMR(Maximal Marginal Relevance) で多様性を確保
+   |  ACL: allowed_roles と user_role を照合
+   v
+[4] BM25 検索 (メモリ内インデックス)
+   |  形態素解析 (fugashi/MeCab) で日本語トークン化
+   |  ACL チェック</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">3. RAG パイプラインのフロー</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>[5] ハイブリッド統合
+   |  RRF (Reciprocal Rank Fusion, k=60) または weighted (v0.7 + bm0.3)
+   v
+[6] Parent-Child 解決
+   |  child hit → parent_chunks の長文に差し替え
+   v
+[7] Reranker (任意)
+   |  CrossEncoder / FlashRank / Ollama Reranker などで rerank_score 付与
+   v
+[8] 取得結果検査 (filter_poisoned_chunks)
+   |  注入パターンを含む chunk を context 構築前に除外
+   v
+[9] LLM 呼び出し (call_llm)
+   |  CRAG : 検索結果が質問に十分か LLM が評価
+   |  Adaptive: 複雑度スコア >= 2.0 で Agentic ループ (最大 3 反復)
+   v
+[10] 出力検査 (detect_output_exfiltration)
+   |  HACKED / PWNED / SECRET-ALPHA-TOKEN / [SYSTEM OVERRIDE] を検査
+   v
+[11] 出口マスク (_mask_for_viewer)
+   |  tier_for_role(role) == 'raw'(admin) は素通し、それ以外は再マスク
+   v
+LLM 回答 + Citation([1][2]...)</code></pre>
+    <p>各段の計測値（<code>vector_elapsed</code> <code>llm_elapsed</code> <code>total_elapsed</code> <code>rerank_latency_ms</code> <code>rerank_scores</code> <code>bm25_scores</code>）は <code>RetrievalResult</code> データクラスに保持されます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">4. Workspace 分離の仕組み</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela は<strong>「Workspace（ユーザとガードレールポリシーをまとめる単位）」</strong>と<strong>「Collection（実際のファイル群と検索戦略を持つ単位）」</strong>の 2 層で分離します。</p>
+    <h3>4.1 テーブル構造</h3>
+<pre><code>workspaces  ──┬── workspace_users    (user の所属)
+              ├── workspace_policies (ガードレールポリシー紐付け)
+              └── workspace_sources  (Source の紐付け)
+                       |
+                       v
+                  collections (workspace_id を FK で持つ、ON DELETE CASCADE)
+                       |
+                       └── collection_files (file_id 紐付け)
+                       └── collection_locks (publish 中のロック)</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">4. Workspace 分離（状態遷移）</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.2 Collection の状態遷移</h3>
+<pre><code>draft ──&gt; ingested ──&gt; ready
+  │           │
+  │           └──&gt; publishing ──&gt; ready
+  │                       └────&gt; failed ──&gt; draft
+  │                       └────&gt; stopped
+  ready ──&gt; draft (再公開のため)</code></pre>
+    <h3>4.3 ChromaDB 上の分離</h3>
+    <p>Collection ID ごとに <code>{cid}__raw</code> と <code>{cid}__masked</code> の 2 つの Chroma コレクションが作られ、ロール別に引き先を変えます。<code>tier_for_role(role)</code> が admin に対しては <code>raw</code>、それ以外には <code>masked</code> を返すため、viewer（curator 等は viewer に正規化）は構造的に生本文に届きません。SQLite の <code>chunks</code> テーブルにも <code>tier='raw'</code> と <code>tier='masked'</code> の 2 行を保持します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">4. Workspace 分離（続き）</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.4 Workspace 単位の追加分離</h3>
+    <p>BM25 インデックスは <code>(workspace_id, tier)</code> をキーとした辞書で持つため、ワークスペースをまたぐ検索が起こらないようキー設計でも分離されています（<code>rag.py:101-107</code>）。</p>
+    <blockquote>補足: ChromaDB レベルでの物理境界は将来フェーズで検討対象。現状は collection_id 単位での分離が前提です。</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">5. 起動モード（mode）</span>
+  </div>
+  <div class="slide-body">
+    <p><code>--mode</code> フラグで読み込むモデルと Provider が切り替わります。</p>
+    <table>
+      <thead>
+        <tr><th>mode</th><th>主用途</th><th>Embedding</th><th>Reranker</th><th>想定環境</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>text</code>（既定）</td><td>テキスト RAG 全機能</td><td>BAAI/bge-m3</td><td>yaml で選択可</td><td>GPU 不要・汎用</td></tr>
+        <tr><td><code>lite</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td><code>lite-en</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p>以前は <code>--mock</code> フラグが最優先で適用され、<code>Embedding</code> を <code>TFIDFEmbedding</code>、<code>Reranker</code> を <code>NoReranker</code> に固定していました。この指定は撤去済みで、いま指定するとエラーで止まります。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">5.1 起動フロー</span>
+  </div>
+  <div class="slide-body">
+<pre><code>main() 呼び出し
+   ↓
+argparse で CLI 引数パース
+   ↓
+_preflight_model_check()
+  ├─ 必要モデルが ~/.cynovela/models/ に存在するか確認
+  └─ 不足時はユーザに DL / 代替モード / キャンセルを提示
+       （CYNOVELA_NONINTERACTIVE=1 なら即 exit）
+   ↓
+get_llm_adapter()  : cynovela.yaml の llm 設定に従う
+   ↓
+load_yaml_config() : cynovela.yaml を読み、CYNOVELA_* で上書き
+   ↓
+_wire_providers_for_mode()
+  ├─ Reranker (yaml.reranker.provider)
+  ├─ 例外 → NoReranker フォールバック
+   ↓
+set_pii_detection_mode(lite / standard / quality)
+   ↓
+init_db(demo=args.demo)
+   ↓
+uvicorn.run() で FastAPI 起動</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">5.2 設定上書き・features フラグ</span>
+  </div>
+  <div class="slide-body">
+    <h3>5.2 設定上書きの優先順</h3>
+    <ol>
+      <li>CLI 引数（<code>--port</code> <code>--host</code> <code>--lan</code> など）が最優先</li>
+      <li>環境変数 <code>CYNOVELA_*</code>（<code>config.py</code> の <code>_ENV_OVERRIDES</code> で yaml に上書き）</li>
+      <li><code>cynovela.yaml</code></li>
+      <li>ハードコードされた既定値</li>
+    </ol>
+    <h3>5.3 features フラグ</h3>
+    <p><code>cynovela.yaml</code> の <code>features</code> セクションで <code>metadata_engine</code> <code>data_guardrails</code> <code>data_sync</code> <code>audit_log</code> <code>pipeline_visualization</code> <code>session_history</code> <code>feedback</code> を個別に on/off できます。ACL フィルターは常時有効です。</p>
+    <blockquote>最終更新: 2026-05-26 / Alpha GA 対応版</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+</div>
+<nav class="nav-bar">
+  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+  <span id="slide-counter">1 / 15</span>
+  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pii-masking — Cynovela</title>
+  <style>
+/* Cynovela Slide Base CSS — generated 2026-05-26 */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px;
+}
+.slide.active { display: flex; }
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+  </style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+
+<div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Cynovela PII マスキング</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">このドキュメントについて</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>このドキュメントについて</strong><br>
+      Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
+    </blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">1. 設計思想：マスク済みのみ ChromaDB へ</span>
+  </div>
+  <div class="slide-body">
+    <p>PII（Personally Identifiable Information：個人情報・社外秘情報）対策の基本方針は、<strong>「検索対象として広く露出するベクター DB（ChromaDB）には、原則としてマスク済みの本文だけを入れる」</strong>というものです。生本文（raw）は別系統で暗号化保管し、管理者ロールに限って引き出せるようにします。</p>
+    <p>この設計により、次のような状況でも漏えい経路を絞れます。</p>
+    <ul>
+      <li>検索ヒットして LLM プロンプトに混入する経路 → マスク済み本文のみが渡る</li>
+      <li>ChromaDB のデータをそのままダンプ・コピーされる経路 → マスク済みのみ</li>
+      <li>DB ファイルを物理的に持ち去られる経路 → raw 側は Fernet で暗号化済み</li>
+    </ul>
+    <p>これを実現するため、Cynovela は<strong>取込時マスキング（Tier1）</strong>と<strong>回答時マスキング（Tier2）</strong>の二重防御を採用しています。</p>
+    <p><strong>廃止（2026-07-24）</strong>: かつての例外「伏字なし取り込み（<code>collections.raw_only</code>）」は廃止されました。取り込みは常に伏字を経由し、ベクターは伏字済みの一組のみです。過去データの列は保全のため残っています（詳細は metadata-engine §6）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">2. Tier1：取込時マスキング</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.1 役割</h3>
+    <p>Publish（コレクションを ChromaDB に流し込む処理）の途中で、各 chunk について<strong>「生本文（raw）」と「マスク済み本文（masked）」の dual-row</strong> を生成します。両方が SQLite の <code>chunks</code> テーブルと ChromaDB の両 collection に保存されます。</p>
+    <h3>2.2 実装抜粋（rag.py:984-1075）</h3>
+<pre><code>pii_flag = 1 if pii_pat.search(chunk or "") else 0
+# §段1b: マスク済本文を生成 (context prefix 付き全文を対象)
+try:
+    _masked_chunk, _mask_spans = _mtws_publish(chunk or "")
+except Exception as _me:
+    _log.warning(f"§段1b mask 失敗 doc_id={doc_id}: {_me}")
+    _masked_chunk, _mask_spans = (chunk or ""), []
+_masked_doc_id = f"{doc_id}__masked"
+_meta_raw["tier"] = "raw"
+_meta_masked["tier"] = "masked"
+all_docs_masked.append(_masked_chunk or "")</code></pre>
+    <p><code>_mtws_publish</code> は <code>guardrail.mask_text_with_spans</code> のエイリアスで、正規表現ベースのマスクを各 chunk に適用します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">2. Tier1：保管先と失敗時挙動</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.3 保管先</h3>
+    <table>
+      <thead><tr><th>保管先</th><th>raw tier</th><th>masked tier</th></tr></thead>
+      <tbody>
+        <tr><td>SQLite <code>chunks</code></td><td><code>doc_id</code> 行（<code>tier='raw'</code>）</td><td><code>doc_id + '__masked'</code> 行（<code>tier='masked'</code>）</td></tr>
+        <tr><td>ChromaDB</td><td><code>{collection_id}__raw</code></td><td><code>{collection_id}__masked</code></td></tr>
+        <tr><td>暗号化</td><td>Fernet（<code>enc:</code> プレフィックス）</td><td>暗号化なし（検索性能確保）</td></tr>
+      </tbody>
+    </table>
+    <h3>2.4 失敗時の挙動</h3>
+    <p>マスク処理に例外が出ても Publish は止めず、<code>_log.warning</code> でログに出してから raw 本文のまま masked 側にも保存します。これは「取込が止まると業務が止まる」リスクを避けるための設計です。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">3. Tier2：回答時マスキング</span>
+  </div>
+  <div class="slide-body">
+    <h3>3.1 役割</h3>
+    <p>LLM が生成した回答テキストに対して、利用者のロールに応じてさらに<strong>出口マスク</strong>を適用します。これにより、何らかの理由で raw 本文が context に混入してしまっても、admin 以外の利用者には届かないようにします。</p>
+    <h3>3.2 実装（routers/chat.py:128-162）</h3>
+<pre><code>def _mask_for_viewer(text: str, user: dict | None) -&gt; str:
+    """M1: 利用者の保管庫 tier (raw/masked) に応じて
+    LLM 生成出力に出口マスクを適用する。"""
+    if not text or not user:
+        return text
+    try:
+        from rag import tier_for_role
+        if tier_for_role(user.get("role") or "") == "raw":
+            return text
+    except Exception:
+        pass
+    try:
+        from guardrail import mask_text_with_spans
+        masked, _spans = mask_text_with_spans(text)
+        return masked
+    except Exception:
+        return text</code></pre>
+    <p><code>_mask_for_viewer</code> は chat 経路 4 箇所（通常応答 / Compare A / Compare B / SSE 経路）で呼ばれます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">3.3 ロール別の振り分け</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>def tier_for_role(role: str) -&gt; str:
+    """§段2: ロールに応じて保管庫の tier を決める。
+    admin → 'raw'   (生本文を保管する管理者保管庫を引く)
+    その他 → 'masked' (マスク済本文の一般保管庫を引く)
+    """
+    return "raw" if (role or "").strip() == "admin" else "masked"</code></pre>
+    <p><code>tier_for_role</code> は、<strong>ChromaDB の引き先</strong>（<code>{cid}__raw</code> か <code>{cid}__masked</code> か）と、<strong>出口マスクを通すか素通しするか</strong>、の両方を決めるため、二重防御として機能します。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">4. Fernet 暗号化</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.1 役割</h3>
+    <p>raw tier の本文を SQLite と ChromaDB に保存する直前に Fernet（対称鍵暗号方式の一つで、認証付きの AES-128-CBC + HMAC）で暗号化し、<code>enc:</code> というプレフィックス付きで保存します。冪等な実装（既に <code>enc:</code> で始まる文字列は再暗号化しない）になっており、二重暗号化を避けます。</p>
+    <h3>4.2 実装</h3>
+    <ul>
+      <li><strong>鍵管理</strong>: <code>config.py:62</code> で <code>Fernet(_KEY)</code> を初期化。<code>CYNOVELA_SECRET_KEY</code> 環境変数で鍵を渡します。本番運用では明示的にこの環境変数を設定することが推奨されています。</li>
+      <li><strong>窓口</strong>: <code>vault_enc.py</code> の <code>enc_raw(text)</code> / <code>dec_raw(text)</code> が薄いラッパーを提供します。</li>
+    </ul>
+<pre><code>ENC_PREFIX = "enc:"
+
+def enc_raw(text: str | None) -&gt; str:
+    """raw 本文を暗号化形式に揃える (冪等)。"""
+
+def dec_raw(text: str | None) -&gt; str:
+    """暗号化形式なら復号、それ以外 (masked / 旧平文) はそのまま素通し。"""</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">4. Fernet 適用箇所と移行</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.3 適用箇所</h3>
+    <table>
+      <thead><tr><th>経路</th><th>適用箇所</th><th>対象</th></tr></thead>
+      <tbody>
+        <tr><td>Chroma 投入時</td><td><code>rag.py:1285</code></td><td>raw tier の <code>documents</code> 配列に <code>enc_raw</code> を一括適用</td></tr>
+        <tr><td>SQLite chunks 保存時</td><td><code>rag.py:1393</code></td><td>raw tier 行の <code>content</code> を <code>enc_raw</code></td></tr>
+        <tr><td>SQLite parent_chunks 保存時</td><td><code>rag.py:1131</code></td><td>parent の raw tier に <code>enc_raw</code></td></tr>
+      </tbody>
+    </table>
+    <p>masked tier は暗号化しません。検索パフォーマンス（埋め込み計算や全文検索）を確保するためです。raw tier は ChromaDB の <code>documents</code> に暗号化済みのバイト列として入るため、引き出し時に <code>dec_raw</code> で復号する必要があります。</p>
+    <h3>4.4 既存データの移行</h3>
+    <p><code>tools/vault_enc_migrate.py</code> が既存の SQLite / ChromaDB データを一括で <code>enc:</code> 形式に揃えるツールとして用意されています。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">5. ロール別の見え方</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>ロール</th><th>引き先保管庫</th><th>出口マスク</th><th>結果として見えるもの</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>raw tier（復号した生本文）</td><td>素通し</td><td>生本文</td></tr>
+        <tr><td><code>curator</code></td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
+        <tr><td><code>viewer</code></td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
+        <tr><td>未認証・未設定</td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
+      </tbody>
+    </table>
+    <p>これにより、設定ミスでロールが空になっていても、<strong>構造的に raw 本文には届きません</strong>。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">6. PII カテゴリ全件（一次系）</span>
+  </div>
+  <div class="slide-body">
+    <h3>6.1 一次系：guardrail.py（正規表現ベース）</h3>
+    <p><code>guardrail.py:137-153</code> で 8 種類を定義しています。</p>
+    <table>
+      <thead><tr><th>entity_type</th><th>検出対象</th><th>マスク後トークン</th></tr></thead>
+      <tbody>
+        <tr><td><code>URL</code></td><td><code>https?://...</code></td><td><code>[MASKED:URL]</code></td></tr>
+        <tr><td><code>EMAIL</code></td><td>メールアドレス</td><td><code>[MASKED:EMAIL]</code></td></tr>
+        <tr><td><code>PHONE_JP</code></td><td>携帯番号（070/080/090）</td><td><code>[MASKED:PHONE]</code></td></tr>
+        <tr><td><code>PHONE_LAND</code></td><td>固定電話番号</td><td><code>[MASKED:PHONE]</code></td></tr>
+        <tr><td><code>CREDIT</code></td><td>クレジットカード番号（4-4-4-4）</td><td><code>[MASKED:CREDIT]</code></td></tr>
+        <tr><td><code>MYNUMBER</code></td><td>マイナンバー（12 桁）</td><td><code>[MASKED:MYNUM]</code></td></tr>
+        <tr><td><code>PASSPORT</code></td><td>パスポート番号（英 2 + 数字 7）</td><td><code>[MASKED:PASSPORT]</code></td></tr>
+        <tr><td><code>IPV4</code></td><td>IPv4 アドレス</td><td><code>[MASKED:IP]</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">6. PII カテゴリ全件（二次系）</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>6.2 二次系：utils/metadata/pii.py（presidio + GiNZA）</h3>
+    <p>presidio が利用可能なら presidio を使い、ダメなら正規表現フォールバック。日本語 NER は GiNZA で固有表現抽出を行います。</p>
+    <table>
+      <thead><tr><th>entity_type</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td><code>EMAIL</code></td><td>メールアドレス（正規表現）</td></tr>
+        <tr><td><code>PHONE_JP</code> / <code>PHONE_INTL</code></td><td>日本／国際電話番号</td></tr>
+        <tr><td><code>IP_ADDRESS</code></td><td>IP アドレス</td></tr>
+        <tr><td><code>MY_NUMBER</code></td><td>マイナンバー</td></tr>
+        <tr><td><code>CREDIT_CARD</code></td><td>クレジットカード番号</td></tr>
+        <tr><td><code>INTERNAL_URL</code></td><td>内部 URL</td></tr>
+        <tr><td><code>EMAIL_ADDRESS</code> / <code>PHONE_NUMBER</code> / <code>DATE_TIME</code></td><td>presidio が検出</td></tr>
+        <tr><td><code>PERSON_JP</code> / <code>ORG_JP</code> / <code>LOC_JP</code></td><td>GiNZA が検出する人名・組織・地名</td></tr>
+        <tr><td><code>ADDRESS_JP</code></td><td>日本語住所ルール</td></tr>
+      </tbody>
+    </table>
+    <p><code>HIGH_RISK_TYPES</code> として <code>{CREDIT_CARD, MY_NUMBER, SSN, PASSPORT, IBAN_CODE}</code> が定義されており、感度スコア（0〜100）の計算で重く扱われます。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">6.3 ポリシーマトリクス対象</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <p><code>routers/policies.py:159</code> で、Workspace ポリシーから選択可能な PII タイプは次の 6 種に絞られています。</p>
+<pre><code>pii_types = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "IPV4"]</code></pre>
+    <p>URL と PASSPORT は検出はされますがポリシー UI からの選択肢には入っていません。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">7. pii_mode の違い</span>
+  </div>
+  <div class="slide-body">
+    <h3>7.1 設定方法</h3>
+    <p><code>cynovela.yaml</code> の <code>pii_mode</code> キーで設定します。CLI 引数（旧 <code>--pii-mode</code>）は廃止されました。実行時に変更したい場合は <code>/api/settings/pii-mode</code>（PUT）で切り替えられます（admin 限定）。</p>
+    <h3>7.2 3 モードの動作</h3>
+    <table>
+      <thead><tr><th>値</th><th>検出方式</th><th>速度</th><th>精度</th><th>主用途</th></tr></thead>
+      <tbody>
+        <tr><td><code>lite</code></td><td>正規表現のみ</td><td>高速</td><td>低〜中</td><td>大量取込・軽量環境</td></tr>
+        <tr><td><code>standard</code>（既定）</td><td>正規表現 + GiNZA NER</td><td>中庸</td><td>中〜高</td><td>既定値・推奨</td></tr>
+        <tr><td><code>quality</code></td><td>正規表現 + GiNZA NER + 詳細フィルタリング</td><td>低速</td><td>高</td><td>研究開発・機微情報の精査</td></tr>
+      </tbody>
+    </table>
+    <p>無効な値が与えられた場合は <code>standard</code> にリセットされます（<code>server.py:3135-3137</code>）。</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">pii-masking</span>
+    <span class="slide-title">7.3 検出件数の集計 / 8. 旧実装移行</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>7.3 検出件数の集計</h3>
+    <p>PII 検出は次の 2 系統で集計されます。</p>
+    <ul>
+      <li><strong><code>/api/guardrails/pii-detections</code>（GET）</strong>: <code>audit_logs</code> テーブルから集計（admin 限定）</li>
+      <li><strong><code>/api/pii-detections</code>（GET）</strong>: <code>chunks</code> テーブルからドキュメント単位で集計（P4-14、admin 限定）</li>
+    </ul>
+    <p>両方とも admin ロール必須で、<code>_require_admin(request)</code> がエンドポイント先頭で呼ばれます。</p>
+    <h3>8. 旧実装からの移行</h3>
+    <p>旧 <code>utils/pii_detector.py</code> は削除され、実装は <code>utils/metadata/pii.py</code> に集約されました（Stage R6-fix / Phase 3-fix 経由）。新実装の <code>llm_judge_pi(text)</code> は LLM judge ベースで追加判定を行う関数で、Stage R7 C-5 で導入されました。</p>
+    <blockquote>最終更新: 2026-05-26 / Alpha GA 対応版</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>非公式・個人学習目的 / Alpha GA</span>
+  </div>
+</div>
+
+</div>
+<nav class="nav-bar">
+  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+  <span id="slide-counter">1 / 15</span>
+  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

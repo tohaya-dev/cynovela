@@ -82,6 +82,8 @@
 ./launch.sh --ingest ~/Documents/契約 --ingest /path/to/資料
 
 # 起動せずに追加だけ行う（反映には起動し直しが必要）
+# ※ 追加・一覧・外すは 3.12 系の python を使います（はじめてなら先に一度
+#    Cynovela-start.command を押すと、配布物の中に用意されます）
 ./launch.sh --add-path /path/to/新しい取り込み元
 
 # フォルダ選択画面から追加（macOS。Cynovela-add-folder.command のダブルクリックでも同じ）

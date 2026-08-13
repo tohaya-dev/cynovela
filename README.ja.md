@@ -1,5 +1,7 @@
 **English → [README.md](README.md)**
 # Cynovela
+
+本命は Podman で動くコンテナ版（falcon）です。`falcon-docker-beta` は Docker 対応の開発中の別枝です。
 企業の AI データパイプラインの「縮小図」です。資料を取り込み、個人情報を伏せ、
 公開し、出典つきの答えを返す。そして役割ごとに見えるものを分ける。ここまでを
 手元の Mac だけで動かします。

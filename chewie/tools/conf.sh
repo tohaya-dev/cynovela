@@ -65,3 +65,20 @@ conf_set() {  # conf_set <上の名前> <下の名前> <値>   その行だけ�
     ' "$CONF_FILE" > "$tmp" || { rm -f "$tmp"; return 1; }
     mv "$tmp" "$CONF_FILE"
 }
+
+conf_pick_py() {  # DD-CYN-0107 F-c: $1=木の根 → 動作要件 (3.12 系) を満たす python の絶対パスを出す
+    # この形態の自前環境 (.venv-cynovela) を最優先で使う。無ければ名前で探す。
+    # 素の python3 (版の検査なし) へは倒れない。見つからなければ 1 を返し、呼ぶ側が案内を出す。
+    local _root="$1" _c
+    if [ -x "$_root/.venv-cynovela/bin/python3" ]; then
+        printf '%s\n' "$_root/.venv-cynovela/bin/python3"
+        return 0
+    fi
+    for _c in python3.12 python3.13; do
+        if command -v "$_c" >/dev/null 2>&1; then
+            command -v "$_c"
+            return 0
+        fi
+    done
+    return 1
+}
