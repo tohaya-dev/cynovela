@@ -3,7 +3,7 @@
 > 手元の Mac だけで動かしてみるための道具です。日本語の文書を想定して作っています。
 > 売り物ではなく、学びと試しのためのものです。
 
-本命は Podman で動くコンテナ版（falcon）です。`falcon-docker-beta` は Docker 対応の開発中の別枝です。 / The Podman-based falcon is the primary form; `falcon-docker-beta` is a separate, in-development branch for Docker.
+本命は Podman で動くコンテナ版（falcon）です。`falcon-docker-beta` は Docker 対応の開発中のベータです（`falcon` とはファイルを共有しない、独立したフォルダです）。 / The Podman-based falcon is the primary form; `falcon-docker-beta` is a separate, in-development beta for Docker that shares no files with `falcon`.
 ---
 # Cynovela
 A small-scale model of an enterprise AI data pipeline: ingest documents, mask
@@ -16,12 +16,13 @@ for Japanese text.
 The name is a coined word, from *cynosure* (a guiding star) and *Vela* (the
 constellation of the Sail).
 <!-- screenshot: place one image here once it has been captured and checked -->
-## The two forms in this repository
+## The three forms in this repository
 | Directory | What it is |
 |---|---|
-| `falcon` | Runs inside a container. |
+| `falcon` | Runs inside a container (Podman). |
 | `chewie` | Runs directly on macOS. |
-You only need one of them. They are two ways of running the same thing.
+| `falcon-docker-beta` | Runs inside a container (Docker; in-development beta, no bundled models). |
+You only need one of them. They are three ways of running the same thing.
 ## Requirements
 - macOS on Apple silicon.
 - `falcon`: Podman is the supported path.
@@ -38,6 +39,7 @@ You only need one of them. They are two ways of running the same thing.
 | falcon, lightweight | container | no | single file |
 | chewie, all-in-one | directly on macOS | yes | **split into parts — needs assembling** |
 | chewie, lightweight | directly on macOS | no | single file |
+| falcon, docker-beta | container (Docker, in development) | no | single file |
 Pick **lightweight** if you already have the embedding model locally, or if you
 are happy to fetch it on first start.
 Pick **all-in-one** if you want everything in the download and no fetching.
@@ -46,6 +48,8 @@ Each release ships a `HOW-TO-ASSEMBLE.md` and a `SHA256SUMS` next to the parts.
 Download every part, follow that file to join them, and check the result against
 `SHA256SUMS` before starting. If no release is listed yet, the packages are not
 published at this point.
+The docker-beta package is a single file named
+`cynovela-falcon-docker-beta-1.0.0-docker-beta.tar.gz`.
 ## Running it
 1. Download and, for an all-in-one package, assemble it.
 2. Start it with the launcher included in the package.

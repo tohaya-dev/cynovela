@@ -509,16 +509,16 @@ a:hover { text-decoration: underline; }
 <div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">このツールにできないこと</span>
-    <span class="slide-title">9. Kubernetes / 起動の形態とデータの置き場</span>
+    <span class="slide-title">9. Kubernetes / 起動の形態とデータの場所</span>
   </div>
   <div class="slide-body">
     <h3>9. Kubernetes 一式は、そのままでは動かない</h3>
     <ul>
-      <li><strong>コンテナ版の配布物には <code>deploy/k8s/20-deployment.yaml</code> が入っていません。</strong> 配布物を作る <code>tools/build-dist.sh</code> が、梱包の直前にこのファイルを落としています。残りの 3 つ（namespace / pvc / service）だけでは、アプリのコンテナが 1 つも立ちません。</li>
+      <li><strong>コンテナ版の配布物には <code>deploy/k8s/20-deployment.yaml</code> が入っていません。</strong> 配布物を作る <code>tools/build-dist.sh</code> が、<code>tar</code> を作る直前にこのファイルを落としています。残りの 3 つ（namespace / pvc / service）だけでは、アプリのコンテナが 1 つも立ちません。</li>
       <li><strong>ホスト直起動版には <code>deploy/</code> そのものがありません。</strong></li>
     </ul>
     <p>Kubernetes で動かしたい場合は、Deployment の定義を自分で書く必要があります。</p>
-    <h3>10.1 起動の形態とデータの置き場</h3>
+    <h3>10.1 起動の形態とデータの場所</h3>
     <ul>
       <li><code>--demo</code> を付けると、同梱のダミー資料が載ったデモのデータベースで起動します（<code>store/db/demo.db</code> と <code>store/vector/demo/chroma</code>）。</li>
       <li>何も付けなければ本番で、<strong>空のデータベース</strong>で起動します（<code>store/db/cynovela.db</code> と <code>store/vector/default/chroma</code>）。</li>
@@ -582,7 +582,7 @@ a:hover { text-decoration: underline; }
     <p>通行証は <code>POST /api/auth/login</code> が発行する JWT です。署名鍵は<strong>配布物には入っていません</strong>。受け取った側で初回起動時に暗号乱数から自動生成し、<code>store/db/jwt/secret.key</code> に保存します（<code>config.py</code> の <code>_load_or_create_jwt_signing_key</code>）。配布物を作るときに、この鍵は必ず落とします（共有すると、よそで発行された通行証が通ってしまうためです）。鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります（再起動すると発行済みの通行証は無効になり、再ログインで通ります）。</p>
     <h3>落とし穴</h3>
     <ul>
-      <li>ChromaDB の <code>PersistentClient</code> は、間違ったパスを渡してもエラーになりません。空のデータベースを黙って作ります。<strong>検索が 0 件になったときは、まず索引の置き場が合っているかを疑ってください。</strong></li>
+      <li>ChromaDB の <code>PersistentClient</code> は、間違ったパスを渡してもエラーになりません。空のデータベースを黙って作ります。<strong>検索が 0 件になったときは、まず索引の場所が合っているかを疑ってください。</strong></li>
       <li>LM Studio の API に <code>max_tokens</code> を渡さないでください。思考する型のモデルで、考えるためのトークンを使い切ってしまいます。</li>
     </ul>
     <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">最終更新: 2026-07-31 / 版 1.0.0-alpha</p>

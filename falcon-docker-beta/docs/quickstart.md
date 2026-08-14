@@ -152,7 +152,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 
 ## 9. 動作確認（テスト）
 
-> **配布物には `tests/` は入っていません**（梱包時に外されます）。受け取った配布物では `pytest` / `make test` は実行できません。
+> **配布物には `tests/` は入っていません**（配布物を作るときに外されます）。受け取った配布物では `pytest` / `make test` は実行できません。
 > 動作を確かめるには `conda run -n cynovela python scripts/test_comprehensive_e2e.py` を使ってください。
 
 ```bash
