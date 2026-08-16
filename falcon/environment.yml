@@ -4,6 +4,11 @@
 # 文書抽出系 (pdfplumber / pypdfium2) と推移依存 (numba/llvmlite/tiktoken 等) は
 # requirements.txt 側でのみ宣言し、本 environment.yml の凍結 pin には含めない (numpy 等との解決衝突回避)。
 # 別Macでは launch.sh が両段を自動実行するため「ディレクトリ複製 + conda」で自己完結する。
+#
+# DD-CYN-0117 R-3 20260816: 両方に載っている部品の版は、必ず requirements.txt (正本) と
+#   一致させること。ここが食い違うと、(1) だけで環境を作った受け取り手が
+#   ./launch.sh --check のたびに「版が違う部品」を並べて見ることになる (M5 実測で 19 件)。
+#   突き合わせは tools/check-manifests.py が機械で行う。部品の版を触ったら必ず走らせる。
 name: cynovela
 channels:
   - conda-forge
@@ -32,16 +37,16 @@ dependencies:
       - annotated-doc==0.0.4
       - annotated-types==0.7.0
       - anyio==4.13.0
-      - apscheduler==3.11.2
+      - apscheduler==3.11.3
       - attrs==26.1.0
       - bcrypt==5.0.0
-      - beautifulsoup4==4.14.3
+      - beautifulsoup4==4.15.0
       - build==1.4.3
       - cbor==1.0.0
       - certifi==2026.2.25
       - cffi==2.0.0
       - charset-normalizer==3.4.7
-      - chromadb==1.5.7
+      - chromadb==1.5.9
       - click==8.3.2
       - cryptography==46.0.7
       - datasets==4.8.4
@@ -49,10 +54,11 @@ dependencies:
       - dill==0.4.1
       - durationpy==0.10
       - et-xmlfile==2.0.0
-      # fixall-B1 20260602: 旧ピン fastapi==0.119.1 は starlette<0.49.0 を要求し、
-      # 下記 starlette==0.49.1 と矛盾して conda env create が ResolutionImpossible で失敗していた。
-      # requirements.txt(fastapi>=0.120.0/starlette>=0.49.0)が解決する実バージョンへ整合。
-      - fastapi==0.136.3
+      # DD-CYN-0117 R-3 20260816: 版は requirements.txt (pip 層の正本) に合わせる。
+      # 旧ピン fastapi==0.136.3 / starlette==0.49.1 は正本の fastapi==0.139.2 /
+      # starlette==1.3.1 に届かず、conda の道で作った環境が必ず「版が違う部品 19 件」を
+      # 出していた (M5 実測)。以後、この2つの部品表は突き合わせで一致させる。
+      - fastapi==0.139.2
       - filelock==3.25.2
       - flagembedding==1.4.0
       - flashrank==0.2.10
@@ -66,11 +72,11 @@ dependencies:
       - h11==0.16.0
       - hf-xet==1.4.3
       - httpcore==1.0.9
-      - httptools==0.7.1
+      - httptools==0.8.0   # DD-CYN-0117 R-3: uvicorn[standard]==0.51.0 が >=0.8.0 を要求。親と一緒に動かす
       - httpx==0.28.1
       - httpx-sse==0.4.3
       - huggingface-hub==1.10.1
-      - idna==3.17   # fixall-C1 20260602: requirements.txt(>=3.16, security) と整合 (旧 3.11 は floor 未満で2段時に矛盾)
+      - idna==3.18   # DD-CYN-0117 R-3: requirements.txt の正本値 (security)
       - ijson==3.5.0
       - importlib-metadata==8.7.1
       - importlib-resources==6.5.2
@@ -87,7 +93,7 @@ dependencies:
       - limits==5.8.0
       - lxml==6.0.4   # fixall-C1 20260602: lxml は FlagEmbedding(必須)→ir-datasets→inscriptis(<6.1.0) に上限拘束される。旧 6.1.0 は inscriptis と矛盾し env create が ResolutionImpossible だった。6.0.x 最新の 6.0.4 へ (既存稼働値)
       # FIX-050: /metrics 配線 (prometheus_fastapi_instrumentator)
-      - prometheus-fastapi-instrumentator>=7.0
+      - prometheus-fastapi-instrumentator==8.0.2
       - prometheus-client>=0.20
       - lz4==4.4.5
       - markdown-it-py==4.0.0
@@ -119,61 +125,61 @@ dependencies:
       - orjson==3.11.8
       - overrides==7.7.0
       - pandas==3.0.2
-      - pdfminer-six==20251230   # fixall-B2 20260602: pdfplumber==0.11.9 が pdfminer.six==20251230 を厳密要求。旧 20260107 は requirements.txt の pdfplumber と非互換で2段時に黙ってdowngradeされていた
+      - pdfminer-six==20260107   # DD-CYN-0117 R-3: requirements.txt の pdfplumber==0.11.10 が pdfminer.six==20260107 を厳密要求。0.11.9 の頃の値 (20251230) が取り残されていた
       - peft==0.19.1
       - pillow==12.2.0
       - playwright==1.58.0
       - pluggy==1.6.0
-      - presidio-analyzer==2.2.362
-      - presidio-anonymizer==2.2.362
-      - spacy==3.8.14
+      - presidio-analyzer==2.2.363
+      - presidio-anonymizer==2.2.363
+      - spacy==3.8.13
       - propcache==0.4.1
       - protobuf==6.33.6
       - psutil==7.2.2
       - pyarrow==24.0.0
       - pybase64==1.4.3
       - pycparser==3.0
-      - pydantic==2.12.5
-      - pydantic-core==2.41.5
+      - pydantic==2.13.4
+      - pydantic-core==2.46.4   # DD-CYN-0117 R-3: pydantic==2.13.4 が厳密要求する連れ。親と一緒に動かす
       - pydantic-settings==2.13.1
       - pyee==13.0.1
       - pygments==2.20.0
-      - pyjwt==2.12.1
-      - pypdf==6.10.2
+      - pyjwt==2.13.0
+      - pypdf==6.14.2
       - pypika==0.51.1
       - pyproject-hooks==1.2.0
       - pytest==9.0.3
       - python-dateutil==2.9.0.post0
       - python-docx==1.2.0
       - python-dotenv==1.2.2
-      - python-multipart==0.0.30   # fixall-C1 20260602: requirements.txt(>=0.0.29, CVE-2024-53981) と整合 (旧 0.0.26 は floor 未満)
+      - python-multipart==0.0.32   # DD-CYN-0117 R-3: requirements.txt の正本値 (CVE-2024-53981)
       - python-pptx==1.0.2
       - pyyaml==6.0.3
       - rank-bm25==0.2.2
       - referencing==0.37.0
       - regex==2026.4.4
-      - requests==2.33.1
+      - requests==2.34.2
       - requests-oauthlib==2.0.0
       - rich==14.3.4
       - rpds-py==0.30.0
       - safetensors==0.7.0
       - scikit-learn==1.8.0
       - scipy==1.17.1
-      - sentence-transformers==5.4.1
+      - sentence-transformers==5.6.0
       - sentencepiece==0.2.1
       - setuptools==81.0.0
       - shellingham==1.5.4
       - six==1.17.0
-      - slowapi==0.1.9
+      - slowapi==0.1.10
       - soupsieve==2.8.3
       - sse-starlette==3.4.1
-      - starlette==0.49.1   # fixall-B1 20260602: fastapi==0.136.3 が許容 / requirements.txt(>=0.49.0)と整合
+      - starlette==1.3.1   # DD-CYN-0117 R-3: requirements.txt の正本値。fastapi==0.139.2 が許容する版
       - sympy==1.14.0
       - tabulate==0.10.0
       - tenacity==9.1.4
       - threadpoolctl==3.6.0
       - tokenizers==0.22.2
-      - torch==2.11.0
+      - torch==2.13.0
       - tqdm==4.67.3
       - transformers==5.6.2
       - trec-car-tools==2.6
@@ -184,7 +190,7 @@ dependencies:
       - unidic-lite==1.0.8
       - unlzw3==0.2.3
       - urllib3==2.7.0
-      - uvicorn==0.44.0
+      - uvicorn==0.51.0
       - uvloop==0.22.1
       - warc3-wet==0.2.5
       - warc3-wet-clueweb09==0.2.5

@@ -61,13 +61,19 @@ MODE_SETUP=0
 # DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"
-# DD-CYN-0107 F-c: 取り込み元の控えは、動作要件 (3.12 系) を満たす python でのみ読み書きする。
-#   素の python3 (版の検査なし) へは倒れない。3.12 系が無いときは理由と入れ方を出して止める。
+# DD-CYN-0107 F-c: 取り込み元の控えは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
+#   素の python3 (版の検査なし) へは倒れない。満たすものが無いときは理由と、その場で効く
+#   操作を出す。
+# DD-CYN-0117 R-1: 版は名前で当てず、conf_pick_py がその python 自身に答えさせる。
+#   ∴ 配布物専用の conda 環境の python (名前は python) も候補に入る。
 ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" || true)"
 _roots_py() {
     if [ -z "$ROOTS_PY" ]; then
-        echo "エラー: 3.12 系の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を扱えません。" >&2
-        echo "       ./Cynovela-start.command を一度押して環境の準備を済ませると、この配布物の中に python の置き場が作られます。" >&2
+        # DD-CYN-0117 R-4: いま失敗した入口 (Cynovela-start.command は ./launch.sh を
+        #   呼ぶだけの同じ道) をもう一度押せ、とは言わない。その場で効く操作を出す。
+        echo "エラー: 3.12 以上の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を扱えません。" >&2
+        echo "       直し方: ./launch.sh --setup を叩いてください。この配布物の中に python の置き場が作られ、以後この操作が通ります。" >&2
+        echo "       いま在るものを確かめる: ./launch.sh --check" >&2
         return 1
     fi
     "$ROOTS_PY" "$@"
@@ -798,13 +804,22 @@ run_probe() {
         add_report "使う python: 見つかりません"
         add_blocker "python が見つかりません。conda (miniforge) を入れてから ./launch.sh --setup を実行してください: https://github.com/conda-forge/miniforge/releases/latest"
     fi
-    # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 系) を満たす python だけ。有無ではなく版まで見る。
+    # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
+    # DD-CYN-0117 R-1: 使う python が決まった後で、控えに使う python を解き直す。
+    #   解き直さないと、同じ書き出しの中で
+    #     使う python      : .../envs/cynovela-dist/bin/python   版: Python 3.12.13
+    #     控えに使う python: ありません (3.12 系が見つかりません)
+    #   という食い違いが残る (M5 実測)。決まったものが要件を満たすなら、それを控えにも使う。
+    ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" "${PY:-}" || true)"
     if [ -n "$ROOTS_PY" ]; then
         add_report "控えに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
     else
-        add_report "控えに使う python: ありません (3.12 系が見つかりません)"
+        add_report "控えに使う python: ありません (3.12 以上のものが見つかりません)"
         if [ -s "$INGEST_ROOTS_FILE" ]; then
-            add_blocker "3.12 系の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を読めず、足したフォルダが読み込まれません。./Cynovela-start.command を一度押して環境の準備を済ませてください。"
+            # DD-CYN-0117 R-2: これは起動を止める理由にならない。読めなくなるのは
+            #   取り込み元の控えだけで、本体は動く。∴ 気をつけること へ置く。
+            # DD-CYN-0117 R-4: いま失敗した入口をもう一度押せ、とは言わない。
+            add_warning "3.12 以上の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を読めないため、足したフォルダは読み込まれません。起動そのものは止まりません。直すには ./launch.sh --setup を叩いてください (この配布物の中に python の置き場が作られます)。"
         fi
     fi
 
@@ -1222,12 +1237,21 @@ setup_venv() {
 # 足りない部品を入れる (土台の種類によらず共通)
 install_requirements() {
     [ -f "$REQ_FILE" ] || return 0
-    local probe miss total
+    local probe miss mism total
     probe="$(missing_packages)"
     miss="$(printf '%s\n' "$probe" | awk -F'\t' '$1=="MISSING"{print $2}')"
-    if [ -z "$miss" ] || [ "$probe" = "PROBE_FAILED" ]; then
-        echo "  足りない部品はありません。何も入れませんでした。"
+    mism="$(printf '%s\n' "$probe" | awk -F'\t' '$1=="MISMATCH"{print $2}')"
+    # DD-CYN-0117 R-3: 「足りない部品」だけを見て止めない。版が違う部品も入れ直しの理由になる。
+    #   conda の道は environment.yml の pip 層で部品の名前が一通り揃うため、ここが
+    #   MISSING だけを見ていると 2段目 (pip install -r requirements.txt) が一度も走らず、
+    #   requirements.txt が求める版に届かないまま終わっていた (M5 実測で「版が違う部品」19 件)。
+    if [ "$probe" = "PROBE_FAILED" ] || { [ -z "$miss" ] && [ -z "$mism" ]; }; then
+        echo "  足りない部品も、版が違う部品もありません。何も入れませんでした。"
         return 0
+    fi
+    if [ -z "$miss" ]; then
+        echo "  足りない部品はありませんが、版が違う部品があります: $mism"
+        echo "  requirements.txt が求める版へ揃えます。"
     fi
     total="$(count_requirements)"
     echo ""

@@ -57,13 +57,20 @@ MODE_SETUP=0
 # DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"
-# DD-CYN-0107 F-c: 取り込み元の控えは、動作要件 (3.12 系) を満たす python でのみ読み書きする。
-#   素の python3 (版の検査なし) へは倒れない。3.12 系が無いときは理由と入れ方を出して止める。
+# DD-CYN-0107 F-c: 取り込み元の控えは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
+#   素の python3 (版の検査なし) へは倒れない。満たすものが無いときは理由と、その場で効く
+#   操作を出す。
+# DD-CYN-0117 R-1: 版は名前で当てず、conf_pick_py がその python 自身に答えさせる。
+#   ∴ 名前に版の付かない python3 も、中身が 3.12 以上なら候補に入る。
 ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" || true)"
 _roots_py() {
     if [ -z "$ROOTS_PY" ]; then
-        echo "エラー: 3.12 系の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を扱えません。" >&2
-        echo "       ./Cynovela-start.command を一度押して「1) conda で作る」を選ぶと、この配布物の中に 3.12 の環境が作られます。" >&2
+        # DD-CYN-0117 R-4: いま失敗した入口 (Cynovela-start.command は ./launch.sh を
+        #   呼ぶだけの同じ道) をもう一度押せ、とは言わない。この形態は入れ物で動くため、
+        #   押し直しても Mac 側に python は作られない。∴ その場で効く操作だけを出す。
+        echo "エラー: 3.12 以上の python がこの Mac にありません。取り込み元の控え (store/ingest-roots.json) を扱えません。" >&2
+        echo "       直し方: https://www.python.org/downloads/ から 3.12 以上を入れてください。" >&2
+        echo "       入れ物の中の部品はこれとは別です。入れ物を作り直す必要はありません。" >&2
         return 1
     fi
     "$ROOTS_PY" "$@"
@@ -645,13 +652,19 @@ run_probe() {
     else
         add_report "python3: ありません"
     fi
-    # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 系) を満たす python だけ。有無ではなく版まで見る。
+    # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
+    # DD-CYN-0117 R-1: 版は名前で当てない。上で出した python3 も、中身が 3.12 以上なら
+    #   conf_pick_py が候補に入れる。∴ 「見つかりました」と出しながら「ありません」と
+    #   言う食い違いが起きない。
     if [ -n "$ROOTS_PY" ]; then
         add_report "控えに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
     else
-        add_report "控えに使う python: ありません (3.12 系が見つかりません)"
+        add_report "控えに使う python: ありません (3.12 以上のものが見つかりません)"
         if [ -s "$INGEST_ROOTS_FILE" ]; then
-            add_blocker "3.12 系の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を読めず、足したフォルダが読み込まれません。./Cynovela-start.command で「1) conda で作る」を選んでください。"
+            # DD-CYN-0117 R-2: これは起動を止める理由にならない。読めなくなるのは
+            #   取り込み元の控えだけで、入れ物の中の本体は動く。∴ 気をつけること へ置く。
+            # DD-CYN-0117 R-4: いま失敗した入口をもう一度押せ、とは言わない。
+            add_warning "3.12 以上の python がこの Mac にありません。取り込み元の控え (store/ingest-roots.json) を読めないため、足したフォルダは読み込まれません。入れ物の起動そのものは止まりません。直すには https://www.python.org/downloads/ から 3.12 以上を入れてください (入れ物の中の部品はこれとは別で、作り直しは要りません)。"
         fi
     fi
 

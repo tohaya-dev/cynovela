@@ -48,6 +48,15 @@ evidence/
 *.tar.gz.part*
 *.zip
 SHA256SUMS
+# --- 置き場へ絶対に載せないもの (禁則#63・最上位-019・決定 §56) ---
+#   hansolo は GitHub へ載せない。push・ブランチ・タグ・リリース・アセットの
+#   いずれにも入れない。永久である。ここに書いておくのは、取り違えて
+#   `git add -A` を叩いたときに黙って乗ってしまうのを機械で止めるため。
+hansolo/
+# 梱包直前の検査に使う照合値 (中身は文字数と sha256 のみ。追跡下に置かない)
+tools/dist-check-values.local
+**/tools/dist-check-values.local
+
 # --- macOS ---
 .DS_Store
 ._*

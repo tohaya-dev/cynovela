@@ -66,16 +66,47 @@ conf_set() {  # conf_set <上の名前> <下の名前> <値>   その行だけ�
     mv "$tmp" "$CONF_FILE"
 }
 
-conf_pick_py() {  # DD-CYN-0107 F-c: $1=木の根 → 動作要件 (3.12 系) を満たす python の絶対パスを出す
-    # この形態の自前環境 (.venv-cynovela) を最優先で使う。無ければ名前で探す。
-    # 素の python3 (版の検査なし) へは倒れない。見つからなければ 1 を返し、呼ぶ側が案内を出す。
-    local _root="$1" _c
-    if [ -x "$_root/.venv-cynovela/bin/python3" ]; then
-        printf '%s\n' "$_root/.venv-cynovela/bin/python3"
-        return 0
-    fi
-    for _c in python3.12 python3.13; do
-        if command -v "$_c" >/dev/null 2>&1; then
+_conf_py_meets() {  # DD-CYN-0117 R-1: $1=python の場所 → 動作要件 (3.12 以上) を満たすなら 0
+    # 名前で当てず、その python 自身に版を答えさせる。名前が python でも中身が 3.12 なら通る。
+    [ -n "${1:-}" ] && [ -x "$1" ] || return 1
+    "$1" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1
+}
+
+conf_pick_py() {  # DD-CYN-0107 F-c / DD-CYN-0117 R-1
+    #   $1=木の根、$2 以降=呼ぶ側が既に解いた python (任意・この順で先に見る)
+    #   → 動作要件 (3.12 以上) を満たす python の絶対パスを出す。
+    #
+    # DD-CYN-0117 R-1: 版は名前で当てず、必ずその python に答えさせる。
+    #   旧: 名前が python3.12 / python3.13 のものと、この形態の自前環境だけを見ていた。
+    #       ∴ 配布物専用の conda 環境 'cynovela-dist' の python は、中身が 3.12.13 でも
+    #       名前が python なので候補から外れ、同じ書き出しの中で
+    #         使う python      : .../envs/cynovela-dist/bin/python   版: Python 3.12.13
+    #         控えに使う python: ありません (3.12 系が見つかりません)
+    #       という食い違いを出していた (M5 実測)。
+    #   新: 呼ぶ側が既に解いた python を第一候補にし、要件を満たすならそこで探索を終える。
+    #       名前に版の付かない python3 も、版を実測して満たすときだけ受ける。
+    #       「素の python3 へ版の検査なしに倒れない」という F-c の縛りはそのまま保つ。
+    local _root="$1" _c _b _e
+    shift
+    for _c in "$@"; do
+        if _conf_py_meets "$_c"; then printf '%s\n' "$_c"; return 0; fi
+    done
+    # この配布物の中に作られる置き場 (形態によって名前が違うので両方見る)
+    for _c in "$_root/.venv-cynovela/bin/python3" "$_root/.mas-env/bin/python3"; do
+        if _conf_py_meets "$_c"; then printf '%s\n' "$_c"; return 0; fi
+    done
+    # 配布物専用の conda 環境。名前が python なので、版を実測しないと当てられない。
+    for _b in "$HOME/miniforge3" "$HOME/miniconda3" "/opt/homebrew/Caskroom/miniforge/base" \
+              "$HOME/opt/anaconda3" "$HOME/anaconda3" "/usr/local/anaconda3"; do
+        for _e in cynovela-dist cynovela; do
+            if _conf_py_meets "$_b/envs/$_e/bin/python"; then
+                printf '%s\n' "$_b/envs/$_e/bin/python"
+                return 0
+            fi
+        done
+    done
+    for _c in python3.12 python3.13 python3; do
+        if command -v "$_c" >/dev/null 2>&1 && _conf_py_meets "$(command -v "$_c")"; then
             command -v "$_c"
             return 0
         fi
