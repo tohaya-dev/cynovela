@@ -802,7 +802,20 @@ run_probe() {
         add_report "版: $("$PY" -V 2>&1)"
     else
         add_report "使う python: 見つかりません"
-        add_blocker "python が見つかりません。conda (miniforge) を入れてから ./launch.sh --setup を実行してください: https://github.com/conda-forge/miniforge/releases/latest"
+        # DD-CYN-0117 R-5 (版7): 案内を、いまこの機材に在るものに合わせて出し分ける。
+        #   旧: 無条件に「conda (miniforge) を入れてから」と出していた。∴ conda が
+        #   既に在る機材では、同じ書き出しの中で
+        #     conda の置き場: /opt/homebrew/Caskroom/miniforge/base
+        #     - python が見つかりません。conda (miniforge) を入れてから…
+        #   と、在るものを入れろと言っていた (実測 20260817)。R-4 と同じ型である。
+        #   ここで見ているのは「まだ用意していない」だけで、道具は揃っている。
+        if [ -n "$CONDA_BASE" ]; then
+            add_blocker "この配布物専用の環境がまだ作られていません。conda は見つかっています ($CONDA_BASE)。./launch.sh --setup を叩くと、専用の環境を作って起動できます。"
+        elif command -v python3 >/dev/null 2>&1; then
+            add_blocker "この配布物専用の置き場がまだ作られていません。python3 は見つかっています。./launch.sh --setup を叩くと、この配布物の中に置き場を作って起動できます。"
+        else
+            add_blocker "python が見つかりません。次のどちらかを入れてから ./launch.sh --setup を実行してください。conda (miniforge): https://github.com/conda-forge/miniforge/releases/latest  /  Python 3.12 以上: https://www.python.org/downloads/"
+        fi
     fi
     # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
     # DD-CYN-0117 R-1: 使う python が決まった後で、控えに使う python を解き直す。
@@ -1193,15 +1206,21 @@ setup_conda() {
 
 # venv を作れる python を探す (新しい版から順に。順序と書き方は falcon 側 tools/mas-phase.sh の原文と同じ)
 venv_base_python() {
+    # DD-CYN-0117 R-6 (版7): 要件は 3.12 以上である (pyproject.toml requires-python
+    #   = ">=3.12" / environment.yml が python=3.12.13 を固定 / conf_pick_py も 3.12 以上)。
+    #   旧: ここだけ 3.10 以上を通しており、「3.10 以上が見つかりません」と言いながら
+    #   同じ画面で「3.12 を入れてください」と案内する食い違いが出ていた (実測 20260817)。
+    #   ∴ 判定と案内を、宣言した要件 (3.12 以上) に揃える。
+    #   版は名前で決めつけず、その python 自身に答えさせる。
     local c
-    for c in python3.13 python3.12 python3.11 python3.10; do
-        if command -v "$c" >/dev/null 2>&1; then command -v "$c"; return 0; fi
+    for c in python3.13 python3.12; do
+        if command -v "$c" >/dev/null 2>&1 && _conf_py_meets "$(command -v "$c")"; then
+            command -v "$c"; return 0
+        fi
     done
     # 版のついた名前が無いときは python3 の版を見る
-    if command -v python3 >/dev/null 2>&1; then
-        if python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
-            command -v python3; return 0
-        fi
+    if command -v python3 >/dev/null 2>&1 && _conf_py_meets "$(command -v python3)"; then
+        command -v python3; return 0
     fi
     return 1
 }
@@ -1216,8 +1235,9 @@ setup_venv() {
     if [ -n "$base_py" ]; then
         echo "  使う Python: $base_py ($("$base_py" -V 2>&1))"
     else
-        echo "❌ 3.10 以上の python3 が見つかりませんでした。"
-        echo "   入れ方: https://www.python.org/downloads/ から 3.12 を入れてください"
+        echo "❌ 3.12 以上の python3 が見つかりませんでした。"
+        echo "   入れ方: https://www.python.org/downloads/ から 3.12 以上を入れてください"
+        echo "   または conda (miniforge) を入れて ./launch.sh --setup --base conda を使ってください"
         exit 1
     fi
 
