@@ -255,9 +255,28 @@ case "$FLAVOR" in
   *) echo "FLAVOR は all-in-one か lightweight" >&2; exit 2 ;;
 esac
 
-ROOT="$(git rev-parse --show-toplevel)"
+# DD-CYN-0117 (版7): 配布物の木は、リポジトリの根と同じとは限らない。
+#   いまの本流は 1 つのリポジトリの下に chewie/ と falcon/ が並ぶ形である。
+#   旧: ROOT=リポジトリの根 → NAME が "Cynovela" になり、出力名が
+#       cynovela-Cynovela-… となる。さらに `git archive "$REF"` がリポジトリ全体を
+#       取るため chewie+falcon+falcon-docker-beta が 1 本に混ざり、直後に
+#       `欠落: mas` ($ROOT/mas を見るが実体は chewie/mas) で落ちていた。
+#   新: ROOT=この build-dist.sh が置かれている配布物の木 (tools/ の 1 つ上)。
+#       取り出しは `"$REF:$SUBDIR"` でその木だけに絞る。
+#       リポジトリの根と同じ場合は SUBDIR が空になり、従来と同じ動きになる。
+REPO="$(git rev-parse --show-toplevel)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 NAME="$(basename "$ROOT")"
+# リポジトリの根から見た、この木の位置 (根そのものなら空)
+SUBDIR="$(git rev-parse --show-prefix)"
+SUBDIR="${SUBDIR%/}"
+# git archive / git ls-tree に渡す木 (SUBDIR が空なら $REF そのもの)
+if [ -n "$SUBDIR" ]; then
+  REF_TREE="$REF:$SUBDIR"
+else
+  REF_TREE="$REF"
+fi
 
 # ── 出力名の日付は実行日から導出する (dist-date-20260729) ─────────────────
 # 従来は呼び出し側の第1引数がそのまま出力名になり、日付は手入力だった
@@ -289,7 +308,7 @@ SOURCE_EPOCH="$(git log -1 --format=%ct "$REF")"
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
-echo "[dist] ref=$REF flavor=$FLAVOR name=$NAME"
+echo "[dist] ref=$REF flavor=$FLAVOR name=$NAME root=$ROOT subdir=${SUBDIR:-(リポジトリの根)}"
 
 # ga-close-v3 PartG: 取り出しは $REF の中身であって机の上ではない。追跡ファイルに
 #   未コミットの手直しが残っていると「直したつもりのものが配布物に入っていない」と
@@ -302,7 +321,10 @@ fi
 
 echo "[dist] 追跡ファイルのみを取り出す (未追跡は原理的に入らない)"
 mkdir -p "$STAGE/$NAME"
-git archive --format=tar "$REF" | tar -x -C "$STAGE/$NAME"
+# `git archive "$REF:$SUBDIR"` は cwd 依存で、この木の中から叩くと空になる
+# (chewie の中では chewie/chewie を探して 0 項目。実測 20260817)。
+# ∴ git はリポジトリの根に固定して呼ぶ。
+git -C "$REPO" archive --format=tar "$REF_TREE" | tar -x -C "$STAGE/$NAME"
 
 # ── ここから「追跡外だが同梱すべきもの」を名指しで足す ─────────────────
 add_named() {   # add_named <ツリー内の相対パス> <説明>
@@ -327,7 +349,7 @@ add_if_untracked() {   # add_if_untracked <ツリー内の相対パス> <説明>
   # (作業ツリーの手直しで上書きすると「取り出しは $REF の中身」の原則が崩れる)。
   # 追跡外のときだけ名指しで足す。
   local rel="$1" desc="$2"
-  if [ -n "$(git ls-tree -r --name-only "$REF" -- "$rel")" ]; then
+  if [ -n "$(git -C "$REPO" ls-tree -r --name-only "$REF_TREE" -- "$rel")" ]; then
     echo "[dist] 追跡下: $rel は git archive 側で入る (名指し追加はしない)"
     return 0
   fi
@@ -469,12 +491,19 @@ fi
 #   平文はこのリポジトリのどこにも置かない。tools/dist-initial-credentials.local
 #   (1 行 = 記号 TAB 値・git 追跡外・mode 600) から読み、ここで staging へ書き込む。
 #   このファイルが無いときは決められないので止める (フェイルクローズ)。
-CRED_FILE="$ROOT/tools/dist-initial-credentials.local"
-if [ ! -f "$CRED_FILE" ]; then
-  echo "[dist] 初期の合言葉の元ファイルが不在: $CRED_FILE" >&2
+# DD-CYN-0117 (版7): 検査値と同じく、この木の下 → リポジトリの根 の順で探す。
+#   1 つのリポジトリに木が複数並ぶ形では、根の tools/ に 1 本だけ置く運用である。
+CRED_FILE=""
+for _cf in "$ROOT/tools/dist-initial-credentials.local" "$REPO/tools/dist-initial-credentials.local"; do
+  [ -f "$_cf" ] && { CRED_FILE="$_cf"; break; }
+done
+if [ -z "$CRED_FILE" ]; then
+  echo "[dist] 初期の合言葉の元ファイルが不在" >&2
+  echo "[dist]   探した先: $ROOT/tools/ と $REPO/tools/" >&2
   echo "[dist] フェイルクローズ: 固定値を決められないため作るのを止める" >&2
   exit 1
 fi
+echo "[dist] 初期の合言葉の元: $CRED_FILE"
 ADMIN_PW="$(awk -F'\t' '$1=="admin"{print $2}' "$CRED_FILE")"
 VIEWER_PW="$(awk -F'\t' '$1=="viewer"{print $2}' "$CRED_FILE")"
 if [ -z "$ADMIN_PW" ] || [ -z "$VIEWER_PW" ]; then
@@ -496,7 +525,11 @@ python - "$STAGE/$NAME/cynovela.yaml" "$ADMIN_PW" <<'PYYAML'
 import re, sys
 path, pw = sys.argv[1], sys.argv[2]
 src = open(path, encoding="utf-8").read()
-new, n = re.subn(r"(?m)^(auth:\n(?:[ \t]+.*\n)*?[ \t]+admin_initial_password:[ \t]*)''[ \t]*$",
+# DD-CYN-0117 (版7): 空 ('') のときだけでなく、既に値が書かれているときも揃える。
+#   追跡下の cynovela.yaml に値が入ったまま commit された状態では、旧式 ('' だけを
+#   狙う) は 0 箇所となり梱包がフェイルクローズで止まっていた (実測 20260817)。
+#   梱包は「元が何であれ、正本の値に揃える」のが正しい。
+new, n = re.subn(r"(?m)^(auth:\n(?:[ \t]+.*\n)*?[ \t]+admin_initial_password:[ \t]*)'[^'\n]*'[ \t]*$",
                  lambda m: m.group(1) + "'" + pw.replace("'", "''") + "'", src)
 if n != 1:
     print("[dist] cynovela.yaml の auth.admin_initial_password を書き換えられなかった (%d 箇所)" % n)
@@ -512,7 +545,8 @@ python - "$STAGE/$NAME/cynovela.yaml" "$VIEWER_PW" <<'PYYAML'
 import re, sys
 path, pw = sys.argv[1], sys.argv[2]
 src = open(path, encoding="utf-8").read()
-new, n = re.subn(r"(?m)^([ \t]+viewer_initial_password:[ \t]*)''[ \t]*$",
+# DD-CYN-0117 (版7): 管理者側と同じく、既に値が入っていても正本へ揃える。
+new, n = re.subn(r"(?m)^([ \t]+viewer_initial_password:[ \t]*)'[^'\n]*'[ \t]*$",
                  lambda m: m.group(1) + "'" + pw.replace("'", "''") + "'", src)
 if n != 1:
     print("[dist] cynovela.yaml の auth.viewer_initial_password を書き換えられなかった (%d 箇所)" % n)
@@ -525,20 +559,39 @@ PYYAML
 python - "$STAGE/$NAME/STARTUP.md" "$ADMIN_PW" "$VIEWER_PW" <<'PYDOC'
 import sys
 path, apw, vpw = sys.argv[1], sys.argv[2], sys.argv[3]
+# DD-CYN-0117 (版7): 目印が在るとき (雛形のまま) と、既に値の2行へ置き換わって
+#   commit されているときの両方で通す。旧式は目印だけを狙い、置き換え済みの
+#   STARTUP.md では 0 個となって梱包がフェイルクローズで止まっていた (実測 20260817)。
+#   梱包は「元が何であれ、正本の2行に揃える」のが正しい。
+import re as _re
 MARK = "<!-- dist:initial-credentials -->"
-lines = open(path, encoding="utf-8").read().split("\n")
-idx = [i for i, ln in enumerate(lines) if MARK in ln]
-if len(idx) != 1:
-    print("[dist] STARTUP.md の目印が %d 個 (1 個であること)" % len(idx))
-    sys.exit(1)
-# 目印の在る行を丸ごと差し替える (目印だけ消すと、本流での読みやすさのために
-# 同じ行へ添えた説明が配布物側に残ってしまうため)
-lines[idx[0]: idx[0] + 1] = [
+NEWLINES = [
     "- 管理者: ユーザー名 `cynovela` / パスワード: `%s`" % apw,
     "- 閲覧者: ユーザー名 `demo` / パスワード: `%s`" % vpw,
 ]
+lines = open(path, encoding="utf-8").read().split("\n")
+idx = [i for i, ln in enumerate(lines) if MARK in ln]
+if len(idx) == 1:
+    # 目印の在る行を丸ごと差し替える (目印だけ消すと、本流での読みやすさのために
+    # 同じ行へ添えた説明が配布物側に残ってしまうため)
+    lines[idx[0]: idx[0] + 1] = NEWLINES
+    print("[dist] 案内の目印を実際の値へ置き換えた (STARTUP.md)")
+elif len(idx) == 0:
+    a_re = _re.compile(r"^- 管理者: ユーザー名 `[^`]*` / パスワード: `[^`]*`\s*$")
+    v_re = _re.compile(r"^- 閲覧者: ユーザー名 `[^`]*` / パスワード: `[^`]*`\s*$")
+    a_idx = [i for i, ln in enumerate(lines) if a_re.match(ln)]
+    v_idx = [i for i, ln in enumerate(lines) if v_re.match(ln)]
+    if len(a_idx) != 1 or len(v_idx) != 1:
+        print("[dist] STARTUP.md に目印も、置き換え済みの2行も見つからない "
+              "(目印 %d 個 / 管理者行 %d 個 / 閲覧者行 %d 個)" % (len(idx), len(a_idx), len(v_idx)))
+        sys.exit(1)
+    lines[a_idx[0]] = NEWLINES[0]
+    lines[v_idx[0]] = NEWLINES[1]
+    print("[dist] 案内の既存の2行を正本の値へ揃えた (STARTUP.md)")
+else:
+    print("[dist] STARTUP.md の目印が %d 個 (1 個であること)" % len(idx))
+    sys.exit(1)
 open(path, "w", encoding="utf-8").write("\n".join(lines))
-print("[dist] 案内に初期の合言葉を書いた (STARTUP.md)")
 PYDOC
 
 if [ "$MODELS_LINKED" = "1" ]; then
@@ -684,7 +737,19 @@ rm -rf "$STAGE/$NAME/ingest" "$STAGE/$NAME/sample_data" "$STAGE/$NAME/data"
 # ── 梱包直前の検査 (フェイルクローズ・pretar-inspect-20260729) ────────────
 # 検査の中身と検査値ファイルの決まりはファイル先頭近くの dist_inspect を参照。
 echo "[dist] 梱包直前の検査 (3種・フェイルクローズ)"
-dist_inspect "$STAGE/$NAME" "$ROOT/tools/dist-check-values.local"
+# DD-CYN-0117 (版7): 検査値はこの木の下 → リポジトリの根 の順で探す。
+#   1 つのリポジトリに木が複数並ぶ形では、根の tools/ に 1 本だけ置く運用である。
+CHECK_VALUES=""
+for _cv in "$ROOT/tools/dist-check-values.local" "$REPO/tools/dist-check-values.local"; do
+  [ -f "$_cv" ] && { CHECK_VALUES="$_cv"; break; }
+done
+if [ -z "$CHECK_VALUES" ]; then
+  echo "[dist] 検査値 (tools/dist-check-values.local) が見つかりません。梱包を止めます。" >&2
+  echo "[dist]   探した先: $ROOT/tools/ と $REPO/tools/" >&2
+  exit 1
+fi
+echo "[dist] 検査値: $CHECK_VALUES"
+dist_inspect "$STAGE/$NAME" "$CHECK_VALUES"
 
 # ── 決定論的な tar ───────────────────────────────────────────────
 # macOS の tar は bsdtar で --mtime を持たないため、固める前にステージ側の時刻を

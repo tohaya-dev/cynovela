@@ -56,6 +56,9 @@ hansolo/
 # 梱包直前の検査に使う照合値 (中身は文字数と sha256 のみ。追跡下に置かない)
 tools/dist-check-values.local
 **/tools/dist-check-values.local
+# 配布物の初期の合言葉の元 (値そのもの。追跡下に置かない)
+tools/dist-initial-credentials.local
+**/tools/dist-initial-credentials.local
 
 # --- macOS ---
 .DS_Store
