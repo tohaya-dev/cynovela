@@ -1,4 +1,4 @@
-"""core.version — このツールの版数の単一の出どころ (version-single-source-20260731 / DD-CYN-0007 B8)。
+"""core.version — このツールの版数の単一の入手元 (version-single-source-20260731 / DD-CYN-0007 B8)。
 
 版の表記が 6 か所で食い違っていた (実測: `未設定` / `0.0.0` / `1.0.0-alpha` / `0.1.0` /
 `2.0` / `v3.0.0「Kenobi」`)。うち実行時に出るのは次の 4 つだけだった。

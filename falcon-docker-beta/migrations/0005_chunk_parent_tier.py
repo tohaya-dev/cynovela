@@ -1,10 +1,10 @@
 """migration 0005: chunks/parent_chunks に tier 列を追加 (masking-rework-overnight-v5)。
 
-PII マスキング再実装の土台となる「保管庫の階層分離」のためのスキーマ拡張。
+PII マスキング再実装の基盤となる「保管庫の階層分離」のためのスキーマ拡張。
 
 設計判断（pageId 36694ef8-ac04-811c-9194-ce7d73a85098 「設計の正本」準拠）:
-- 生本文 → tier='raw' 行（管理者保管庫 / Chroma {cid}__raw / BM25 raw 索引）
-- マスク済本文 → tier='masked' 行（一般保管庫 / Chroma {cid}__masked / BM25 masked 索引）
+- 生本文 → tier='raw' 行（管理者保管庫 / Chroma {cid}__raw / BM25 raw インデックス）
+- マスク済本文 → tier='masked' 行（一般保管庫 / Chroma {cid}__masked / BM25 masked インデックス）
 
 入口の権限階層判定で tier='raw'/'masked' のどちらの行を引くかを構造的に決め、
 表示時のロール書き分けに頼らない（生をベクトル化しないことで埋め込み逆変換を防ぐ）。

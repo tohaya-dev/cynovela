@@ -611,13 +611,13 @@ let _editingPolicyId = null;
 const POLICY_ROLES = ["admin", "viewer"];
 const POLICY_TYPES = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "IPV4"];
 
-// ga-close-v3 PartX: 伏字の型名の表示ラベルを1か所に集約する。
+// ga-close-v3 PartX: マスキングの型名の表示ラベルを1か所に集約する。
 //   型は増える前提 (2026-07-27 に SSN / IBAN / PASSWORD / APIKEY / PRIVATEKEY が増えた)。
 //   表に無いキーは落とさず数えたまま出す。画面側で許可リストを持って
-//   リスト外の型を 0 件に潰さないこと (それが「伏字したのに画面に出ない」の原因になる)。
+//   リスト外の型を 0 件に潰さないこと (それが「マスキングしたのに画面に出ない」の原因になる)。
 //
 // DD-CYN-0020 U-6: サーバが返し得る型名を実測で数え直し、表に無かった 6 つを足した。
-//   出どころは 2 系統ある:
+//   入手元は 2 系統ある:
 //     (a) guardrail.PII_PATTERNS のラベル (13種) … 表に揃っていた
 //     (b) utils/metadata/pii.py の型名 … 足りていなかった
 //         - FALLBACK_PATTERNS の名前 (pii_mode: lite・presidio 不在/例外のとき):
@@ -626,7 +626,7 @@ const POLICY_TYPES = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "
 //   これらは (a) の CREDIT / MYNUMBER / IPV4 / PHONE_JP / EMAIL と同じ物を指す別名だが、
 //   別のキーとして届くので行も別に持つ (件数を足し合わせる処理は入れない。
 //   数え方を変えると受領書・一覧・公開履歴の実測と食い違うため)。
-//   実測 (2026-08-02・chewie 写し・pii_mode: lite で 1 ファイルを取り込み):
+//   実測 (2026-08-02・chewie コピー・pii_mode: lite で 1 ファイルを取り込み):
 //     直す前の取り込み画面 … 「🔒PHONE_INTL×2 🔒IP_ADDRESS×1 🔒CREDIT_CARD×1」と生の値が出ていた
 const PII_TYPE_LABELS = {
   PERSON_JP:    { icon: '👤', en: 'Name',                    ja: '氏名' },
@@ -1306,15 +1306,15 @@ function applyRoleRestrictions() {
 // POST/PUT に乗る値・DB 値・title 属性の元値は不変。未申告・/app/store/uploads 系・その他は素通し。
 // settings は admin 限定 EP のため viewer は取得失敗＝'' フォールバック（現状表示のまま）。
 let _ingestHostPathCache;  // undefined=未取得 / ''=未申告or取得不可 / 非空=申告値
-// multi-ingest-roots-20260728: 起動時に渡された取り込み元の根 (settings key: ingest.roots)。
-// undefined=未取得 / []=根なしor取得不可 / [{name,host_path,label}] = 根あり。
+// multi-ingest-roots-20260728: 起動時に渡された取り込み元のルート (settings key: ingest.roots)。
+// undefined=未取得 / []=ルートなしor取得不可 / [{name,host_path,label}] = ルートあり。
 let _ingestRootsCache;
 async function _loadIngestHostPath() {
   if (_ingestHostPathCache !== undefined) return _ingestHostPathCache;
   try {
     const s = await API.get('/api/settings');
     _ingestHostPathCache = (s && s['ingest.host_path']) ? String(s['ingest.host_path']).trim() : '';
-    // multi-ingest-roots-20260728: 根の一覧も同じ設定応答から読む (JSON 文字列)。
+    // multi-ingest-roots-20260728: ルートの一覧も同じ設定応答から読む (JSON 文字列)。
     try {
       const roots = s && s['ingest.roots'] ? JSON.parse(s['ingest.roots']) : [];
       _ingestRootsCache = Array.isArray(roots) ? roots : [];
@@ -1329,7 +1329,7 @@ async function _loadIngestHostPath() {
 }
 function _resetIngestHostPathCache() { _ingestHostPathCache = undefined; _ingestRootsCache = undefined; }
 function _displaySourcePath(p) {
-  // multi-ingest-roots-20260728: /app/ingest/<name>... は該当する根の host_path へ写像する。
+  // multi-ingest-roots-20260728: /app/ingest/<name>... は該当するルートの host_path へ写像する。
   // /app/ingest そのもの (仮想の最上位) は「取り込み元」と表示する。
   // (chewie はホスト直起動で実パスのまま流れるため実質素通りだが、falcon と同一コードを保つ)
   if (p === '/app/ingest') return lj('Ingest sources', '取り込み元');
@@ -2003,7 +2003,7 @@ async function showFolderBrowser(targetInputId) {
 
 async function _fbNavigateUp() {
   const cur = _folderBrowserState.currentPath;
-  if (!cur) return;  // 仮想の最上位 (根の一覧) より上は無い
+  if (!cur) return;  // 仮想の最上位 (ルートの一覧) より上は無い
   let parent;
   try {
     const data = await API.get(`/api/browse?path=${encodeURIComponent(cur)}`);
@@ -2071,7 +2071,7 @@ async function previewFile(sourceId, fileId) {
   $('preview-modal').classList.add('active');
   // Read first 500 chars via extract (we'll just show what we know from classification)
   // Since we don't have a text preview API, show file metadata
-  // multi-ingest-roots-20260728: パス表示は取り込み元の根で写像 (表示のみ・元値不変)
+  // multi-ingest-roots-20260728: パス表示は取り込み元のルートで写像 (表示のみ・元値不変)
   $('preview-content').textContent = `ファイル: ${file.name}\nパス: ${_displaySourcePath(file.path)}\nサイズ: ${file.size ? Math.round(file.size/1024)+'KB' : '不明'}\nMIME: ${file.mime_type||'不明'}\nカテゴリ: ${(file.categories||[]).join(', ')}`;
 }
 

@@ -55,7 +55,7 @@ _env_file = _load_env_file(Path.home() / ".cynovela_cli.env")
 
 
 def _cfg(key: str, default: str = "") -> str:
-    # DD-CYN-0067 G-2: 環境変数からは受け取らない。出どころは ~/.cynovela_cli.env の 1 本。
+    # DD-CYN-0067 G-2: 環境変数からは受け取らない。入手元は ~/.cynovela_cli.env の 1 本。
     return _env_file.get(key) or default
 
 

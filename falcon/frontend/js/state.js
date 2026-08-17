@@ -611,13 +611,13 @@ let _editingPolicyId = null;
 const POLICY_ROLES = ["admin", "viewer"];
 const POLICY_TYPES = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "IPV4"];
 
-// ga-close-v3 PartX: 伏字の型名の表示ラベルを1か所に集約する。
+// ga-close-v3 PartX: マスキングの型名の表示ラベルを1か所に集約する。
 //   型は増える前提 (2026-07-27 に SSN / IBAN / PASSWORD / APIKEY / PRIVATEKEY が増えた)。
 //   表に無いキーは落とさず数えたまま出す。画面側で許可リストを持って
-//   リスト外の型を 0 件に潰さないこと (それが「伏字したのに画面に出ない」の原因になる)。
+//   リスト外の型を 0 件に潰さないこと (それが「マスキングしたのに画面に出ない」の原因になる)。
 //
 // DD-CYN-0020 U-6: サーバが返し得る型名を実測で数え直し、表に無かった 6 つを足した。
-//   出どころは 2 系統ある:
+//   入手元は 2 系統ある:
 //     (a) guardrail.PII_PATTERNS のラベル (13種) … 表に揃っていた
 //     (b) utils/metadata/pii.py の型名 … 足りていなかった
 //         - FALLBACK_PATTERNS の名前 (pii_mode: lite・presidio 不在/例外のとき):
@@ -626,7 +626,7 @@ const POLICY_TYPES = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "
 //   これらは (a) の CREDIT / MYNUMBER / IPV4 / PHONE_JP / EMAIL と同じ物を指す別名だが、
 //   別のキーとして届くので行も別に持つ (件数を足し合わせる処理は入れない。
 //   数え方を変えると受領書・一覧・公開履歴の実測と食い違うため)。
-//   実測 (2026-08-02・chewie 写し・pii_mode: lite で 1 ファイルを取り込み):
+//   実測 (2026-08-02・chewie コピー・pii_mode: lite で 1 ファイルを取り込み):
 //     直す前の取り込み画面 … 「🔒PHONE_INTL×2 🔒IP_ADDRESS×1 🔒CREDIT_CARD×1」と生の値が出ていた
 const PII_TYPE_LABELS = {
   PERSON_JP:    { icon: '👤', en: 'Name',                    ja: '氏名' },
@@ -1366,7 +1366,7 @@ function applyRoleRestrictions() {
 // POST/PUT に乗る値・DB 値・title 属性の元値は不変。未申告・/app/store/uploads 系・その他は素通し。
 // settings は admin 限定 EP のため viewer は取得失敗＝'' フォールバック（現状表示のまま）。
 let _ingestHostPathCache;  // undefined=未取得 / ''=未申告or取得不可 / 非空=申告値
-// multi-ingest-roots-20260728: 複数根 (settings key: ingest.roots = JSON 文字列 [{name,host_path,label}])
+// multi-ingest-roots-20260728: 複数ルート (settings key: ingest.roots = JSON 文字列 [{name,host_path,label}])
 // の表示写像キャッシュ。undefined=未取得 / []=なしor取得不可 / 配列=申告値。表示専用・保存値不変。
 let _ingestRootsCache;
 async function _loadIngestHostPath() {
@@ -1390,7 +1390,7 @@ function _resetIngestHostPathCache() { _ingestHostPathCache = undefined; _ingest
 function _displaySourcePath(p) {
   if (!p) return '';
   const BOX = '/app/ingest';
-  // multi-ingest-roots-20260728: 複数根写像を先に試す。/app/ingest/<name>(/...) → host_path + 残り。
+  // multi-ingest-roots-20260728: 複数ルート写像を先に試す。/app/ingest/<name>(/...) → host_path + 残り。
   if (p.indexOf(BOX + '/') === 0) {
     const rest = p.slice(BOX.length + 1);
     const roots = _ingestRootsCache || [];
@@ -1405,7 +1405,7 @@ function _displaySourcePath(p) {
   if (base && (p === BOX || p.indexOf(BOX + '/') === 0)) {
     return base.replace(/\/+$/, '') + p.slice(BOX.length);
   }
-  // multi-ingest-roots-20260728: 複数根方式では /app/ingest 自体に単一のホスト側実体が無いため、
+  // multi-ingest-roots-20260728: 複数ルート方式では /app/ingest 自体に単一のホスト側実体が無いため、
   // 内部パスをそのまま見せず「取り込み元」という表示文字列にする (表示専用)。
   if (p === BOX) return lj('Ingest sources', '取り込み元');
   return p;

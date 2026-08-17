@@ -11,7 +11,7 @@ from db import get_db
 
 import state as _state
 from core.auth import _require_authenticated
-# ga-close-v3 PartD D-3: 伏字件数の数え方は guardrail.py の 1 か所に集約する。
+# ga-close-v3 PartD D-3: マスキング件数の数え方は guardrail.py の 1 か所に集約する。
 from guardrail import pii_counts_from_db
 
 router = APIRouter(tags=["dashboard"])
@@ -26,13 +26,13 @@ async def dashboard_summary(request: Request):
         total_sources = conn.execute("SELECT COUNT(*) AS c FROM sources").fetchone()["c"]
         total_workspaces = conn.execute("SELECT COUNT(*) AS c FROM workspaces").fetchone()["c"]
         total_collections = conn.execute("SELECT COUNT(*) AS c FROM collections WHERE status='ready'").fetchone()["c"]
-        # radar 保護軸(枝②): 公開(=伏字・保管済み)カバレッジの母数。全status件数を読み取るだけ(検出比は使わない=偽満点回避)。
+        # radar 保護軸(分岐②): 公開(=マスキング・保管済み)カバレッジの母数。全status件数を読み取るだけ(検出比は使わない=偽満点回避)。
         collections_total_all = conn.execute("SELECT COUNT(*) AS c FROM collections").fetchone()["c"]
         total_files = conn.execute("SELECT COUNT(*) AS c FROM files").fetchone()["c"]
         total_chunks = conn.execute("SELECT COUNT(*) AS c FROM chunks").fetchone()["c"]
         # zanken-fix1-20260706: raw/masked の dual-row 二重計上を是正（論理チャンク基準= raw 層のみ集計）
         # ga-close-v3 PartD D-3: 数え方は guardrail.pii_counts_from_db に集約した
-        #   (pii_detected 列は伏字 0 件でも簡易正規表現の当たりで 1 になるため使わない)。
+        #   (pii_detected 列はマスキング 0 件でも簡易正規表現の当たりで 1 になるため使わない)。
         _pii_counts = pii_counts_from_db(conn)
         pii_total = int(_pii_counts["pii_chunks"])
         excluded_chunks_total = conn.execute("SELECT COUNT(*) AS c FROM chunks WHERE excluded = 1").fetchone()["c"]
@@ -217,7 +217,7 @@ async def dashboard_summary(request: Request):
             ).fetchone()["c"]
         except Exception:
             ingest_24h = 0
-        # honest fix (pii-fiction): 実際に伏字したスパン総数(=実伏字件数)。masked tier の pii_summary {種別:件数} を合算。
+        # honest fix (pii-fiction): 実際にマスキングしたスパン総数(=実マスキング件数)。masked tier の pii_summary {種別:件数} を合算。
         #   「PII未対処/レビュー待ち」(実体なし=pii_unreviewed)の置換表示用。検出比でなく実数・読み取りのみ。
         # ga-close-v3 PartD D-3: 集計は guardrail.pii_counts_from_db に集約した
         #   (層の指定と {種別:件数} の読み方をここで書き直さない)。
@@ -225,8 +225,8 @@ async def dashboard_summary(request: Request):
             masked_spans_total = int(pii_counts_from_db(conn2)["pii_spans"])
         except Exception:
             masked_spans_total = 0
-        # masked-only §9-7 (vector-tier-masked-only-20260724): 伏字なし取り込み (raw_only) の
-        # 廃止に伴い、専用の存在数集計 (rawmode-partD) は撤去した (取り込みは常に伏字を経由する)。
+        # masked-only §9-7 (vector-tier-masked-only-20260724): マスキングなし取り込み (raw_only) の
+        # 廃止に伴い、専用の存在数集計 (rawmode-partD) は撤去した (取り込みは常にマスキングを経由する)。
     finally:
         conn2.close()
 

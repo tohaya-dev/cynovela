@@ -21,7 +21,7 @@ from pipeline_types import ChunkHit, RetrievalResult
 from providers.embedding import get_embedding_provider, EmbeddingProvider
 from providers.reranker import get_reranker_provider, NoReranker, RerankerProvider
 
-# vault-enc 鍵窓口: raw 本文を 'enc:' プレフィックス付きで暗号化／復号する薄い窓口
+# vault-enc 鍵インターフェース: raw 本文を 'enc:' プレフィックス付きで暗号化／復号する薄いインターフェース
 from vault_enc import enc_raw, dec_raw
 
 # Phase 2: モジュール保持のEmbeddingProvider（server.pyから差し替え可能）
@@ -144,7 +144,7 @@ def _get_vs():
 
 
 # Phase 1: Workspaceごとの BM25 インデックス（Publish時に構築、メモリに保持）
-# §段1d: (workspace_id, tier) 複合キーで分離。raw/masked を別索引にする。
+# §段1d: (workspace_id, tier) 複合キーで分離。raw/masked を別インデックスにする。
 # 既存呼出 (workspace_id 単一キー) は _bm25_key で 'raw' tier に正規化する。
 _bm25_indexes: dict[tuple[str, str], BM25Okapi] = {}
 _bm25_corpus: dict[tuple[str, str], list[list[str]]] = {}  # トークン化されたコーパス
@@ -154,7 +154,7 @@ _bm25_chunk_source: dict[tuple[str, str], list[str]] = {}  # 各chunkのsource_d
 
 
 def _bm25_key(workspace_id: str, tier: str = "raw") -> tuple[str, str]:
-    """§段1d: BM25 索引のキー (workspace_id, tier)。tier は 'raw'/'masked'。"""
+    """§段1d: BM25 インデックスのキー (workspace_id, tier)。tier は 'raw'/'masked'。"""
     _t = tier if tier in ("raw", "masked") else "raw"
     return (workspace_id, _t)
 
@@ -202,7 +202,7 @@ def _current_embedding_model_name() -> str:
     if "TFIDF" in cls:
         return "tfidf"
     # DD-CYN-0067 G-2: 実装の選択を環境変数 (CYNOVELA_EMBEDDING_BACKEND) から受ける口を
-    #   撤去した。立てる側は皆無で常に既定だった。出どころは設定ファイル 1 本にする。
+    #   撤去した。立てる側は皆無で常に既定だった。入手元は設定ファイル 1 本にする。
     try:
         _cfg_model = ((_DTC2.get("embedding") or {}).get("model") or "").strip()
     except Exception:
@@ -230,12 +230,12 @@ _EMBED_STOP_POLL_SEC = 2  # 埋め込み中に停止フラグ/締切を確認す
 # ingest-resilience v1 は「埋め込み段」だけを外側から監視していた。実測したところ
 # 停止が効かない長い無音区間は別の段に残っており、そこを同じ方式で塞ぐ:
 #   (1) PDF 等の本文抽出 extract_text() = 1ファイル1回の長い同期呼び出し
-#   (2) 伏字の並列前処理 _parallel_mask_batch() = プール起動(spawn+NERモデル読込)中は
+#   (2) マスキングの並列前処理 _parallel_mask_batch() = プール起動(spawn+NERモデル読込)中は
 #       as_completed が1件も完了せず停止判定に到達しない
 #   (3) チャンク書き込みループ = 生存合図はあるが停止判定が無い (in-memory 積み上げのみ)
 # いずれも「取り込み結果」には触れず、停止を押してから画面が戻るまでの時間だけを縮める。
 _EXTRACT_STOP_POLL_SEC = 1  # 本文抽出中に停止フラグを確認する間隔(秒)。
-_MASK_STOP_POLL_SEC = 1  # 伏字の並列処理待ちで停止フラグを確認する間隔(秒)。
+_MASK_STOP_POLL_SEC = 1  # マスキングの並列処理待ちで停止フラグを確認する間隔(秒)。
 
 
 class _PublishStopRequested(Exception):
@@ -902,7 +902,7 @@ def extract_text(file_path: str, mode: str = "fast") -> str:
                     finally:
                         # ga-close-v3 PartA (handoff A→C): 中身の取り出しが例外で落ちても
                         # 一時ファイルを必ず消す。従来は unlink が try の内側の最後にあり、
-                        # 壊れた docx / 暗号化 PDF が1つ混ざるだけで、伏字も暗号化もされていない
+                        # 壊れた docx / 暗号化 PDF が1つ混ざるだけで、マスキングも暗号化もされていない
                         # 中身が OS の一時領域に置き去りになっていた。
                         if tmp_path:
                             try:
@@ -966,7 +966,7 @@ def _embedding_model_missing_message(model_name, store_models, hf_folder, cache_
     _expected = os.path.join(store_models, hf_folder)
     return (
         f"[Cynovela] 埋め込みモデル {model_name} を読み込めませんでした。"
-        f"探した場所: {_expected}/snapshots/<版>/ (置き場: {cache_dir})。"
+        f"探した場所: {_expected}/snapshots/<版>/ (保存先: {cache_dir})。"
         "モデルが無いと取り込みも検索も成り立ちません "
         "(検索は「該当する情報が含まれていません」と出ますが、原因は資料ではなくモデル不在です)。"
         f"{guide} の手順でモデルを置いてから、もう一度お試しください。"
@@ -1005,7 +1005,7 @@ def _get_chroma_embedding_function():
     if _CHROMA_EF_CACHE is not None:
         return _CHROMA_EF_CACHE
     # DD-CYN-0067 G-2: 実装・モデルの指定を環境変数 (CYNOVELA_EMBEDDING_BACKEND /
-    #   CYNOVELA_EMBEDDING_MODEL) から受ける口を撤去した。出どころは設定ファイル
+    #   CYNOVELA_EMBEDDING_MODEL) から受ける口を撤去した。入手元は設定ファイル
     #   (cynovela.yaml の embedding.model) の 1 本にする。
     from chromadb.utils import embedding_functions
 
@@ -1031,7 +1031,7 @@ def _get_chroma_embedding_function():
     #   device 省略時 "cpu" 固定。MPS が使える環境 (Apple Silicon ホスト直起動) では
     #   MPS を明示し、使えない環境 (コンテナ内 torch +cpu ビルド等) は従来どおり CPU。
     # mas-device-20260725: embedding.device (cpu/local_cpu | mps/local_mps) が明示されて
-    #   いればそれを優先する。auto/未指定/external* は従来の自動判定のまま (外の口への
+    #   いればそれを優先する。auto/未指定/external* は従来の自動判定のまま (外部の推論サーバへの
     #   退避先もこの自動判定値 = コンテナでは CPU・ホスト直では MPS)。
     try:
         _dev_cfg = ((_DTC2.get("embedding") or {}).get("device") or "").lower()
@@ -1065,9 +1065,9 @@ def _get_chroma_embedding_function():
         pass
     # r1-model-missing-20260802 (DD-CYN-0020 R-1): モデルを読み込めないときに素の
     #   FileNotFoundError ("[Errno 2] No such file or directory") を投げていた。この文には
-    #   ファイル名も置き場も入っておらず、画面に出ても受け取り手には何をすればよいか分からない。
+    #   ファイル名も保存先も入っておらず、画面に出ても受け取り手には何をすればよいか分からない。
     #   何が足りないか・どこを探したか・どこへ置けばよいかを含む文へ置き換える。
-    #   モデルを外に置く作り (置き場は store/models のまま) は変えていない。
+    #   モデルを外に置く作り (保存先は store/models のまま) は変えていない。
     try:
         _CHROMA_EF_CACHE = embedding_functions.SentenceTransformerEmbeddingFunction(
             model_name=_st_target,
@@ -1095,7 +1095,7 @@ def get_active_publishes() -> list:
         return list(_ACTIVE_PUBLISHES)
 
 
-# mas-fallback-20260725: 外の口 (Mac Accelerator Service) に届かないときの明示退避の状態。
+# mas-fallback-20260725: 外部の推論サーバ (Mac Accelerator Service) に届かないときの明示退避の状態。
 #   黙って遅くならないために退避の発生を記録し、/api/settings/embedding 経由で画面へ出す。
 #   実際にローカルで選ばれるデバイスは _EF_DEVICE_SELECTED (コンテナ=cpu / ホスト直=mps)。
 _EF_DEVICE_SELECTED = None
@@ -1110,7 +1110,7 @@ _EMBED_FALLBACK_STATE = {
 
 
 def get_embedding_fallback_state() -> dict:
-    """外の口からローカルへの退避状態のスナップショットを返す (UI 表示用)。
+    """外部の推論サーバからローカルへの退避状態のスナップショットを返す (UI 表示用)。
 
     r1-model-missing-20260802 (DD-CYN-0020 R-1): モデルを読み込めなかった記録も同じ器に
     載せる。受け口 (/api/settings/embedding) はこの辞書をそのまま返しているため、
@@ -1159,13 +1159,13 @@ def _external_embedding_provider():
 
 
 def _embed_texts_for_index(texts):
-    """v3.5.0 Stage2 (embedding 外出し): 索引/検索用 embedding を計算する単一経路。
+    """v3.5.0 Stage2 (embedding 外出し): インデックス/検索用 embedding を計算する単一経路。
 
     外部 embedding provider (cynovela.yaml embedding.provider=openai_compat 等) が設定されて
     いればそれを使って事前計算し、それ以外（既定 local bge-m3 / multilingual_e5 等）は従来の
     Chroma EmbeddingFunction をそのまま使う（= 既定経路は完全無回帰）。
     返り値: list[list[float]] か None (None=ChromaDB 既定埋め込みに委譲 = 旧 minilm 経路)。
-    伏字・暗号化には一切触れない（masked/raw のテキスト内容は呼び出し側で確定済み）。
+    マスキング・暗号化には一切触れない（masked/raw のテキスト内容は呼び出し側で確定済み）。
     """
     _texts = list(texts)
     _prov = _embedding_provider
@@ -1181,7 +1181,7 @@ def _embed_texts_for_index(texts):
         except Exception as _ex:
             # mas-fallback-20260725: 口が居ないときは黙って待たせず、ローカルへ明示的に退避する。
             #   コンテナ内では CPU・ホスト直では MPS (下の Chroma EF の自動判定と同値)。
-            #   復帰は次回の外部呼び出し成功時 (毎回まず外の口を試す)。
+            #   復帰は次回の外部呼び出し成功時 (毎回まず外部の推論サーバを試す)。
             try:
                 import torch as _torch_fb
                 _fb_target = "mps" if _torch_fb.backends.mps.is_available() else "cpu"
@@ -1189,7 +1189,7 @@ def _embed_texts_for_index(texts):
                 _fb_target = "cpu"
             from datetime import datetime as _dt_fb
             # r1-model-missing-20260802 (DD-CYN-0020 R-1): 退避先のローカルにモデルが
-            #   在るかどうかまで見る。外の口に届かず、手元にもモデルが無いときは、この
+            #   在るかどうかまで見る。外部の推論サーバに届かず、手元にもモデルが無いときは、この
             #   あと必ず失敗する。画面から「外が落ちただけ」と「手元にも無い」を切り分け
             #   られるよう、退避の記録に持たせる。
             try:
@@ -1208,7 +1208,7 @@ def _embed_texts_for_index(texts):
                 local_model_missing=_fb_local_missing,
             )
             _log.warning(
-                f"[Cynovela] 外の口 (embedding {getattr(_prov, 'base_url', '')}) に届かないため "
+                f"[Cynovela] 外部の推論サーバ (embedding {getattr(_prov, 'base_url', '')}) に届かないため "
                 f"ローカル ({_fb_target}) へ退避します: {_ex}"
             )
         else:
@@ -1216,7 +1216,7 @@ def _embed_texts_for_index(texts):
                 _EMBED_FALLBACK_STATE.update(
                     active=False, error="", target="", local_model_missing=False
                 )
-                _log.info("[Cynovela] 外の口 (embedding) への接続が復帰しました (退避解除)")
+                _log.info("[Cynovela] 外部の推論サーバ (embedding) への接続が復帰しました (退避解除)")
             return [[float(x) for x in e] for e in _embs]
     # 既定: 従来どおり Chroma EF (bge-m3) で計算。minilm backend のときは None。
     _ef = _get_chroma_embedding_function()
@@ -1236,7 +1236,7 @@ class _ChromaClientWrapper:
 
     def get_or_create_collection(self, name, **kwargs):
         if "embedding_function" not in kwargs:
-            # mas-noef-20260725: 外部埋め込み (外の口) 有効時はローカル EF を注入しない。
+            # mas-noef-20260725: 外部埋め込み (外部の推論サーバ) 有効時はローカル EF を注入しない。
             # 埋め込みは _embed_texts_for_index が事前計算して embeddings/query_embeddings で
             # 渡すため EF は不要で、モデル非同梱環境でローカルモデルを要求してしまうのを防ぐ。
             if _external_embedding_provider() is None:
@@ -1274,9 +1274,9 @@ def get_chroma():
 
 
 # ─── §9-4 embedding-identity (ga-mas-20260725) ────────────────────────────
-# 索引を作った埋め込みモデルの識別 (名前+版) を索引ディレクトリに記録し、起動時に
+# インデックスを作った埋め込みモデルの識別 (名前+版) をインデックスディレクトリに記録し、起動時に
 # 現在の埋め込み経路と突き合わせる。食い違えば明示的に警告する (ブロックはしない)。
-# 受け取り手が別版の bge-m3 で追加取り込みし、同じ索引に別数値系のベクトルを混ぜて
+# 受け取り手が別版の bge-m3 で追加取り込みし、同じインデックスに別数値系のベクトルを混ぜて
 # 順位が壊れる事故を、黙って起こさせないための対策 (a)。
 
 _EMBED_IDENTITY_STATE = {"checked": False, "match": None, "stored": None, "current": None, "message": ""}
@@ -1287,7 +1287,7 @@ def _embedding_identity_path() -> str:
 
 
 def _current_embedding_identity() -> dict:
-    """現在の埋め込み経路の識別。外部 (外の口) は /capabilities に問い合わせる。"""
+    """現在の埋め込み経路の識別。外部 (外部の推論サーバ) は /capabilities に問い合わせる。"""
     _prov = _external_embedding_provider()
     if _prov is not None:
         try:
@@ -1323,7 +1323,7 @@ def get_embedding_identity_state() -> dict:
 
 
 def check_embedding_identity(write_if_absent: bool = False) -> dict:
-    """索引の識別記録と現在の埋め込み経路を突き合わせる。
+    """インデックスの識別記録と現在の埋め込み経路を突き合わせる。
 
     - 記録が無く write_if_absent=True → 現在値を記録 (publish 開始時)。
     - 記録が有り一致 → match=True。
@@ -1347,19 +1347,19 @@ def check_embedding_identity(write_if_absent: bool = False) -> dict:
                 os.makedirs(CHROMA_PATH, exist_ok=True)
                 with open(path, "w", encoding="utf-8") as _f:
                     _json_id.dump(cur, _f, ensure_ascii=False, indent=2)
-                _log.info(f"[Cynovela] 索引の埋め込み識別を記録: {cur}")
+                _log.info(f"[Cynovela] インデックスの埋め込み識別を記録: {cur}")
             except Exception as _e:
                 _log.warning(f"[Cynovela] embedding_identity.json 書き込み失敗: {_e}")
         _EMBED_IDENTITY_STATE.update(checked=True, match=None, stored=None, current=cur, message="記録なし (初回 publish 時に記録)")
         return get_embedding_identity_state()
-    # identity-unreachable-20260727: 外の口へ到達できないときは突き合わせが成立していない。
+    # identity-unreachable-20260727: 外部の推論サーバへ到達できないときは突き合わせが成立していない。
     #   従来は到達失敗時に revision が "unknown" になり、下の緩和条件 ("unknown" in _revs) が
     #   そのまま通って match=True → 画面に「一致」と出ていた。実際には現在の経路の識別を
     #   一度も読めていないため、「一致」ではなく「確認できない」を返す。
     if cur.get("source") == "external_unreachable":
         msg = (
-            "確認できません: 外の口 (Mac Accelerator Service) へ到達できないため、"
-            f"現在の埋め込み経路の識別を読み取れませんでした。索引側の記録は "
+            "確認できません: 外部の推論サーバ (Mac Accelerator Service) へ到達できないため、"
+            f"現在の埋め込み経路の識別を読み取れませんでした。インデックス側の記録は "
             f"{stored.get('model')}@{stored.get('revision')} です。口を起動してから再確認してください。"
         )
         _log.warning(f"[Cynovela] §9-4 embedding identity UNVERIFIABLE: {msg}")
@@ -1375,9 +1375,9 @@ def check_embedding_identity(write_if_absent: bool = False) -> dict:
         msg = "一致"
     else:
         msg = (
-            f"索引の埋め込み識別と現在の経路が食い違っています: 索引={stored.get('model')}@{stored.get('revision')} / "
+            f"インデックスの埋め込み識別と現在の経路が食い違っています: インデックス={stored.get('model')}@{stored.get('revision')} / "
             f"現在={cur.get('model')}@{cur.get('revision')}。このまま追加取り込みすると既存ベクトルと数値系の異なる"
-            "ベクトルが同じ索引に混ざり検索順位が壊れます。モデル版を索引作成時と揃えるか、全再構築してください。"
+            "ベクトルが同じインデックスに混ざり検索順位が壊れます。モデル版をインデックス作成時と揃えるか、全再構築してください。"
         )
         _log.warning(f"[Cynovela] §9-4 embedding identity MISMATCH: {msg}")
     _EMBED_IDENTITY_STATE.update(checked=True, match=match, stored=stored, current=cur, message=msg)
@@ -1416,7 +1416,7 @@ def _publish_mask_text(text: str) -> tuple[str, list[dict]]:
     """Publish 経路の二段マスク（child / parent 共通）。
 
     C2 (allinone) NER #18 / A6: 先に NER(GiNZA/Presidio) で人名・組織・住所・日付を
-    伏字し、その後 regex マスク (mask_text_with_spans) で email/phone/url 等を伏字する。
+    マスキングし、その後 regex マスク (mask_text_with_spans) で email/phone/url 等をマスキングする。
     NER を先に当てることで regex placeholder の二重マスク破損を防ぐ。NER 失敗時は raw を
     保ったまま regex マスクのみ適用する（人名等は最低限 regex では落ちないが、ここで例外を
     握り潰して publish 全体を止めないための後方互換挙動）。
@@ -1477,7 +1477,7 @@ def _publish_mask_text_safe(text: str) -> tuple[str, list]:
 
 
 def _mask_worker_init(mode: str) -> None:
-    """spawn ワーカへ伏字の強度を引き継ぐ。
+    """spawn ワーカへマスキングの強度を引き継ぐ。
 
     PII_DETECTION_MODE は utils.metadata.pii のモジュール大域であり、spawn の子は
     親を継承せず再 import する。initializer が無いと子は常に既定 (standard) で動くため、
@@ -1494,13 +1494,13 @@ _QUERY_MASK_TOKEN_RX = None
 
 
 def _mask_query_for_retrieval(query: str) -> str:
-    """§9-5 (vector-tier-masked-only-20260724): 問い合わせ文に取り込みと同じ伏字処理
-    (NER+regex = _publish_mask_text_safe) をかけてから索引 (embedding / BM25) へ渡す。
+    """§9-5 (vector-tier-masked-only-20260724): 問い合わせ文に取り込みと同じマスキング処理
+    (NER+regex = _publish_mask_text_safe) をかけてからインデックス (embedding / BM25) へ渡す。
 
-    伏字済みの索引に生の問い合わせをぶつけると、そこがもう一つの漏れ口になる。
-    一方、伏字トークン ([MASKED:EMAIL] 等) 自体は索引側のほぼ全チャンクに現れるため、
+    マスキング済みのインデックスに生の問い合わせをぶつけると、そこがもう一つの漏れ口になる。
+    一方、マスキングトークン ([MASKED:EMAIL] 等) 自体はインデックス側のほぼ全チャンクに現れるため、
     トークンを残したまま検索すると無関係な文書への誤一致の種になる。よってトークンは
-    除去し、残った文だけを検索に使う。全文が伏字対象 (PII 値だけの問い合わせ) なら
+    除去し、残った文だけを検索に使う。全文がマスキング対象 (PII 値だけの問い合わせ) なら
     空文字を返し、呼び出し側は検索を行わない (ヒット0件で閉じる)。
     """
     global _QUERY_MASK_TOKEN_RX
@@ -1514,7 +1514,7 @@ def _mask_query_for_retrieval(query: str) -> str:
 
 
 def _parallel_mask_batch(texts: list, stop_event=None) -> tuple:
-    """伏字(NER+regex)を入力順を保って一括処理する。
+    """マスキング(NER+regex)を入力順を保って一括処理する。
 
     DD-CYN-0032 B6: 中身は _parallel_mask_batch_iter へ移した。ここはその生成器を
     最後まで回して結果だけを返す薄い包みである（従来の呼び出し側から見た振る舞いは不変）。
@@ -1529,9 +1529,9 @@ def _parallel_mask_batch(texts: list, stop_event=None) -> tuple:
 
 
 def _parallel_mask_batch_iter(texts: list, stop_event=None):
-    """伏字(NER+regex)を入力順を保って一括処理し、途中経過を刻みながら進む生成器。
+    """マスキング(NER+regex)を入力順を保って一括処理し、途中経過を刻みながら進む生成器。
 
-    masking-parallel: 各 text の伏字は _publish_mask_text_safe による決定的純関数のため、
+    masking-parallel: 各 text のマスキングは _publish_mask_text_safe による決定的純関数のため、
     並列度を変えても出力は逐次と1バイトも変わらない（§7 パリティの設計根拠）。並列度は
     cynovela.yaml の masking.parallelism（既定 0=自動 min(コア数-1,4)）。masking.parallel_min_chunks
     （既定 64）未満や parallelism<=1 のときは逐次（= 従来挙動と等価）。
@@ -1543,7 +1543,7 @@ def _parallel_mask_batch_iter(texts: list, stop_event=None):
     DD-CYN-0032 B6: 従来はこれが yield を1つも持たない通常関数だったため、呼び出し元の
       生成器 publish_collection_iter は本関数が戻るまで次の yield に到達できず、その間
       publish_jobs の行が1バイトも変わらなかった。画面側 (_pollPublishJob) は
-      「進捗も message も 90 秒変わらない」を打ち切りの条件にしているため、伏字に 90 秒
+      「進捗も message も 90 秒変わらない」を打ち切りの条件にしているため、マスキングに 90 秒
       以上かかる資料では取り込みの途中で追うのをやめていた（追記200 の実測）。
       計算そのものと出力は変えていない。変えたのは「終わるまで一言も返さない」点だけである。
 
@@ -1669,7 +1669,7 @@ def _boundary_prepatch_regex(
 ) -> tuple[str, list]:
     """maskfix-boundary(案A'§1): 全文 regex スパン(detect_pii_spans(text) の原文座標)のうち
     チャンク範囲と「部分交差」する(=境界をまたぐ)スパンの断片をマスクトークンへ前倒し置換した
-    伏字入力専用テキストを返す。完全内包スパンは従来どおりチャンク単位 regex に任せる
+    マスキング入力専用テキストを返す。完全内包スパンは従来どおりチャンク単位 regex に任せる
     (非境界のマスク出力を1バイトも変えない)。raw 経路・content_hash には絶対に使わないこと。
     Returns: (patched_text, [{"type": ...}, ...])  — text の決定的純関数。"""
     e = chunk_start + len(chunk_text)
@@ -1679,7 +1679,7 @@ def _boundary_prepatch_regex(
         if b <= chunk_start or a >= e or not sp.get("type"):
             continue
         if a >= chunk_start and b <= e:
-            continue  # 完全内包 → チャンク単位 regex が完全形を従来どおり伏字
+            continue  # 完全内包 → チャンク単位 regex が完全形を従来どおりマスキング
         hits.append((max(a, chunk_start) - chunk_start, min(b, e) - chunk_start, sp["type"]))
     if not hits:
         return chunk_text, []
@@ -1701,7 +1701,7 @@ def _boundary_patch_ner(
 ) -> dict:
     """maskfix-boundary(案A'§2): NER(人名/住所)系の境界断片パッチ。
     隣接チャンクが overlap 再包含により完全形を NER 検出済みのスパンを原文座標へ写像し、
-    断片だけが残る側の伏字入力(mask_parts)の該当端を [{TYPE}:***] へ置換する(インプレース)。
+    断片だけが残る側のマスキング入力(mask_parts)の該当端を [{TYPE}:***] へ置換する(インプレース)。
     追加の NER 呼び出しはゼロ。完全形がどのチャンクにも現れない L>overlap の NER スパンは
     対象外(既知限界・regex 系は §1 の全文前倒しが全長カバー)。
     Returns: {chunk_index: [{"type": ...}, ...]}  — 呼び出し側で該当チャンクのみ再マスクする。"""
@@ -1815,14 +1815,14 @@ def _publish_collection_iter_impl(
     stop_event = _publish_stop_flags.setdefault(collection_id, threading.Event())
     stop_event.clear()
 
-    # §9-4 embedding-identity: publish 開始時に索引の識別記録を確認する。
+    # §9-4 embedding-identity: publish 開始時にインデックスの識別記録を確認する。
     # 記録が無ければ現在の識別を記録し、食い違えば警告 (check 内で log + 状態保持)。
     try:
         check_embedding_identity(write_if_absent=True)
     except Exception as _id_e:
         _log.warning(f"[Cynovela] embedding identity check failed at publish: {_id_e}")
 
-    # masked-only §9-7 (vector-tier-masked-only-20260724): 伏字なし取り込み (raw_only) は
+    # masked-only §9-7 (vector-tier-masked-only-20260724): マスキングなし取り込み (raw_only) は
     # 廃止済み。列と過去データは残すため、ここでは外部送出フェイルクローズの判定のためだけに
     # collections.raw_only を読む (取り込み動作の分岐には使わない)。
     # raw_only 列が無い旧 DB でも落ちないよう try/except で読み、既定 0。
@@ -1841,7 +1841,7 @@ def _publish_collection_iter_impl(
         _raw_only = 0
 
     # egress-guard (pre-ga-fix-all-20260720 / §9-7-4 で維持): ★masked-only 不可侵。
-    # 伏字なし取り込みは廃止済みだが、過去に raw_only=1 で作られたレガシー Collection が
+    # マスキングなし取り込みは廃止済みだが、過去に raw_only=1 で作られたレガシー Collection が
     # 残る可能性があるため、外部埋め込み有効時の publish 拒否 (フェイルクローズ) は
     # 守りとしてそのまま残す (画面からは到達できないが遮断は維持する・11-7)。
     if _raw_only and _external_embedding_provider() is not None:
@@ -1854,8 +1854,8 @@ def _publish_collection_iter_impl(
         return
 
     chroma = get_chroma()
-    # masked-only (vector-tier-masked-only-20260724 §9-1): ベクターは伏字済み一組のみ。
-    # 伏字前の層 ({cid}__raw) のコレクションは作らない (作成経路から撤去)。
+    # masked-only (vector-tier-masked-only-20260724 §9-1): ベクターはマスキング済み一組のみ。
+    # マスキング前の層 ({cid}__raw) のコレクションは作らない (作成経路から撤去)。
     from providers.vector_store import chroma_name_for_tier as _cnt
     _masked_name = _cnt(collection_id, "masked")
     chroma.get_or_create_collection(name=_masked_name)
@@ -1926,7 +1926,7 @@ def _publish_collection_iter_impl(
         processed_count = 0
         retained_count = 0
         # intake-togo-v2-20260705 (Fix 7): 差分内訳の可視化用カウンタ。
-        # reingested = 指紋不一致で入れ替えた既存ファイル / missing_retained = 実体不在で非破壊温存したファイル
+        # reingested = ハッシュ不一致で入れ替えた既存ファイル / missing_retained = 実体不在で非破壊温存したファイル
         reingested_count = 0
         missing_retained_count = 0
         retained_chunk_ids: list[str] = []
@@ -1936,7 +1936,7 @@ def _publish_collection_iter_impl(
         new_chunk_rows: list[dict] = []  # [{chunk_id, source_doc, char_count, content, pii_detected}]
         excluded_chunk_rows: list[dict] = []  # excluded=1 でchunks表に記録（内容なし）
         skipped_files = []
-        # DD-CYN-0091 C: 飛ばしたファイルを名前と理由つきで画面へ出すための控え (additive)
+        # DD-CYN-0091 C: 飛ばしたファイルを名前と理由つきで画面へ出すためのバックアップ (additive)
         skipped_details: list[dict] = []
         excluded_files = []
         # vision-placeholder-warn-20260727: 抽出結果がプレースホルダだけだったファイル。
@@ -2071,7 +2071,7 @@ def _publish_collection_iter_impl(
 
                 # 変更あり or 新規 → 旧チャンクを削除してから再登録（下でupsert）
                 if existing:
-                    reingested_count += 1  # intake-togo-v2 (Fix 7): 指紋不一致=変更ファイルの入替として計上
+                    reingested_count += 1  # intake-togo-v2 (Fix 7): ハッシュ不一致=変更ファイルの入替として計上
                     try:
                         old_ids = json.loads(existing.get("chunk_ids", "[]"))
                     except Exception:
@@ -2170,9 +2170,9 @@ def _publish_collection_iter_impl(
                 # Phase 1: PII簡易検出（メール / 電話 / マイナンバー風パターン）
                 import re as _re
 
-                # sokessan-fix-a10-20260711: 電話/12桁枝に境界ガードを付け、日付や長桁数値の内部への
-                # 誤マッチ (例 "20260711" が電話様に部分一致し pii_detected=1 だが伏字0件、の不整合) を防ぐ。
-                # MYNUMBER 第3枝 (?<!\d)\d{12}(?!\d) と同方式。email 枝は不変。伏字本体(guardrail.py)には不接触。
+                # sokessan-fix-a10-20260711: 電話/12桁分岐に境界ガードを付け、日付や長桁数値の内部への
+                # 誤マッチ (例 "20260711" が電話様に部分一致し pii_detected=1 だがマスキング0件、の不整合) を防ぐ。
+                # MYNUMBER 第3分岐 (?<!\d)\d{12}(?!\d) と同方式。email 分岐は不変。マスキング本体(guardrail.py)には不接触。
                 pii_pat = _re.compile(
                     r"([\w\.-]+@[\w\.-]+\.\w+|(?<!\d)0\d{1,4}-?\d{1,4}-?\d{4}(?!\d)|(?<!\d)\d{12}(?!\d))"
                 )
@@ -2194,14 +2194,14 @@ def _publish_collection_iter_impl(
                 # 振り分けるが、Chroma 側分離は §段1c。本段では DB 側の dual-row のみ実装する。
                 # (確定2-5: マスク対象は context prefix を付けた後の本文全体。)
                 # NER+regex 二段マスクは _publish_mask_text に集約 (child / parent 共通)。
-                # masking-parallel A: context prefix を pre-pass で確定 → 伏字(NER)を遊休コアで並列化。
+                # masking-parallel A: context prefix を pre-pass で確定 → マスキング(NER)を遊休コアで並列化。
                 #   出力は逐次と完全一致（_publish_mask_text_safe は text の決定的純関数・入力順保持）。
                 # masking-parallel B: 本 pre-pass は DB フラッシュ前なので、ここでの停止は raw/masked の
                 #   どちらにも中途半端な書き込みを残さない（孤児ゼロ）。
                 # maskfix-boundary(案A'§1): 全文 regex スパンをファイル毎に1回前倒し計算。
                 # 失敗時は空(=従来挙動へ縮退)とし publish を止めない(既存 NER 失敗時と同じ継続方針)。
-                # masked-only §9-7 (vector-tier-masked-only-20260724): 伏字なし取り込み
-                # (raw_only) の分岐は廃止。取り込みは常に伏字を経由する。
+                # masked-only §9-7 (vector-tier-masked-only-20260724): マスキングなし取り込み
+                # (raw_only) の分岐は廃止。取り込みは常にマスキングを経由する。
                 try:
                     from guardrail import PII_PATTERNS as _BP_PATS
                     from guardrail import detect_pii_spans as _bp_detect
@@ -2212,10 +2212,10 @@ def _publish_collection_iter_impl(
                     _log.warning(f"maskfix-boundary 全文スパン計算失敗(継続・前倒しなし): {_bpe}")
                     _bp_fulltext_spans, _bp_label_to_token = [], {}
                 _prefixed_chunks: list = []
-                # maskfix-boundary: 伏字入力は境界断片を前倒しトークン化した専用コピー。
+                # maskfix-boundary: マスキング入力は境界断片を前倒しトークン化した専用コピー。
                 # raw 経路(_prefixed_chunks)・content_hash は真の原文のまま(★リスク1・不変条件1/12)。
                 _mask_inputs: list = []       # _parallel_mask_batch へ渡す (prefix + パッチ済み chunk)
-                _mask_parts: list = []        # prefix 無しのパッチ済み chunk (parent 伏字入力・NER 端パッチ用)
+                _mask_parts: list = []        # prefix 無しのパッチ済み chunk (parent マスキング入力・NER 端パッチ用)
                 _mask_patch_types: list = []  # チャンク毎の前倒し断片種別 (pii_flag/pii_summary へ追記)
                 for i, chunk in enumerate(chunks):
                     _ctx_text = ""
@@ -2240,10 +2240,10 @@ def _publish_collection_iter_impl(
                     _mask_inputs.append(_minput)
                     _mask_parts.append(_bp_part)
                     _mask_patch_types.append(_bp_types)
-                # masked-only §9-7: 伏字なし取り込み (raw_only) 分岐は廃止。常に伏字を計算する。
-                # maskfix-boundary: 伏字入力は _mask_inputs (境界断片前倒し済)。raw 経路は _prefixed_chunks のまま。
-                # DD-CYN-0032 B6: 開始前の1回だけでなく、伏字が進むたびに生存合図を出す。
-                #   従来は「伏字処理中 N件」を1回出したきり、_parallel_mask_batch が戻るまで
+                # masked-only §9-7: マスキングなし取り込み (raw_only) 分岐は廃止。常にマスキングを計算する。
+                # maskfix-boundary: マスキング入力は _mask_inputs (境界断片前倒し済)。raw 経路は _prefixed_chunks のまま。
+                # DD-CYN-0032 B6: 開始前の1回だけでなく、マスキングが進むたびに生存合図を出す。
+                #   従来は「マスキング処理中 N件」を1回出したきり、_parallel_mask_batch が戻るまで
                 #   何も出さなかった。画面はその無音を打ち切りの条件 (90秒) に当てて追うのをやめていた。
                 _child_mask_cache, _mask_stopped = None, False
                 for _mev in _parallel_mask_batch_iter(_mask_inputs, stop_event):
@@ -2252,14 +2252,14 @@ def _publish_collection_iter_impl(
                             "stage": "chunking",
                             "current": idx,
                             "total": total_files,
-                            "message": f"伏字処理中 {_mev[1]}/{_mev[2]}件: {fname} ({idx}/{total_files})",
+                            "message": f"マスキング処理中 {_mev[1]}/{_mev[2]}件: {fname} ({idx}/{total_files})",
                         }
                     else:
                         _child_mask_cache, _mask_stopped = _mev[1], _mev[2]
                 if _mask_stopped:
                     conn.close()
                     _publish_stop_flags.pop(collection_id, None)
-                    yield {"stage": "stopped", "current": idx - 1, "total": total_files, "message": "停止しました（伏字処理中）"}
+                    yield {"stage": "stopped", "current": idx - 1, "total": total_files, "message": "停止しました（マスキング処理中）"}
                     return
                 # maskfix-boundary(案A'§2): NER 系の境界断片を端パッチし、該当チャンクのみ再マスク。
                 # DB フラッシュ前の pre-pass 内なので停止セマンティクス(孤児ゼロ)は不変。
@@ -2298,7 +2298,7 @@ def _publish_collection_iter_impl(
                     vector_id = _make_vector_id(logical_chunk_id, _emb_version)
                     doc_id = vector_id
                     content_hash = _make_content_hash(chunk or "")
-                    # §段1b: 伏字済本文（pre-pass で並列生成・逐次と完全一致）。
+                    # §段1b: マスキング済本文（pre-pass で並列生成・逐次と完全一致）。
                     _masked_chunk, _mask_spans = _child_mask_cache[i]
                     _masked_doc_id = f"{doc_id}__masked"
                     # masked-only §9-7: raw_only 分岐は廃止。pii_flag/pii_summary は常に算出する。
@@ -2401,7 +2401,7 @@ def _publish_collection_iter_impl(
                     from collections import defaultdict as _dd
 
                     _grp: dict = _dd(list)
-                    # maskfix-boundary: parent の伏字入力は断片パッチ済み child(_mask_parts) の join。
+                    # maskfix-boundary: parent のマスキング入力は断片パッチ済み child(_mask_parts) の join。
                     # raw 親(_grp/_parent_texts)は真の原文 join のまま(不変条件1)。
                     _grp_mask: dict = _dd(list)
                     _grp_ptypes: dict = _dd(list)
@@ -2411,11 +2411,11 @@ def _publish_collection_iter_impl(
                         _grp[_pid].append(ch)
                         _grp_mask[_pid].append(_mask_parts[ci])
                         _grp_ptypes[_pid].extend(_mask_patch_types[ci])
-                    # masking-parallel: parent も child と同一の伏字を pre-pass で並列生成（出力は逐次と完全一致・順序保持）。
+                    # masking-parallel: parent も child と同一のマスキングを pre-pass で並列生成（出力は逐次と完全一致・順序保持）。
                     _parent_items = list(_grp.items())
                     _parent_texts = ["\n".join(_parts) for _pid, _parts in _parent_items]
                     _parent_mask_inputs = ["\n".join(_grp_mask[_pid]) for _pid, _parts in _parent_items]
-                    # masked-only §9-7: raw_only 分岐は廃止。parent の伏字も常に計算する。
+                    # masked-only §9-7: raw_only 分岐は廃止。parent のマスキングも常に計算する。
                     # DD-CYN-0032 B6: 親側は生存合図が1つも無かった。ここでも刻んで出す。
                     _parent_mask_cache, _pmask_stopped = None, False
                     for _mev in _parallel_mask_batch_iter(_parent_mask_inputs, stop_event):
@@ -2424,14 +2424,14 @@ def _publish_collection_iter_impl(
                                 "stage": "chunking",
                                 "current": idx,
                                 "total": total_files,
-                                "message": f"伏字処理中(まとめ) {_mev[1]}/{_mev[2]}件: {fname} ({idx}/{total_files})",
+                                "message": f"マスキング処理中(まとめ) {_mev[1]}/{_mev[2]}件: {fname} ({idx}/{total_files})",
                             }
                         else:
                             _parent_mask_cache, _pmask_stopped = _mev[1], _mev[2]
                     if _pmask_stopped:
                         conn.close()
                         _publish_stop_flags.pop(collection_id, None)
-                        yield {"stage": "stopped", "current": idx - 1, "total": total_files, "message": "停止しました（伏字処理中・親）"}
+                        yield {"stage": "stopped", "current": idx - 1, "total": total_files, "message": "停止しました（マスキング処理中・親）"}
                         return
                     for _pi, (_pid, _parts) in enumerate(_parent_items):
                         _ptext = _parent_texts[_pi]
@@ -2613,12 +2613,12 @@ def _publish_collection_iter_impl(
                 end = min(b + batch_size, total_new_chunks)
                 try:
                     # masked-only (vector-tier-masked-only-20260724 §9-1): 埋め込みは
-                    # 伏字済み本文 (all_docs_masked) からのみ計算し、upsert も masked 層のみ。
-                    # 伏字前の本文は埋め込まない。伏字前の層 ({cid}__raw) は作らない。
+                    # マスキング済み本文 (all_docs_masked) からのみ計算し、upsert も masked 層のみ。
+                    # マスキング前の本文は埋め込まない。マスキング前の層 ({cid}__raw) は作らない。
                     # 理由 (決着済み・事実101-1): ベクトルは距離計算を壊すため暗号化できず、
-                    # 伏字前由来のベクターを置くことは暗号化されていない原文の写しを置くのと
+                    # マスキング前由来のベクターを置くことは暗号化されていない原文のコピーを置くのと
                     # ほぼ同義になる。外部埋め込み時に送るのも masked のみ (egress-guard 継承)。
-                    # FIX-056 / v3.5.0 Stage2: 索引用 embedding は単一経路 _embed_texts_for_index。
+                    # FIX-056 / v3.5.0 Stage2: インデックス用 embedding は単一経路 _embed_texts_for_index。
                     # ingest-resilience v1: 呼び出しの外側でタイムアウト/停止監視 (本体・モデル指定は不変)。
                     _masked_docs_slice = all_docs_masked[b:end]
                     _batch_embeddings_masked = _embed_batch_guarded(_masked_docs_slice, stop_event)
@@ -2695,7 +2695,7 @@ def _publish_collection_iter_impl(
         #   出荷時の file_hashes がビルド時の相対パス (./dummy-corpus/...) で記録されていると、
         #   実行時は絶対パスで照合するため全ファイルが「新規」扱いで入れ直され、その直後に
         #   旧パスの記録行が「今回見なかったファイル」としてここへ落ちる。chunk_id は内容由来で
-        #   新旧同一のため、入れ直したばかりの索引 (ベクター・親行) をそのまま消してしまい、
+        #   新旧同一のため、入れ直したばかりのインデックス (ベクター・親行) をそのまま消してしまい、
         #   検索が関連度0%になっていた (実測: upsert 64 → 同一 id を delete 64)。
         #   ∴ 現在有効な id 集合 (温存分 + 今回登録分) に含まれる id は後始末の対象から外す。
         #   記録行 (file_hashes) の旧パス掃除はこれまでどおり行う。
@@ -2756,7 +2756,7 @@ def _publish_collection_iter_impl(
                     # enc_raw は冪等で空/None/enc:始まりは素通しする。
                     _tier_for_enc = row.get("tier", "raw")
                     # masked-only §9-2 (vector-tier-masked-only-20260724): 金庫 (関係DB) には
-                    # 生と伏字済みの両方を暗号化して格納する (従来は raw のみ暗号化・masked は平文)。
+                    # 生とマスキング済みの両方を暗号化して格納する (従来は raw のみ暗号化・masked は平文)。
                     # 読み出し側は dec_raw が冪等素通し設計のため表面化箇所は既存のまま追随する。
                     _content_for_db = enc_raw(row["content"])
                     conn.execute(
@@ -2820,9 +2820,9 @@ def _publish_collection_iter_impl(
     total_chunks = total_new_chunks + len(retained_chunk_ids)
     # sokessan-fix-a10-20260711: pii_count は tier='raw' 行のみを数える。従来は raw/masked 両層を
     # 無差別集計し、1チャンクで raw+masked=2件のように過大表示していた (dashboard.py 等の集計は
-    # 既に tier='raw' 限定で正しく、publish サマリだけ取り残されていた)。検出/伏字の実処理は不変。
-    # ga-close-v3 PartD D-3: 受領書の伏字件数も guardrail.pii_counts_from_rows に集約する。
-    #   pii_detected は簡易正規表現(メール/電話/12桁)の当たりでも 1 になり、伏字 0 件でも
+    # 既に tier='raw' 限定で正しく、publish サマリだけ取り残されていた)。検出/マスキングの実処理は不変。
+    # ga-close-v3 PartD D-3: 受領書のマスキング件数も guardrail.pii_counts_from_rows に集約する。
+    #   pii_detected は簡易正規表現(メール/電話/12桁)の当たりでも 1 になり、マスキング 0 件でも
     #   計上されていた (要約・一覧・公開履歴と食い違う原因の一つ)。
     from guardrail import pii_counts_from_rows as _pii_counts_from_rows
 
@@ -2888,7 +2888,7 @@ def _publish_collection_iter_impl(
         "placeholder_only_files": placeholder_only_files[:50],
         "placeholder_warning": (
             f"⚠ {len(placeholder_only_files)} ファイルは中身が取り込まれていません"
-            "（画像処理モードが none / filename_only のためファイル名だけが索引に入りました）。"
+            "（画像処理モードが none / filename_only のためファイル名だけがインデックスに入りました）。"
             "設定の画像処理モードを lm_studio / caption にして取り込み直してください。"
             if placeholder_only_files
             else ""
@@ -2907,8 +2907,8 @@ def rag_search(
 
     Stage-2G-2 HIGH-3 修正: workspace_id 引数を追加。指定時は ChromaDB col.query に
     where={"workspace_id": workspace_id} を渡して cross-WS 漏えいを防ぐ。
-    masked-only §9-3/§9-5 (vector-tier-masked-only-20260724): 検索は常に伏字済み層。
-    問い合わせ文も伏字にかけてから埋め込む。
+    masked-only §9-3/§9-5 (vector-tier-masked-only-20260724): 検索は常にマスキング済み層。
+    問い合わせ文もマスキングにかけてから埋め込む。
     """
     tier = "masked"
     query = _mask_query_for_retrieval(query)
@@ -2921,7 +2921,7 @@ def rag_search(
         _query_kwargs_extra["where"] = {"workspace_id": workspace_id}
     # FIX-056 完成: query 側も BGE-M3 で事前計算 (upsert 側と同じ embedding を使う)
     # upsert で embedding_function=None で collection 作成しているため、query_texts は使えない
-    # v3.5.0 Stage2: query 側も索引と同一 embedding 経路 (外部 provider 対応・既定無回帰)
+    # v3.5.0 Stage2: query 側もインデックスと同一 embedding 経路 (外部 provider 対応・既定無回帰)
     _q_embeddings = _embed_texts_for_index([query])
     for cid in collection_ids:
         try:
@@ -2961,7 +2961,7 @@ def build_bm25_index(workspace_id: str, chunks: list[dict], tier: str = "raw") -
     Args:
         workspace_id: ワークスペースID
         chunks: [{"chunk_id": str, "text": str, "source_doc": str}, ...]
-        tier: §段1d 'raw' / 'masked'。索引を (ws, tier) で分離する。
+        tier: §段1d 'raw' / 'masked'。インデックスを (ws, tier) で分離する。
 
     PHASE 3: トークナイザを文字単位 (`list(text.lower())`) から
     `utils.tokenizer.tokenize()` に変更。日本語は fugashi (MeCab/UniDic)
@@ -2994,9 +2994,9 @@ def build_bm25_index(workspace_id: str, chunks: list[dict], tier: str = "raw") -
 
 
 def _bm25_chunks_from_index(workspace_id: str, tier: str = "masked") -> list[dict]:
-    """bm25-index-source-20260725: 索引 (chroma) の伏字済み document から BM25 用の
+    """bm25-index-source-20260725: インデックス (chroma) のマスキング済み document から BM25 用の
     チャンク一覧を作る。関係DB 側の本文が鍵不一致で復号できない環境 (配布物の初回起動)
-    でも BM25 を成立させるための代替ソース。伏字済み層のみを読む。
+    でも BM25 を成立させるための代替ソース。マスキング済み層のみを読む。
     """
     out: list[dict] = []
     try:
@@ -3035,16 +3035,16 @@ def _bm25_chunks_from_index(workspace_id: str, tier: str = "masked") -> list[dic
                     }
                 )
     except Exception as _e:
-        _log.warning(f"[Cynovela] BM25: 索引側からの補完に失敗: {_e}")
+        _log.warning(f"[Cynovela] BM25: インデックス側からの補完に失敗: {_e}")
     return out
 
 
 def rebuild_bm25_from_db(workspace_id: str, tier: str | None = None) -> int:
     """SQLiteのchunksテーブルから workspace の BM25 インデックスを再構築する。
 
-    masked-only §9-3 (vector-tier-masked-only-20260724): 検索は常に伏字済み層を引くため、
-    tier=None (既定) は masked のみを再構築する。伏字前 (raw) の BM25 索引は作らない
-    (raw 平文の全文索引をメモリ上に持たない)。tier 明示指定時はそちらだけ。
+    masked-only §9-3 (vector-tier-masked-only-20260724): 検索は常にマスキング済み層を引くため、
+    tier=None (既定) は masked のみを再構築する。マスキング前 (raw) の BM25 インデックスは作らない
+    (raw 平文の全文インデックスをメモリ上に持たない)。tier 明示指定時はそちらだけ。
 
     Returns: 再構築対象となったチャンク件数
     """
@@ -3062,7 +3062,7 @@ def rebuild_bm25_from_db(workspace_id: str, tier: str | None = None) -> int:
                 (workspace_id, _tier),
             ).fetchall()
             # vault-enc: BM25 トークン化前に raw content を復号する (masked / 旧平文は素通し)。
-            # 索引はメモリのみ保持 (rag.py:1541 _bm25_indexes) なので平文はディスクに残らない。
+            # インデックスはメモリのみ保持 (rag.py:1541 _bm25_indexes) なので平文はディスクに残らない。
             # enc-leak-guard-20260725: 復号できなかった本文 ('enc:' のまま) は BM25 の
             # トークン化対象から外す (暗号文の断片が語彙に混ざるのを防ぐ)。
             chunks = []
@@ -3085,9 +3085,9 @@ def rebuild_bm25_from_db(workspace_id: str, tier: str | None = None) -> int:
                 )
                 # bm25-index-source-20260725: 鍵を持たない環境 (配布物の初回起動など) では
                 # 関係DB の本文が全て復号できず BM25 が空になり、ハイブリッド検索が
-                # ベクトルのみに退化する。索引側 (chroma) の document は伏字済みの平文で
+                # ベクトルのみに退化する。インデックス側 (chroma) の document はマスキング済みの平文で
                 # 保持されているため、そちらを代替ソースにして BM25 を成立させる。
-                # 伏字済みのみを使う (masked-only 不可侵) 点は関係DB 経路と同じ。
+                # マスキング済みのみを使う (masked-only 不可侵) 点は関係DB 経路と同じ。
                 if _tier == "masked":
                     _recovered = _bm25_chunks_from_index(workspace_id, _tier)
                     if _recovered:
@@ -3095,7 +3095,7 @@ def rebuild_bm25_from_db(workspace_id: str, tier: str | None = None) -> int:
                         _add = [c for c in _recovered if c["chunk_id"] not in _have]
                         chunks.extend(_add)
                         _log.info(
-                            f"[Cynovela] BM25: 索引側 (伏字済み) から {len(_add)} 件を補完しました"
+                            f"[Cynovela] BM25: インデックス側 (マスキング済み) から {len(_add)} 件を補完しました"
                         )
             build_bm25_index(workspace_id, chunks, tier=_tier)
             total += len(chunks)
@@ -3198,7 +3198,7 @@ def tier_for_role(role: str) -> str:
     よい」ことだけを意味する (§9-4 _vault_substitute_raw が復号直前に本関数で確認する)。
 
       admin → 'raw'   (金庫からの原文復号提示を許可)
-      その他 → 'masked' (伏字済みのまま)
+      その他 → 'masked' (マスキング済みのまま)
 
     'admin' 以外は全て 'masked' を返す (admin 厳格判定)。
     """
@@ -3208,13 +3208,13 @@ def tier_for_role(role: str) -> str:
 def _vault_substitute_raw(hits, full_contents: dict, role: str, cid_to_pid: dict):
     """§9-4 (vector-tier-masked-only-20260724): 管理者への原文提示。
 
-    検索は常に伏字済み層で行われる (rag_retrieve 冒頭で固定)。原文が要る場合は
+    検索は常にマスキング済み層で行われる (rag_retrieve 冒頭で固定)。原文が要る場合は
     検索で当たった箇所について、金庫 = 関係DB (chunks / parent_chunks) の tier='raw'
     行を取り出して復号し、回答と出典に使う本文を差し替える。
 
     - 復号の直前に明示的な権限確認を置く: tier_for_role(role) == 'raw' 以外は
       何も差し替えずに返す (層の指定による間接的な守りだけにしない)。
-    - 復号できない行 (鍵不整合等で 'enc:' のまま) は伏字済み本文を維持する
+    - 復号できない行 (鍵不整合等で 'enc:' のまま) はマスキング済み本文を維持する
       (フェイルクローズ: 画面に暗号文を出さない)。
     - masked 層の id は '{raw_id}__masked' 規約 (§段1c) なのでサフィックスを剥がして
       raw 行を引く。parent 差替済みの hit は cid_to_pid の parent_id を同様に剥がす。
@@ -3246,7 +3246,7 @@ def _vault_substitute_raw(hits, full_contents: dict, role: str, cid_to_pid: dict
                     continue
                 _plain = dec_raw(row["content"] or "")
                 if not _plain or _plain.startswith("enc:"):
-                    # 復号不能: 伏字済みのまま (ANDON 条件6 の顕在化は Part4 で検出される)
+                    # 復号不能: マスキング済みのまま (ANDON 条件6 の顕在化は Part4 で検出される)
                     continue
                 full_contents[_cid] = _plain
                 h.content_preview = _plain[:150]
@@ -3256,7 +3256,7 @@ def _vault_substitute_raw(hits, full_contents: dict, role: str, cid_to_pid: dict
                 except Exception:
                     pass
             except Exception as _se:
-                print(f"[WARN] §9-4 金庫復号差し替え失敗 (伏字済みを維持) chunk={getattr(h, 'chunk_id', '?')}: {_se}")
+                print(f"[WARN] §9-4 金庫復号差し替え失敗 (マスキング済みを維持) chunk={getattr(h, 'chunk_id', '?')}: {_se}")
     finally:
         conn.close()
     return hits, full_contents
@@ -3275,13 +3275,13 @@ async def expand_query_variants(
     LLM 呼び出し失敗時は元クエリ単独でフォールバック。
 
     masked-only §9-6 (vector-tier-masked-only-20260724): HyDE と同型に、LLM へ渡す
-    問い合わせ文は §9-5 と同じ伏字処理にかけてから使う (生の問い合わせを出さない)。
+    問い合わせ文は §9-5 と同じマスキング処理にかけてから使う (生の問い合わせを出さない)。
     """
     if not query or n <= 1:
         return [query] if query else []
     _masked_q = _mask_query_for_retrieval(query)
     if not _masked_q:
-        return [query]  # 全文が伏字対象: 展開せず元クエリ単独 (検索側で0件に閉じる)
+        return [query]  # 全文がマスキング対象: 展開せず元クエリ単独 (検索側で0件に閉じる)
     prompt = (
         f"以下の質問を{n - 1}つの異なる表現に言い換えてください。\n"
         f"各表現は1行で出力し、番号や箇条書き記号 (-, *, 1.) は一切付けないでください。\n"
@@ -3402,14 +3402,14 @@ async def generate_hyde_text(
 
     masked-only §9-6 (vector-tier-masked-only-20260724): HyDE は問い合わせ文を LLM へ
     渡す経路 (followups/summarize/CRAG と同型) だが宛先ガードが無かった。§9-5 と同じ
-    伏字処理を入口でかけ、生の問い合わせが LLM (外部宛含む) へ出ないように倒す。
-    生成された仮想文章はこの後 rag_retrieve 冒頭で再度伏字にかけてから埋め込まれる。
+    マスキング処理を入口でかけ、生の問い合わせが LLM (外部宛含む) へ出ないように倒す。
+    生成された仮想文章はこの後 rag_retrieve 冒頭で再度マスキングにかけてから埋め込まれる。
     """
     if not query:
         return query
     _masked_q = _mask_query_for_retrieval(query)
     if not _masked_q:
-        return query  # 全文が伏字対象: HyDE せず元クエリを返す (検索側で0件に閉じる)
+        return query  # 全文がマスキング対象: HyDE せず元クエリを返す (検索側で0件に閉じる)
     prompt = (
         "以下の質問に答えるような文章を1〜2文で生成してください "
         "(実際の回答ではなく、回答が含まれていそうな仮の文章です。前置きや謝辞は不要):\n"
@@ -3581,23 +3581,23 @@ async def rag_retrieve(
     - BM25: `workspace_id` の `_bm25_indexes` から呼び出し
     - 統合スコア: vector_weight * vector + bm25_weight * bm25
     - PII判定は SQLite の chunks テーブルから照合
-    - §段1d: tier ('raw'/'masked') で BM25 索引と Chroma collection を分岐。
+    - §段1d: tier ('raw'/'masked') で BM25 インデックスと Chroma collection を分岐。
       §段2 で入口がロールに応じて tier を選び、ここに渡す。既定 tier='raw'
       は admin/legacy 経路 (後方互換)。
     - masked-only (vector-tier-masked-only-20260724): 検索は役割によらず常に
-      伏字済み層 (masked) を引く。tier='raw' は「原文提示の希望」としてのみ解釈し、
+      マスキング済み層 (masked) を引く。tier='raw' は「原文提示の希望」としてのみ解釈し、
       検索後に金庫 (関係DB) から復号して差し替える (§9-4 _vault_substitute_raw)。
     """
     from core.config import CYNOVELA_CONFIG
 
     # masked-only (vector-tier-masked-only-20260724):
     # §9-3 検索層は masked に固定 (役割による層切り替えの廃止)。
-    # §9-5 問い合わせ文は取り込みと同じ伏字処理にかけてから埋め込み・BM25 へ渡す。
+    # §9-5 問い合わせ文は取り込みと同じマスキング処理にかけてから埋め込み・BM25 へ渡す。
     _want_raw_vault = tier == "raw"
     tier = "masked"
     query = _mask_query_for_retrieval(query)
     if not query:
-        # 問い合わせ全文が伏字対象 (PII 値のみの問い合わせ) → 検索しない (ヒット0件)
+        # 問い合わせ全文がマスキング対象 (PII 値のみの問い合わせ) → 検索しない (ヒット0件)
         return [], 0.0, {}
 
     # fix-all-v2: preset/リクエスト単位の rag 設定を受け取る。未指定時はグローバル設定。
@@ -3624,7 +3624,7 @@ async def rag_retrieve(
     if workspace_id:
         _where_kwargs["where"] = {"workspace_id": workspace_id}
     # §段1c/1d: tier ('raw'/'masked') を関数引数から受け取り、Chroma collection と
-    # BM25 索引を一貫して切り替える。§段2 で入口がロールに応じてこの tier を選ぶ。
+    # BM25 インデックスを一貫して切り替える。§段2 で入口がロールに応じてこの tier を選ぶ。
     from providers.vector_store import chroma_name_for_tier as _cnt2
     for cid in collection_ids:
         try:
@@ -3690,7 +3690,7 @@ async def rag_retrieve(
 
     # --- BM25 scores ---
     # PHASE 3: クエリ側も build_bm25_index と同じトークナイザを使用 (整合性)
-    # §段1d: tier 別索引 _bm25_key(workspace_id, tier) を引く。
+    # §段1d: tier 別インデックス _bm25_key(workspace_id, tier) を引く。
     bm25_scores: dict[str, float] = {}
     _bm25k = _bm25_key(workspace_id, tier)
     if _bm25k in _bm25_indexes:
@@ -3869,7 +3869,7 @@ async def rag_retrieve(
                 # ここで dec_raw に通す (masked / 旧平文は素通し・冪等)。
                 _pid_to_text = {r["parent_id"]: dec_raw(r["content"]) for r in _rows}
                 # enc-leak-guard-20260725: 鍵不一致などで復号できなかった本文 ('enc:' のまま)
-                # は LLM へのコンテキストにも画面にも出さない。子チャンク (索引側の伏字済み
+                # は LLM へのコンテキストにも画面にも出さない。子チャンク (インデックス側のマスキング済み
                 # 平文) を維持する。配布物のように鍵を持たない環境で、暗号文がそのまま
                 # プロンプトへ流れ込み回答品質を壊すのを防ぐ (_vault_substitute_raw と同じ守り)。
                 _undecryptable = [k for k, v in _pid_to_text.items() if (v or "").startswith("enc:")]
@@ -3907,7 +3907,7 @@ async def rag_retrieve(
             # 切詰め済 + 後段の padding で最終件数は n_results を維持するため、本変更は
             # 「上位いくつを実際に reランクするか」のみに作用する (最終件数・件数契約は不変)。
             _rr_top_n = int((CYNOVELA_CONFIG.get("reranker") or {}).get("top_n", 5) or 5)
-            # ga-finish-20260727: 外の口 (Mac Accelerator Service) へ渡す本文が伏字済みか
+            # ga-finish-20260727: 外部の推論サーバ (Mac Accelerator Service) へ渡す本文がマスキング済みか
             # 原文かを常に明示する (埋め込みの content_class と同型)。この時点の
             # full_contents は _want_raw_vault (§9-4 金庫復号) を通った後なので、
             # 原文提示経路 (tier='raw') では raw、それ以外は masked を申告する。
@@ -3946,7 +3946,7 @@ async def rag_retrieve(
         "rerank_elapsed": float(rerank_elapsed),
         "rerank_scores": rerank_scores_for_metrics,
         "acl_filtered_count": int(_acl_filtered_count_local),
-        # masked-only §9-5: 実際に索引へ渡した伏字済み問い合わせ文 (11-6 の実行時証跡)
+        # masked-only §9-5: 実際にインデックスへ渡したマスキング済み問い合わせ文 (11-6 の実行時証跡)
         "masked_query": query,
     }
 

@@ -8,11 +8,11 @@
 #     2. 取り返しがつかないことを示し、2回目の確認をします
 #     3. 以後は一括で行い、途中で問い直しません
 #     4. この配布物から起こした本体を止めます
-#     5. 外の口 (Mac Accelerator Service) を止めます
+#     5. 外部の推論サーバ (Mac Accelerator Service) を止めます
 #     6. この配布物のために作った python の環境を消します
 #     7. このフォルダをゴミ箱へ入れます
 #
-#   この形 (chewie) は、この Mac の上で直接動きます。入れ物 (コンテナ) はありません。
+#   この形 (chewie) は、この Mac の上で直接動きます。コンテナ (コンテナ) はありません。
 #   ∴ 取り除く相手は「この配布物のために作った python の環境」と「このフォルダ」です。
 #
 #   環境の名前は決め打ちしていません。cynovela.yaml に書いてあればそれを、
@@ -102,7 +102,7 @@ if [ -f "$DATA_DIR/server.pid" ]; then
 fi
 _app_pids="$(printf '%s' "$_app_pids" | tr ' ' '\n' | /usr/bin/grep -v '^$' | sort -u | tr '\n' ' ')"
 
-# 外の口も、この配布物の中の python で動いているものだけを対象にする
+# 外部の推論サーバも、この配布物の中の python で動いているものだけを対象にする
 _mas_pid=""
 if [ -x "$MAS_ENV_DIR/bin/python" ]; then
     _mas_pid="$(/bin/ps -Ao pid=,command= 2>/dev/null \
@@ -119,7 +119,7 @@ echo "============================================================"
 echo ""
 echo "読み取った名前:"
 echo "  この配布物のための conda 環境 : ${DIST_ENV}"
-echo "  この配布物の中の置き場        : ${VENV_DIR}"
+echo "  この配布物の中の保存先        : ${VENV_DIR}"
 echo "  このフォルダ                 : ${REPO}"
 echo ""
 echo "実際に在るものと突き合わせた結果:"
@@ -131,9 +131,9 @@ else
     echo "  動いている本体 : ありません → 何もしません"
 fi
 if [ -n "$_mas_pid" ]; then
-    echo "  外の口 (このフォルダの python で動いているもの・番号 ${_mas_pid}) : 在ります → 止めます"
+    echo "  外部の推論サーバ (このフォルダの python で動いているもの・番号 ${_mas_pid}) : 在ります → 止めます"
 else
-    echo "  外の口 (このフォルダの python で動いているもの) : ありません → 何もしません"
+    echo "  外部の推論サーバ (このフォルダの python で動いているもの) : ありません → 何もしません"
 fi
 if [ "$_have_conda_env" = "1" ]; then
     echo "  conda 環境 ${DIST_ENV} : 在ります (${CONDA_ENV_DIR}) → 消します"
@@ -141,14 +141,14 @@ else
     echo "  conda 環境 ${DIST_ENV} : ありません → 何もしません"
 fi
 if [ "$_have_venv" = "1" ]; then
-    echo "  置き場 .venv-cynovela : 在ります → 下のフォルダごとゴミ箱へ入ります"
+    echo "  保存先 .venv-cynovela : 在ります → 下のフォルダごとゴミ箱へ入ります"
 else
-    echo "  置き場 .venv-cynovela : ありません → 何もしません"
+    echo "  保存先 .venv-cynovela : ありません → 何もしません"
 fi
 if [ "$_have_masenv" = "1" ]; then
-    echo "  外の口の python の環境 .mas-env : 在ります → 下のフォルダごとゴミ箱へ入ります"
+    echo "  外部の推論サーバの python の環境 .mas-env : 在ります → 下のフォルダごとゴミ箱へ入ります"
 else
-    echo "  外の口の python の環境 .mas-env : ありません → 何もしません"
+    echo "  外部の推論サーバの python の環境 .mas-env : ありません → 何もしません"
 fi
 echo "  このフォルダ       : ${REPO}"
 echo "                     → ゴミ箱へ入れます (取り込んだ資料と設定も、この中に在ります)"
@@ -218,7 +218,7 @@ else
     echo "      動いていません"
 fi
 
-echo "[2/4] 外の口を止めます"
+echo "[2/4] 外部の推論サーバを止めます"
 if [ -n "$_mas_pid" ]; then
     kill -TERM "$_mas_pid" 2>/dev/null && echo "      止めました (番号 ${_mas_pid})" || echo "      止められませんでした (番号 ${_mas_pid})"
 else

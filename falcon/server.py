@@ -126,11 +126,11 @@ try:
         _paths_cfg.get("data_dir", "./store")
     ))
     _demo_db_rel  = _paths_cfg.get("db", {}).get("demo" if _early_demo else "clean", "db/demo.db" if _early_demo else "db/cynovela.db")
-    # vector-path-by-mode-20260731 (DD-CYN-0007 B4): 索引の置き場も起動の形態で選ぶ。
+    # vector-path-by-mode-20260731 (DD-CYN-0007 B4): インデックスの保存先も起動の形態で選ぶ。
     #   従来は --demo の有無に関わらず必ず vector.demo を返していたため、本番起動でも
-    #   画面 (起動時の "Chroma (resolved): …") にデモ側の置き場が出ていた。
+    #   画面 (起動時の "Chroma (resolved): …") にデモ側の保存先が出ていた。
     #   cynovela.yaml には vector.default のキーが在るのに、読むコードが 1 か所も無かった。
-    #   関係DB (db.clean = cynovela.db) とベクターの置き場を同じ規則で選ぶ形に揃える。
+    #   関係DB (db.clean = cynovela.db) とベクターの保存先を同じ規則で選ぶ形に揃える。
     _chroma_rel   = _paths_cfg.get("vector", {}).get(
         "demo" if _early_demo else "default",
         "vector/demo/chroma" if _early_demo else "vector/default/chroma",
@@ -148,7 +148,7 @@ except Exception:
     _backup_rel    = "backups"
     _log_rel       = "logs"
     _models_rel    = "models"
-# DD-CYN-0053: 置き場の正は cynovela.yaml の paths だけとする。
+# DD-CYN-0053: 保存先の正は cynovela.yaml の paths だけとする。
 #   従来は setdefault だったため、外から環境変数を与えると設定より強く効いた。
 #   ここで必ず入れ直し、外からの上書きを効かせない。
 #   なお下の4つは、この走りの中でデータ層へ渡すための受け渡しであり、設定の口ではない。
@@ -208,7 +208,7 @@ from classifier import classify_file, classify_metadata
 from core.config import is_feature_enabled
 from core.version import APP_VERSION
 from guardrail import apply_guardrail
-# ga-close-v3 PartD D-3: 伏字件数の数え方は guardrail.py の 1 か所に集約する。
+# ga-close-v3 PartD D-3: マスキング件数の数え方は guardrail.py の 1 か所に集約する。
 from guardrail import pii_counts_from_db
 
 import state as _state
@@ -254,7 +254,7 @@ async def lifespan(app_instance):
         await _startup_rebuild_bm25()
     except Exception as _e:
         logger.warning(f"BM25 startup rebuild failed at lifespan: {_e}")
-    # §9-4 embedding-identity (ga-mas-20260725): 起動時に索引の埋め込み識別と現在の経路を
+    # §9-4 embedding-identity (ga-mas-20260725): 起動時にインデックスの埋め込み識別と現在の経路を
     # 突き合わせる。食い違いは check 内で warning ログ + 状態保持 (画面は設定 > Embedding)。
     try:
         import rag as _rag_id
@@ -1782,7 +1782,7 @@ def _auto_publish_workspace(ws_id: str) -> int:
                 }
                 _log_processing(
                     "ingest",
-                    f"自動同期 完了: {_cc} チャンクを索引化（差分: 新規{_adiff['new']}・変更{_adiff['changed']}・スキップ{_adiff['skipped']}・消滅{_adiff['missing']}）",
+                    f"自動同期 完了: {_cc} チャンクをインデックス化（差分: 新規{_adiff['new']}・変更{_adiff['changed']}・スキップ{_adiff['skipped']}・消滅{_adiff['missing']}）",
                     level="success", job_id=f"auto-{col_id}",
                     metadata={"stage": "done", "chunk_count": _cc, "collection_id": col_id, "diff": _adiff, "auto": True},
                 )
@@ -1983,7 +1983,7 @@ def _log_processing(
 
         c = get_db()
         try:
-            # masked-only §9-7 (vector-tier-masked-only-20260724): 伏字なし取り込み
+            # masked-only §9-7 (vector-tier-masked-only-20260724): マスキングなし取り込み
             # (raw_only) の廃止に伴い、ingest ログへの [raw_only] 付記も撤去した。
             meta_str = _json.dumps(metadata, ensure_ascii=False) if metadata else None
             c.execute(
@@ -2075,7 +2075,7 @@ def _finalize_publish_success(
             (workspace_id,),
         ).fetchall()
         total_chunks = len(rows)
-        # ga-close-v3 PartD D-3: 伏字件数は guardrail.pii_counts_from_db に集約した。
+        # ga-close-v3 PartD D-3: マスキング件数は guardrail.pii_counts_from_db に集約した。
         #   旧実装は層を絞らず raw+masked の両方で pii_detected を数えていたため、
         #   要約・一覧と食い違っていた (公開済み「デモ資料一式」実測: 公開履歴 2146 =
         #   raw 2128 + masked 18。同じ資料で一覧は 2128、要約は 361)。
@@ -2306,12 +2306,12 @@ def _run_publish_background(
             }
             _log_processing(
                 "ingest",
-                f"完了: {chunk_count} チャンクを索引化（差分: 新規{_diff['new']}・変更{_diff['changed']}・スキップ{_diff['skipped']}・消滅{_diff['missing']}）",
+                f"完了: {chunk_count} チャンクをインデックス化（差分: 新規{_diff['new']}・変更{_diff['changed']}・スキップ{_diff['skipped']}・消滅{_diff['missing']}）",
                 level="success", job_id=job_id,
                 metadata={
                     "stage": "done", "chunk_count": chunk_count, "collection_id": col_id, "diff": _diff,
                     # vision-placeholder-warn-20260727: 中身が1文字も入らなかったファイル。
-                    #   平文がある取り込みの瞬間にしか判定できない (索引の本文は暗号文) ため、
+                    #   平文がある取り込みの瞬間にしか判定できない (インデックスの本文は暗号文) ため、
                     #   ここで残して publish-summary から読み出す。
                     "placeholder_only_files": list(final_event.get("placeholder_only_files") or []),  # pyright: ignore[reportOptionalMemberAccess]
                     # DD-CYN-0091 C: 飛ばしたファイルの一覧 (publish-summary が読み出す)
@@ -2917,7 +2917,7 @@ def _preflight_model_check(args) -> bool:
 
     from core.model_paths import resolve_model_path as _resolve
 
-    # ga-mas-20260725: 埋め込みが外の口 (external_accelerator / openai_compat) に設定されて
+    # ga-mas-20260725: 埋め込みが外部の推論サーバ (external_accelerator / openai_compat) に設定されて
     # いる場合、埋め込みモデルのローカル実体は不要 (口の側が持つ)。プリフライト対象から
     # 外し、モデル非同梱の配布物でも HF ダウンロードに進まず起動できるようにする。
     # 口が居ないときの退避はローカル EF が担うが、実体が無い場合は埋め込み時に明示
@@ -2934,7 +2934,7 @@ def _preflight_model_check(args) -> bool:
         _pf_external = False
     if _pf_external:
         # DD-CYN-0095 §6-6-4: 役割は "Embedding（英語特化）" のような添え書きつきでも
-        #   埋め込みである。完全一致だと lite-en だけ免除から漏れ、外の口設定でも
+        #   埋め込みである。完全一致だと lite-en だけ免除から漏れ、外部の推論サーバ設定でも
         #   起動できなかった (lite は通るのに lite-en は落ちる非対称の原因)。前方一致にする。
         required = [r for r in required if not (r[2] or "").lower().startswith("embedding")]
         if not required:
@@ -2958,7 +2958,7 @@ def _preflight_model_check(args) -> bool:
         print(f"  [{role}] {model_name}  ({size})")
     print()
 
-    # v3.5.0 Stage1-B: mock モード案内を撤去し、モデル不要起動は minimal (TF-IDF) を案内。
+    # v3.5.0 Stage1-B: mock モードガイドを撤去し、モデル不要起動は minimal (TF-IDF) をガイド。
     alternatives = {
         "full": "  [2] textモードで起動する（Rerankerなし）\n  [3] minimalモードで起動する（モデル不要・TF-IDF）",
         "text": "  [2] liteモードで起動する（約470MB・多言語対応）\n  [3] lite-enモードで起動する（約22MB・英語のみ）\n  [4] minimalモードで起動する（モデル不要・TF-IDF）",
@@ -2969,7 +2969,7 @@ def _preflight_model_check(args) -> bool:
     cancel_num = 2 + alt_text.count("\n") + 1
 
     # ga-mas-c8-20260729 (C-B8): 選択メニューは対話 (stdin が TTY) のときだけ表示する。
-    # 非対話では [1] を選べないため、案内は下の停止メッセージに一本化する。
+    # 非対話では [1] を選べないため、ガイドは下の停止メッセージに一本化する。
     _interactive = sys.stdin.isatty()
     if _interactive:
         print("  [1] 今すぐダウンロードして起動する")
@@ -3000,7 +3000,7 @@ def _preflight_model_check(args) -> bool:
         logger.error(f"[Cynovela] 起動モード {mode} に必要なモデルが手元にありません:")
         for model_name, size, role in missing:
             logger.error(f"[Cynovela]   - {model_name} (用途: {role} / 想定サイズ: {size})")
-        logger.error(f"[Cynovela] 置き場所: {_models_dir}")
+        logger.error(f"[Cynovela] 保存先: {_models_dir}")
         for model_name, size, role in missing:
             _layout = os.path.join(_models_dir, "models--" + model_name.replace("/", "--"))
             logger.error(f"[Cynovela]   期待するレイアウト: {_layout}/snapshots/<revision>/")
@@ -3141,7 +3141,7 @@ def _wire_providers_for_mode(app_config, yaml_cfg: dict) -> None:
     # ga-finish-20260727 (Part1-3): 起動の指定 (--mode full) で再ランクの有無が決まる
     # 旧ゲート (multimodal_enabled 以外は NoReranker 固定) を撤去し、設定
     # (rag.reranker_enabled + reranker.provider/device) を正とする。
-    # 実行場所は既定で外の口 (Mac Accelerator Service) を指し、provider 構築は遅延ロード
+    # 実行場所は既定で外部の推論サーバ (Mac Accelerator Service) を指し、provider 構築は遅延ロード
     # のためモデルのロードコストは起動時に発生しない (_MODE_MODELS の定義自体は不変)。
 
     # F6: rag.reranker_enabled をマスタースイッチとして尊重する。
@@ -3164,7 +3164,7 @@ def _wire_providers_for_mode(app_config, yaml_cfg: dict) -> None:
     try:
         provider = get_reranker_provider(yaml_cfg)
         set_reranker_provider(provider)
-        # ga-finish-20260727: 実行場所 (外の口 / 本体内) がログから読めるように base_url も出す
+        # ga-finish-20260727: 実行場所 (外部の推論サーバ / 本体内) がログから読めるように base_url も出す
         _rr_ep = getattr(provider, "base_url", "") or ""
         logger.info(
             f"[Cynovela] Reranker: {type(provider).__name__}" + (f" (endpoint={_rr_ep})" if _rr_ep else "")
@@ -3210,7 +3210,7 @@ from routers import compliance as _r_compliance
 from routers import guardrails as _r_guardrails
 from routers import settings as _r_settings
 from routers import chat as _r_chat
-# SECURITY(bugaudit-20260706): /api/transcribe は生の文字起こしを伏字なしで返し、
+# SECURITY(bugaudit-20260706): /api/transcribe は生の文字起こしをマスキングなしで返し、
 #   認証済みなら viewer でも音声内の生PIIを平文取得できる統治ホールだった。マウントしない。
 # from routers import transcribe as _r_transcribe
 # DD-CYN-0020 U-2: 音声入力そのものを撤去した。統治経路だった routers/voice.py も
@@ -3343,7 +3343,7 @@ if __name__ == "__main__":
 
     # fixall-B5 20260602: 実ポートを routers/mcp.py 等が参照できるようにする
     # (旧 mcp.py はポート 8765 をリテラル直書きしており --port 変更時に不整合だった)。
-    # DD-CYN-0053: 受け渡しを環境変数からやめ、走っている間だけ覚えておく入れ物へ入れる。
+    # DD-CYN-0053: 受け渡しを環境変数からやめ、走っている間だけ覚えておくコンテナへ入れる。
     from core import runtime as _runtime
     _runtime.SERVER_PORT = str(args.port)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""DD-CYN-0117 R-3: 2つの部品表 (environment.yml / requirements.txt) を突き合わせる。
+"""DD-CYN-0117 R-3: 2つのマニフェスト (environment.yml / requirements.txt) を突き合わせる。
 
 なぜ要るか:
     公式の作り方は2段である。
@@ -11,7 +11,7 @@
 
 使い方:
     python3 tools/check-manifests.py                     (この配布物を見る)
-    python3 tools/check-manifests.py <配布物の根> ...     (複数まとめて見る)
+    python3 tools/check-manifests.py <配布物のルートディレクトリ> ...     (複数まとめて見る)
 
 終了の値:
     0 = 食い違い 0 件
@@ -136,7 +136,7 @@ def check_tree(root):
 def main(argv):
     roots = argv[1:]
     if not roots:
-        # 既定はこのファイルの1つ上 (= 配布物の根)
+        # 既定はこのファイルの1つ上 (= 配布物のルートディレクトリ)
         roots = [os.path.dirname(os.path.dirname(os.path.abspath(__file__)))]
     total_bad = 0
     for root in roots:

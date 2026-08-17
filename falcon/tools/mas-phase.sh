@@ -1,16 +1,16 @@
 #!/bin/bash
-# Mac Accelerator Service (外の口) を用意するフェーズ — launch.sh から読み込んで使う
+# Mac Accelerator Service (外部の推論サーバ) を用意するフェーズ — launch.sh から読み込んで使う
 #
-#   置き場所の考え方 (決定 29-3):
+#   保存先の考え方 (決定 29-3):
 #     既存の起動スクリプトを置き換えない。launch.sh がこのファイルを読み込み、
 #     3択 (Podman / Docker / 自分で指定) より前に mas_phase_ask を、
 #     選択が確定したあとに mas_phase_apply を呼ぶ。本体 (tools/launch-body.sh)
 #     には手を入れない。
 #
 #   なぜ3択より前か:
-#     MAS が立たないまま入れ物を起こすと、埋め込みは入れ物の中の CPU へ退避する。
+#     MAS が立たないままコンテナを起こすと、埋め込みはコンテナの中の CPU へ退避する。
 #     退避したあとで実行ファイルを選び直しても、その取り込みには効かない。
-#     ∴ MAS は入れ物より先に立てる。
+#     ∴ MAS はコンテナより先に立てる。
 #
 #   なぜ launch.sh の中か:
 #     launch.sh は本体を --no-prompt で切り離して呼ぶ。本体の側の問いかけは
@@ -88,21 +88,21 @@ mas_phase_ask() {
     local dev have_conda=0 have_venv=0 venv_base="" env_py="" ans
 
     echo ""
-    echo "== 埋め込みを動かす外の口 (Mac Accelerator Service) =="
-    echo "   この配布物は、資料を数値に直す仕事を、この Mac の上で動く外の口へ渡す作りです。"
-    echo "   外の口が立っていないと、その仕事は入れ物の中の CPU で行われます。処理は止まりませんが遅くなります。"
+    echo "== 埋め込みを動かす外部の推論サーバ (Mac Accelerator Service) =="
+    echo "   この配布物は、資料を数値に直す仕事を、この Mac の上で動く外部の推論サーバへ渡す作りです。"
+    echo "   外部の推論サーバが立っていないと、その仕事はコンテナの中の CPU で行われます。処理は止まりませんが遅くなります。"
 
     # 1. 既に立っているか
     dev="$(mas_device)"
     if [ -n "$dev" ]; then
         echo ""
-        echo "   外の口: 既に立っています (device: $dev)"
+        echo "   外部の推論サーバ: 既に立っています (device: $dev)"
         MAS_PLAN="use-running"
         MAS_STATE="既に立っています (device: $dev)"
         return 0
     fi
     echo ""
-    echo "   外の口: 立っていません (127.0.0.1:${MAS_PORT} に応答がありません)"
+    echo "   外部の推論サーバ: 立っていません (127.0.0.1:${MAS_PORT} に応答がありません)"
 
     # 2. 配布物の中に環境が在るか
     env_py="$(mas_env_python)"
@@ -120,7 +120,7 @@ mas_phase_ask() {
 
     while true; do
         echo ""
-        echo "   外の口を動かすための場所を、この配布物の中に作れます。"
+        echo "   外部の推論サーバを動かすための場所を、この配布物の中に作れます。"
         echo "   作る先: $MAS_ENV_DIR  (この配布物の中だけです。共有の環境には何も書きません)"
         echo "   入れるもの: $MAS_REQ に書いた4件"
         echo ""
@@ -141,8 +141,8 @@ mas_phase_ask() {
         fi
         echo "  3) 自分で指定する"
         echo "     既に4件が入っている python の場所を入力します。新しくは作りません。"
-        echo "  4) 外の口を使わずに進む"
-        echo "     埋め込みは入れ物の中の CPU で行われます。処理は止まりませんが遅くなります。"
+        echo "  4) 外部の推論サーバを使わずに進む"
+        echo "     埋め込みはコンテナの中の CPU で行われます。処理は止まりませんが遅くなります。"
         echo "  5) やめる"
         printf '番号を入れてください [1/2/3/4/5]: '
         if ! IFS= read -r ans; then
@@ -182,12 +182,12 @@ mas_phase_ask() {
                     MAS_PLAN="custom"; MAS_STATE="指定された python で立てます: $MAS_PYTHON"; return 0
                 fi
                 echo ""
-                echo "その python では外の口を動かせませんでした。"
+                echo "その python では外部の推論サーバを動かせませんでした。"
                 echo "  次の4件が入っている必要があります: torch / sentence-transformers / fastapi / uvicorn"
                 echo "  確かめ方: $MAS_PYTHON -c 'import torch, sentence_transformers, fastapi, uvicorn'"
                 ;;
             4)
-                MAS_PLAN="skip"; MAS_STATE="使いません (埋め込みは入れ物の中の CPU で行われます)"; return 0
+                MAS_PLAN="skip"; MAS_STATE="使いません (埋め込みはコンテナの中の CPU で行われます)"; return 0
                 ;;
             5)
                 echo "やめました。何も作っていません。"
@@ -210,7 +210,7 @@ mas_phase_apply() {
             ;;
         skip)
             echo ""
-            echo "[外の口] 使わずに進みます。埋め込みは入れ物の中の CPU で行われます。"
+            echo "[外部の推論サーバ] 使わずに進みます。埋め込みはコンテナの中の CPU で行われます。"
             echo "         あとで立てたいときは SETUP-ACCELERATOR.md を見てください。"
             return 0
             ;;
@@ -222,32 +222,32 @@ mas_phase_apply() {
             ;;
         conda)
             echo ""
-            echo "[外の口] conda で場所を作ります: $MAS_ENV_DIR"
+            echo "[外部の推論サーバ] conda で場所を作ります: $MAS_ENV_DIR"
             echo "         共有の環境 (envs) には何も書きません。"
             if ! conda create -y -p "$MAS_ENV_DIR" python=3.12; then
-                echo "[外の口] 場所を作れませんでした。" >&2
+                echo "[外部の推論サーバ] 場所を作れませんでした。" >&2
                 mas_report_missing; return 1
             fi
             py="$MAS_ENV_DIR/bin/python"
-            echo "[外の口] 部品を入れます: $MAS_REQ"
+            echo "[外部の推論サーバ] 部品を入れます: $MAS_REQ"
             if ! "$py" -m pip install -r "$MAS_REQ"; then
-                echo "[外の口] 部品を入れられませんでした。" >&2
+                echo "[外部の推論サーバ] 部品を入れられませんでした。" >&2
                 mas_report_missing; return 1
             fi
             ;;
         venv)
             echo ""
-            echo "[外の口] venv で場所を作ります: $MAS_ENV_DIR"
+            echo "[外部の推論サーバ] venv で場所を作ります: $MAS_ENV_DIR"
             echo "         共有の環境には何も書きません。"
             if ! "$MAS_PYTHON" -m venv "$MAS_ENV_DIR"; then
-                echo "[外の口] 場所を作れませんでした。" >&2
+                echo "[外部の推論サーバ] 場所を作れませんでした。" >&2
                 mas_report_missing; return 1
             fi
             py="$MAS_ENV_DIR/bin/python"
-            echo "[外の口] 部品を入れます: $MAS_REQ"
+            echo "[外部の推論サーバ] 部品を入れます: $MAS_REQ"
             if ! "$py" -m pip install --upgrade pip; then :; fi
             if ! "$py" -m pip install -r "$MAS_REQ"; then
-                echo "[外の口] 部品を入れられませんでした。" >&2
+                echo "[外部の推論サーバ] 部品を入れられませんでした。" >&2
                 mas_report_missing; return 1
             fi
             ;;
@@ -258,11 +258,11 @@ mas_phase_apply() {
 
     # 立てる (SETUP-ACCELERATOR.md の手順どおり)
     echo ""
-    echo "[外の口] 立てます: $py mas/mas_server.py --preload"
+    echo "[外部の推論サーバ] 立てます: $py mas/mas_server.py --preload"
     echo "         記録はこのファイルへ書きます: $MAS_LOG"
     mkdir -p "$WRAP_DIR/store"
     ( cd "$WRAP_DIR" && nohup "$py" mas/mas_server.py --preload >> "$MAS_LOG" 2>&1 & )
-    echo "[外の口] 立ち上がりを待っています (初回は埋め込みモデルの読み込みに時間がかかります)"
+    echo "[外部の推論サーバ] 立ち上がりを待っています (初回は埋め込みモデルの読み込みに時間がかかります)"
 
     i=0
     dev=""
@@ -274,16 +274,16 @@ mas_phase_apply() {
     done
 
     if [ -z "$dev" ]; then
-        echo "[外の口] 立ち上がりませんでした。" >&2
+        echo "[外部の推論サーバ] 立ち上がりませんでした。" >&2
         echo "         記録を見てください: $MAS_LOG" >&2
         mas_report_missing
         return 1
     fi
 
-    echo "[外の口] 立ちました (device: $dev)"
+    echo "[外部の推論サーバ] 立ちました (device: $dev)"
     MAS_STATE="立っています (device: $dev)"
     if [ "$dev" != "mps" ]; then
-        echo "[外の口] device が mps ではありません。埋め込みは GPU ではなく $dev で行われます。"
+        echo "[外部の推論サーバ] device が mps ではありません。埋め込みは GPU ではなく $dev で行われます。"
         echo "         このまま進めても処理は止まりませんが、遅くなります。"
     fi
     return 0
@@ -292,16 +292,16 @@ mas_phase_apply() {
 # ── 立てられなかったときに、何が足りないかを画面に出す ──────
 mas_report_missing() {
     echo ""
-    echo "== 外の口を立てられませんでした =="
-    echo "   このまま入れ物を起こすと、埋め込みは入れ物の中の CPU で行われます。"
+    echo "== 外部の推論サーバを立てられませんでした =="
+    echo "   このままコンテナを起こすと、埋め込みはコンテナの中の CPU で行われます。"
     echo "   黙って遅くならないよう、ここで止めています。"
     echo ""
     echo "   要るもの:"
     echo "     - 3.10 以上の python (conda でも venv でも構いません)"
     echo "     - $MAS_REQ に書いた4件"
-    echo "     - 埋め込みモデル bge-m3 の置き場: $WRAP_DIR/store/models"
+    echo "     - 埋め込みモデル bge-m3 の保存先: $WRAP_DIR/store/models"
     echo ""
     echo "   手で立てる手順は SETUP-ACCELERATOR.md に書いてあります。"
-    echo "   外の口を使わずに進めたいときは、もう一度このファイルを叩いて 4) を選んでください。"
+    echo "   外部の推論サーバを使わずに進めたいときは、もう一度このファイルを叩いて 4) を選んでください。"
     echo ""
 }

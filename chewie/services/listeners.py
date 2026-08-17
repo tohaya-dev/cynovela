@@ -129,7 +129,7 @@ class SMTPListener:
         self.host = smtp_config.get("host", "")
         self.port = int(smtp_config.get("port", 587))
         self.username = smtp_config.get("username", "")
-        # DD-CYN-0067 G-2: 合言葉は設定ファイル (notifications.smtp.password) からのみ。
+        # DD-CYN-0067 G-2: パスワードは設定ファイル (notifications.smtp.password) からのみ。
         #   環境変数 (CYNOVELA_SMTP_PASSWORD) の読み口は撤去した。
         self.password = smtp_config.get("password", "") or ""
         self.from_address = smtp_config.get("from_address", "")

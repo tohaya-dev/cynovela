@@ -19,7 +19,7 @@
 #    2. conda・Python・自分で指定 を同列に並べて選ばせる (N-1・決定 14-1〜14-5)。
 #       見つけたものへ黙って進む形にしない (決定 30-2 と同じ考え方)
 #    3. これから何が起きるかを出して Y/N/C で確かめる (N-3)
-#    4. 環境がまだ無ければ作り (本体の --setup を呼ぶ)、記録の置き場を出して、
+#    4. 環境がまだ無ければ作り (本体の --setup を呼ぶ)、記録の保存先を出して、
 #       本体をターミナルから切り離して起動する (このターミナルを閉じても本体は落ちません)
 #    5. 立ち上がりを待ち、開く場所と止め方を出して終わる (N-7)
 #       起動に失敗したときは、理由と記録の場所を出して終わる (画面はそのまま残る)
@@ -33,7 +33,7 @@ DIST_ENV="cynovela-dist"
 
 # ── 透過の道 ──────────────────────────────────────────────
 # 次のものは本体へそのまま渡す (この包みは何も足さず・何も変えない):
-#   1. 凍結済みの押す道 (Cynovela-start.command → launcher-core.sh) が付ける --no-prompt
+#   1. 凍結済みの操作手順 (Cynovela-start.command → launcher-core.sh) が付ける --no-prompt
 #   2. 端末が繋がっていない呼び出し (聞く・待つ・流すの扱いができない)
 #   3. 起動でない用件 (--list / --add / --check / --setup 単独 など)。包みが受け持つのは
 #      起動の形 (引数なし=本番 / --demo=デモ) と、包みだけの指定 (--follow / --pro) である。
@@ -355,17 +355,17 @@ confirm_launch() {
                 line_make="ありません（既に在る環境を使います）"
                 line_first="待ちはほとんどありません"
             fi
-            line_where="conda の環境の置き場に約 3.9 GB"
+            line_where="conda の環境の保存先に約 3.9 GB"
             line_del="bash uninstall.sh"
             ;;
         venv)
             if [ "$NEED_SETUP" = "1" ]; then
                 line_use="この配布物の中の Python（配布物の中だけに作ります）"
-                line_make="このフォルダの中の置き場 1つ（.venv-cynovela）"
+                line_make="このフォルダの中の保存先 1つ（.venv-cynovela）"
                 line_first="部品の取得に時間がかかります"
             else
-                line_use="この配布物の中の Python（既に在る置き場 .venv-cynovela を使います）"
-                line_make="ありません（既に在る置き場を使います）"
+                line_use="この配布物の中の Python（既に在る保存先 .venv-cynovela を使います）"
+                line_make="ありません（既に在る保存先を使います）"
                 line_first="待ちはほとんどありません"
             fi
             line_where="このフォルダの中に約 2.2 GB"
@@ -428,7 +428,7 @@ if [ "$ACTION" = "stop_new" ]; then
     _verify_stopped
 fi
 
-# ── 2. 記録の置き場を画面へ出す (ターミナルを閉じる前に必ず) ──────────
+# ── 2. 記録の保存先を画面へ出す (ターミナルを閉じる前に必ず) ──────────
 mkdir -p "$WRAP_DIR/store"
 echo "記録はこのファイルへ書きます: $LOG"
 
@@ -443,10 +443,10 @@ if [ "$NEED_SETUP" = "1" ]; then
 fi
 PASS+=(--python "$SEL_PY")
 
-# ── 3.5 部品 (bge-m3) が無いときは、取り寄せの前に必ず聞く (DD-CYN-0099) ──
+# ── 3.5 部品 (bge-m3) が無いときは、ダウンロードの前に必ず聞く (DD-CYN-0099) ──
 #   本体は切り離し (--no-prompt・端末なし) で動くため、本体の確認は受け取り手に
 #   届かない。∴ 人が見ているこの包みで、切り離す前に聞く (事実161 の二択を保つ)。
-#   選ぶまで通信は始めない。1 を選ぶと、本体が起動の中で取り寄せる (進み具合は記録へ)。
+#   選ぶまで通信は始めない。1 を選ぶと、本体が起動の中でダウンロードする (進み具合は記録へ)。
 _model_found=""
 for _cand in \
     "$WRAP_DIR/store/models/models--BAAI--bge-m3" \
@@ -464,12 +464,12 @@ if [ -z "$_model_found" ]; then
     echo ""
     echo "資料を読み取るための部品 (埋め込みモデル bge-m3) が、この機械にまだありません。"
     echo "どうしますか？"
-    echo "  1) いま取り寄せる"
+    echo "  1) いまダウンロードする"
     echo "     ・大きさ: 約 2.3 GB"
-    echo "     ・インターネットにつなぎます (取り寄せ先: Hugging Face)"
+    echo "     ・インターネットにつなぎます (ダウンロード元: Hugging Face)"
     echo "     ・進み具合は記録 ($LOG) に出ます"
     echo "  2) すでに持っているフォルダを選ぶ"
-    echo "  3) 取り寄せずに、いちばん軽い設定で始める"
+    echo "  3) ダウンロードせずに、いちばん軽い設定で始める"
     echo ""
     echo "  ※ 選ぶまで、通信は始めません。"
     printf '  選んでください [1-3] (Enter は 3): '
@@ -480,7 +480,7 @@ if [ -z "$_model_found" ]; then
     fi
     case "$_mc" in
         1)
-            echo "  → 起動の中で取り寄せます。進み具合は記録 ($LOG) に出ます。"
+            echo "  → 起動の中でダウンロードします。進み具合は記録 ($LOG) に出ます。"
             ;;
         2)
             _msel="$(osascript -e 'POSIX path of (choose folder with prompt "bge-m3 が入っているフォルダを選んでください")' 2>/dev/null || true)"
@@ -495,7 +495,7 @@ if [ -z "$_model_found" ]; then
             PASS+=(--mode minimal)
             ;;
         *)
-            echo "  → 取り寄せません。いちばん軽い設定で始めます。"
+            echo "  → ダウンロードしません。いちばん軽い設定で始めます。"
             PASS+=(--mode minimal)
             ;;
     esac

@@ -265,7 +265,7 @@ async function refreshAllData() {
   // P2: viewer では /api/policies・/api/settings が 403 になるため個別に握り潰す
   try { State.policies = await API.get('/api/policies'); } catch (_e) { /* 403 silenced */ }
   try { State.settings = await API.get('/api/settings'); } catch (_e) { /* 403 silenced */ }
-  // multi-ingest-roots-20260728: 取り込み元の根 (ingest.roots) を先読みして表示写像を温める
+  // multi-ingest-roots-20260728: 取り込み元のルート (ingest.roots) を先読みして表示写像を温める
   // (キャッシュを作り直してから fire-and-forget で再取得)。
   try { _resetIngestHostPathCache(); _loadIngestHostPath(); } catch (_e) { /* ignore */ }
   updateSidebarBadges();
@@ -326,7 +326,7 @@ async function loadChunks(workspaceId, filter) {
     }
     listEl.innerHTML = summaryHtml + data.chunks.map((chunk, i) => {
       // ga-close-v3 PartX: chunks.pii_detected 列は使わない (raw 側は簡易正規表現の当たりでも
-      //   1 になり伏字0件でも立ち、masked 側は伏字後の再判定なので普通 0 になる)。
+      //   1 になりマスキング0件でも立ち、masked 側はマスキング後の再判定なので普通 0 になる)。
       //   サーバと同じ判定 (pii_summary に1件以上あるか) に揃える。
       const _chunkHasPii = !!(chunk.pii_summary && typeof chunk.pii_summary === 'object'
         && Object.values(chunk.pii_summary).some(v => (parseInt(v, 10) || 0) > 0));

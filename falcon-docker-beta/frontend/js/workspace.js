@@ -332,7 +332,7 @@ async function loadChunks(workspaceId, filter) {
     }
     listEl.innerHTML = summaryHtml + data.chunks.map((chunk, i) => {
       // ga-close-v3 PartX: chunks.pii_detected 列は使わない (raw 側は簡易正規表現の当たりでも
-      //   1 になり伏字0件でも立ち、masked 側は伏字後の再判定なので普通 0 になる)。
+      //   1 になりマスキング0件でも立ち、masked 側はマスキング後の再判定なので普通 0 になる)。
       //   サーバと同じ判定 (pii_summary に1件以上あるか) に揃える。
       const _chunkHasPii = !!(chunk.pii_summary && typeof chunk.pii_summary === 'object'
         && Object.values(chunk.pii_summary).some(v => (parseInt(v, 10) || 0) > 0));

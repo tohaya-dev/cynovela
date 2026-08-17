@@ -6,16 +6,16 @@ function renderAiReadinessScore(summary, totalFiles, readyCol, piiCount) {
   const totalChunks = summary.total_chunks || 0;
   const vecChunks   = summary.vectorized_chunks || 0;
   // ga-close-v3 PartX: pii_unreviewed_count は DEPRECATED (サーバ側で
-  //   pii_detections_total の写し = 「未処理」という実体が無い)。読むのをやめる。
+  //   pii_detections_total のコピー = 「未処理」という実体が無い)。読むのをやめる。
   const piiTotal    = summary.pii_detections_total || 0;
   const maskedSpans = summary.masked_spans_total || 0;
   const wsTotal     = summary.total_workspaces || 0;
   const wsNoPolicy  = summary.ws_without_policy_count || 0;
   // スコア計算
   const vecScore  = totalChunks > 0 ? (vecChunks / totalChunks) * 50 : 0;
-  // ga-close-v3 PartX: 伏字が効いているか (検出ゼロなら満点)。
+  // ga-close-v3 PartX: マスキングが効いているか (検出ゼロなら満点)。
   //   「対処率」は測っていないので出さない。測れているのは「個人情報を含む塊が
-  //   あるのに伏字が1件も記録されていない」という失敗形の有無だけ。
+  //   あるのにマスキングが1件も記録されていない」という失敗形の有無だけ。
   const piiScore = piiTotal > 0 ? (maskedSpans > 0 ? 30 : 0) : 30;
   // Guardrail適用率
   const policyScore = wsTotal > 0 ? ((wsTotal - wsNoPolicy) / wsTotal) * 20 : 20;
@@ -40,7 +40,7 @@ function renderAiReadinessScore(summary, totalFiles, readyCol, piiCount) {
           </div>
           <div class="help-score-row">
             <span class="help-score-weight">30%</span>
-            <span>${lj('Masking is in effect (masked items > 0 where personal information was found)','伏字が効いていること（個人情報を含む塊がある場合、伏字が1件以上記録されている）')}<br>
+            <span>${lj('Masking is in effect (masked items > 0 where personal information was found)','マスキングが効いていること（個人情報を含む塊がある場合、マスキングが1件以上記録されている）')}<br>
                   <small>${lj('(Full score if no personal information was found)','（個人情報が検出されなかった場合は満点）')}</small></span>
           </div>
           <div class="help-score-row">
@@ -61,7 +61,7 @@ function renderAiReadinessScore(summary, totalFiles, readyCol, piiCount) {
       <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:17px;color:#475569;margin-top:10px;">
         <span>${lj('Vectorized','ベクター化済み')}: <strong>${vecChunks}${lj('','件')}</strong></span>
         <span>${lj('Chunks with personal information','個人情報を含む塊')}: <strong>${piiTotal}${lj('','件')}</strong></span>
-        <span>${lj('Masked items (total)','伏字の総件数')}: <strong style="color:${(piiTotal>0&&maskedSpans===0)?'#d97706':'#16a34a'};">${maskedSpans}${lj('','件')}</strong>${(piiTotal>0&&maskedSpans===0)?' ⚠️':''}</span>
+        <span>${lj('Masked items (total)','マスキングの総件数')}: <strong style="color:${(piiTotal>0&&maskedSpans===0)?'#d97706':'#16a34a'};">${maskedSpans}${lj('','件')}</strong>${(piiTotal>0&&maskedSpans===0)?' ⚠️':''}</span>
         <span>${lj('WS without policy','ポリシー未適用WS')}: <strong style="color:${wsNoPolicy>0?'#d97706':'#16a34a'};">${wsNoPolicy}${lj('','件')}</strong>${wsNoPolicy>0?' ⚠️':''}</span>
       </div>
     </div>`;
@@ -227,7 +227,7 @@ async function renderGuardrailsSummary() {
   const totalWs = summary.total_workspaces || 0;
   const wsWithoutPolicy = summary.ws_without_policy_count || 0;
   const protectedWs = Math.max(0, totalWs - wsWithoutPolicy);
-  // honest fix (pii-fiction): 「PII未対処」(実体なし=pii_unreviewed_count)を実伏字スパン総数へ置換。
+  // honest fix (pii-fiction): 「PII未対処」(実体なし=pii_unreviewed_count)を実マスキングスパン総数へ置換。
   const maskedSpans = summary.masked_spans_total || 0;
   // 直近24h security 検知（audit-logs から）
   let recent24h = 0;
@@ -255,7 +255,7 @@ async function renderGuardrailsSummary() {
       card('🛡️', lj('Protected WS', '保護済みWS'),     `${protectedWs} / ${totalWs}`, wsWithoutPolicy>0 ? orangeAcc : greenAcc)
     + card('⚠️', lj('Unprotected WS', '未保護WS'),     `${wsWithoutPolicy}`,          wsWithoutPolicy>0 ? redAcc   : greenAcc)
     + card('⚡', lj('Detected (24h)', '直近24h検知'),  `${recent24h}`,                blueAcc)
-    + card('🔒', lj('Masked PII', '伏字済みPII'),     `${maskedSpans}`,            greenAcc);
+    + card('🔒', lj('Masked PII', 'マスキング済みPII'),     `${maskedSpans}`,            greenAcc);
 }
 
 async function renderRecentGuardrailEvents() {

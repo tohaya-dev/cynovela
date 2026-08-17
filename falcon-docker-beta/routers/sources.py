@@ -237,13 +237,13 @@ def open_source_in_finder(request: Request, source_id: str):
             f"このソースのパスが現在の環境に存在しません。別のマシンで登録されたソースの可能性があります（path={_miss_disp}）。",
         )
     # fix2-D: コンテナ実行時は OS ファイルマネージャーを起動できない (xdg-open 不在・そもそも
-    #   コンテナから Mac の Finder は開けない)。subprocess を呼ばず、ホスト側の場所を案内するだけにして
+    #   コンテナから Mac の Finder は開けない)。subprocess を呼ばず、ホスト側の場所を示すだけにして
     #   500/未捕捉例外を出さない。standalone (非コンテナ) は従来どおり Finder/Explorer/xdg-open。
     if os.path.exists("/run/.containerenv") or os.path.exists("/.dockerenv"):
         _box = "/app/ingest"
         # pathdisplay-20260706: 固定文言の決め打ちを廃し、管理者が Settings で申告した
         # 「取り込みフォルダの実際の場所」(settings key: ingest.host_path) を参照する。
-        # 未申告時はパスを含まない中立文言（申告環境で嘘の案内をしない）。表示専用・保存値不変。
+        # 未申告時はパスを含まない中立文言（申告環境で嘘のガイドをしない）。表示専用・保存値不変。
         _host_base = ""
         try:
             _c2 = get_db()
@@ -255,7 +255,7 @@ def open_source_in_finder(request: Request, source_id: str):
             _host_base = (_row["value"] or "").strip() if _row else ""
         except Exception:
             _host_base = ""
-        # multi-ingest-roots-20260728: 複数根 (settings key: ingest.roots) の写像を優先し、
+        # multi-ingest-roots-20260728: 複数ルート (settings key: ingest.roots) の写像を優先し、
         # 写像できない場合のみ従来の ingest.host_path / 中立文言へ落とす。表示専用・保存値不変。
         _roots_hint = _map_ingest_roots(src_path)
         if src_path == _box or src_path.startswith(_box + os.sep):
@@ -366,7 +366,7 @@ def delete_source(request: Request, source_id: str):
 
     ga-close-v3 PartA (2026-07-27): 旧実装はアップロード保管領域
     `store/uploads/{source_id}/` を rmtree していたが、アップロード受け口の撤去に伴い
-    アプリ内部に資料の写しが作られなくなったため不要になった。取り込みフォルダ側の
+    アプリ内部に資料のコピーが作られなくなったため不要になった。取り込みフォルダ側の
     原本は従来どおり一切触らない。
     """
     from server import _purge_chunks_for_source
@@ -379,7 +379,7 @@ def delete_source(request: Request, source_id: str):
         src_row = conn.execute("SELECT path FROM sources WHERE id = ?", (source_id,)).fetchone()
         src_path = src_row["path"] if src_row else None
         # fix-v3 (A2-F2): BM25 再構築のため、削除前に影響を受ける workspace_id を取得しておく
-        # (sources 削除で workspace_sources が FK CASCADE で消えるため事前に控える)。
+        # (sources 削除で workspace_sources が FK CASCADE で消えるため事前にバックアップる)。
         _affected_ws = [r["workspace_id"] for r in conn.execute(
             "SELECT workspace_id FROM workspace_sources WHERE source_id = ?", (source_id,)
         ).fetchall()]
@@ -389,7 +389,7 @@ def delete_source(request: Request, source_id: str):
         conn.commit()
     finally:
         conn.close()
-    # fix-v3 (A2-F2): 削除コミット後に影響 WS の BM25 索引を再構築 (delete 経路の stale 索引
+    # fix-v3 (A2-F2): 削除コミット後に影響 WS の BM25 インデックスを再構築 (delete 経路の stale インデックス
     # 経由で削除済みチャンクが RAG 回答に残留する漏洩を防ぐ。delete_collection と同型)。
     for _wsid in _affected_ws:
         try:
@@ -398,14 +398,14 @@ def delete_source(request: Request, source_id: str):
         except Exception:
             pass
     # ga-close-v3 PartA (2026-07-27): store/uploads/{source_id}/ の rmtree を撤去した。
-    # アップロード受け口が無くなり、アプリが自分の中に資料の写しを作ることが無くなったため、
-    # 削除連鎖でアプリ内部の写しを消す処理は不要になった。取り込みフォルダ側の原本は
+    # アップロード受け口が無くなり、アプリが自分の中に資料のコピーを作ることが無くなったため、
+    # 削除連鎖でアプリ内部のコピーを消す処理は不要になった。取り込みフォルダ側の原本は
     # 従来どおり一切触らない (ユーザー指定パスの source は元ファイルを保持する)。
     return {"ok": True}
 
 
 # ============================================================
-# DD-CYN-0032 B4: 取り込み元 (根) を画面から足す・見る・外す
+# DD-CYN-0032 B4: 取り込み元 (ルート) を画面から足す・見る・外す
 # ------------------------------------------------------------
 #   受け取り手が端末を叩かずに済むようにするための受け口。決定 3-4 に従い、
 #   足すときは「フォルダを辿って選ぶ」形だけを用意し、フルパスの手入力は受け付けない
@@ -415,14 +415,14 @@ def delete_source(request: Request, source_id: str):
 #   管理者だけが使える (_require_admin)。閲覧者には一覧も出さない・受け付けない。
 #   足していない場所を断る作りは従来のまま (ここで境界を緩めない)。
 #
-#   入れ物 (コンテナ) で動く形態では、受け取り手の機械のフォルダを画面から辿れない
-#   (本体は入れ物の中にいる)。その形態では「見る・外す」だけを画面から行い、
-#   「足す」は入口の1行を画面に出して案内する。can_add_from_screen でそれを伝える。
+#   コンテナ (コンテナ) で動く形態では、受け取り手の機械のフォルダを画面から辿れない
+#   (本体はコンテナの中にいる)。その形態では「見る・外す」だけを画面から行い、
+#   「足す」は入口の1行を画面に出して示す。can_add_from_screen でそれを伝える。
 # ============================================================
 
 
 def _ingest_roots_file() -> str:
-    """控えの場所。書く側 (入口スクリプト) と読む側 (ここ) で同じ場所を指す。"""
+    """バックアップの場所。書く側 (入口スクリプト) と読む側 (ここ) で同じ場所を指す。"""
     _base = os.environ.get("CYNOVELA_DATA_DIR") or os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "store"
     )
@@ -430,16 +430,16 @@ def _ingest_roots_file() -> str:
 
 
 def _in_container() -> bool:
-    """入れ物 (コンテナ) の中で動いているか。中なら機械のフォルダを辿れない。"""
+    """コンテナ (コンテナ) の中で動いているか。中なら機械のフォルダを辿れない。"""
     return os.path.isdir("/app/ingest") and os.path.abspath("/app") == os.path.abspath(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     )
 
 
 def _load_ingest_roots() -> list:
-    """控えを読んで根の一覧を返す。読めなければ空。
+    """バックアップを読んでルートの一覧を返す。読めなければ空。
 
-    portable-roots-20260808 (DD-CYN-0066 F-2): 控えには配布物の根からの相対の書き方
+    portable-roots-20260808 (DD-CYN-0066 F-2): バックアップには配布物のルートディレクトリからの相対の書き方
     ("@app/…") が入りうる。ここで生の JSON を直に読むと、その書き方のまま画面へ出て
     しまう。∴ 入口スクリプトと同じ部品 (scripts/ingest_roots.py) に読ませ、解いた
     絶対パスだけを受け取る。読めないときだけ従来どおり生読みへ落ちる。
@@ -473,12 +473,12 @@ def _ingest_roots_helper():
 
 
 def _browse_start_dir() -> str:
-    """新しい根を選ぶときの出発点。
+    """新しいルートを選ぶときの出発点。
 
     A2 の実測に従って決めた: 端末側の `./launch.sh --add` は、いまも機械のどのフォルダでも
-    根にできる (osascript のフォルダ選択に範囲の制限が無い)。∴ 画面側の出発点を家 ($HOME)
+    ルートにできる (osascript のフォルダ選択に範囲の制限が無い)。∴ 画面側の出発点を家 ($HOME)
     にしても、管理者が既に持っている力は広がらない。ここで見せるのはフォルダの名前だけで、
-    中の資料は根として足すまで一切読めない (読む側の境界は従来どおり根の集合である)。
+    中の資料はルートとして足すまで一切読めない (読む側の境界は従来どおりルートの集合である)。
     """
     return os.path.realpath(os.path.expanduser("~"))
 
@@ -510,8 +510,8 @@ def list_ingest_roots(request: Request):
     _out = []
     for _r in _roots:
         _hp = _r.get("host_path") or ""
-        # DD-CYN-0071 P-4: 入れ物の中では控えの host_path (機械側の場所) は必ず見えないため、
-        #   入れ物の中から見える場所 /app/ingest/<中の名前> で在るかどうかを確かめる
+        # DD-CYN-0071 P-4: コンテナの中ではバックアップの host_path (機械側の場所) は必ず見えないため、
+        #   コンテナの中から見える場所 /app/ingest/<中の名前> で在るかどうかを確かめる
         #   (マウントは deploy/container/run-container.sh が中の名前ごとに張る)。
         #   ホスト直で動く形態では _in_container() が偽になり、従来どおり host_path を見る。
         if _in_container():
@@ -529,9 +529,9 @@ def list_ingest_roots(request: Request):
         )
     return {
         "roots": _out,
-        # 画面から足せるか。入れ物の中では機械のフォルダを辿れないため足せない。
+        # 画面から足せるか。コンテナの中では機械のフォルダを辿れないため足せない。
         "can_add_from_screen": not _in_container(),
-        # 足したものがすぐ読めるか。入れ物では起動し直しが要る (束縛は起動時にしか張れない)。
+        # 足したものがすぐ読めるか。コンテナでは起動し直しが要る (束縛は起動時にしか張れない)。
         "restart_required_to_apply": _in_container(),
         "add_from_terminal": "./launch.sh --add",
         "start_dir": _browse_start_dir() if not _in_container() else "",
@@ -540,7 +540,7 @@ def list_ingest_roots(request: Request):
 
 @router.get("/api/ingest-roots/browse", response_model=None)
 def browse_for_ingest_root(request: Request, path: str | None = None):
-    """新しい根を選ぶためのフォルダ辿り (管理者のみ・フォルダ名だけを返す)。
+    """新しいルートを選ぶためのフォルダ辿り (管理者のみ・フォルダ名だけを返す)。
 
     手入力を受け付けないための取り決め: 画面はここが返した path しか
     POST /api/ingest-roots へ送れない。サーバ側でも、受け取った値が実在する

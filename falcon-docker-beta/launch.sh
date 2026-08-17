@@ -19,7 +19,7 @@
 #    2. Podman・Docker・自分で指定 を同列に並べて選ばせる (N-1・決定 30-1〜30-3)。
 #       見つけたものへ黙って進む形は全廃した (決定 30-2)
 #    3. これから何が起きるかを出して Y/N/C で確かめる (N-3)
-#    4. 記録の置き場を画面へ出し、本体をターミナルから切り離して起動する
+#    4. 記録の保存先を画面へ出し、本体をターミナルから切り離して起動する
 #       (このターミナルを閉じても本体は落ちません)
 #    5. 立ち上がりを待ち、開く場所と止め方を出して終わる (N-7)
 #       起動に失敗したときは、理由と記録の場所を出して終わる (画面はそのまま残る)
@@ -31,7 +31,7 @@ LOG="$WRAP_DIR/store/launch-app.log"
 
 # ── 透過の道 ──────────────────────────────────────────────
 # 次のものは本体へそのまま渡す (この包みは何も足さず・何も変えない):
-#   1. 凍結済みの押す道 (Cynovela-start.command → launcher-core.sh) が付ける --no-prompt
+#   1. 凍結済みの操作手順 (Cynovela-start.command → launcher-core.sh) が付ける --no-prompt
 #   2. 端末が繋がっていない呼び出し (聞く・待つ・流すの扱いができない)
 #   3. 起動でない用件 (--list / --add / --check / --setup 単独 など)。包みが受け持つのは
 #      起動の形 (引数なし=本番 / --demo=デモ) と、包みだけの指定 (--follow / --pro) である。
@@ -67,10 +67,10 @@ for _a in "$@"; do
 done
 
 # ── 0. いま動いている Cynovela を全数調べて表示する (DD-CYN-0070 N-6) ──
-#   調べる先は入れ物 (動いているものと止まっているものの両方)。この配布物が
-#   作ったものだけに絞らない (Cynovela の目印 org.cynovela.artifact で見る)。
+#   調べる先はコンテナ (動いているものと止まっているものの両方)。この配布物が
+#   作ったものだけに絞らない (Cynovela のマーカー org.cynovela.artifact で見る)。
 #   受け取り手が選ぶまで、止めない・起こさない・作らない。
-#   入れ物を消す操作 (rm) は、この道のどこにも置かない。
+#   コンテナを消す操作 (rm) は、この道のどこにも置かない。
 FOUND=""            # 1行1件: engine|name|state|port
 ACTION="new"        # new / stop_new / restart
 STOP_TARGETS=""     # 「止めて、新しく起こす」が選ばれたときの止める対象
@@ -134,7 +134,7 @@ _confirm_simple() {  # $1=使うもの $2=作られるものの行 $3=初回の�
         echo "  作られるもの   : $2"
         echo "  残る場所      : このフォルダの中の store/ と、名前つきの保存領域（${VOLPREFIX}-db ほか）"
         echo "  消し方        : ここでは何も消しません（手元から取り除く道は bash uninstall.sh です）"
-        echo "  外から        : この入れ物を作ったときの決めがそのまま続きます"
+        echo "  外から        : このコンテナを作ったときの決めがそのまま続きます"
         echo "  初回          : $3"
         echo "進めますか。"
         echo "  Y) はい、進めます"
@@ -246,12 +246,12 @@ CONF_REPO="$WRAP_DIR"
 CNAME="$(conf_get_or container name "$CONF_DEFAULT_CNAME")"
 VOLPREFIX="$(conf_get_or container volume_prefix "$CONF_DEFAULT_VOLPREFIX")"
 
-# ── 0-A. 埋め込みを動かす外の口 (MAS) を用意するフェーズ (DD-CYN-0083) ──
+# ── 0-A. 埋め込みを動かす外部の推論サーバ (MAS) を用意するフェーズ (DD-CYN-0083) ──
 #   本体を置き換えず、ここへ被せる形で読み込む (決定 29-3)。
 #   3択 (Podman / Docker / 自分で指定) より前に mas_phase_ask を呼ぶ。
-#   理由: 外の口が立たないまま入れ物を起こすと、埋め込みは入れ物の中の CPU へ
+#   理由: 外部の推論サーバが立たないままコンテナを起こすと、埋め込みはコンテナの中の CPU へ
 #         退避する。退避したあとで実行ファイルを選び直しても、その取り込みには
-#         効かない。∴ 外の口は入れ物より先に立てる。
+#         効かない。∴ 外部の推論サーバはコンテナより先に立てる。
 . "$WRAP_DIR/tools/mas-phase.sh"
 
 _ver_of() {  # $1=実行ファイル名 → 版の数字だけを出す
@@ -372,11 +372,11 @@ confirm_launch() {
         echo ""
         echo "これから行うことを確かめてください。"
         echo "  使うもの      : $ENGINE_DISP"
-        echo "  外の口 (埋め込み): $MAS_STATE"
+        echo "  外部の推論サーバ (埋め込み): $MAS_STATE"
         if [ -n "$STOP_TARGETS" ]; then
-            echo "  作られるもの   : 入れ物 1つ（名前: ${CNAME}。先に $STOP_TARGETS を止めます。止めるだけです）"
+            echo "  作られるもの   : コンテナ 1つ（名前: ${CNAME}。先に $STOP_TARGETS を止めます。止めるだけです）"
         else
-            echo "  作られるもの   : 入れ物 1つ（名前: ${CNAME}）"
+            echo "  作られるもの   : コンテナ 1つ（名前: ${CNAME}）"
         fi
         echo "  残る場所      : このフォルダの中の store/ と、名前つきの保存領域（${VOLPREFIX}-db ほか）"
         echo "  消し方        : bash uninstall.sh"
@@ -384,7 +384,7 @@ confirm_launch() {
         echo "                  読み込んだ資料と設定も一緒に消えます"
         echo "  外から        : 同じネットワークの別の Mac から開けます"
         echo "                  この Mac だけに限りたいときは --local-only を付けてください"
-        echo "  初回          : 入れ物の組み立てに時間がかかります"
+        echo "  初回          : コンテナの組み立てに時間がかかります"
         echo "進めますか。"
         echo "  Y) はい、進めます"
         echo "  N) いいえ、選び直します"
@@ -408,8 +408,8 @@ confirm_launch() {
 running_menu
 if [ "$ACTION" = "restart" ]; then
     if _confirm_simple "$RESTART_ENG" "ありません（起こし直すもの: ${RESTART_NAME}。作り直しません。資料と設定はそのまま使えます）" "組み立ては行いません"; then
-        # 起こし直す道でも、入れ物より先に外の口を用意する (DD-CYN-0083)。
-        # 新しく起こす道だけに置くと、この道が外の口を素通りしてしまう。
+        # 起こし直す道でも、コンテナより先に外部の推論サーバを用意する (DD-CYN-0083)。
+        # 新しく起こす道だけに置くと、この道が外部の推論サーバを素通りしてしまう。
         mas_phase_ask
         if ! mas_phase_apply; then
             exit 1
@@ -438,7 +438,7 @@ if [ "$ACTION" = "restart" ]; then
     ACTION="new"
 fi
 
-# 外の口 (MAS) を用意するフェーズ。3択より前に置く (DD-CYN-0083)。
+# 外部の推論サーバ (MAS) を用意するフェーズ。3択より前に置く (DD-CYN-0083)。
 # ここでは調べて選ばせるだけで、まだ何も作らない。
 mas_phase_ask
 
@@ -449,14 +449,14 @@ while true; do
 done
 apply_engine_choice
 
-# 選ばれた道で外の口を用意し、立てて、device を確かめる。
-# 立てられなかったときは黙って入れ物を起こさず、何が足りないかを出して止まる。
+# 選ばれた道で外部の推論サーバを用意し、立てて、device を確かめる。
+# 立てられなかったときは黙ってコンテナを起こさず、何が足りないかを出して止まる。
 if ! mas_phase_apply; then
     exit 1
 fi
 
 # Podman を選んだとき、仮想機械が止まっていれば一度だけ起こしてみる
-# (従来の押す道 (launcher-core.sh cmd_engine) と同じ扱い。起こせなければ本体の点検が知らせる)
+# (従来の操作手順 (launcher-core.sh cmd_engine) と同じ扱い。起こせなければ本体の点検が知らせる)
 if [ "$ENGINE_SEL" = "podman" ] && ! podman info >/dev/null 2>&1; then
     echo "Podman の仮想機械を起こしています (podman machine start)"
     podman machine start >/dev/null 2>&1 || true
@@ -469,7 +469,7 @@ if [ "$ACTION" = "stop_new" ]; then
     _verify_stopped
 fi
 
-# ── 2. 記録の置き場を画面へ出す (ターミナルを閉じる前に必ず) ──────────
+# ── 2. 記録の保存先を画面へ出す (ターミナルを閉じる前に必ず) ──────────
 mkdir -p "$WRAP_DIR/store"
 echo "記録はこのファイルへ書きます: $LOG"
 

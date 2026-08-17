@@ -67,14 +67,14 @@ def _load_or_create_jwt_signing_key() -> str:
 
     解決順序 (金庫鍵と同型・**新しい環境変数は 1 つも追加しない**):
       1. 永続化ファイル <CYNOVELA_DATA_DIR>/db/jwt/secret.key を読み出す
-         (置き場の指定は既存の CYNOVELA_DATA_DIR のみを使う。署名鍵専用の env は設けない。
+         (保存先の指定は既存の CYNOVELA_DATA_DIR のみを使う。署名鍵専用の env は設けない。
           ツリー外へ出したい場合は CYNOVELA_DATA_DIR の指定で行う)
       2. 無ければ暗号乱数 (secrets) で新規生成し、同パスへ書き込み + chmod 600
     公知の推測可能な固定文字列へ落ちる経路は持たない (2026-07-05 に撤去した穴を再生産しない)。
     書き込みに失敗した場合はプロセス内限りの乱数鍵を返す (金庫鍵と同じ作り)。この場合は起動ごとに
     署名鍵が変わるため発行済みの通行証は無効になるが、再ログインで通る (金庫の中身には影響しない)。
 
-    置き場を db/ 配下の jwt/ にする理由:
+    保存先を db/ 配下の jwt/ にする理由:
       - falcon コンテナ / K8s では /app/store/db が書き込み可能な永続ボリューム
         (podman 名前つきボリューム・K8s PVC) で、金庫鍵の読み取り専用 bind
         (/app/store/secret.key:ro) と衝突せず、コンテナ作り直しでも鍵が残る。
@@ -233,14 +233,14 @@ def load_cynovela_config(yaml_path: str = "cynovela.yaml") -> dict:
     #   従来はここに env_map (13 件) が在り、cynovela.yaml を読み終えたあとに
     #   CYNOVELA_LLM_BASE_URL / CYNOVELA_EMBEDDING_* / CYNOVELA_RAG_* / CYNOVELA_LOG_LEVEL
     #   などで上から塗り替えていた。∴ 設定ファイルに書いた値と違う状態で動くことがあり、
-    #   伏字の強さ・待ち受けの範囲・モデルの指定が案内と食い違った。受け取り手には
+    #   マスキングの強さ・待ち受けの範囲・モデルの指定がガイドと食い違った。受け取り手には
     #   「書いたとおりに動かない」としか見えず、原因が設定ファイルの外に在るため辿れない。
     #
-    #   決めごとの置き場は cynovela.yaml 1 本である (DD-CYN-0053)。読む順は
+    #   決めごとの保存先は cynovela.yaml 1 本である (DD-CYN-0053)。読む順は
     #   既定値 → 設定ファイル で終わりにし、そのあと誰も塗り替えない。
     #
-    #   置き場そのもの (CYNOVELA_DATA_DIR / CYNOVELA_DB / CYNOVELA_CHROMA など) は
-    #   ここで扱っていた値ではなく、この撤去では動かない。梱包の場 (tools/build_bundled_data.py)
+    #   保存先そのもの (CYNOVELA_DATA_DIR / CYNOVELA_DB / CYNOVELA_CHROMA など) は
+    #   ここで扱っていた値ではなく、この撤去では動かない。パッケージングの場 (tools/build_bundled_data.py)
     #   がステージの中を指すのに使っているのはそちらである。
     return config
 

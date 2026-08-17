@@ -1,6 +1,6 @@
-"""Cynovela 金庫暗号化 鍵窓口 (vault-enc)。
+"""Cynovela 金庫暗号化 鍵インターフェース (vault-enc)。
 
-原本 (生本文) を SQLite / Chroma に保存する直前に通すための薄い窓口。
+原本 (生本文) を SQLite / Chroma に保存する直前に通すための薄いインターフェース。
 config.encrypt / config.decrypt (Fernet) を流用し、保存形式は ``"enc:" + base64`` で
 冪等になるよう統一する。再発行ボタン等で鍵差替えする際は本モジュール 1 箇所で
 吸収できる構造にしてある。

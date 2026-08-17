@@ -10,7 +10,7 @@ echo "  bash stop.sh"
 echo ""
 bash stop.sh
 
-# 本当に止まったかを実測して出す (この配布物の置き場から起動した本体だけを見る)
+# 本当に止まったかを実測して出す (この配布物の保存先から起動した本体だけを見る)
 _left=""
 for _p in $(pgrep -f " server\.py" 2>/dev/null); do
     _cwd="$(lsof -a -p "$_p" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1)"

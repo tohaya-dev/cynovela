@@ -20,10 +20,10 @@
   管理者・デモ用閲覧者とも平文をコードに書かない。--admin-password / --viewer-password で
   受け取り、指定が無ければその場で乱数を生成する。
   生成した値は **標準出力に出さない**。--admin-password-out で指定したファイルへ 0600 で
-  「資格情報の控え」としてまとめて書き出すだけにする
+  「資格情報のバックアップ」としてまとめて書き出すだけにする
   (画面・端末の記録・作業ログに平文が残らないようにするため)。
   いずれかを生成する場合に --admin-password-out が無ければエラーで止める (逃げ道を作らない)。
-  控えは配布物 tar の外に置かれるので、配る人はこのファイルだけを見て初期パスワードを知る。
+  バックアップは配布物 tar の外に置かれるので、配る人はこのファイルだけを見て初期パスワードを知る。
   管理者は must_change_password=1 で初回ログイン時に変更を強制する。
 """
 import os
@@ -57,7 +57,7 @@ VIEWER_USERNAME = "demo"
 # 実行時/テスト残渣テーブル (RAG コーパスへの inbound FK なし → 安全に空にできる)
 # key-vector-fix-20260721 (Part E): messages / message_rag_refs / sessions は全消去を
 # やめ、テスト由来のみ選別除去する (_selective_conversation_cleanup)。デモ由来の
-# 会話記録は取り込み・伏字のデモ材料として配布物に残す (迷うものは残す側に倒す)。
+# 会話記録は取り込み・マスキングのデモ材料として配布物に残す (迷うものは残す側に倒す)。
 RUNTIME_RESIDUE = (
     "audit_logs", "admin_change_log",
     "refresh_tokens", "processing_logs", "feedback", "reports",
@@ -74,14 +74,14 @@ SEED_WS_REMOVED = ("ws-sales", "ws-tech", "ws-hr")
 def _clear_all_conversations(conn, dump_dir: str | None) -> dict:
     """dist-no-history-20260727: 配布物の会話記録を全消去する。
 
-    従来は「テスト由来のみ選別除去し、デモ由来の会話は伏字デモの材料として残す」方針
+    従来は「テスト由来のみ選別除去し、デモ由来の会話はマスキングデモの材料として残す」方針
     (key-vector-fix-20260721 Part E) だったが、配布物では次の2つの理由で成立しない。
 
-    1. 他人の会話履歴が配布物に入る。前走行の配布物には falcon 2行・chewie 4行
+    1. 他人の会話履歴が配布物に入る。前実行の配布物には falcon 2行・chewie 4行
        (計 4,716文字) が残っていた。
     2. **配布物は secret.key を同梱しない。** 残った本文は `enc:` の暗号文のまま
        復号できず、管理者経路のプロンプトへそのまま流れる。chewie ではこれで回答が
-       「該当なし」に落ちた (事実108-6)。伏字デモの材料になるどころか壊す。
+       「該当なし」に落ちた (事実108-6)。マスキングデモの材料になるどころか壊す。
 
     セッションの器も消す。本文の無いセッションは画面上「題だけあって中身が空の会話」
     として並び、受け取り手には取りこぼしにしか見えないため (迷うものは残す、の対象外)。
@@ -244,15 +244,15 @@ def _relocate_source_paths(conn) -> dict:
 
 
 
-# ── N-1 (DD-CYN-0020): 索引 (chroma.sqlite3) に焼き込まれた絶対パスの正規化 ──────────
-# demo.db 側 (_relocate_source_paths) は 2026-07-28 から相対化しているが、索引の
+# ── N-1 (DD-CYN-0020): インデックス (chroma.sqlite3) に焼き込まれた絶対パスの正規化 ──────────
+# demo.db 側 (_relocate_source_paths) は 2026-07-28 から相対化しているが、インデックスの
 # embedding_metadata.file_path ほかには取り込み時の**絶対**パスがそのまま残る。
 # 実測 2026-08-02 (本流の作業ツリー・読み取りのみ):
-#   chewie 26,371 セル / falcon 26 セル / hansolo 0 セル (索引自体が空)
+#   chewie 26,371 セル / falcon 26 セル / hansolo 0 セル (インデックス自体が空)
 #   内訳 (chewie): embedding_metadata.string_value 25,752 /
 #                  embeddings_queue.metadata 491 / embedding_fulltext_search 63 ×2 /
 #                  collections.schema_str 2
-# 取り込み元を相対で入れても索引には絶対パスが焼き込まれる (ossinit-20260729 の知見)。
+# 取り込み元を相対で入れてもインデックスには絶対パスが焼き込まれる (ossinit-20260729 の知見)。
 # そのため「全表・全 TEXT 列を走査して置換する」形を採る。列を名指しすると、
 # chroma の版が変わって列が増えたときに取りこぼす。
 _CHROMA_FTS_SHADOW = ("_data", "_idx", "_docsize", "_config", "_content")
@@ -262,7 +262,7 @@ def _chroma_text_columns(con):
     """chroma.sqlite3 の (表, 列) のうち文字列を持ちうるものを列挙する。
 
     FTS5 の影の表 (…_data / _idx / _docsize / _config / _content) は直接書かない。
-    影を直接書くと索引と中身が食い違うため、仮想表そのものを更新する。
+    影を直接書くとインデックスと中身が食い違うため、仮想表そのものを更新する。
     """
     fts = set()
     tables = []
@@ -294,34 +294,34 @@ def _chroma_rules(mapping: dict, app_root: str) -> list:
     rules = [(old.rstrip("/"), new.rstrip("/")) for old, new in mapping.items()]
     # 廃止済みの保管領域 (ga-close-v3 PartA) を指す絶対パス。demo.db 側と同じ形にする。
     rules.append((app_root.rstrip("/") + "/store/uploads", "./store/uploads"))
-    # 最後に、梱包を作った場所そのもの。ここまでで拾えなかった参照を展開フォルダ相対にする。
+    # 最後に、パッケージングを作った場所そのもの。ここまでで拾えなかった参照を展開フォルダ相対にする。
     rules.append((app_root.rstrip("/"), "."))
     rules.sort(key=lambda r: len(r[0]), reverse=True)
     return rules
 
 
-# 資料本文そのものを持つ行 (chroma:document と全文検索の写し) は書き換えない。
+# 資料本文そのものを持つ行 (chroma:document と全文検索のコピー) は書き換えない。
 # 本文の中に絶対パスが書かれているのは資料の中身であって、道具が勝手に改めるものではない
 # (実測 2026-08-02: 印刷footer に file:///Users/… を含む HTML が同梱資料に在る)。
 _CHROMA_DOC_KEY = "chroma:document"
-# 置き場 (store 配下) を指す絶対パスは、どの機材で作っても展開フォルダ相対にできる。
+# 保存先 (store 配下) を指す絶対パスは、どの機材で作っても展開フォルダ相対にできる。
 _CHROMA_STORE_RE = re.compile(r"""[^"'\s]*?/store/(uploads|models|vector|db)(?=[/"'\s]|$)""")
 
 
 def _relocate_chroma_paths(chroma_sqlite: str, mapping: dict, app_root: str) -> dict:
-    """索引の全 TEXT 列から作った機材の絶対パスを取り除き、展開フォルダ相対へ改める。
+    """インデックスの全 TEXT 列から作った機材の絶対パスを取り除き、展開フォルダ相対へ改める。
 
     戻り値:
       replaced        置換したセル数
       leftover_abs    参照 (メタデータ) 側に残った作った機材の絶対パスのセル数
-                      → 0 件を梱包の合格条件にする (取りこぼしたら止める)
+                      → 0 件をパッケージングの合格条件にする (取りこぼしたら止める)
       leftover_in_doc 資料本文の中に書かれている絶対パスのセル数 (道具では書き換えない)
     """
     home = os.path.expanduser("~")
     res = {"file": chroma_sqlite, "replaced": 0, "leftover_abs": 0,
            "leftover_in_doc": 0, "leftover_in_queue": 0, "by_rule": {}}
     if not os.path.exists(chroma_sqlite):
-        res["skipped"] = "索引が無い"
+        res["skipped"] = "インデックスが無い"
         return res
     con = sqlite3.connect(chroma_sqlite)
     try:
@@ -342,8 +342,8 @@ def _relocate_chroma_paths(chroma_sqlite: str, mapping: dict, app_root: str) -> 
                 res["by_rule"][old] = n_rule
                 res["replaced"] += n_rule
         con.commit()
-        # 2) 取りこぼし (別の作業ツリーで作った索引を持ち込んだ等) を正規表現で詰める。
-        #    置き場 (store 配下) を指す絶対パスだけが対象。資料本文の行は触らない。
+        # 2) 取りこぼし (別の作業ツリーで作ったインデックスを持ち込んだ等) を正規表現で詰める。
+        #    保存先 (store 配下) を指す絶対パスだけが対象。資料本文の行は触らない。
         n_re = 0
         for t, c in cols:
             if t.startswith("embedding_fulltext_search"):
@@ -388,7 +388,7 @@ def _relocate_chroma_paths(chroma_sqlite: str, mapping: dict, app_root: str) -> 
                         f'SELECT COUNT(*) FROM "{t}" WHERE "{c}" GLOB ?', (f"*{home}*",)
                     ).fetchone()[0]
                 elif t == "embeddings_queue":
-                    # chroma 内部の書き込み待ち行列。資料本文の写しを含むため別に数える。
+                    # chroma 内部の書き込み待ち行列。資料本文のコピーを含むため別に数える。
                     res["leftover_in_queue"] += con.execute(
                         f'SELECT COUNT(*) FROM "{t}" WHERE "{c}" GLOB ?', (f"*{home}*",)
                     ).fetchone()[0]
@@ -425,13 +425,13 @@ def write_secret_file(path: str, value: str) -> None:
 
 def credentials_text(admin_username: str, admin_pw: str,
                      viewer_username: str, viewer_pw: str) -> str:
-    """資格情報の控えの中身を組み立てる (pw-out-of-code-20260729 / C-B9)。
+    """資格情報のバックアップの中身を組み立てる (pw-out-of-code-20260729 / C-B9)。
 
     書き出し先は tar の外なので配布物には入らない。配る人はこのファイルだけを見て
     管理者と閲覧者の初期パスワードを知る (画面にも作業ログにも出さない)。
     """
     return (
-        "# Cynovela 配布物の初期資格情報 (この控えは配布物 tar の外です・取り扱い注意)\n"
+        "# Cynovela 配布物の初期資格情報 (このバックアップは配布物 tar の外です・取り扱い注意)\n"
         f"admin_username={admin_username}\n"
         f"admin_password={admin_pw}\n"
         "# 管理者は初回ログイン時にパスワード変更を強制されます\n"
@@ -456,13 +456,13 @@ def main(src: str, out: str, dump_dir: str | None = None,
     conn.execute("PRAGMA foreign_keys = ON")
 
     before_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-    # ws-protect-by-name-20260727: 元DBの作業場所を控えておき、1つも欠けていないことを検査する
+    # ws-protect-by-name-20260727: 元DBの作業場所をバックアップておき、1つも欠けていないことを検査する
     # (seed-ws-removal-20260730: 撤去済みシード3件 SEED_WS_REMOVED は判定から除外する)
     before_ws = [r[0] for r in conn.execute("SELECT id FROM workspaces ORDER BY id")]
 
     # 0) 資格情報の決定 (pw-out-of-code-20260727 / pw-out-of-code-20260729 C-B9)。
     #    管理者・閲覧者とも平文をコードに書かない。引数で渡されなければその場で乱数を生成し、
-    #    生成した値は標準出力に出さず 0600 の控えファイルへまとめて書くだけにする
+    #    生成した値は標準出力に出さず 0600 のバックアップファイルへまとめて書くだけにする
     #    (pw-not-on-screen-20260727: 配布物を作る画面の記録に平文が残っていた)。
     admin_pw = admin_password if admin_password is not None else secrets.token_urlsafe(18)
     viewer_pw = viewer_password if viewer_password is not None else secrets.token_urlsafe(12)
@@ -507,8 +507,8 @@ def main(src: str, out: str, dump_dir: str | None = None,
     # 4c) mba-launch-20260728: 参照先 (sources.path ほか) を展開フォルダ相対へ改める
     relocated = _relocate_source_paths(conn)
 
-    # 4d) N-1 (DD-CYN-0020): 索引 (chroma.sqlite3) 側の絶対パスも同じ規則で相対へ改める。
-    #     demo.db だけ相対化しても、索引には取り込み時の絶対パスが焼き込まれたまま残る
+    # 4d) N-1 (DD-CYN-0020): インデックス (chroma.sqlite3) 側の絶対パスも同じ規則で相対へ改める。
+    #     demo.db だけ相対化しても、インデックスには取り込み時の絶対パスが焼き込まれたまま残る
     #     (実測 2026-08-02: 本流の作業ツリーで chewie 26,371 セル / falcon 26 セル)。
     _chroma_path = chroma if chroma is not None else _default_chroma_path(out)
     _store_root = os.path.dirname(os.path.dirname(os.path.abspath(out)))
@@ -572,12 +572,12 @@ def main(src: str, out: str, dump_dir: str | None = None,
     print(f"[verify] 会話履歴 0行 = {history_clean} (messages={n_msgs} sessions={n_sess} refs={n_refs})")
     print(f"[clean] 参照先を展開フォルダ相対へ変更: {relocated}")
     print(f"[verify] 参照先に絶対パス残り 0件 = {leftover_abs == 0} (残り {leftover_abs}件)")
-    print(f"[clean] 索引 (chroma.sqlite3) の絶対パスを相対へ変更: {chroma_res}")
-    print(f"[verify] 索引の参照に絶対パス残り 0件 = {chroma_res['leftover_abs'] == 0}"
+    print(f"[clean] インデックス (chroma.sqlite3) の絶対パスを相対へ変更: {chroma_res}")
+    print(f"[verify] インデックスの参照に絶対パス残り 0件 = {chroma_res['leftover_abs'] == 0}"
           f" (残り {chroma_res['leftover_abs']}件)")
-    print(f"[note]   索引の資料本文の中に書かれた絶対パス = {chroma_res['leftover_in_doc']}件"
+    print(f"[note]   インデックスの資料本文の中に書かれた絶対パス = {chroma_res['leftover_in_doc']}件"
           f" / 書き込み待ち行列の中 = {chroma_res['leftover_in_queue']}件"
-          f" (どちらも資料の中身の写しのため道具では書き換えない)")
+          f" (どちらも資料の中身のコピーのため道具では書き換えない)")
     ok = (
         viewer_ok
         and admin_ok

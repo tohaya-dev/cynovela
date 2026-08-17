@@ -239,7 +239,7 @@ function buildRagAnswerHtml(answer, retrievalDetail, meta = null) {
   let answerHtml = renderMarkdownAnswer(answer);
   // P5-C: [MASKED:TYPE] トークンをホバー説明付きの span に変換
   answerHtml = answerHtml.replace(/\[MASKED:(\w+)\]/g, (_m, type) => {
-    // ga-close-v3 PartX: 伏字トークン名は型名と綴りが違うものがあるためここで対応付ける。
+    // ga-close-v3 PartX: マスキングトークン名は型名と綴りが違うものがあるためここで対応付ける。
     //   2026-07-27 に増えた SSN / IBAN / PASSWORD / APIKEY / PRIVATEKEY を追加。
     //   表に無いトークンは state.js の型ラベル表 → それでも無ければトークン名そのまま。
     const labels = {

@@ -374,28 +374,28 @@ class OpenAICompatibleReranker(_CloudRerankerBase):
         super().__init__(model=model, api_key=api_key)
 
 
-# ga-finish-20260727: 外の口 (Mac Accelerator Service) に届かないときの明示退避の状態。
+# ga-finish-20260727: 外部の推論サーバ (Mac Accelerator Service) に届かないときの明示退避の状態。
 # 埋め込みの _EMBED_FALLBACK_STATE (rag.py) と同型。黙って挙動が変わらないよう、
 # 退避の発生を記録し /api/settings/reranker 経由で画面 (設定 > Reranker) へ出す。
 _RERANK_FALLBACK_STATE = {"active": False, "since": None, "error": "", "target": ""}
 
 
 def get_rerank_fallback_state() -> dict:
-    """外の口からローカルへの退避状態のスナップショットを返す (UI 表示用)。"""
+    """外部の推論サーバからローカルへの退避状態のスナップショットを返す (UI 表示用)。"""
     return dict(_RERANK_FALLBACK_STATE)
 
 
 class ExternalAcceleratorReranker(RerankerProvider):
-    """ga-finish-20260727: 外の口 (Mac Accelerator Service) の /v1/rerank を使う Reranker。
+    """ga-finish-20260727: 外部の推論サーバ (Mac Accelerator Service) の /v1/rerank を使う Reranker。
 
     埋め込みの外出し (OpenAICompatibleEmbeddingProvider + content_class) と同じ作り:
-      - 口へ渡す本文が伏字済みか原文かを常に明示する (content_class)
+      - 口へ渡す本文がマスキング済みか原文かを常に明示する (content_class)
       - 口が居ないときは黙って待たせず明示的に退避する:
           * 再ランクの重みがローカル (store/models 等) にある → 本体の中で再ランク
             (in-process CrossEncoder。全部入り版は解凍してそのまま動く)
           * 重みが無い (軽量版) → 再ランクせず検索結果をそのまま返す (落ちない)
         どちらの経路に入ったかはログ1行 + _RERANK_FALLBACK_STATE (画面表示) に残す。
-      - 復帰は次回の外部呼び出し成功時 (毎回まず外の口を試す)
+      - 復帰は次回の外部呼び出し成功時 (毎回まず外部の推論サーバを試す)
     """
 
     def __init__(self, base_url: str, model: str = "", api_key: str = ""):
@@ -462,7 +462,7 @@ class ExternalAcceleratorReranker(RerankerProvider):
             return await self._rerank_fallback(query, chunks, top_n, _ex)
         if _RERANK_FALLBACK_STATE.get("active"):
             _RERANK_FALLBACK_STATE.update(active=False, error="", target="")
-            print("[Cynovela] 外の口 (rerank) への接続が復帰しました (退避解除)")
+            print("[Cynovela] 外部の推論サーバ (rerank) への接続が復帰しました (退避解除)")
         results = data.get("results") or data.get("data") or []
         out = []
         for r_idx, item in enumerate(results[:top_n]):
@@ -492,7 +492,7 @@ class ExternalAcceleratorReranker(RerankerProvider):
         )
         # 要件: どちらの経路に入ったかをログ1行に残す (無言禁止)
         print(
-            f"[Cynovela] 外の口 (rerank {self.base_url}) に届かないため退避します: "
+            f"[Cynovela] 外部の推論サーバ (rerank {self.base_url}) に届かないため退避します: "
             f"経路={_target}: {ex}"
         )
         if _local is not None:
@@ -610,9 +610,9 @@ def get_reranker_provider(config: dict) -> RerankerProvider:
     model = r.get("model") or ""
     base_url = r.get("base_url") or ""
     api_key = r.get("api_key") or ""
-    # ga-finish-20260727: 外の口 (Mac Accelerator Service) への切り替え。
+    # ga-finish-20260727: 外部の推論サーバ (Mac Accelerator Service) への切り替え。
     # 埋め込み (providers/embedding.py get_embedding_provider) と同じ仕組み:
-    #   device: external / external_accelerator + base_url で外の口を指す。
+    #   device: external / external_accelerator + base_url で外部の推論サーバを指す。
     #   provider=external_accelerator も同義として受ける (設定画面の一覧から選ぶ経路)。
     device = (r.get("device") or "").lower()
     if device in ("external", "external_accelerator") or provider == "external_accelerator":

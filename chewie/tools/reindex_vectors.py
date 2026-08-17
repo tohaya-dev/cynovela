@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""reindex_vectors.py — 既存 demo.db の塊(chunks)からベクター索引(ChromaDB)を再構築する。
+"""reindex_vectors.py — 既存 demo.db の塊(chunks)からベクターインデックス(ChromaDB)を再構築する。
 
 背景 (key-vector-fix-20260721): 稼働側の Chroma ベクターが失われても、demo.db の
-chunks(raw=enc: 暗号文 / masked=伏字平文)は無傷で残る。本ツールは原本ファイルを
+chunks(raw=enc: 暗号文 / masked=マスキング平文)は無傷で残る。本ツールは原本ファイルを
 使わず、DB の塊から publish_collection_iter と同じ形式のベクターを作り直す。
 
 原則:
-  - demo.db へは一切書き込まない (mode=ro)。作るのは Chroma 側の索引のみ。
+  - demo.db へは一切書き込まない (mode=ro)。作るのは Chroma 側のインデックスのみ。
   - 埋め込みは publish と同じ BAAI/bge-m3 (Chroma SentenceTransformerEmbeddingFunction,
     1024次元)。モデルは store/models 同梱キャッシュから読む (新規ダウンロードしない)。
   - raw 層の documents は publish と同じく enc: 暗号文で格納する (embeddings は復号平文
@@ -186,8 +186,8 @@ def reindex_collection(conn, chroma, col_row, ef, cache: EmbCache, batch: int) -
             continue
         tier = "masked" if p["masked"] else "raw"
         if tier == "raw":
-            # masked-only §9-1 (vector-tier-masked-only-20260724): 伏字前 (raw) の層は
-            # 再構築しない (ベクターは伏字済み一組のみ)。raw 行は content_hash の親和
+            # masked-only §9-1 (vector-tier-masked-only-20260724): マスキング前 (raw) の層は
+            # 再構築しない (ベクターはマスキング済み一組のみ)。raw 行は content_hash の親和
             # (publish は masked メタにも raw 平文ハッシュを載せる) のためだけに復号する。
             plain = dec_raw(r["content"])
             if plain.startswith("enc:"):
@@ -197,7 +197,7 @@ def reindex_collection(conn, chroma, col_row, ef, cache: EmbCache, batch: int) -
             continue
         else:
             # masked-only §9-2: 金庫 (関係DB) は masked 行も暗号化格納されるため復号する。
-            # Chroma 側 masked documents は検索層として伏字済み平文のまま置く (従来どおり)。
+            # Chroma 側 masked documents は検索層としてマスキング済み平文のまま置く (従来どおり)。
             plain_m = dec_raw(r["content"])
             if plain_m.startswith("enc:"):
                 skipped.append((r["chunk_id"], "undecryptable"))
@@ -244,7 +244,7 @@ def reindex_collection(conn, chroma, col_row, ef, cache: EmbCache, batch: int) -
         item["meta"]["content_hash"] = raw_hash.get(item["logical"]) or _h(item["embed_text"])
 
     result = {"collection": cid, "name": col_row["name"], "skipped": skipped}
-    # masked-only §9-1: 伏字前の層のコレクションが残っていれば撤去する (レガシー掃除)。
+    # masked-only §9-1: マスキング前の層のコレクションが残っていれば撤去する (レガシー掃除)。
     try:
         chroma.delete_collection(name=f"{cid}__raw")
         result["raw_collection_deleted"] = True
@@ -348,7 +348,7 @@ def main() -> int:
             (col["id"],),
         ).fetchone()
         if raw_n >= (db_raw[0] or 0) and masked_n >= (db_raw[1] or 0) and raw_n > 0:
-            print(f"[skip] {col['id']} ({col['name']}): 既に索引あり raw={raw_n} masked={masked_n}")
+            print(f"[skip] {col['id']} ({col['name']}): 既にインデックスあり raw={raw_n} masked={masked_n}")
             continue
         print(f"[start] {col['id']} ({col['name']}) chunks={col['n']}")
         r = reindex_collection(conn, chroma, col, ef, cache, args.batch)

@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 
 from db import get_db
 from core.auth import _require_admin
-# ga-close-v3 PartD D-3: 伏字件数の数え方は guardrail.py の 1 か所に集約する。
+# ga-close-v3 PartD D-3: マスキング件数の数え方は guardrail.py の 1 か所に集約する。
 from guardrail import pii_count_sql
 
 
@@ -216,7 +216,7 @@ td{{padding:4px 8px;border:1px solid #e2e8f0;font-size:11px;word-break:break-all
 <div class="grid">
 <div class="card"><div class="num">0</div><div class="lbl">外部送信 bytes / ローカル完結</div></div>
 <div class="card"><div class="num">{g_pii}</div><div class="lbl">PII検出チャンク</div></div>
-<div class="card"><div class="num">{g_masked}</div><div class="lbl">伏字 __masked チャンク</div></div>
+<div class="card"><div class="num">{g_masked}</div><div class="lbl">マスキング __masked チャンク</div></div>
 <div class="card"><div class="num">{g_cls_pct}%</div><div class="lbl">分類済 {g_classified}/{g_files}</div></div>
 </div>
 <div class="grid">
