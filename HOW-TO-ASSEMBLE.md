@@ -12,11 +12,11 @@ into parts of 1,500,000,000 bytes each. Do this once, before you start the tool.
 
 2. Join the parts in order:
 
-       cat cynovela-falcon-all-in-one-20260817.tar.gz.part00 cynovela-falcon-all-in-one-20260817.tar.gz.part01 cynovela-falcon-all-in-one-20260817.tar.gz.part02 > cynovela-falcon-all-in-one-20260817.tar.gz
+       cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part00 cynovela-falcon-all-in-one-1.0.3.tar.gz.part01 cynovela-falcon-all-in-one-1.0.3.tar.gz.part02 > cynovela-falcon-all-in-one-1.0.3.tar.gz
 
-       cat cynovela-chewie-all-in-one-20260817.tar.gz.part00 cynovela-chewie-all-in-one-20260817.tar.gz.part01 cynovela-chewie-all-in-one-20260817.tar.gz.part02 > cynovela-chewie-all-in-one-20260817.tar.gz
+       cat cynovela-chewie-all-in-one-1.0.3.tar.gz.part00 cynovela-chewie-all-in-one-1.0.3.tar.gz.part01 cynovela-chewie-all-in-one-1.0.3.tar.gz.part02 > cynovela-chewie-all-in-one-1.0.3.tar.gz
 
-   (`cat cynovela-falcon-all-in-one-20260817.tar.gz.part* > cynovela-falcon-all-in-one-20260817.tar.gz`
+   (`cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part* > cynovela-falcon-all-in-one-1.0.3.tar.gz`
    does the same, because the shell sorts the part names.)
 
 3. Check the result:
@@ -27,9 +27,9 @@ into parts of 1,500,000,000 bytes each. Do this once, before you start the tool.
 
 4. Unpack it:
 
-       tar -xzf cynovela-falcon-all-in-one-20260817.tar.gz
+       tar -xzf cynovela-falcon-all-in-one-1.0.3.tar.gz
 
-       tar -xzf cynovela-chewie-all-in-one-20260817.tar.gz
+       tar -xzf cynovela-chewie-all-in-one-1.0.3.tar.gz
 
 If step 3 does not say `OK`: one of the parts did not download completely.
 Download that part again and repeat from step 2. Do not start the tool with a
@@ -53,11 +53,11 @@ your first time, `HAJIMETE.md` in the same folder is the gentler starting point.
 
 2. 片を順番につなぎます。
 
-       cat cynovela-falcon-all-in-one-20260817.tar.gz.part00 cynovela-falcon-all-in-one-20260817.tar.gz.part01 cynovela-falcon-all-in-one-20260817.tar.gz.part02 > cynovela-falcon-all-in-one-20260817.tar.gz
+       cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part00 cynovela-falcon-all-in-one-1.0.3.tar.gz.part01 cynovela-falcon-all-in-one-1.0.3.tar.gz.part02 > cynovela-falcon-all-in-one-1.0.3.tar.gz
 
-       cat cynovela-chewie-all-in-one-20260817.tar.gz.part00 cynovela-chewie-all-in-one-20260817.tar.gz.part01 cynovela-chewie-all-in-one-20260817.tar.gz.part02 > cynovela-chewie-all-in-one-20260817.tar.gz
+       cat cynovela-chewie-all-in-one-1.0.3.tar.gz.part00 cynovela-chewie-all-in-one-1.0.3.tar.gz.part01 cynovela-chewie-all-in-one-1.0.3.tar.gz.part02 > cynovela-chewie-all-in-one-1.0.3.tar.gz
 
-   （`cat cynovela-falcon-all-in-one-20260817.tar.gz.part* > cynovela-falcon-all-in-one-20260817.tar.gz`
+   （`cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part* > cynovela-falcon-all-in-one-1.0.3.tar.gz`
    でも同じです。片の名前の順につながります。）
 
 3. つないだ結果を確かめます。
@@ -68,9 +68,9 @@ your first time, `HAJIMETE.md` in the same folder is the gentler starting point.
 
 4. 取り出します。
 
-       tar -xzf cynovela-falcon-all-in-one-20260817.tar.gz
+       tar -xzf cynovela-falcon-all-in-one-1.0.3.tar.gz
 
-       tar -xzf cynovela-chewie-all-in-one-20260817.tar.gz
+       tar -xzf cynovela-chewie-all-in-one-1.0.3.tar.gz
 
 3 で `OK` と出ない場合、どれかの片が最後まで落ちていません。その片を落とし直し、
 2 からやり直してください。確かめに通らなかったものを使い始めないでください。
