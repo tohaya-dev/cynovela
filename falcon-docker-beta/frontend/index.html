@@ -795,9 +795,9 @@ body.lang-ja .en-block { display: none !important; }
             ⚡ <span class="en">Quick Start</span><span class="ja">クイックスタート</span>
           </button>
           <!-- latestlog-dualbtn-20260627: 起動ボタンの右に「最新ログ」常設入口(一本で両対応)。
-               走行中(同一ブラウザ判定)なら進捗・ログへ再アタッチ、非走行なら直近1件の完了記録を再表示(来歴一覧ではない)。
-               出どころ= IngestViz.showLatestOrReattach() → 走行中: reattachLive()(既存 /api/jobs ポーリング再利用) /
-               非走行: showLatest() → localStorage(cynovela_ingest_history) 先頭。非admin含む全ユーザー可・フロント完結。 -->
+               実行中(同一ブラウザ判定)なら進捗・ログへ再アタッチ、非実行なら直近1件の完了記録を再表示(来歴一覧ではない)。
+               実装= IngestViz.showLatestOrReattach() → 実行中: reattachLive()(既存 /api/jobs ポーリング再利用) /
+               非実行: showLatest() → localStorage(cynovela_ingest_history) 先頭。非admin含む全ユーザー可・フロント完結。 -->
           <button class="btn btn-sm" onclick="IngestViz.showLatestOrReattach()"
                   style="padding:8px 14px;font-size:14px;border-radius:8px;cursor:pointer;"
                   title="Show the most recent ingest log / 直近の取り込みログを表示">
@@ -828,7 +828,7 @@ body.lang-ja .en-block { display: none !important; }
         (function(){
           var fr=document.getElementById('a6-frame');
           // Phase G (allinone): コンプラPDF — /api/compliance/report(根拠記録+ガバナンス状態) を
-          // token 付き fetch し別窓で開く（window.print() で PDF 保存）。
+          // token 付き fetch し別ウィンドウで開く（window.print() で PDF 保存）。
           window.__openCompliancePdf = async function(){
             try{
               var tok=(window.API&&API.token)||localStorage.getItem('cynovela_token')||'';
@@ -1640,7 +1640,7 @@ body.lang-ja .en-block { display: none !important; }
             <label class="form-label">Model</label>
             <input id="emb-model" class="form-input" type="text" placeholder="all-MiniLM-L6-v2">
           </div>
-          <!-- mas-status-20260725: 外の口 (Mac Accelerator Service) の稼働状態と退避表示 -->
+          <!-- mas-status-20260725: 外部の推論サーバ (Mac Accelerator Service) の稼働状態と退避表示 -->
           <div id="emb-accel-status" class="hint" style="display:none;margin:4px 0 8px 0;font-weight:600"></div>
           <div class="form-group" id="emb-base-url-row" style="display:none">
             <label class="form-label">Base URL (openai_compat)</label>
@@ -1705,7 +1705,7 @@ body.lang-ja .en-block { display: none !important; }
           </div>
           <!-- P4-5: PII検出精度設定
                ga-close-v3 PartX: 選べる形（<select>）を撤去し、実際に効いている値の読み取り専用表示にした。
-               画面で選び直しても伏字の強さは変わらない（引き渡しの仕組みは本ランの対象外）ため、
+               画面で選び直してもマスキングの強さは変わらない（引き渡しの仕組みは本ランの対象外）ため、
                「選べるのに効かない」という嘘だけを消す。表示値は GET /api/settings/pii-mode の実測値。 -->
           <div class="form-group" style="margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0;">
             <label class="form-label"><span class="en">PII Detection Accuracy</span><span class="ja">PII検出精度</span></label>
@@ -1726,7 +1726,7 @@ body.lang-ja .en-block { display: none !important; }
             <select id="rr-provider" class="form-select" onchange="onRrProviderChange()">
               <option value="none" data-en="None (no rerank)" data-ja="None (no rerank / Rerank なし)">None (no rerank / Rerank なし)</option>
               <option value="cross_encoder" data-en="CrossEncoder (local)" data-ja="CrossEncoder (local / ローカル)">CrossEncoder (local / ローカル)</option>
-              <option value="external_accelerator" data-en="External accelerator (Mac Accelerator Service)" data-ja="External accelerator / 外の口 (Mac Accelerator Service)">External accelerator / 外の口 (Mac Accelerator Service)</option>
+              <option value="external_accelerator" data-en="External accelerator (Mac Accelerator Service)" data-ja="External accelerator / 外部の推論サーバ (Mac Accelerator Service)">External accelerator / 外部の推論サーバ (Mac Accelerator Service)</option>
               <option value="cohere" data-en="Cohere" data-ja="Cohere">Cohere</option>
               <option value="jina" data-en="Jina" data-ja="Jina">Jina</option>
               <option value="voyage" data-en="Voyage" data-ja="Voyage">Voyage</option>
@@ -1755,7 +1755,7 @@ body.lang-ja .en-block { display: none !important; }
             <button class="btn btn-ghost btn-sm" onclick="testRrConnection()">🔌 <span class="en">Test Connection</span><span class="ja">接続テスト</span></button>
             <span id="rr-result" class="set-result"></span>
           </div>
-          <!-- ga-finish-20260727: 再ランクの現在の実行場所/状態 (外の口・本体内・再ランクなし) -->
+          <!-- ga-finish-20260727: 再ランクの現在の実行場所/状態 (外部の推論サーバ・本体内・再ランクなし) -->
           <div class="form-group">
             <span id="rr-accel-status" class="set-result" style="display:none"></span>
           </div>
@@ -1941,9 +1941,9 @@ body.lang-ja .en-block { display: none !important; }
 (function(){
   // 埋め込み経路 (取り込みと検索に使うモデル) の状態を、管理者の画面に帯で出す。
   // 出すのは3つ:
-  //   1. モデルを読み込めなかった (原因と置き場所つき) … 赤
-  //   2. 外の口へ届かずローカルへ退避した … 黄 (退避先にもモデルが無ければ赤)
-  //   3. 索引を作った埋め込みと今の埋め込みが食い違う … 黄
+  //   1. モデルを読み込めなかった (原因と保存先つき) … 赤
+  //   2. 外部の推論サーバへ届かずローカルへ退避した … 黄 (退避先にもモデルが無ければ赤)
+  //   3. インデックスを作った埋め込みと今の埋め込みが食い違う … 黄
   // どれも無ければ何も出さない。
   var POLL_MS = 60000;
   function show(level, text){
@@ -1993,7 +1993,7 @@ body.lang-ja .en-block { display: none !important; }
       }
       var idt = info.identity || {};
       if(idt.checked && idt.match === false){
-        show('warn', '索引を作った埋め込みと、いまの埋め込みが食い違っています。'
+        show('warn', 'インデックスを作った埋め込みと、いまの埋め込みが食い違っています。'
           + (idt.message || '') + ' 順位が壊れることがあります。');
         return;
       }
