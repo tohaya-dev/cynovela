@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cynovela のコンセプト — Cynovela</title>
+  <title>Concept / Cynovela のコンセプト — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,200 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">The Concept of Cynovela</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that an individual can understand the concepts of an AI platform tool by working on it hands-on. It is not a commercial product and not an official implementation. The implementation is entirely original, and is composed of an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product in any way.
+    </blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">The Problems Cynovela Solves</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela is a learning implementation built to assemble and understand, by hand, a pipeline that connects internal documents to an LLM "safely, reproducibly, and while leaving records." Concretely, it addresses the following three problems.</p>
+    <h4>1. The LLM does not know knowledge specific to the organization</h4>
+    <p>A general-purpose LLM has not learned internal rules, procedures, or meeting minutes. To answer questions such as "What do our rules say about this?" or "What policy was decided in last week's meeting?", you need a RAG (Retrieval-Augmented Generation) mechanism that searches the relevant documents each time and passes them to the LLM as context.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">The Problems Cynovela Solves (continued)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h4>2. Confidential information cannot be sent to the cloud</h4>
+    <p>Internal documents often contain personal information and trade secrets, and it is normal that they cannot be sent to an external API. From the standpoint of data sovereignty, audit requirements, and compliance, document text, embedding generation, and LLM inference all need to be completed locally.</p>
+    <h4>3. You do not want to index documents that contain PII</h4>
+    <p>If raw personal information remains in the search index, there is a risk that it leaks unintentionally through answers. A two-stage design is needed: masking at ingest time to keep the search index in a safe state (A-2 Tier1), and passing answers through masking as well at answer time (A-2 Tier2).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">Design Philosophy (Local-First / PII Protection)</span>
+  </div>
+  <div class="slide-body">
+    <h4>Local-first</h4>
+    <p>In the default configuration, the FastAPI server is bound to <code>127.0.0.1</code>, and the IP allowlist middleware rejects any access other than loopback with 403 (A-5 §4). Exposure to LAN / Tailscale / a custom subnet is enabled only when an explicit flag (<code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code>) is given. Embedding (BGE-M3 and so on) runs locally, and the LLM connects to a local inference server that has an OpenAI-compatible /v1 API (default <code>http://localhost:1234</code>).</p>
+    <h4>Two-stage PII protection</h4>
+    <p>In Tier1 (at ingest), both the <code>raw</code> and <code>masked</code> lines are stored physically separated. The <code>chunks</code> table of SQLite holds rows with the <code>__masked</code> suffix, and ChromaDB creates the two collections <code>{cid}__raw</code> / <code>{cid}__masked</code> (A-2 §6). In Tier2 (at answer time), <code>_mask_for_viewer(text, user)</code> runs at 4 places on the chat response path and forcibly applies masking for anyone other than <code>admin</code> (A-2 §7). The administrator passes raw through in the answer display, but when an external (non-local) LLM is used, crag-egress-guard prevents even the administrator from sending the raw preview (context_preview) outside (it judges locality before sending, and skips the CRAG preview for non-local destinations).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">Design Philosophy (Provider Abstraction / Audit Logs)</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <h4>Provider abstraction</h4>
+    <p>Each of the LLM, Embedding, VectorStore, Reranker, and Classifier layers can be switched through an abstract base class (A-5 §3, A-6 §1). The defaults are LM Studio + BGE-M3 + ChromaDB + NoReranker + a rule-based classifier, but by editing <code>cynovela.yaml</code> you can replace them with other providers. Some of them, such as MLX / Qdrant / LanceDB / GraphRAG, are skeletons only (<code>NotImplementedError</code>) and are planned for future implementation.</p>
+    <h4>Audit logs are mandatory</h4>
+    <p>Important operations (creation and deletion of Source / Workspace / Collection, Publish, Chat, PII detection, prompt injection blocking, authentication failure) always pass through <code>_log_audit(conn, action, target, detail)</code> and are recorded in the <code>audit_logs</code> table. Deletion and modification through the API are prohibited (CLAUDE.md design constraint).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">Design Philosophy (Prompt Injection Countermeasures)</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <h4>Three layers of prompt injection countermeasures</h4>
+    <p><code>routers/chat.py</code> has the following three stages of defense built in (A-2 §9).</p>
+    <ol>
+      <li>Input inspection (14 patterns in English and Japanese)</li>
+      <li>Exclusion of poison chunks after retrieval</li>
+      <li>Output inspection (the 4 patterns <code>HACKED</code> / <code>PWNED</code> / <code>SECRET-ALPHA-TOKEN</code> / <code>[SYSTEM OVERRIDE]</code>)</li>
+    </ol>
+    <p>On detection it blocks with HTTP 400 and records <code>PROMPT_INJECTION_BLOCKED</code> in the audit log. The principle of placing the system prompt "after" retrieved_content (CLAUDE.md security) is also there to prevent overwrite attacks through documents.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">Grounds for the Original Implementation</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela does not reference the implementation of the AI platform tool it was inspired by, and there is no compatibility in source code, API specification, or data model. All design decisions are the responsibility of the individual.</p>
+    <h4>A configuration assembled only from OSS</h4>
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>FastAPI + uvicorn</td><td>HTTP API server</td></tr>
+        <tr><td>SQLite</td><td>Metadata, audit logs, chunk text (foreign keys enabled, <code>INSERT OR REPLACE</code> prohibited)</td></tr>
+        <tr><td>ChromaDB</td><td>Vector store (two lines of collections, raw / masked)</td></tr>
+        <tr><td>BGE-M3</td><td>Multilingual embedding (default text mode)</td></tr>
+        <tr><td>BM25Okapi + fugashi/MeCab</td><td>Lexical search and Japanese morphological analysis</td></tr>
+        <tr><td>cryptography.fernet</td><td>Vault encryption (<code>enc:</code> prefix, idempotent)</td></tr>
+        <tr><td>presidio + GiNZA</td><td>Secondary path for PII detection (NER based)</td></tr>
+        <tr><td>Local LLM</td><td>OpenAI-compatible /v1 API (LM Studio and so on)</td></tr>
+      </tbody>
+    </table>
+    <p>No commercial features, support, or SLA are provided. All implementation decisions and trade-offs are made by an individual.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">What Local-First Means</span>
+  </div>
+  <div class="slide-body">
+    <p>"Local-first" means the following concrete behavior in Cynovela.</p>
+    <ul>
+      <li><strong>Data stays on the local disk</strong>: SQLite and ChromaDB are created by default under <code>~/.cynovela/</code> (can be overridden with the <code>CYNOVELA_DB</code> / <code>CYNOVELA_CHROMA</code> environment variables, A-1 §5).</li>
+      <li><strong>Embedding runs on the local CPU/GPU</strong>: choose from BGE-M3 (default text mode), MiniLM (lite / lite-en mode), and TF-IDF (minimal mode) (A-1 §2). At the first startup a preflight check runs, and for models that have not been downloaded it confirms the retrieval from HuggingFace (with <code>CYNOVELA_NONINTERACTIVE=1</code> it stops immediately without dialog, A-1 §6).</li>
+      <li><strong>LLM inference goes through a local server</strong>: default <code>http://localhost:1234</code>. With <code>--lmstudio-url</code> you can also connect to an OpenAI-compatible server on another machine, but explicit specification is required.</li>
+      <li><strong>External transmission requires explicit configuration</strong>: switching <code>reranker.provider</code> to <code>cohere</code> or similar, setting <code>execution.llm_provider</code> to <code>openrouter</code> / <code>claude_api</code>, adding <code>--lan</code> / <code>--allow-tailscale</code> — none of these happen unless the user intentionally changes them.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">CONCEPT</span>
+    <span class="slide-title">Current Position</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela is a verification implementation for learning at the Alpha GA stage.</p>
+    <ul>
+      <li><strong>The core flow</strong> (Source registration → Scan → Workspace → Collection → Publish → RAG Chat) <strong>works</strong>: the smoke test finishes in about 2 seconds.</li>
+      <li><strong>The test suite has 14 PHASEs / 405+ assertions</strong>: it can be run at once with <code>scripts/run_all_tests.sh</code>. It covers static analysis, extended API, GUI Playwright, security, consistency, CASCADE deletion, SSE error cases, chat error cases, scan error cases, embedding compatibility, DB migration, GUI recovery, and audit_log (CLAUDE.md).</li>
+      <li><strong>Unimplemented features</strong>: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG are skeletons only (A-6 §1). The structured answer template is not implemented, and the exclusion logic of <code>confidence_threshold</code> is only partly integrated (A-3 §6, §11). Authentication is enforced even when starting with <code>--demo</code> (the fixed token of the form <code>Bearer demo-token-&lt;user_id&gt;</code> was abolished on 2026-07-29).</li>
+      <li><strong>Commercial use is out of scope</strong>: this is a personal implementation for learning purposes. It does not represent the official position of the AI platform tool it was inspired by.</li>
+    </ul>
+    <p style="margin-top:18px; color:var(--cyn-muted); font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-11">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">Cynovela のコンセプト</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-12">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -226,7 +411,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-13">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">Cynovela が解く問題</span>
@@ -242,7 +427,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">Cynovela が解く問題（続き）</span>
@@ -260,7 +445,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-15">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">設計思想（ローカルファースト / PII 保護）</span>
@@ -277,7 +462,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">設計思想（プロバイダー抽象化 / 監査ログ）</span>
@@ -295,7 +480,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">設計思想（プロンプトインジェクション対策）</span>
@@ -317,7 +502,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">独自実装の根拠</span>
@@ -346,7 +531,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">ローカルファーストの意味</span>
@@ -366,7 +551,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">コンセプト</span>
     <span class="slide-title">現在の位置づけ</span>
@@ -389,9 +574,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 10</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 20</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

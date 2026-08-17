@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>回答モード — Cynovela</title>
+  <title>Answer Modes / 回答モード — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,261 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Answer Modes</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">About this document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool, built by an individual in order to understand the concepts behind AI platform tooling by actually writing the code. It is not a commercial product and not an official implementation. Everything is implemented from scratch on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
+    </blockquote>
+    <p>The behavior of a Cynovela RAG (retrieval augmented generation) answer changes with the combination of a <strong>mode</strong> and a <strong>preset</strong>, depending on the use case. This document organizes the modes that can be confirmed as of Alpha GA, together with the implementation evidence.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">1. Strictness modes (2 kinds)</span>
+  </div>
+  <div class="slide-body">
+    <p>Two system prompts are defined in <code>rag.py</code>. This is the switching axis that corresponds to the "strictness mode".</p>
+    <h3>1.1 DEFAULT_SYSTEM_PROMPT (default / RAG enabled)</h3>
+    <ul>
+      <li>Instructs the model to answer based on the ingested documents (the context)</li>
+      <li>Recommends embedding the citation numbers <code>[1][2]</code></li>
+    </ul>
+    <h3>1.3 Switching</h3>
+    <ul>
+      <li>Default: <code>DEFAULT_SYSTEM_PROMPT</code> (RAG enabled, answer based on the search results)</li>
+      <li>General knowledge mode: <code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> (RAG disabled, answer from the general knowledge of the LLM only)</li>
+    </ul>
+    <p>From MCP (external tools), calling the <code>rag_general</code> tool requests a direct answer without RAG.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">1.2 GENERAL_KNOWLEDGE_SYSTEM_PROMPT</span>
+  </div>
+  <div class="slide-body">
+    <p>The definition at <code>rag.py:204-213</code> (excerpt):</p>
+    <pre><code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT = """あなたは優秀なアシスタントです。
+ユーザーの質問にあなたの一般知識のみを根拠として回答してください。
+
+【ルール】
+- このモードではコンテキストや社内資料は提供されません。
+- 知らないことは「分かりません」と素直に伝えること。事実を捏造しないこと。
+- 回答はMarkdown形式で返してよい（見出し・箇条書き使用可）。
+- 質問の意図を理解し、簡潔で正確な説明を心がけること。</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">2. RAG presets (all 5)</span>
+  </div>
+  <div class="slide-body">
+    <p>5 built-in presets are defined in <code>routers/pipeline_config.py</code>.</p>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Chunking</th><th>RAG mode</th><th>Guardrail</th><th>Image processing</th></tr></thead>
+      <tbody>
+        <tr><td><code>tech_doc</code></td><td>📄 Technical document</td><td>For manuals</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr>
+        <tr><td><code>confidential</code></td><td>🔒 Confidential document</td><td>Internal documents containing PII</td><td>general</td><td>standard</td><td>mask</td><td>—</td></tr>
+        <tr><td><code>personal_memo</code></td><td>📝 Personal memo</td><td>Minutes and memos</td><td>email_minutes</td><td>lite</td><td>log_only</td><td>—</td></tr>
+        <tr><td><code>multimedia</code></td><td>🖼️ Multimedia</td><td>Mixed images and Office files</td><td>tech_doc</td><td>standard</td><td>default</td><td>caption</td></tr>
+        <tr><td><code>quickstart</code></td><td>⚡ Quick start</td><td>Fully automatic, for beginners</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">2.1 Preset structure / 2.2 The 3 RAG modes</span>
+  </div>
+  <div class="slide-body">
+    <pre><code>{
+  "id": "tech_doc",
+  "name": "📄 技術文書",
+  "description": "...",
+  "config_json": "{\"chunking\": \"tech_doc\", \"rag_mode\": \"standard\", \"guardrail\": \"default\"}",
+  "is_builtin": 1
+}</code></pre>
+    <h3>2.2 The 3 RAG modes</h3>
+    <table>
+      <thead><tr><th>Mode</th><th>Summary</th></tr></thead>
+      <tbody>
+        <tr><td><code>lite</code></td><td>Minimal RAG (one search, optional processing skipped)</td></tr>
+        <tr><td><code>standard</code></td><td>Standard RAG (BM25 hybrid, reranker optional)</td></tr>
+        <tr><td><code>hq</code></td><td>High quality RAG (CRAG, Multi-Query and HyDE enabled)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">3. Structured answer templates</span>
+  </div>
+  <div class="slide-body">
+    <h3>3.1 Current state: not implemented</h3>
+    <p>The search <code>grep -rn "structured.*answer|answer.*template|template.*answer" --include="*.py"</code> returns <strong>0 results</strong>, and none of the following implementations could be confirmed.</p>
+    <ul>
+      <li>No structured fields in the <code>ChunkHit</code> / <code>RetrievalResult</code> dataclasses</li>
+      <li>No instruction in the system prompts such as "return in JSON format" or "return within <code>&lt;answer&gt;XXX&lt;/answer&gt;</code> tags"</li>
+    </ul>
+    <p>Therefore, as of Alpha GA, <strong>a free-form answer is the standard</strong>.</p>
+    <h3>3.2 The citation feature is implemented</h3>
+    <p>Separately from structured answer templates, the <strong>citation feature</strong> is implemented (<code>build_citations()</code> / <code>build_context_with_citations()</code> at <code>rag.py:238-288</code>). Citation numbers in the form <code>[1][2]</code> are embedded in the answer, and the citation mapping is returned afterwards.</p>
+    <ul>
+      <li>Setting: <code>config.rag.citation_enabled = true</code> (default)</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">4.1-4.2 Confidence threshold</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.1 Setting (default)</h3>
+    <pre><code># config.py の defaults
+rag:
+  confidence_threshold: 0.50</code></pre>
+    <ul>
+      <li>Scale: cosine similarity (0 to 1)</li>
+      <li>Noise floor of BGE-M3: 0.35 to 0.45 (even an unrelated query produces a score around this level)</li>
+      <li>Typical range for real queries: 0.55 to 0.75</li>
+      <li>Decision policy: 0.50 or below is treated as "low quality" and becomes a fallback candidate</li>
+    </ul>
+    <h3>4.2 The decision metric is the vector cosine</h3>
+    <p>As a lesson from the past, <strong>using the RRF score for the abstention (answer suppression) decision is wrong</strong>. RRF is the sum of reciprocal ranks (max ≈ 0.033), which differs by orders of magnitude from the cosine similarity (0 to 1). Always use the <strong>vector cosine</strong> as the decision metric.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">4.3-4.4 Integration status / tuning policy</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.3 Integration into the pipeline</h3>
+    <p><code>config.rag.confidence_threshold</code> is defined as a value, but inside the search pipeline (<code>rag_retrieve</code>) it is only <strong>partially integrated</strong> into explicit exclusion logic.</p>
+    <ul>
+      <li>Handling of 0 search results → automatic switching to <code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> is not implemented</li>
+      <li>A separate processing flow for a top score &lt; threshold is not implemented</li>
+    </ul>
+    <h3>4.4 Tuning policy</h3>
+    <p>The threshold can be changed by editing <code>rag.confidence_threshold</code> in <code>cynovela.yaml</code>. Hard-coding is forbidden; it is only changed through the configuration file.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">5. Related advanced features</span>
+  </div>
+  <div class="slide-body">
+    <p>The advanced RAG features used in combination with the answer modes are as follows.</p>
+    <table>
+      <thead><tr><th>Feature</th><th>Related settings</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>MMR re-selection</td><td><code>rag.mmr_enabled</code>, <code>mmr_lambda</code></td><td>Balancing relevance and diversity</td></tr>
+        <tr><td>Parent-Child chunking</td><td><code>rag.parent_child_enabled</code></td><td>Search on the child, substitute the parent</td></tr>
+        <tr><td>Multi-Query expansion</td><td><code>rag.multi_query_enabled</code>, <code>multi_query_count</code></td><td>Expands the query into several variants with the LLM</td></tr>
+        <tr><td>CRAG (self-evaluating re-search)</td><td><code>rag.crag_enabled</code>, <code>crag_max_loops</code></td><td>The LLM evaluates the quality of the search results</td></tr>
+        <tr><td>HyDE (hypothetical document embedding)</td><td><code>rag.hyde_enabled</code></td><td>Generates a hypothetical answer and searches with its embedding</td></tr>
+        <tr><td>Adaptive RAG</td><td><code>rag.adaptive_enabled</code>, <code>adaptive_threshold</code></td><td>Switches automatically between basic / agentic by query complexity</td></tr>
+        <tr><td>Reranker</td><td><code>reranker.provider</code></td><td>Disabled by default, can be switched to CrossEncoder and others</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Answer Modes</span>
+    <span class="slide-title">6. Answer style per role</span>
+  </div>
+  <div class="slide-body">
+    <p>The role prefix in <code>rag.py</code> also switches the tone of the answer.</p>
+    <table>
+      <thead><tr><th>Role</th><th>Policy of the prefix</th></tr></thead>
+      <tbody>
+        <tr><td>admin</td><td>Provides complete information including technical details, setting values and internal structure</td></tr>
+        <tr><td>reader</td><td>An easy to understand explanation focused on the main points, avoiding technical jargon</td></tr>
+      </tbody>
+    </table>
+    <p>See <code>docs/rbac.md</code> for details.</p>
+    <p style="margin-top:18px; color: var(--cyn-muted); font-size: 12px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+
+<div class="slide cover" id="slide-12">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">回答モード（Answer Modes）</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-13">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +473,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">1. 厳格度モード（2 種類）</span>
@@ -252,7 +498,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-15">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">1.2 GENERAL_KNOWLEDGE_SYSTEM_PROMPT</span>
@@ -274,7 +520,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">2. RAG プリセット（全 5 件）</span>
@@ -298,7 +544,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">2.1 プリセット構造 / 2.2 RAG モード 3 種類</span>
@@ -327,7 +573,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">3. 構造化回答テンプレート</span>
@@ -352,7 +598,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">4.1〜4.2 信頼度閾値</span>
@@ -377,7 +623,7 @@ rag:
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">4.3〜4.4 統合状況 / 調整方針</span>
@@ -398,7 +644,7 @@ rag:
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">5. 関連する高度機能</span>
@@ -424,7 +670,7 @@ rag:
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">回答モード</span>
     <span class="slide-title">6. ロール別 回答スタイル</span>
@@ -449,9 +695,9 @@ rag:
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 11</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 22</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>運用ガイド — Cynovela</title>
+  <title>Operations / 運用ガイド — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,368 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
-
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Operations Guide</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About This Document</strong><br>
+      Cynovela is a completely unofficial learning tool built by an individual in order to understand the concepts of AI infrastructure tools hands-on. It is not a commercial product and not an official implementation.
+      The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+      It does not represent the official view of any company or product in any way.
+    </blockquote>
+    <p>This document collects the procedures for starting and stopping, backup, logs, and user management needed to operate Cynovela day to day.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">1. Normal Startup and Shutdown</span>
+  </div>
+  <div class="slide-body">
+    <h3>Startup</h3>
+<pre><code>conda activate cynovela
+python server.py --demo</code></pre>
+    <p>For details of the options, see the deployment guide.</p>
+    <h3>Shutdown</h3>
+    <p>Send <code>Ctrl + C</code> once in the terminal. The FastAPI / Uvicorn shutdown hook runs, and a stop request is propagated to any Publish job in progress (the SSE path).</p>
+    <h3>Starting in the background</h3>
+    <p>You can also keep it resident with <code>nohup</code>, or with a terminal multiplexer such as <code>tmux</code> / <code>screen</code>.</p>
+<pre><code>nohup python server.py --demo &gt; ~/cynovela.out 2&gt;&amp;1 &amp;</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">2. Default Data Locations</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela data is stored under <code>~/.cynovela/</code>.</p>
+    <table>
+      <thead><tr><th>Purpose</th><th>Path</th><th>Environment variable for override</th></tr></thead>
+      <tbody>
+        <tr><td>SQLite DB (normal)</td><td><code>~/.cynovela/db/cynovela.db</code></td><td><code>CYNOVELA_DB</code></td></tr>
+        <tr><td>SQLite DB (demo)</td><td><code>~/.cynovela/db/demo.db</code></td><td><code>CYNOVELA_DB</code></td></tr>
+        <tr><td>ChromaDB (normal)</td><td><code>~/.cynovela/vector/default/chroma</code></td><td><code>CYNOVELA_CHROMA</code></td></tr>
+        <tr><td>ChromaDB (demo)</td><td><code>~/.cynovela/vector/demo/chroma</code></td><td><code>CYNOVELA_CHROMA</code></td></tr>
+        <tr><td>Backups</td><td><code>~/.cynovela/backups</code></td><td><code>CYNOVELA_BACKUP_DIR</code></td></tr>
+        <tr><td>Models</td><td><code>~/.cynovela/models</code></td><td>(can be specified individually with <code>cynovela.yaml.models.*.path</code>)</td></tr>
+        <tr><td>Logs</td><td><code>~/.cynovela</code></td><td><code>CYNOVELA_LOG_DIR</code></td></tr>
+      </tbody>
+    </table>
+    <p>The above are the locations for the host (conda) edition. In the container edition the DB and the vector data are stored in named volumes, and the ingest entry point binds the host's <code>~/Cynovela</code> (default) to <code>/app/ingest</code>. The host edition's <code>~/.cynovela/</code> and the container edition's ingest folder <code>~/Cynovela</code> are different things.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">2. Backup and Restore</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>Manual backup</h3>
+    <p>With the server stopped, copy the directories above.</p>
+<pre><code># サーバー停止後に実行
+TS=$(date +%Y%m%d-%H%M%S)
+mkdir -p ~/cynovela-backups/$TS
+cp -R ~/.cynovela/db ~/cynovela-backups/$TS/db
+cp -R ~/.cynovela/vector ~/cynovela-backups/$TS/vector</code></pre>
+    <h3>Restore</h3>
+<pre><code># サーバー停止後に実行
+cp -R ~/cynovela-backups/20260526-093000/db ~/.cynovela/db
+cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">2. Notes on Backup Operations</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>Always <strong>back up and restore SQLite and ChromaDB together</strong>. If you restore only one of them, consistency between the <code>chunks</code> table and the vector IDs breaks.</li>
+      <li>Deleting a source, workspace, or collection is implemented so that both SQLite and ChromaDB are cleaned up. Keep this &quot;both from the same snapshot&quot; principle in backup operations as well.</li>
+      <li>Starting with <code>--demo</code> uses <code>db/demo.db</code> and <code>vector/demo/chroma</code>, and the demo data is reset on every start. Do not mix it with production operation.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">3. Log Files</span>
+  </div>
+  <div class="slide-body">
+    <h3>Log level</h3>
+    <p>Controlled by <code>logging.level</code> (or <code>server.log_level</code>) in <code>cynovela.yaml</code>. The default is <code>INFO</code>.</p>
+<pre><code>logging:
+  level: INFO
+  request_id: true   # 全リクエストに X-Request-ID を付与</code></pre>
+    <h3>Request ID</h3>
+    <p>When <code>request_id: true</code> is enabled, an <code>X-Request-ID</code> header is added to every API response. It can be used during troubleshooting to link a client-side request with the server-side log.</p>
+    <h3>Preflight log</h3>
+<pre><code>[Cynovela] PII detection mode: standard (from cynovela.yaml)</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">4. Exporting the Audit Log</span>
+  </div>
+  <div class="slide-body">
+    <h3>What the audit log is</h3>
+    <p>Cynovela records important operations in the <code>audit_logs</code> table in SQLite.</p>
+    <h4>Main things that are recorded</h4>
+    <ul>
+      <li>Creation and deletion of workspaces, collections, and sources</li>
+      <li>Execution and completion of Publish</li>
+      <li>Chat (questions and answers)</li>
+      <li>PII detection (<code>PII_DETECTED</code> / <code>pii_detected</code>)</li>
+      <li>Prompt injection detection (<code>PROMPT_INJECTION_BLOCKED</code>)</li>
+      <li>Authentication failures</li>
+    </ul>
+    <blockquote><strong>Tamper prevention</strong>: <code>audit_logs</code> cannot be deleted or modified through the API. Keep this principle in your operational policy as well.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">4. How to Read the Audit Log</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>Reading it from the GUI</h3>
+    <p>After logging in with the <code>admin</code> role, you can browse it with filters on the &quot;Audit log&quot; screen.</p>
+    <h3>Through the API</h3>
+    <ul>
+      <li><code>GET /api/guardrails/pii-detections</code> — aggregates PII detections from <code>audit_logs</code> (administrator required)</li>
+      <li><code>GET /api/pii-detections</code> — aggregates from the <code>chunks</code> table (administrator required)</li>
+      <li><code>GET /api/audit-logs</code> — retrieves the audit log (administrator required)</li>
+    </ul>
+    <h3>Extracting directly from SQLite</h3>
+<pre><code>sqlite3 ~/.cynovela/db/cynovela.db \
+  "SELECT timestamp, action, target, detail FROM audit_logs ORDER BY timestamp DESC LIMIT 100;"</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">5. User Management — Roles</span>
+  </div>
+  <div class="slide-body">
+    <p>The effective roles in Cynovela are the two values <code>admin</code> / <code>viewer</code>.</p>
+    <table>
+      <thead><tr><th>Role</th><th>Permissions</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>All features (user management, system settings, viewing PII detection history, and so on)</td></tr>
+        <tr><td><code>viewer</code></td><td>Read only</td></tr>
+      </tbody>
+    </table>
+    <blockquote>Names such as <code>curator</code> / <code>data-scientist</code> are accepted as backward-compatible values, but in the current implementation they are normalized to <code>viewer</code> and have no permissions of their own.</blockquote>
+    <h3>Initial administrator</h3>
+    <table>
+      <thead><tr><th>Environment variable</th><th>Purpose</th><th>Default value</th></tr></thead>
+      <tbody>
+        <tr><td><code>CYNOVELA_ADMIN_USERNAME</code></td><td>Initial administrator user name</td><td><code>cynovela</code></td></tr>
+        <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>Initial administrator password</td><td>(If neither the env var nor <code>auth.admin_initial_password</code> in <code>cynovela.yaml</code> is set, a password change is forced at first login. No known fixed password is distributed. Set a value only if you want to fix it.)</td></tr>
+      </tbody>
+    </table>
+    <h3>Login information of the shipped demo.db</h3>
+    <p>The <code>demo.db</code> distributed for <code>--demo</code> already contains the following accounts.</p>
+    <table>
+      <thead><tr><th>User name</th><th>Role</th><th>Password</th></tr></thead>
+      <tbody>
+        <tr><td><code>cynovela</code></td><td>admin</td><td>A change is forced at first login (no fixed password is distributed)</td></tr>
+        <tr><td><code>demo</code></td><td>viewer</td><td>See <code>viewer_password</code> in the bundled credentials file (the <code>*.admin-password.txt</code> received separately from the package tar). No fixed password is distributed.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">5. Authentication / Vault / IP Access Control</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>Adding and deleting users, and changing passwords</h3>
+    <p>After logging in with the administrator role, you can do this from the &quot;User management&quot; screen. Operating through the API is also possible, but the user management endpoints are protected by <code>_require_admin</code> or <code>_require_admin_or_self</code> (only the user themselves or an administrator).</p>
+    <h3>Vault access and masking by role</h3>
+    <ul>
+      <li><code>admin</code> → searches the raw (unmasked body text) vault. No exit masking is applied to the displayed answer.</li>
+      <li><code>viewer</code> (<code>curator</code> and others are normalized to viewer) → searches the masked vault. Exit masking is applied.</li>
+    </ul>
+    <blockquote>However, when an external (non-local) LLM is used, crag-egress-guard keeps the raw pre-read (context_preview) from being sent outside even for an administrator (CRAG is skipped). Note that it is not the case that &quot;administrator = the raw body text is always passed to the external LLM&quot;.</blockquote>
+    <h3>Authentication</h3>
+    <p>API authentication is done with the HTTP <code>Authorization</code> header. The token is the JWT issued by <code>POST /api/auth/login</code>. The old <code>Bearer demo-token-{user_id}</code> form has been removed and is not accepted.</p>
+    <blockquote><strong>Note</strong>: Production authentication with JWT is not implemented as of alpha GA. For details, see &quot;Known limitations&quot;.</blockquote>
+    <h3>IP access control</h3>
+    <p>By default, access is allowed only from <code>127.0.0.1</code> / <code>localhost</code>. Access from a LAN or from Tailscale is opened up individually with startup options (<code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code>).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">6. Health Checks and Monitoring</span>
+  </div>
+  <div class="slide-body">
+    <h3>Main health endpoints</h3>
+    <p><code>/api/health</code> and other monitoring endpoints for administrators are provided (protected by <code>_require_admin</code>).</p>
+    <h3>Publish history</h3>
+    <p>The Publish result of each collection is recorded in the <code>publish_history</code> table.</p>
+    <h4>Recorded items</h4>
+    <ul>
+      <li><code>workspace_id</code></li>
+      <li><code>timestamp</code></li>
+      <li><code>doc_count</code></li>
+      <li><code>chunk_count</code></li>
+      <li><code>pii_count</code></li>
+      <li><code>excluded_count</code></li>
+      <li><code>avg_chunk_chars</code></li>
+      <li><code>elapsed_seconds</code></li>
+    </ul>
+    <p>You can view it from the &quot;History&quot; tab of the Workspace detail screen in the GUI.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">6. Circuit Breaker</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>When failures of LLM or external API calls exceed a certain count, the circuit breaker goes OPEN and calls are stopped temporarily. You can adjust the behavior in the <code>circuit_breaker</code> section of <code>cynovela.yaml</code>.</p>
+<pre><code>circuit_breaker:
+  enabled: true
+  failure_threshold: 3
+  recovery_timeout_seconds: 30</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">7. Notifications (Email)</span>
+  </div>
+  <div class="slide-body">
+    <p>Email notification over SMTP is supported (disabled by default).</p>
+<pre><code>notifications:
+  smtp:
+    enabled: false
+    host: smtp.gmail.com
+    port: 587
+    username: ""
+    password: ""              # 環境変数 CYNOVELA_SMTP_PASSWORD 推奨
+    from_address: ""
+    to_addresses: []
+    notify_on:
+      - scan_completed
+      - scan_error
+      - circuit_breaker_opened</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">Operations Guide</span>
+    <span class="slide-title">8. Operational Notes</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li><code>--demo</code> mode is for verification. The demo DB is reset on every start, so do not put production data there.</li>
+      <li>The <code>--mock</code> mode that used to exist has been removed. Specifying it now stops with an error.</li>
+      <li>Take backups as a snapshot of &quot;SQLite and ChromaDB at the same time&quot;. Restoring only one of them breaks consistency.</li>
+      <li><code>audit_logs</code> needs tamper prevention. Avoid careless writes to the SQLite file itself.</li>
+    </ul>
+    <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+
+<div class="slide cover" id="slide-16">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">運用ガイド</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -229,7 +582,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">1. 通常起動と停止</span>
@@ -251,7 +604,7 @@ python server.py --demo</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">2. データの既定保存場所</span>
@@ -278,7 +631,7 @@ python server.py --demo</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">2. バックアップと復元</span>
@@ -303,7 +656,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">2. バックアップ運用上の注意点</span>
@@ -322,7 +675,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">3. ログファイル</span>
@@ -344,7 +697,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">4. 監査ログのエクスポート</span>
@@ -369,7 +722,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">4. 監査ログの参照方法</span>
@@ -394,7 +747,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">5. ユーザー管理 — ロール</span>
@@ -433,7 +786,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">5. 認証 / 保管庫 / IP アクセス制御</span>
@@ -460,7 +813,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-27">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">6. ヘルスチェックと監視</span>
@@ -489,7 +842,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-28">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">6. サーキットブレーカー</span>
@@ -508,7 +861,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-29">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">7. 通知（メール）</span>
@@ -535,7 +888,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-30">
   <div class="slide-header">
     <span class="doc-name">運用ガイド</span>
     <span class="slide-title">8. 運用上の注意</span>
@@ -557,9 +910,9 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 15</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 30</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

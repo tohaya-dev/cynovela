@@ -1,3 +1,19 @@
+# === English ===
+# Parts for running the Mac Accelerator Service (the external inference server) on the host side.
+#
+# Why it is kept separate from requirements.txt:
+#   requirements.txt is for the application body and has 39 items, and among them are ones
+#   that fetch a spaCy model from a direct GitHub link. What MAS reads is only the embedding
+#   model, and the parts of the application body are not needed.
+#   environment.yml is of the form name: cynovela and creates it in conda's shared place, so
+#   it cannot be used for the path of creating an environment dedicated to the package
+#   (decision 14-5).
+#
+# The revisions match what is written in requirements.txt. By using the same revisions as the
+# application body, the revisions of the parts used for computing the embedding are kept from
+# disagreeing.
+#
+# === 日本語 ===
 # Mac Accelerator Service (外部の推論サーバ) をホスト側で動かすための部品。
 #
 # なぜ requirements.txt と別にするか:

@@ -1,5 +1,8 @@
 # Third-Party Notices
 
+**This file is bilingual: English first, then 日本語.**
+**この文書は日英併記です。英語が先、日本語が後ろです。**
+
 A list of the third-party components included in this package, generated
 mechanically from the actual environment.
 

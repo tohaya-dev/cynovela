@@ -1,11 +1,261 @@
+# Cynovela アーキテクチャ
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool built by an individual to
+> understand the concepts of AI platform tools hands-on. It is not a commercial
+> product nor an official implementation.
+> The implementation is entirely original, built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+## 1. Component Overview Diagram
+
+```
+            +-----------------------------------------------------+
+            |                Frontend (frontend/)                 |
+            |  Pages / Workspace UI / Chat UI / Dashboard         |
+            +-----------------------------------------------------+
+                                  |  HTTP / SSE (Server-Sent Events)
+                                  v
++-----------------------------------------------------------------------+
+|                       FastAPI app (server.py)                         |
+|                                                                       |
+|  +----------------+   +----------------+   +----------------------+   |
+|  | IP allowlist   |   | Auth middleware|   | RBAC helpers         |   |
+|  | (lan/tailscale)|   | (Bearer Token) |   | core/auth.py         |   |
+|  +----------------+   +----------------+   +----------------------+   |
+|                                                                       |
+|  +-----------------------------------------------------------------+  |
+|  |  Router layer (routers/), 36 routers                            |  |
+|  |  workspaces / collections / sources / chat / settings /         |  |
+|  |  guardrails / policies / mcp / dashboard / files / users ...    |  |
+|  +-----------------------------------------------------------------+  |
+|                                                                       |
+|  +-----------------------------------------------------------------+  |
+|  |  Service / domain layer                                         |  |
+|  |  rag.py            : RAG pipeline core                          |  |
+|  |  guardrail.py      : PII masking / guardrails                   |  |
+|  |  chunker.py        : Contextual Chunking                        |  |
+|  |  adaptive_rag.py   : complexity scoring / Agentic loop          |  |
+|  |  services/data_sync.py : hash-based differential sync           |  |
+|  |  vault_enc.py      : Fernet encryption interface (enc:)         |  |
+|  +-----------------------------------------------------------------+  |
+|                                                                       |
+|  +-----------------------------------------------------------------+  |
+|  |  Provider abstraction (providers/)                              |  |
+|  |  llm_adapter.py (LMStudioAdapter / MockAdapter)                 |  |
+|  |  embedding.py (BGE-M3 / MiniLM / TF-IDF / MLX skeleton)         |  |
+|  |  reranker.py  (NoReranker / CrossEncoder / FlashRank /          |  |
+|  |                Ollama / MLX skeleton)                           |  |
+|  |  classifier.py (RuleBased / API)                                |  |
+|  |  vector_store.py (Chroma impl. / Qdrant skeleton)               |  |
+|  +-----------------------------------------------------------------+  |
++-----------------------------------------------------------------------+
+        |                            |                       |
+        v                            v                       v
++----------------+         +-------------------+    +-------------------+
+| SQLite DB      |         | ChromaDB          |    | LM Studio (LLM)   |
+| ~/.cynovela/   |         | ~/.cynovela/      |    | (HTTP /v1)        |
+| db/*.db        |         | vector/*/chroma   |    | or mock           |
+| 38 tables      |         | __raw / __masked  |    |                   |
++----------------+         +-------------------+    +-------------------+
+```
+
+External connections are also provided through an MCP (Model Context Protocol: a standard for connecting external tools to an LLM) server; `mcp_server.py` receives JSON-RPC and calls the FastAPI endpoints.
+
+---
+
+## 2. Role of Each Layer
+
+### 2.1 Frontend Layer
+
+A static UI whose entry point is `frontend/index.html`. It has screens such as the workspace list, collection details, chat, and dashboard, and FastAPI serves them from the same origin. Some areas are hidden with `display:none` until JavaScript initialization finishes, and after initialization the display switches according to the role and settings.
+
+### 2.2 Middleware Layer (IP Allowlist / Authentication)
+
+- **IP allowlist**: Works only when you pass `--allow-tailscale` (detected via `tailscale ip -4`) or `--allow-subnet` (any CIDR). **If you do not pass them, everything passes through.** When an allowlist is configured, HTTP 403 is returned to IPs that are not allowed. The default bind address is `0.0.0.0`; use `--local-only` to narrow it.
+- **Authentication**: Received in the form `Authorization: Bearer <token>`, and user information is resolved by `get_user_from_token()` in `core/auth.py`. The only accepted authentication is the JWT issued by `POST /api/auth/login` (the same applies when starting with `--demo`). The former `Bearer demo-token-{user_id}` has been removed and is not accepted.
+
+### 2.3 Router Layer (routers/)
+
+36 routers handle the API endpoints. Role checks are consolidated into the 4 helpers `_require_admin`, `_require_authenticated`, `_require_role`, and `_require_admin_or_self`, used in 242 places in total.
+
+### 2.4 Service / Domain Layer
+
+The RAG pipeline core is consolidated in `rag.py` (44 functions); PII masking is handled by `guardrail.py`, contextual chunking by `chunker.py`, and complexity scoring plus the Agentic loop by `adaptive_rag.py`. Fernet encryption is provided as a thin wrapper by `vault_enc.py`, which encrypts only the body text of the raw tier.
+
+### 2.5 Provider Abstraction (providers/)
+
+The LLM, embedding, reranker, classifier, and vector store are held as replaceable abstractions. Fully implemented ones (LM Studio / BGE-M3 / Chroma / NoReranker / CrossEncoder / FlashRank / Ollama Reranker / RuleBased Classifier) and skeleton-only ones that raise `NotImplementedError` (MLX Embedding / MLX Reranker / Qdrant VectorStore / GraphRAG Strategy) coexist.
+
+### 2.6 Storage Layer
+
+- **SQLite**: Default `~/.cynovela/db/cynovela.db` (`~/.cynovela/db/demo.db` in demo mode). It can be overridden with the `CYNOVELA_DB` environment variable.
+- **ChromaDB**: Default `~/.cynovela/vector/default/chroma`. It can be overridden with the `CYNOVELA_CHROMA` environment variable. For each collection ID it is split into two: `{cid}__raw` and `{cid}__masked`.
+
+---
+
+## 3. RAG Pipeline Flow
+
+A user query enters through `routers/chat.py` and finally reaches the LLM response by way of `rag_retrieve()` (asynchronous) in `rag.py`.
+
+```
+user query
+   |
+   v
+[1] input inspection (detect_prompt_injection)
+   |  --- injection pattern detected -> 400 + audit_logs(PROMPT_INJECTION_BLOCKED)
+   v
+[2] query expansion (optional)
+   |  Multi-Query RAG : generate N-1 paraphrases with the LLM
+   |  HyDE          : generate a hypothetical answer and search with its embedding
+   v
+[3] vector search (Chroma / BGE-M3)
+   |  fetch fetch_k items -> ensure diversity with MMR (Maximal Marginal Relevance)
+   |  ACL: match allowed_roles against user_role
+   v
+[4] BM25 search (in-memory index)
+   |  Japanese tokenization by morphological analysis (fugashi/MeCab)
+   |  ACL check
+   v
+[5] hybrid fusion
+   |  RRF (Reciprocal Rank Fusion, k=60) or weighted (v0.7 + bm0.3)
+   v
+[6] Parent-Child resolution
+   |  child hit -> replaced by the long text of parent_chunks
+   v
+[7] Reranker (optional)
+   |  attach rerank_score via CrossEncoder / FlashRank / Ollama Reranker, etc.
+   v
+[8] retrieval-result inspection (filter_poisoned_chunks)
+   |  exclude chunks containing injection patterns before building the context
+   v
+[9] LLM call (call_llm)
+   |  CRAG : the LLM evaluates whether the search results are sufficient for the question
+   |  Adaptive: Agentic loop when the complexity score >= 2.0 (up to 3 iterations)
+   v
+[10] output inspection (detect_output_exfiltration)
+   |  inspects for HACKED / PWNED / SECRET-ALPHA-TOKEN / [SYSTEM OVERRIDE]
+   v
+[11] egress masking (_mask_for_viewer)
+   |  passes through when tier_for_role(role) == 'raw'(admin); otherwise re-masks
+   v
+LLM answer + citations ([1][2]...)
+```
+
+The measurements of each stage (`vector_elapsed`, `llm_elapsed`, `total_elapsed`, `rerank_latency_ms`, `rerank_scores`, `bm25_scores`) are held in the `RetrievalResult` dataclass.
+
+---
+
+## 4. How Workspace Isolation Works
+
+Cynovela isolates data in two layers: the "Workspace" (the unit that groups users and guardrail policies) and the "Collection" (the unit that holds the actual set of files and the search strategy).
+
+### 4.1 Table Structure
+
+```
+workspaces  ──┬── workspace_users    (user membership)
+              ├── workspace_policies (guardrail policy binding)
+              └── workspace_sources  (source binding)
+                       |
+                       v
+                  collections (holds workspace_id as an FK, ON DELETE CASCADE)
+                       |
+                       └── collection_files (file_id binding)
+                       └── collection_locks (lock held during publish)
+```
+
+### 4.2 Collection State Transitions
+
+```
+draft ──> ingested ──> ready
+  │           │
+  │           └──> publishing ──> ready
+  │                       └────> failed ──> draft
+  │                       └────> stopped
+  ready ──> draft (for re-publishing)
+```
+
+### 4.3 Isolation in ChromaDB
+
+For each collection ID, two Chroma collections `{cid}__raw` and `{cid}__masked` are created, and the lookup target changes by role. Because `tier_for_role(role)` returns `raw` for admin and `masked` for everyone else, a viewer (`curator` and the like are normalized to viewer) structurally cannot reach the raw body text. The SQLite `chunks` table likewise holds two rows, `tier='raw'` and `tier='masked'`.
+
+### 4.4 Additional Isolation per Workspace
+
+Because the BM25 index is held in a dictionary keyed by `(workspace_id, tier)`, the key design also isolates searches so that they do not cross workspaces (`rag.py:101-107`).
+
+<!-- BACKLOG: a physical workspace boundary at the ChromaDB level is listed as A-6, a HIGH priority bug carried over from Phase 3; currently isolation is per collection_id -->
+
+---
+
+## 5. Component Changes by Startup Mode
+
+The `--mode` flag switches which models and providers are loaded (`_MODE_MODELS` at `server.py:2725-2740` and `_wire_providers_for_mode` at `server.py:2854-2895`).
+
+| mode | main use | Embedding | Reranker | assumed environment |
+|------|--------|-----------|----------|----------|
+| `text` (default) | all text RAG features | BAAI/bge-m3 | selectable in yaml | no GPU required, general purpose |
+| `lite` | the switch is **not wired**, so it is actually BAAI/bge-m3 (behavior is the same as text; only the display name changes) | — | — | — |
+| `lite-en` | the switch is **not wired**, so it is actually BAAI/bge-m3 (behavior is the same as text; only the display name changes) | — | — | — |
+
+Previously the `--mock` flag was applied with the highest priority and fixed `Embedding` to `TFIDFEmbedding` and `Reranker` to `NoReranker`. This option has been removed, and specifying it now stops with an error.
+
+### 5.1 Startup Flow
+
+```
+main() called
+   ↓
+parse CLI arguments with argparse
+   ↓
+_preflight_model_check()
+  ├─ check whether the required models exist in ~/.cynovela/models/
+  └─ if missing, offer the user download / alternative mode / cancel
+       (exits immediately if CYNOVELA_NONINTERACTIVE=1)
+   ↓
+get_llm_adapter()  : follows the llm settings in cynovela.yaml
+   ↓
+load_yaml_config() : reads cynovela.yaml and overrides with CYNOVELA_*
+   ↓
+_wire_providers_for_mode()
+  ├─ Reranker (yaml.reranker.provider)
+  ├─ exception → fall back to NoReranker
+   ↓
+set_pii_detection_mode(lite / standard / quality)
+   ↓
+init_db(demo=args.demo)
+   ↓
+start FastAPI with uvicorn.run()
+```
+
+### 5.2 Configuration Override Precedence
+
+1. CLI arguments (`--port`, `--host`, `--lan`, etc.) have the highest priority
+2. Environment variables `CYNOVELA_*` (overriding the yaml via `_ENV_OVERRIDES` in `config.py`)
+3. `cynovela.yaml`
+4. Hard-coded default values
+
+### 5.3 features Flags
+
+In the `features` section of `cynovela.yaml` you can turn `metadata_engine`, `data_guardrails`, `data_sync`, `audit_log`, `acl_filter`, `pipeline_visualization`, `session_history`, and `feedback` on and off individually. For example, setting `features.acl_filter=false` skips the ACL check on both the vector and BM25 paths.
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# Cynovela アーキテクチャ
 
 ## 1. コンポーネント全体図
 

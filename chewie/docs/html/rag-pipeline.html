@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>rag-pipeline — Cynovela</title>
+  <title>RAG Pipeline / rag-pipeline — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -183,15 +183,301 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Cynovela RAG Pipeline</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">About this document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool, built by an individual in order to understand the concepts behind AI platform tooling by actually writing the code. It is not a commercial product and not an official implementation. Everything is implemented from scratch on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
+    </blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">1. Hybrid search (vector + BM25)</span>
+  </div>
+  <div class="slide-body">
+    <p>Search in Cynovela runs both vector search (based on semantic similarity) and BM25 (the classic keyword frequency based search algorithm), and merges the results; this <strong>"hybrid search"</strong> is the default. The implementation is in <code>rag_retrieve()</code> (an async function) at <code>rag.py:1994</code>.</p>
+    <h3>1.1 Vector search</h3>
+    <ul>
+      <li><strong>Model</strong>: BGE-M3 (a multilingual embedding model) by default. With <code>--mode lite</code> it is MiniLM-L12-v2, with <code>--mode lite-en</code> MiniLM-L3-v2, and with <code>--mode minimal</code> TF-IDF.</li>
+      <li><strong>Store</strong>: ChromaDB. For each Collection ID it is split into the two stores <code>{cid}__raw</code> and <code>{cid}__masked</code>, and which one is queried is decided by the user role.</li>
+      <li><strong>Diversity</strong>: MMR (Maximal Marginal Relevance) is enabled with <code>mmr_enabled=true</code>; a larger candidate set taken with <code>mmr_fetch_k=20</code> is re-selected with the weight <code>mmr_lambda=0.7</code> (<code>rag.py:1654-1701</code>).</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">1. BM25 search / merge methods</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>1.2 BM25 search</h3>
+    <ul>
+      <li><strong>Index</strong>: a <code>BM25Okapi</code> is kept in memory under the key <code>(workspace_id, tier)</code> (<code>rag.py:101-107</code>). It is built with <code>build_bm25_index()</code> when Publish completes, and rebuilt with <code>rebuild_bm25_from_db()</code> when needed.</li>
+      <li><strong>Tokenization</strong>: Japanese uses fugashi (MeCab based), English is split on spaces. Both are consolidated in <code>utils.tokenizer.tokenize()</code>.</li>
+      <li><strong>Normalization</strong>: the score is normalized to [0, 1] before it is passed to the hybrid merge.</li>
+    </ul>
+    <h3>1.3 Hybrid merge methods</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Formula (conceptual)</th><th>Default settings</th></tr></thead>
+      <tbody>
+        <tr><td><code>rrf</code> (default)</td><td><code>score += 1.0/(rrf_k+vector_rank) + 1.0/(rrf_k+bm25_rank)</code></td><td><code>rrf_k=60</code></td></tr>
+        <tr><td><code>weighted</code></td><td><code>hybrid_score = vector_score*0.7 + bm25_score*0.3</code></td><td><code>v=0.7</code> <code>bm=0.3</code></td></tr>
+      </tbody>
+    </table>
+    <p>RRF (Reciprocal Rank Fusion) adds up the reciprocals of the ranks. Since it avoids adding together scores with different scales (cosine and BM25) directly, it is adopted as the default.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">2. The role of the reranker</span>
+  </div>
+  <div class="slide-body">
+    <p>The reranker takes the top N results returned by the hybrid search, re-evaluates them as <strong>pairs of the query and the chunk text</strong>, and reorders them into a more accurate ranking. The implementation is at <code>rag.py:2284-2296</code>, and the classes in <code>providers/reranker.py</code> are interchangeable.</p>
+    <table>
+      <thead><tr><th>Provider</th><th>Class</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>none</code> (default)</td><td><code>NoReranker</code></td><td>Does nothing (pass-through)</td></tr>
+        <tr><td><code>cross_encoder</code></td><td><code>CrossEncoderReranker</code></td><td>Re-evaluates with the CrossEncoder of sentence-transformers</td></tr>
+        <tr><td><code>flashrank</code></td><td><code>FlashRankReranker</code></td><td>Re-evaluates lightly with the FlashRank library</td></tr>
+        <tr><td><code>ollama</code></td><td><code>OllamaReranker</code></td><td>Re-evaluates through an Ollama server</td></tr>
+        <tr><td><code>mlx</code></td><td><code>MLXRerankerProvider</code></td><td>Skeleton only (<code>NotImplementedError</code>)</td></tr>
+        <tr><td><code>http</code></td><td>(legacy path)</td><td>Re-evaluates with an arbitrary HTTP API</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">2. Switching and measuring the reranker</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.2 How to switch</h3>
+<pre><code>reranker:
+  provider: cross_encoder
+  model: BAAI/bge-reranker-v2-m3
+  base_url: ""
+  api_key: ""
+  top_n: 5</code></pre>
+    <p>How the reranker is chosen follows the <code>reranker</code> settings in <code>cynovela.yaml</code> (the forced selection by <code>--mock</code> that used to exist has been removed).</p>
+    <h3>2.3 Measurement</h3>
+    <p>The inference time of the reranker (<code>rerank_latency_ms</code>) and the score of each chunk (<code>rerank_scores</code>) are recorded in <code>RetrievalResult</code>, and can be read out with <code>get_last_retrieval_metrics()</code>.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">3. Differences between the 3 scores</span>
+  </div>
+  <div class="slide-body">
+    <p><code>ChunkHit</code> (an individual search result) and <code>RetrievalResult</code> (the search as a whole) carry the following 3 scores (<code>pipeline_types.py</code>).</p>
+    <table>
+      <thead><tr><th>Score name</th><th>Meaning</th><th>Scale</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td><code>vector_score</code></td><td>Vector similarity (cosine)</td><td>0 to 1</td><td>Semantic similarity based on BGE-M3. Used for the confidence threshold decision</td></tr>
+        <tr><td><code>bm25_score</code></td><td>BM25 normalized to [0,1]</td><td>0 to 1</td><td>Strength of the keyword match</td></tr>
+        <tr><td><code>rerank_score</code></td><td>Score of the reranker re-evaluation</td><td>Provider dependent</td><td>Final ranking of the top N. 0 means not applied</td></tr>
+      </tbody>
+    </table>
+    <p>In addition, <code>hybrid_score</code> is computed as a provisional score after the hybrid merge, and when the reranker is not applied it decides the final ranking.</p>
+    <blockquote><strong>Design note</strong>: the decision for the low confidence fallback (abstention) is designed to use <code>vector_score</code>, not the RRF score. The RRF score (max ≈ 0.033) and the cosine similarity (0 to 1) differ by orders of magnitude, so confusing them breaks the threshold decision.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">4. RAG presets</span>
+  </div>
+  <div class="slide-body">
+    <p>5 built-in presets are defined at <code>routers/pipeline_config.py:24-60</code>. They exist to switch the combination of Smart Ingestion settings with one click.</p>
+    <table>
+      <thead><tr><th>ID</th><th>Display name</th><th>Chunking</th><th>RAG mode</th><th>Guardrail</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>tech_doc</code></td><td>Technical document</td><td><code>tech_doc</code></td><td><code>standard</code></td><td><code>default</code></td><td>Manual-like documents</td></tr>
+        <tr><td><code>confidential</code></td><td>Confidential document</td><td><code>general</code></td><td><code>standard</code></td><td><code>mask</code></td><td>Internal documents containing PII</td></tr>
+        <tr><td><code>personal_memo</code></td><td>Personal memo</td><td><code>email_minutes</code></td><td><code>lite</code></td><td><code>log_only</code></td><td>Minutes and memos</td></tr>
+        <tr><td><code>multimedia</code></td><td>Multimedia</td><td><code>tech_doc</code></td><td><code>standard</code></td><td><code>default</code></td><td>image_mode=caption</td></tr>
+        <tr><td><code>quickstart</code></td><td>Quick start</td><td><code>tech_doc</code></td><td><code>standard</code></td><td><code>default</code></td><td>Fully automatic, for beginners</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">4.1 The 3 RAG modes</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>The <code>rag_mode</code> key switches the behavior of the whole search pipeline.</p>
+    <table>
+      <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>lite</code></td><td>Minimal RAG. Options such as Multi-Query / HyDE / CRAG are skipped, and a single search is enough</td></tr>
+        <tr><td><code>standard</code> (default)</td><td>BM25 hybrid + reranker (when configured). Assumes ordinary business use</td></tr>
+        <tr><td><code>hq</code></td><td>High quality mode. CRAG, Multi-Query and HyDE are turned on, spending more time to get accuracy</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">5. Strictness mode (switching the system prompt)</span>
+  </div>
+  <div class="slide-body">
+    <p>Two system prompts are defined at <code>rag.py:175-213</code>, and they are switched depending on whether search results were obtained or not.</p>
+    <table>
+      <thead><tr><th>Constant name</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td><code>DEFAULT_SYSTEM_PROMPT</code> (<code>SYSTEM_PROMPT</code>)</td><td>When RAG is enabled. Instructs the LLM to answer based on the search results (context)</td></tr>
+        <tr><td><code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code></td><td>General knowledge mode. Assumes no context is provided, and instructs the model to answer "I don't know" for things it does not know</td></tr>
+      </tbody>
+    </table>
+    <p>In addition, a role-specific preamble is applied by <code>apply_role_prefix()</code> (<code>rag.py:215-231</code>).</p>
+    <ul>
+      <li><strong>admin</strong>: provides complete information including technical details, setting values and internal structure</li>
+      <li><strong>reader</strong>: an easy to understand explanation focused on the main points, avoiding technical jargon</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">6. Confidence threshold (confidence_threshold)</span>
+  </div>
+  <div class="slide-body">
+    <p>This is the threshold used for the low confidence fallback (abstention: the behavior of withholding an answer and replying "I don't know" when the evidence is insufficient).</p>
+    <h3>6.1 Setting (config.py:131-135)</h3>
+<pre><code># 低信頼度フォールバック: hits の最大 vector_score で判定
+# BGE-M3 のノイズフロアは 0.35-0.45 (架空クエリでもこの程度の score が出る)
+# 実存クエリは 0.55-0.75 程度のため 0.50 を境界に設定
+"confidence_threshold": 0.50,</code></pre>
+    <h3>6.2 Why this value</h3>
+    <ul>
+      <li><strong>BGE-M3 noise floor</strong>: 0.35 to 0.45 (even an unrelated query produces a score around this level)</li>
+      <li><strong>Typical range for real queries</strong>: 0.55 to 0.75</li>
+      <li><strong>Decision boundary</strong>: 0.50. Below this, the evidence is judged insufficient, and it becomes a candidate for withholding the answer or switching to general knowledge mode</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">6.3 An important note about scale</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>The decision metric must be <code>vector_score</code> (cosine similarity, scale 0 to 1). It differs by orders of magnitude from the RRF score (the sum of reciprocal ranks, max ≈ 0.033), so making the threshold decision on the RRF score makes <strong>abstention fire on every query</strong>. Interpret the value of <code>config.rag.confidence_threshold</code> on the assumption of the cosine scale.</blockquote>
+    <p>This is a lesson from a fatal bug that actually happened in Cynovela in the past. It was solved at the root by changing the abstention decision metric from RRF to vector cosine.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">rag-pipeline</span>
+    <span class="slide-title">7. Advanced search options (Advanced RAG)</span>
+  </div>
+  <div class="slide-body">
+    <p>The following options are implemented in <code>rag.py</code>, and are enabled in the <code>rag</code> section of <code>cynovela.yaml</code>.</p>
+    <table>
+      <thead><tr><th>Option</th><th>Setting key</th><th>Behavior</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td>Multi-Query RAG</td><td><code>multi_query_enabled</code> / <code>multi_query_count</code></td><td>Expands the query into N-1 paraphrases with the LLM, searches with each one, then merges with RRF</td><td>on / 3</td></tr>
+        <tr><td>CRAG</td><td><code>crag_enabled</code> / <code>crag_max_loops</code></td><td>The LLM evaluates the quality of the search results, and searches again if they are insufficient</td><td>on / 1</td></tr>
+        <tr><td>HyDE</td><td><code>hyde_enabled</code></td><td>Generates a hypothetical answer from the query, and searches with its embedding</td><td>off</td></tr>
+        <tr><td>Adaptive RAG</td><td><code>adaptive_enabled</code> / <code>adaptive_threshold</code> / <code>agentic_max_loops</code></td><td>Switches to an agentic loop when the complexity score is at or above the threshold</td><td>on / 2.0 / 3</td></tr>
+        <tr><td>Parent-Child</td><td><code>parent_child_enabled</code> / <code>child_chunk_size</code> / <code>parent_chunk_size</code></td><td>Search hits on a small child chunk, but the large parent chunk is substituted for the LLM</td><td>on / 256 / 1000</td></tr>
+      </tbody>
+    </table>
+    <blockquote>The substitution logic of Parent-Child is asymmetric by design: <code>retrieval_detail.hits</code> carries the preview of the child, while <strong>the context inside the LLM prompt carries the long parent text</strong>. When checking the behavior, judge by the number of characters of the context inside the LLM prompt (more than 500 characters).</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+
+<div class="slide cover" id="slide-14">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">Cynovela RAG パイプライン</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-15">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -208,7 +494,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">1. ハイブリッド検索（ベクター + BM25）</span>
@@ -228,7 +514,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">1. BM25 検索 / 統合方式</span>
@@ -257,7 +543,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">2. Reranker の役割</span>
@@ -282,7 +568,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">2. Reranker 切り替え・計測</span>
@@ -306,7 +592,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">3. スコア 3 種の違い</span>
@@ -330,7 +616,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">4. RAG プリセット</span>
@@ -354,7 +640,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">4.1 RAG モード 3 種</span>
@@ -377,7 +663,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">5. 厳格度モード（システムプロンプト切替）</span>
@@ -403,7 +689,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">6. 信頼度閾値（confidence_threshold）</span>
@@ -428,7 +714,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">6.3 スケールに関する重要な注意</span>
@@ -444,7 +730,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">rag-pipeline</span>
     <span class="slide-title">7. 高度な検索オプション（Advanced RAG）</span>
@@ -471,9 +757,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 13</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 26</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

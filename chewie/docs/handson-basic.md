@@ -1,5 +1,261 @@
 # ハンズオン（基礎編）
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built by an individual to
+> understand the concepts of AI infrastructure tools hands-on. It is not a
+> commercial product or an official implementation.
+> The implementation is entirely original, and consists of an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+In this hands-on, you go through 5 steps, from creating a workspace to RAG (Retrieval-Augmented Generation) queries, checking the audit log, and experiencing the guardrails.
+
+As a precondition, it is assumed that Cynovela has already been started according to the quickstart.
+
+---
+
+## Step 1: Create a workspace
+
+### Why it is needed
+
+A workspace is the management unit that groups users, guardrail policies, and collections (sets of files). By splitting them per business area or per information sensitivity, it becomes easier to apply the access control and the guardrails in the later stages.
+
+### Operation
+
+Open the "workspace management" screen in the GUI and press the "create new" button.
+
+Input items:
+
+| Item | Content |
+|------|------|
+| Name | Workspace name (unique) |
+| Guardrail policy | Select 1 policy to apply |
+
+In demo mode, the following 3 kinds of guardrail policies are prepared in advance.
+
+| Policy ID | Name | Content |
+|-----------|------|------|
+| `pol-pii` | PII protection policy | PII is `mask`, Financial is `exclude_from_rag` |
+| `pol-strict` | Strict management policy | PII is `mask`, Financial and HR are `exclude_from_rag` |
+| `pol-log` | Log only policy | PII and Financial are `log_only` (recorded only, not masked) |
+
+There are 4 kinds of guardrail actions (`mask` / `exclude_from_rag` / `log_only` / `allow`).
+
+---
+
+## Step 2: Ingest files and check the classification
+
+### Why it is needed
+
+Cynovela automatically classifies each ingested document with a metadata assignment mechanism called "Smart Ingestion". This is so that, in the later RAG search and reports, you can grasp "how many documents of which kind there are".
+
+### Classification categories (14 kinds)
+
+| Category ID | Description |
+|-----------|------|
+| governance_policy | Governance and policy documents |
+| incident_report | Incident report |
+| technical_guide | Technical guide and manual |
+| case_study | Case study |
+| meeting_minutes | Meeting minutes |
+| audit_report | Audit and assessment report |
+| poc_report | POC evaluation report |
+| faq | FAQ, frequently asked questions |
+| whitepaper | Whitepaper |
+| checklist | Checklist |
+| proposal_rfp | Proposal, RFP |
+| newsletter | Newsletter, technical information |
+| reference | Reference, glossary |
+| other | Other |
+
+### Choosing the classification engine
+
+Cynovela can switch between 3 kinds of classification engines.
+
+| Engine | Mechanism | Characteristics |
+|---------|------|------|
+| Lightweight | Keyword match on the file name and the first 500 characters | Very small CPU, stateless, fast |
+| LLM | Zero-shot classification with a local LLM (Ollama) | Strong on context, requires the LLM to be running |
+| Hybrid | Falls back to the LLM if the Lightweight confidence is below the threshold (0.65) | The default combination |
+
+### Operation
+
+1. Select a workspace and run "create collection"
+2. Upload files (PDF / DOCX / TXT / images, and so on)
+3. Start the ingest with the "Publish" button
+
+After Publish, a category and a confidence are assigned to each file, and you can check them in the GUI.
+
+---
+
+## Step 3: RAG queries and how to read the scores
+
+### Why it is needed
+
+RAG is a "hybrid search" that combines vector search (semantic similarity) and BM25 search (keyword match). Once you can read the scores, it becomes easier to judge and tune the answer quality.
+
+### Composition of the hybrid search
+
+Cynovela integrates the following 2 systems.
+
+| Search system | Mechanism | Default weight |
+|---------|------|----------|
+| Vector search | Computes cosine similarity with an Embedding (default: BGE-M3) | 70% (when weighted) |
+| BM25 search | Keyword match based on morphological analysis | 30% (when weighted) |
+
+Two integration methods can be selected.
+
+- `weighted`: weighted addition of the scores (vector × 0.7 + bm25 × 0.3)
+- `rrf` (Reciprocal Rank Fusion, default): adds the reciprocals of the ranks (smoothed with k=60)
+
+### Rough guide to the scores (vector cosine similarity)
+
+For BGE-M3, the Embedding model used in the AI infrastructure tool that this refers to, the rough guide is as follows.
+
+| Score band | Interpretation |
+|---------|------|
+| 0.35 to 0.45 | Noise floor. Appears even for unrelated queries |
+| 0.50 | The default value of the confidence threshold (`confidence_threshold`) |
+| 0.55 to 0.75 | Typical hit range for a real query |
+| 0.75 and above | Extremely highly relevant |
+
+### Reranker
+
+The Reranker is a mechanism that "re-evaluates the top N search results with a more precise model and reorders them". The default is `NoReranker` (not applied), but it can be switched in the settings to a provider such as `cross_encoder` / `flashrank`.
+
+### Advanced RAG features (those enabled by default)
+
+| Feature | Role |
+|------|------|
+| MMR (Maximal Marginal Relevance) | Balances relevance and diversity. Controlled with `mmr_lambda` |
+| Parent-Child chunking | Searches with the small child chunks, and swaps in the text of the parent chunk for the answer |
+| Multi-Query | Expands the query into N-1 similar queries with the LLM and integrates them with RRF |
+| CRAG (Corrective RAG) | The LLM evaluates whether the search results are sufficient, and searches again if necessary |
+| HyDE (OFF by default) | Generates a hypothetical answer first and searches with its embedding |
+| Adaptive RAG | Switches between basic / agentic according to the complexity of the query |
+
+### Operation
+
+1. Enter a query on the RAG Chat screen
+2. An answer and citation numbers `[1][2]` are returned
+3. If you switch the detail display mode to `developer`, you can see the vector score / BM25 score / hybrid score / Reranker score of each chunk
+
+---
+
+## Step 4: Check the audit log
+
+### Why it is needed
+
+Cynovela records all important operations in the "audit_logs" table. It is a mechanism that lets you verify afterwards who did what and when, and how many PII (personal information) items were detected.
+
+### Main recording targets
+
+- Creation and deletion of workspaces, collections, and sources
+- Execution and completion of Publish
+- Chat (question and answer)
+- PII detection (`PII_DETECTED` / `pii_detected`)
+- Prompt injection detection (`PROMPT_INJECTION_BLOCKED`)
+- Authentication failure
+
+### Operation
+
+Browse it from the "audit log" screen of the GUI (admin only). The following filters are available.
+
+- Action type
+- Target (workspace ID / collection ID)
+- Date and time range
+
+### Through the API
+
+- `GET /api/guardrails/pii-detections` — aggregates PII detections from `audit_logs` (admin required)
+- `GET /api/pii-detections` — aggregates per document from the `chunks` table (admin required)
+
+> **Important**: `audit_logs` cannot be deleted or modified through the API (tamper prevention).
+
+---
+
+## Step 5: Experience the guardrails
+
+### Why it is needed
+
+The guardrails work in two stages, "detection → action", and prevent the leakage of PII and sensitive information. They operate as a double defense of Tier1 (masking at ingest time) and Tier2 (masking at answer time).
+
+### Tier1: masking at ingest time
+
+At the timing of Publish, 2 systems, "raw (the original body text)" and "masked", are generated from each chunk, and both are stored into the 2 collections of ChromaDB (`{cid}__raw` / `{cid}__masked`) and into the `chunks` table of SQLite.
+
+### Tier2: masking at answer time
+
+An exit mask is applied to the output of the LLM according to the role.
+
+| Role | Vault searched | Exit mask |
+|--------|-------------|----------|
+| `admin` | raw (the original body text) | None |
+| `curator` / `viewer` | masked | Yes |
+
+### PII types that are detected
+
+The types handled by the regular expression base (primary detection) are as follows.
+
+| Type | Mask token | Example |
+|------|-------------|-----|
+| URL | `[MASKED:URL]` | `https://example.com/...` |
+| EMAIL | `[MASKED:EMAIL]` | `taro@example.co.jp` |
+| PHONE_JP | `[MASKED:PHONE]` | `090-1234-5678` |
+| PHONE_LAND | `[MASKED:PHONE]` | `03-1234-5678` |
+| CREDIT | `[MASKED:CREDIT]` | Card number format |
+| MYNUMBER | `[MASKED:MYNUM]` | My Number format |
+| PASSPORT | `[MASKED:PASSPORT]` | Passport number format |
+| IPV4 | `[MASKED:IP]` | IPv4 address |
+
+In addition to these, the secondary system (presidio + GiNZA NER) detects named entities such as `ADDRESS_JP` / `PERSON_JP` / `ORG_JP` / `LOC_JP`.
+
+### Detection modes
+
+You can switch among 3 levels with the `pii_mode` key of `cynovela.yaml` (the default is `standard`).
+
+| Mode | Method | Characteristics |
+|--------|------|------|
+| `lite` | Regular expressions only | Lightweight and fast |
+| `standard` | Regular expressions + GiNZA NER | Middle ground, recommended |
+| `quality` | Regular expressions + GiNZA NER + detailed filter | High accuracy, slow |
+
+### Steps to try it
+
+1. Publish a text file that contains PII (for example: "連絡先は taro@example.com、電話は 090-1234-5678")
+2. Ask "連絡先を教えて" in RAG Chat with the `viewer` role → `[MASKED:EMAIL]` and `[MASKED:PHONE]` appear in the output
+3. Ask the same question with the `admin` role → the raw email address and phone number appear
+4. Check `pii_detected` in the audit log
+
+### Encryption
+
+The body text in the raw side vault is stored encrypted with Fernet (symmetric key encryption). The encryption key is specified with the `CYNOVELA_SECRET_KEY` environment variable (recommended for production).
+
+---
+
+## What you have experienced so far
+
+| Element | Content |
+|------|------|
+| Workspace management | Name + guardrail policy |
+| Smart Ingestion | Automatic classification into 14 categories + 3 kinds of classification engines |
+| Hybrid search | Integration of Vector + BM25 with RRF or weighted |
+| Audit log | Complete tracking of important operations and PII detections |
+| Guardrails | Tier1 masking at ingest time + Tier2 masking at answer time + Fernet encryption |
+
+The next step is "hands-on (advanced)", which goes on to workspace separation, MCP (Model Context Protocol) integration, and so on.
+
+---
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。

@@ -1,29 +1,31 @@
+# English / 日本語: comments in this file are bilingual, English first.
+# このファイルのコメントは日英併記です。英語が先、日本語が後ろです。
 fastapi==0.139.2
-# fix-fastapi-bump-v1 (2026-05-28): starlette CVE 対応のため fastapi 0.120+ へ更新。
-# starlette は 0.49.0 以上を明示要求し、fastapi の transitive 依存と整合させる。
+# fix-fastapi-bump-v1 (2026-05-28): Bumped fastapi to 0.120+ to address the starlette CVE. / starlette CVE 対応のため fastapi 0.120+ へ更新。
+# starlette explicitly requires 0.49.0 or later, kept consistent with the transitive dependency of fastapi. / starlette は 0.49.0 以上を明示要求し、fastapi の transitive 依存と整合させる。
 starlette==1.3.1
 uvicorn==0.51.0
-# fix-security-batch-v2 (2026-05-28): CVE-2024-53981 対応の最新版。
+# fix-security-batch-v2 (2026-05-28): Latest version addressing CVE-2024-53981. / CVE-2024-53981 対応の最新版。
 python-multipart==0.0.32
 chromadb==1.5.9
 python-docx==1.2.0
 sentence-transformers==5.6.0
 httpx==0.28.1
-# PII 検出 (presidio): 通常依存（標準モード以上では必須）
+# PII detection (presidio): a normal dependency (required in standard mode and above) / PII 検出 (presidio): 通常依存（標準モード以上では必須）
 presidio-analyzer==2.2.363
 presidio-anonymizer==2.2.363
-# P4 Metadata Engine: 日本語固有名詞認識 (氏名・組織名・地名)
+# P4 Metadata Engine: Japanese proper-noun recognition (person / organization / place names) / P4 Metadata Engine: 日本語固有名詞認識 (氏名・組織名・地名)
 spacy==3.8.13
 ja-ginza==5.2.0
-# fixall-B3 20260602: standard/quality PII (utils/metadata/pii.py:148-149) が読む spaCy 基盤モデルを
-# build 時に取り込み、runtime をオフライン化する (旧 start.sh は `spacy download` でネット依存だった)。
-# spacy 3.8.x 互換の 3.8.0 を直 URL ピン。これが無いと fresh env で standard PII が regex へ退行する。
+# fixall-B3 20260602: Pull in the spaCy base models read by standard/quality PII (utils/metadata/pii.py:148-149) / standard/quality PII (utils/metadata/pii.py:148-149) が読む spaCy 基盤モデルを
+# at build time and make runtime offline (the old start.sh depended on the network via `spacy download`). / build 時に取り込み、runtime をオフライン化する (旧 start.sh は `spacy download` でネット依存だった)。
+# 3.8.0, compatible with spacy 3.8.x, is pinned by direct URL. Without it, standard PII regresses to regex in a fresh env. / spacy 3.8.x 互換の 3.8.0 を直 URL ピン。これが無いと fresh env で standard PII が regex へ退行する。
 en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ja_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/ja_core_news_sm-3.8.0/ja_core_news_sm-3.8.0-py3-none-any.whl
 cryptography==46.0.7
-# settlement-allforms: JWT ログインで直接 import される (routers/auth.py:9 / core/auth.py:14) が
-# 未記載だった。conda 環境では transitive で入るが、クリーンな pip install (コンテナ/K8s) では
-# ImportError でログインがクラッシュするため直接依存として明示する。
+# settlement-allforms: It is imported directly by JWT login (routers/auth.py:9 / core/auth.py:14) but / JWT ログインで直接 import される (routers/auth.py:9 / core/auth.py:14) が
+# was not listed. In a conda environment it comes in transitively, but with a clean pip install (container/K8s) / 未記載だった。conda 環境では transitive で入るが、クリーンな pip install (コンテナ/K8s) では
+# login crashes with ImportError, so it is declared explicitly as a direct dependency. / ImportError でログインがクラッシュするため直接依存として明示する。
 PyJWT==2.13.0
 
 # PHASE 3: BM25 Hybrid Search
@@ -33,48 +35,48 @@ unidic-lite==1.0.8
 
 # P4-P5 additions
 beautifulsoup4==4.15.0
-# pypdf (MIT) — PyMuPDF (AGPL-3.0) から差替え (OSS 公開対応)
+# pypdf (MIT) — replaced PyMuPDF (AGPL-3.0) (for the OSS release) / pypdf (MIT) — PyMuPDF (AGPL-3.0) から差替え (OSS 公開対応)
 pypdf==6.14.2
 watchdog==6.0.0
 flashrank==0.2.10
-# Embedding: BGE-M3 (BAAI/bge-m3, 100言語/MIT/1024次元) のローダ
+# Embedding: loader for BGE-M3 (BAAI/bge-m3, 100 languages / MIT / 1024 dimensions) / Embedding: BGE-M3 (BAAI/bge-m3, 100言語/MIT/1024次元) のローダ
 FlagEmbedding==1.4.0
 
-# 文書抽出（quality/vision/Office モード）: 未記載だと pip-only 環境で
-# ImportError → fast へサイレントフォールバックするため明示記載。
+# Document extraction (quality/vision/Office modes): if not listed, in a pip-only environment / 文書抽出（quality/vision/Office モード）: 未記載だと pip-only 環境で
+# it hits ImportError and silently falls back to fast, so it is listed explicitly. / ImportError → fast へサイレントフォールバックするため明示記載。
 pdfplumber==0.11.10
 pypdfium2==5.12.1
 openpyxl==3.1.5
 python-pptx==1.0.2
 
-# fix061 F3: /metrics endpoint (server.py の FIX-050 配線を活性化)
+# fix061 F3: /metrics endpoint (activates the FIX-050 wiring in server.py) / fix061 F3: /metrics endpoint (server.py の FIX-050 配線を活性化)
 prometheus-fastapi-instrumentator==8.0.2
 
-# release/v1.0.0-alpha: cynovela.yaml の paths セクションを server.py 起動時に読むため必須
+# release/v1.0.0-alpha: Required so that server.py reads the paths section of cynovela.yaml at startup / release/v1.0.0-alpha: cynovela.yaml の paths セクションを server.py 起動時に読むため必須
 pyyaml==6.0.3
 
-# PORTABILITY FIX 20260527 M3: 互換性破壊回避のため上限ピンを明示
-# torch / pydantic は sentence-transformers / FlagEmbedding / fastapi の transitive 依存
-# だが、メジャー更新で API 破壊の前例があるため明示制約を入れる
+# PORTABILITY FIX 20260527 M3: Upper-bound pins are stated explicitly to avoid breaking compatibility / 互換性破壊回避のため上限ピンを明示
+# torch / pydantic are transitive dependencies of sentence-transformers / FlagEmbedding / fastapi, / torch / pydantic は sentence-transformers / FlagEmbedding / fastapi の transitive 依存
+# but major updates have broken the API before, so an explicit constraint is added / だが、メジャー更新で API 破壊の前例があるため明示制約を入れる
 torch==2.13.0
 pydantic==2.13.4
 
-# fix-security-batch-v2 (2026-05-28): MED-4 ログイン EP レート制限のため明示記載。
-# サイレント無効化（slowapi 未インストール時の no-op fallback）を防ぐ。
+# fix-security-batch-v2 (2026-05-28): Listed explicitly for the MED-4 login EP rate limit. / MED-4 ログイン EP レート制限のため明示記載。
+# Prevents silent disabling (the no-op fallback when slowapi is not installed). / サイレント無効化（slowapi 未インストール時の no-op fallback）を防ぐ。
 slowapi==0.1.10
 
-# fix-security-batch-v2 (2026-05-28): CVE 対応で transitive 依存を最新セキュアバージョンへ明示ピン。
-# fixall-C1 20260602: 旧 `lxml>=6.1.1` は install 不能だった。lxml は FlagEmbedding(必須依存)→
-#   ir-datasets→inscriptis(全版 lxml<6.1.0) に上限拘束されるため 6.1.1 と両立せず、既存稼働 env も
-#   実際は 6.0.4。6.0.x 最新へ整合し env を再現可能にする。
-#   [BACKLOG/security] lxml 6.1.1 の修正 (lxml.html.clean xlink:href / libxslt CVE-2025-7424) は
-#   本 app では到達不能 (lxml は utils/file_parser.py の BS4 パーサ backend のみ・Cleaner/XSLT 未使用)。
-#   恒久対応は FlagEmbedding の ir-datasets 依存除去 or inscriptis の lxml 上限解除 (上流) 待ち。
+# fix-security-batch-v2 (2026-05-28): Transitive dependencies are pinned explicitly to the latest secure versions for CVEs. / CVE 対応で transitive 依存を最新セキュアバージョンへ明示ピン。
+# fixall-C1 20260602: The old `lxml>=6.1.1` could not be installed. lxml is upper-bound constrained by FlagEmbedding (a required dependency) → / 旧 `lxml>=6.1.1` は install 不能だった。lxml は FlagEmbedding(必須依存)→
+#   ir-datasets → inscriptis (all versions lxml<6.1.0), so it cannot coexist with 6.1.1, and the existing running env is / ir-datasets→inscriptis(全版 lxml<6.1.0) に上限拘束されるため 6.1.1 と両立せず、既存稼働 env も
+#   actually 6.0.4. Align to the latest 6.0.x and make the env reproducible. / 実際は 6.0.4。6.0.x 最新へ整合し env を再現可能にする。
+#   [BACKLOG/security] The lxml 6.1.1 fix (lxml.html.clean xlink:href / libxslt CVE-2025-7424) is / [BACKLOG/security] lxml 6.1.1 の修正 (lxml.html.clean xlink:href / libxslt CVE-2025-7424) は
+#   unreachable in this app (lxml is only the BS4 parser backend in utils/file_parser.py; Cleaner/XSLT are not used). / 本 app では到達不能 (lxml は utils/file_parser.py の BS4 パーサ backend のみ・Cleaner/XSLT 未使用)。
+#   A permanent fix waits on removing FlagEmbedding's ir-datasets dependency, or on inscriptis lifting its lxml upper bound (upstream). / 恒久対応は FlagEmbedding の ir-datasets 依存除去 or inscriptis の lxml 上限解除 (上流) 待ち。
 lxml==6.0.4
 urllib3==2.7.0
 idna==3.18
 
-# fix-fastapi-bump-v1 (2026-05-28): config.py / server.py で使用済みだが requirements 未記載だったため追記。
+# fix-fastapi-bump-v1 (2026-05-28): Already used in config.py / server.py but not listed in requirements, so it is added. / config.py / server.py で使用済みだが requirements 未記載だったため追記。
 python-dotenv==1.2.2
 APScheduler==3.11.3
 requests==2.34.2

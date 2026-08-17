@@ -1,11 +1,187 @@
+# LAN 共有・Tailscale 共有ガイド
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built so that one individual could
+> understand the concepts behind AI infrastructure tools by working through them by hand.
+> It is not a commercial product and not an official implementation.
+> The implementation is entirely original, built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+Cynovela listens on `0.0.0.0` by default. That means other machines on the same LAN (local
+network) can reach it with no extra flags (original specification). If you want to close it off
+to your own machine only, add `--local-only`. For access via Tailscale (a VPN service), or to
+narrow down where access may come from, use the flags below.
+
+---
+
+## 1. Default behaviour (safest)
+
+```bash
+python server.py
+```
+
+- **Bind address**: `0.0.0.0` (`127.0.0.1` only when `--local-only` is added)
+- **Clients that can access it**: only browsers and CLIs on the same machine
+- **Seen from outside**: the port appears to be closed
+
+Operated in this state, access over the network cannot occur in principle. This configuration
+is recommended for verification and personal use.
+
+---
+
+## 2. LAN sharing mode
+
+If you want to access Cynovela from another machine on the same LAN, add the `--lan` flag.
+
+### 2-1. Startup command
+
+```bash
+python server.py --lan
+```
+
+This flag switches the bind address to `0.0.0.0` (all interfaces), making it connectable from
+other machines on the LAN.
+
+### 2-2. Connection example
+
+If the LAN IP of the server machine is `192.168.1.20`, connect from a browser on another
+machine as follows.
+
+```
+http://192.168.1.20:8765
+```
+
+### 2-3. IP allowlist
+
+Cynovela has an IP allowlist feature. `127.0.0.1` and `localhost` are always permitted, but any
+other source must be permitted explicitly. You can add source subnets with `--allow-subnet`.
+
+```bash
+python server.py --lan --allow-subnet 192.168.1.0/24
+```
+
+To specify more than one, repeat `--allow-subnet`.
+
+```bash
+python server.py --lan --allow-subnet 192.168.1.0/24 --allow-subnet 10.0.0.0/24
+```
+
+Requests from a source that is not permitted receive HTTP 403 Forbidden.
+
+---
+
+## 3. Tailscale sharing mode
+
+With Tailscale you can connect over a VPN even between separate networks, such as home and a
+remote location. Cynovela has an `--allow-tailscale` flag that automatically permits the
+Tailscale subnet (`100.64.0.0/10`).
+
+### 3-1. Preconditions
+
+- The Tailscale client is installed on the server machine and logged in
+- The connecting machine is logged in to the same Tailscale account
+- The `tailscale ip -4` command returns a Tailscale IP on the server side
+
+### 3-2. Startup command
+
+```bash
+python server.py --lan --allow-tailscale
+```
+
+### 3-3. Behaviour
+
+- At startup it runs `tailscale ip -4` to detect the assigned Tailscale IP (3 second timeout).
+- It automatically adds the `100.64.0.0/10` subnet to the IP allowlist.
+- Clients connecting via Tailscale become able to connect.
+
+To display the Tailscale name or IP of a source, run `tailscale status` on the Tailscale client
+side.
+
+---
+
+## 4. Changing the port number
+
+The default port is `8765`. You can change it with `--port`.
+
+```bash
+python server.py --lan --port 9000
+```
+
+Using a privileged port such as 80 or 443 requires administrator privileges, so going through a
+reverse proxy (nginx, etc.) is recommended.
+
+---
+
+## 5. Security notes
+
+LAN sharing and Tailscale sharing are convenient, but there are several risks to be aware of.
+
+### 5-1. Communication is plaintext HTTP
+
+The Cynovela main body listens over HTTP. HTTPS is not built in, so the contents of
+communication travel as plaintext within the network. If you handle highly confidential
+documents, consider one of the following.
+
+- Access only over an encrypted VPN such as Tailscale
+- Terminate TLS at a reverse proxy (nginx, etc.)
+
+### 5-2. Direct exposure to the internet is prohibited
+
+Given the incompleteness of authentication and the lack of encryption, you must absolutely
+avoid exposing it directly to the internet side while bound to `0.0.0.0`.
+
+### 5-3. Constraints of authentication
+
+Authentication is JWT (issued by `POST /api/auth/login`), and is required even when started
+with `--demo`. The legacy `Bearer demo-token-<user_id>` form has been abolished and is not
+accepted. When sharing over a LAN, operate on the premise that only trusted users are on the
+network.
+
+### 5-4. Permission for file upload
+
+Because the configuration can end up accepting file uploads from any user on the LAN, always
+check the validation of the `path` argument of `/api/sources` and the upload limit setting
+(`CYNOVELA_MAX_UPLOAD_BYTES`, default 100 MB).
+
+### 5-5. Recommended configurations
+
+Even for verification and learning use, one of the following is recommended.
+
+- Fully local: add no flags and operate on `127.0.0.1` only
+- Personal VPN: add only `--allow-tailscale` and avoid exposure to the LAN
+- Restricted LAN: narrow the sources strictly with `--lan --allow-subnet`
+
+---
+
+## 6. Summary of related startup flags
+
+| Flag | Default | Description |
+|---|---|---|
+| `--host` | `0.0.0.0` | Bind address (all addresses by default; narrow it with `--local-only`) |
+| `--port` | `8765` | Port number |
+| `--lan` | disabled | Explicitly set `host=0.0.0.0` and listen on all interfaces |
+| `--allow-tailscale` | disabled | Permit the Tailscale subnet (`100.64.0.0/10`) |
+| `--allow-subnet` | empty | Add a custom subnet (can be specified multiple times) |
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# LAN 共有・Tailscale 共有ガイド
 
 Cynovela は既定で `0.0.0.0` で待ち受けます。つまり同じ LAN（ローカルネットワーク）内の他のマシンからは、追加のフラグ無しで到達できます（元仕様）。自分のマシンの中だけに閉じたい場合は `--local-only` を付けてください。Tailscale（VPN サービス）経由のアクセスや、アクセス元を絞りたい場合は、以下のフラグを使います。
 

@@ -1,5 +1,9 @@
 # Contributing
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
 ## Development Setup
 
 ```bash

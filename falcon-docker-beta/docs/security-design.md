@@ -1,11 +1,306 @@
+# セキュリティ設計
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built by an individual to
+> understand the concepts of AI infrastructure tools hands-on. It is not a
+> commercial product or an official implementation.
+> The implementation is entirely original, and consists of an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+Cynovela implements the **guardrails (protection rules)** and **access control** that are required when handling internal documents with RAG (Retrieval-Augmented Generation), split across several layers. This document summarizes the design principles, the implementation status, and the known limitations.
+
+---
+
+## 1. Three principles of the security design
+
+The security design of Cynovela rests on the following 3 principles.
+
+1. **Double-defense PII (personal information) masking**
+   At ingest time both raw and masked are stored, and at answer time an exit mask per role is also applied. Even if one of the two stops working, the other covers it.
+
+2. **Encrypted originals (vault)**
+   The original body text is passed through Fernet encryption immediately before it is stored into SQLite and Chroma. The `enc:` prefix makes it idempotent and prevents double encryption.
+
+3. **Three-layer prompt injection countermeasures**
+   Checks are made in 3 stages: input inspection, post-retrieval inspection, and output inspection. On detection it is recorded in the audit log and blocked with HTTP 400.
+
+---
+
+## 2. Technical guarantees of workspace separation
+
+### 2.1 Separation layers per workspace
+
+| Layer | Separation method |
+|---|---|
+| User assignment | `workspace_users (workspace_id, user_id)` |
+| Guardrail policy | `workspace_policies (workspace_id, policy_id)` |
+| Source binding | `workspace_sources (workspace_id, source_id)` |
+| Collection | References `workspaces.id` with an FK; deleted together via `ON DELETE CASCADE` |
+
+### 2.2 Separation in ChromaDB (vector search)
+
+At Publish time, 2 kinds of vector collections, `{cid}__raw` and `{cid}__masked`, are created per collection. When searching from chat, the destination that is read is switched according to the role of the user.
+
+### 2.3 ACL (access control list) filter
+
+The ACL filter operates inside the search pipeline (`rag_retrieve`) of `rag.py`.
+
+```python
+# Vector 経路での ACL
+if user_role and _acl_filter_enabled():
+    allowed_roles = metadata.get("allowed_roles")
+    if allowed_roles and user_role not in allowed_roles:
+        continue  # 除外
+```
+
+On the BM25 path as well, the metadata is completed first and then the ACL check is performed. Setting `features.acl_filter` to `false` allows it to be skipped, but the default is `true`.
+
+### 2.4 Known limitations
+
+- ChromaDB is separated by a logical boundary (collection name), but a **physical boundary (a separate directory, etc.) is not implemented**. An improvement is planned toward Beta GA.
+- The cross-boundary check for session information of WS-A being diverted into a chat of WS-B has a known gap, and is planned to be addressed in Phase 3.
+
+---
+
+## 3. PII detection and masking
+
+### 3.1 Two PII detection systems
+
+PII detection in Cynovela has 2 systems.
+
+#### Primary: regular expression based (`guardrail.py`)
+
+It detects 8 kinds of entities.
+
+| entity_type | Mask token | Pattern example |
+|---|---|---|
+| URL | `[MASKED:URL]` | `https?://...` |
+| EMAIL | `[MASKED:EMAIL]` | `\b[\w.+-]+@[\w.-]+\.\w+\b` |
+| PHONE_JP | `[MASKED:PHONE]` | Mobile phone number |
+| PHONE_LAND | `[MASKED:PHONE]` | Landline phone number |
+| CREDIT | `[MASKED:CREDIT]` | Credit card number |
+| MYNUMBER | `[MASKED:MYNUM]` | My Number (12 digits) |
+| PASSPORT | `[MASKED:PASSPORT]` | Passport number |
+| IPV4 | `[MASKED:IP]` | IPv4 address |
+
+#### Secondary: named entity recognition + fallback (`utils/metadata/pii.py`)
+
+presidio (a personal information detection library) is used if available, and if not, a regular expression fallback is used. Both Japanese and English are supported.
+
+- presidio side: `PERSON_JP`, `ORG_JP`, `LOC_JP`, `ADDRESS_JP`, `EMAIL_ADDRESS`, `PHONE_NUMBER`, `DATE_TIME`, and others
+- Fallback: `EMAIL`, `PHONE_JP`, `PHONE_INTL`, `IP_ADDRESS`, `MY_NUMBER`, `CREDIT_CARD`, `INTERNAL_URL`
+
+The targets of the policy matrix (`routers/policies.py`) are 6 kinds: EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / IPV4.
+
+### 3.2 PII detection modes
+
+Switched with `pii_mode` in `cynovela.yaml` (abolished as a CLI argument).
+
+| Value | Detection method | Speed |
+|---|---|---|
+| `lite` | Regular expressions only | Lightweight and fast |
+| `standard` (default) | Regular expressions + GiNZA NER | Middle ground |
+| `quality` | Regular expressions + GiNZA NER + detailed filtering | High accuracy, slow |
+
+### 3.3 Masking at ingest time (Tier1)
+
+At Publish time, 2 lines, raw and masked, are generated from each chunk and stored in parallel into both SQLite and Chroma.
+
+```python
+_meta_raw["tier"]    = "raw"
+_meta_masked["tier"] = "masked"
+all_docs_masked.append(_masked_chunk or "")
+```
+
+### 3.4 Masking at answer time (Tier2)
+
+An exit mask is applied to the LLM output according to the role of the user.
+
+```python
+def tier_for_role(role: str) -> str:
+    return "raw" if (role or "").strip() == "admin" else "masked"
+```
+
+It is called on all 4 paths of `routers/chat.py`: normal response / comparison A / comparison B / SSE. For anything other than admin, the exit mask is applied by force.
+
+For details, see `docs/guardrails.md` (provided separately) or `docs/rbac.md`.
+
+---
+
+## 4. Fernet encryption (vault)
+
+### 4.1 Design policy
+
+- **Target**: the original body text (raw tier only). The masked tier passes through as-is (double defense is unnecessary, and this keeps search performance)
+- **Interface**: goes through `enc_raw()` / `dec_raw()` of `vault_enc.py`
+- **Idempotency**: the `enc:` prefix is used as a marker to prevent double encryption
+- **Key**: uses the Fernet key in the environment variable `CYNOVELA_SECRET_KEY`
+
+### 4.2 Where it is implemented
+
+Fernet is initialized at `config.py:62`.
+
+```python
+_fernet = Fernet(_KEY.encode() if isinstance(_KEY, str) else _KEY)
+```
+
+The interface functions of `vault_enc.py`:
+
+```python
+ENC_PREFIX = "enc:"
+
+def enc_raw(text):
+    """raw 本文を暗号化形式に揃える (冪等)"""
+
+def dec_raw(text):
+    """暗号化形式なら復号、それ以外はそのまま素通し (冪等)"""
+```
+
+Where it is applied:
+
+| Location | Code |
+|---|---|
+| SQLite `chunks` | `rag.py:1131` |
+| Insert into Chroma | `rag.py:1285` |
+| SQLite `parent_chunks` | `rag.py:1393` |
+
+`tools/vault_enc_migrate.py` also provides a bulk encryption migration for existing data.
+
+---
+
+## 5. RAG poisoning countermeasures (3-layer defense)
+
+### 5.1 Input inspection
+
+Prompt injection wording contained in the query itself is detected with 14 patterns (both English and Japanese).
+
+```python
+INJECTION_PATTERNS = [
+    r"ignore\s+(previous|all|prior)\s+instructions?",
+    r"forget\s+(everything|all|previous)",
+    r"you\s+are\s+now\s+",
+    r"new\s+instructions?:",
+    r"system\s*:\s*",
+    r"<\s*system\s*>",
+    r"\[\s*system\s+override\s*\]",
+    r"jailbreak",
+    r"pretend\s+you\s+are",
+    r"act\s+as\s+(?:if\s+)?(?:you\s+(?:have\s+no|are\s+without))",
+    r"reveal\s+(all|your|the)\s+(documents?|data|instructions?|prompt)",
+    r"ignore\s+(safety|security|guardrail)",
+    r"これまでの指示を(無視|忘れて)",
+    r"(全ての|すべての)(ドキュメント|文書|データ)を(教えて|表示)",
+]
+```
+
+On detection, `PROMPT_INJECTION_BLOCKED` is recorded in the audit log and it is blocked immediately with HTTP 400.
+
+### 5.2 Post-retrieval inspection
+
+The same set of patterns is applied to the chunks in the search results as well, and contaminated chunks are excluded **before** the context is built.
+
+```python
+filtered_chunks, _pi_filtered_count = filter_poisoned_chunks(filtered_chunks)
+```
+
+### 5.3 Output inspection
+
+It checks whether the response of the LLM contains exfiltration (information leakage) keywords.
+
+```python
+EXFILTRATION_PATTERNS = [
+    r"\bHACKED\b",
+    r"\bPWNED\b",
+    r"SECRET-ALPHA-TOKEN",
+    r"\[\s*SYSTEM\s+OVERRIDE\s*\]",
+]
+```
+
+In addition, an extra **LLM judge based** decision is also provided by `llm_judge_pi` in `utils/metadata/pii.py` (Stage R7 C-5).
+
+### 5.4 Indirect attacks through documents (known limitation)
+
+Prompt injection wording that slipped into an ingested document is guarded once by the post-retrieval inspection, but a **detection mechanism dedicated to indirect prompt injection** is listed as one of the HIGH priority bugs to be added in Phase 3.
+
+---
+
+## 6. Authentication and authorization
+
+For details, see `docs/rbac.md`. Only the key points are described here.
+
+- Roles: 3 kinds, `admin` / `curator` / `viewer` (fixed by a CHECK constraint in the DB)
+- Role check helpers: `_require_admin`, `_require_authenticated`, `_require_role`, `_require_admin_or_self`
+- Calls to the role checks are spread over about 242 places under the routers
+- One-click entry has been removed (username / password are required)
+
+---
+
+## 7. Audit log
+
+- Important operations (creation and deletion of Source / Workspace, Publish, Chat, authentication failure, PII detection, prompt injection blocking, and so on) are recorded with `_log_audit(conn, action, target, detail)`.
+- **Deletion and modification through the API are forbidden** (tamper prevention).
+- They are classified into `security` / `data` / `system` and so on by the category map (`_AUDIT_CATEGORY_MAP` of `core/audit.py`).
+
+---
+
+## 8. Network control
+
+### 8.1 IP allow list
+
+In the middleware of `server.py`, the client IP is checked against the allow list.
+
+| Startup flag | Effect |
+|---|---|
+| Default | No restriction (everything passes when `--allow-subnet` / `--allow-tailscale` are not specified) |
+| `--lan` | LAN exposure (`host=0.0.0.0`) |
+| `--allow-tailscale` | Adds the Tailscale subnet (`100.64.0.0/10`) |
+| `--allow-subnet` | Adds a custom subnet (can be specified multiple times) |
+
+Access from an IP that is not allowed returns **HTTP 403 Forbidden**.
+
+### 8.2 Restriction on the LM Studio URL
+
+`llm_endpoint` is validated on the settings API side so that it cannot be changed to a value that points to the internal network.
+
+---
+
+## 9. Placement order of the system prompt
+
+When composing the LLM prompt, the design is that the **system prompt is placed "after" retrieved_content**. This is because, if it is placed first, it can be overwritten by the body text of an ingested document.
+
+---
+
+## 10. Alpha GA known limitations
+
+| Item | Status |
+|---|---|
+| Forced authentication | Resolved (2026-07-29). Only the JWT of `/api/auth/login` is accepted, and authentication is forced even on a `--demo` startup |
+| WS physical boundary | A physical boundary at the ChromaDB level is not implemented. Planned for Phase 3 |
+| WS-A → WS-B cross-boundary check | There is a gap. Planned for Phase 3 |
+| Indirect prompt injection detection | No dedicated mechanism. Planned to be added in Phase 3 |
+| DB → Chroma order inversion in `import_workspace` | Known bug. Planned to be fixed in Phase 3 |
+| Race condition in `admin_cleanup_chromadb_orphans` | Known bug. Planned to be fixed in Phase 3 |
+| Persistence of Embedding / Reranker settings | Kept in memory only. Returns to the default on restart |
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# セキュリティ設計
 
 Cynovela は、社内ドキュメントを RAG（検索拡張生成）で扱う際に必要となる **ガードレール（保護ルール）** と **アクセス制御** を、複数層に分けて実装しています。本ドキュメントでは、その設計原則・実装状況・既知制限をまとめます。
 

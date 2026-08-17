@@ -1,8 +1,10 @@
+# English / 日本語: the comments in this file are bilingual.
+# このファイルの説明は日英併記です。
 # Cynovela UI Design Tokens
-# 抽出元: frontend/style.css, frontend/index.html
-# 抽出日: 2026-05-26
+# Extracted from / 抽出元: frontend/style.css, frontend/index.html
+# Extracted on / 抽出日: 2026-05-26
 
-## CSS変数（frontend/style.css :root より、確定値）
+## CSS variables (from :root of frontend/style.css, fixed values) / CSS変数（frontend/style.css :root より、確定値）
 --bg-base:            #f5f6f8     /* ページ背景 */
 --bg-surface:         #ffffff
 --bg-card:            #ffffff
@@ -34,26 +36,26 @@
 --error-bg:           #fef2f2
 --error-border:       #fbc8c4
 
-## フォント
+## Fonts / フォント
 font-family (body): 'Inter', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif
 font-family (mono): 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace
 font-family (system fallback): system-ui, -apple-system, sans-serif
 
-## ボタン色
+## Button colors / ボタン色
 btn-primary:   bg #0078d4 / color #fff / hover #006abc
 btn-secondary: bg #ffffff / color #0f1923 / border #e0e7ef
 btn-ghost:     bg transparent / color #3a4f68 / border #e0e7ef
 btn-danger:    bg #fef2f2  / color #c0392b / border #fbc8c4
 btn-success:   bg #eaf7f0  / color #0e8a4a / border #b3e2ca
 
-## ロゴ表記
+## Logo notation / ロゴ表記
 Topbar logo: "Data" + "Tap" (アイコン📊 + テキスト)
 
-## 半径・影
+## Radius and shadow / 半径・影
 card border-radius: 10px
 soft shadow: 0 2px 8px rgba(0,120,212,0.3)  (btn-primary hover)
 
-## 頻出カラーコード（index.html + style.css の grep 集計）
+## Frequent color codes (grep tally of index.html + style.css) / 頻出カラーコード（index.html + style.css の grep 集計）
    54 #fff
    44 #e2e8f0   (ダッシュボード・補助境界線)
    28 #1e293b   (本文濃色のサブ)
@@ -75,7 +77,7 @@ soft shadow: 0 2px 8px rgba(0,120,212,0.3)  (btn-primary hover)
     7 #fef2f2
     7 #d97706
 
-## 結論（スライドCSSで採用する値）
+## Conclusion, the values adopted in the slide CSS / 結論（スライドCSSで採用する値）
 --cyn-bg:           #f5f6f8
 --cyn-surface:      #ffffff
 --cyn-border:       #e0e7ef

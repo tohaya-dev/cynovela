@@ -1,11 +1,151 @@
+# 変更履歴（Changelog）
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built so that an individual
+> could understand the concepts of an AI platform tool by working with their own hands.
+> It is not a commercial product and not an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+This records the main changes to Cynovela in chronological order.
+
+---
+
+## Alpha GA (2026-05-26)
+
+Alpha GA is the milestone of "a state in which the core flows work end to end as a personal learning tool". Through Stage 0 to Stage 6, the main features — guardrails, PII detection, RAG, and MCP integration — reached a working state.
+
+### Stage 0: Startup Foundation
+
+- Tidying up of the CLI argument definitions with argparse
+- Introduction of the 5 kinds of `--mode` (full / text / lite / lite-en / minimal)
+- Preflight at startup (checking that the required models exist, and proposing a download or an alternative mode when they are not fetched)
+- Skipping the interactive prompts during script execution with `CYNOVELA_NONINTERACTIVE=1`
+- Centralization of settings with `cynovela.yaml`, and environment variable overrides
+
+### Stage 1: Data Persistence and FK Integrity
+
+- Preparation of the SQLite schema (`workspaces`, `collections`, `sources`, `files`, `chunks`, `audit_logs`, and so on)
+- Applying `PRAGMA foreign_keys = ON` to all connections
+- The `_purge_chunks_for_*()` family of helpers that clean up both SQLite and ChromaDB on deletion
+- Introduction of `_stable_fid(path)` for `file_id` stability after a re-scan
+- Thorough use of the audit recording helper `_log_audit(conn, action, target, detail)`
+
+### Stage 2: Guardrails and PII
+
+- The 4 kinds of guardrail actions (`mask` / `exclude_from_rag` / `log_only` / `allow`)
+- Detection of 8 kinds of PII patterns (URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4)
+- Generation of dual-tier storage (raw / masked) at Publish time
+- Protection of the raw body text with Fernet encryption (`vault_enc.py`)
+- 3-layer prompt injection countermeasures (input inspection, post-retrieval inspection, output inspection)
+
+### Stage 3: RAG Pipeline
+
+- Hybrid integration of BM25 and vector search (default: RRF, k=60)
+- BAAI/bge-m3 vector embeddings
+- Swappable reranker (CrossEncoder, FlashRank, Ollama, HTTP)
+- Advanced search features (MMR, Parent-Child chunking, Multi-Query, CRAG, HyDE, Adaptive RAG)
+- Adoption of a confidence threshold (cosine similarity 0.50)
+
+### Stage 4: Smart Ingestion
+
+- Automatic classification into 14 kinds of document categories
+- 3 kinds of classification engines (lightweight, LLM, hybrid)
+- Hash-difference synchronization per path by DataSyncService (default 60 second interval)
+- Contextual Chunking (prepending metadata to the head of the chunk)
+
+### Stage 5: RBAC and Auditing
+
+- Applying an SQL CHECK constraint for the 3 roles (admin / curator / viewer)
+- Preparation of the 4 kinds of RBAC helper functions (`_require_admin`, `_require_authenticated`, `_require_role`, `_require_admin_or_self`)
+- Applying RBAC checks to 33 routers (242 places)
+- Prohibiting modification and deletion of audit_logs through the API
+
+### Stage 6: External Integration
+
+- Publishing an MCP server (11 tools)
+- LM Studio / Ollama / OpenAI-compatible API connections
+- Preparation of the LAN sharing and Tailscale sharing flags (`--lan` / `--allow-tailscale` / `--allow-subnet`)
+- IP allowlist middleware
+
+---
+
+## Main Fix History
+
+### Security Hardening
+
+- **Complete removal of login with user_id alone**: The legacy path was deleted, and username/password was made mandatory.
+- **Making `/api/auth/users` require admin**: The unauthenticated allowance in demo mode was abolished.
+- **Restricting the PII detection history to admin**: `/api/guardrails/pii-detections` was changed to admin only.
+- **Abolishing the chat popup route**: `/chat-popup` was changed to 410 Gone.
+
+### Bug Fixes
+
+- **Strengthening the path validation of `/api/sources`**: References to system paths are prevented.
+- **Validation of `llm_endpoint`**: Restriction on changing it to reference an internal network.
+- **Fixing the placement order of the system prompt**: Placed after retrieved_content (preventing overwriting by a document).
+- **Elimination of `INSERT OR REPLACE`**: Unified to `ON CONFLICT DO UPDATE` to prevent FK CASCADE from misfiring.
+- **Testability of `_publish_semaphore`**: Changed from module scope to dependency injection (handed over from Stage-3).
+
+### Quality Improvements
+
+- pyright errors reduced from 16 to 0
+- Protection of all contracts of dependency constraints by import-linter
+- The pytest suite expanded to 14 PHASEs / more than 405 assertions
+- Kept at 0 console errors
+
+---
+
+## Planned Items Toward Beta GA
+
+Beta GA is a milestone under consideration, whose goal is "a state that can withstand simple joint use in addition to personal learning".
+
+### Authentication and Authorization
+
+- Full introduction of JWT authentication (enforcing RBAC in all modes)
+- Issuing API keys per user
+
+### RAG Quality
+
+- Reranker substance tests (quality verification of CrossEncoder and others)
+- Adjustment of the chunk strategy (considering making Contextual Chunking the default)
+- Considering the introduction of structured answer templates
+
+### Stability
+
+- YAML persistence of the embedding / reranker settings (currently in memory only)
+- Hardening the error recovery paths
+- Integrating DataSyncService with publish (currently a noop)
+
+### Integration Expansion
+
+- Expanding the tools published by the MCP server
+- Expanding the Chunks viewer of KnowledgeCatalog (metadata search, citation tracking)
+
+### Backend Diversification
+
+- Vector store support for Qdrant / LanceDB (currently skeleton only)
+- Implementation of MLX Embedding / Reranker (Apple Silicon optimization)
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# 変更履歴（Changelog）
 
 Cynovela の主要な変更内容を時系列で記録します。
 

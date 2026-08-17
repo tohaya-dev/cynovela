@@ -1,5 +1,211 @@
 # ハンズオン（応用編）
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built so that an individual can
+> understand the concepts of AI platform tools by actually running them.
+> It is not a commercial product and not an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official view of any company or product.
+
+This hands-on covers workspace separation, differences in how things look per role, switching the startup mode, LAN sharing, and MCP (Model Context Protocol: the protocol for calling Cynovela from an external AI assistant) connection.
+
+---
+
+## 1. Demo of workspace separation
+
+### Purpose
+
+A workspace is a boundary of an information domain. You experience the behavior that, even for the same user, the visible collections change when the workspace they belong to is different.
+
+### Related schema
+
+The workspace area consists of the following tables.
+
+- `workspaces`: the workspace itself
+- `workspace_users`: the membership relation between a workspace and users
+- `workspace_policies`: the link between a workspace and guardrail policies
+- `workspace_sources`: the link between a workspace and data sources
+- `collections`: the collections under a workspace (related by `workspace_id`)
+
+### Example combinations of policies and workspaces
+
+When started with `--demo`, only one workspace containing the bundled dummy documents is present (the three empty seeded workspaces were removed on 2026-07-30). In this exercise, please create workspaces yourself. The three seeded policies can be assigned to the workspaces you create, for example as follows.
+
+| Policy to assign | Content | Example of the assumed domain |
+|------------|----------|---------|
+| pol-pii | mask PII, exclude Financial | Sales |
+| pol-strict | Strongly control PII + Financial + HR | Human resources |
+| pol-log | Log only for PII / Financial | Engineering |
+
+### Steps to try
+
+1. Create two workspaces, assign a different policy to each (for example pol-pii for sales and pol-strict for human resources), separate the member users, and log in
+2. Open the "collection list" and confirm that the visible collections differ
+3. Specify the `collection_id` of one workspace and try to chat from the other, and confirm that the boundary works
+
+> **Note**: Of the workspace separation, the physical boundary at the ChromaDB level is still being strengthened. `<!-- BACKLOG: A-6 仕様で「WS 分離: ChromaDB 物理境界なし」が Phase 3 引き継ぎ HIGH バグとして明示されています -->`
+
+---
+
+## 2. Differences in how things look for admin / viewer
+
+### Purpose
+
+You check the behavior that combines role-based access control (RBAC: Role-Based Access Control) with Tier1/Tier2 masking.
+
+### Summary of role permissions
+
+| Role | Main permissions |
+|--------|--------|
+| `admin` | All management functions. User management, viewing the PII detection history, searching the raw store, no exit masking |
+| `viewer` | Viewing only. RAG search and report viewing, searching the masked store, exit masking applied |
+
+> Names such as `curator` / `data-scientist` are normalized to `viewer` and have no permissions of their own (the effective roles are the two values `admin` / `viewer`).
+
+### Internal decision logic (outline)
+
+- The store to search is decided by `tier_for_role(role)` (admin → raw / others → masked)
+- The output of the LLM is masked according to the role by `_mask_for_viewer()`
+- Some endpoints (PII detection history, audit logs, user management and so on) have `_require_admin` applied, so anyone other than admin cannot call them at all
+
+### Steps to try
+
+1. Prepare a collection in which a file containing PII has been published
+2. Log in as `admin` and ask "tell me the contact information" in RAG Chat → the original text is shown
+3. Ask the same question as `viewer` → it is replaced with `[MASKED:EMAIL]` and so on
+4. Try to access the audit log screen as `viewer` → 403 Forbidden
+
+---
+
+## 3. Switching `--mode`
+
+### Purpose
+
+You check the switching of the display name of the startup mode (`--mode`). Because the switching is not wired, the behavior and the required models are the same as text for any value.
+
+### List of modes
+
+| `--mode` value | Required model | Embedding implementation | Recommended environment |
+|-----------|----------|--------------|---------|
+| `text` (default) | BAAI/bge-m3 | BGE-M3 (about 2.3GB) | General purpose, no GPU needed |
+| `lite` | The switching is **not wired** = in fact BAAI/bge-m3 (the behavior is the same as text, only the display name changes) | — | — |
+| `lite-en` | The switching is **not wired** = in fact BAAI/bge-m3 (the behavior is the same as text, only the display name changes) | — | — |
+
+### Examples of switching
+
+```bash
+# 表示名: lite（動作は text と同じ・切替は未配線）
+python server.py --demo --mode lite
+
+# 表示名: lite-en（動作は text と同じ・切替は未配線）
+python server.py --demo --mode lite-en
+
+```
+
+> **Note**: The `--mock` option that used to exist (the option that fixed the embedding to TF-IDF and the reranker to `NoReranker` regardless of the mode) has been removed. If you specify it now, it stops with an error.
+
+---
+
+## 4. Starting with LAN sharing
+
+### Purpose
+
+You make Cynovela running on your own PC reachable from another PC or a tablet on the same LAN.
+
+### Default restrictions
+
+- Bind address: `0.0.0.0` (default; narrow it to `127.0.0.1` with `--local-only`)
+- An IP allow-list middleware is in place and rejects anything other than `127.0.0.1` / `localhost`
+
+### Publishing to the LAN
+
+Adding the `--lan` flag makes the bind `0.0.0.0`.
+
+```bash
+python server.py --demo --lan
+```
+
+To allow custom subnets, you can specify `--allow-subnet` multiple times.
+
+```bash
+python server.py --demo --lan --allow-subnet 192.168.1.0/24 --allow-subnet 10.0.0.0/8
+```
+
+### Access through Tailscale
+
+If Tailscale (a private mesh VPN) is installed on your machine, you can automatically allow `100.64.0.0/10` with `--allow-tailscale`.
+
+```bash
+python server.py --demo --allow-tailscale
+```
+
+> **Note on the behavior**: At startup the IP is detected with `tailscale ip -4` and added to the allowed subnets. If Tailscale is not installed, it is ignored.
+
+### Changing the port
+
+```bash
+python server.py --demo --lan --port 9000
+```
+
+---
+
+## 5. Checking the MCP (Model Context Protocol) connection
+
+### Purpose
+
+MCP is the protocol for calling Cynovela's RAG search and workspace management tools from an external AI assistant. Cynovela ships with an MCP server implementation (`mcp_server.py`).
+
+### Provided tools (11)
+
+| Category | Tool name | Description |
+|------|--------|------|
+| RAG search | `search_collection` | RAG search of a single collection |
+| RAG search | `search_across_collections` | RAG search across multiple collections |
+| RAG search | `rag_with_role` | RAG with the answer style of each role |
+| RAG search | `rag_general` | Ask the LLM directly without RAG (general knowledge answer) |
+| Information | `list_workspaces` | List of workspaces and collections |
+| Information | `get_workspace_info` | Details of a workspace |
+| Information | `get_collection_info` | Details of a collection |
+| Information | `get_audit_logs` | Get audit logs (up to 50) |
+| Management | `list_sources` | List of data sources |
+| Management | `publish_collection` | Publish a collection |
+| Management | `create_workspace` | Create a workspace |
+
+### How to check the connection
+
+1. Start the Cynovela server (`python server.py --demo`)
+2. Configure the MCP client (for example Claude Desktop or another supported client) to start `mcp_server.py`
+3. Call `list_workspaces` and confirm that the demo seeded workspace is returned
+4. Pass `query` / `workspace_id` / `collection_id` to `search_collection` and run a RAG search
+
+> **Caution**: The MCP server sends authenticated requests to Cynovela's REST API internally. The Python path used to run MCP can be specified with the environment variable `CYNOVELA_MCP_PYTHON`.
+
+> **Known limitation**: Running the MCP server assumes a conda environment.
+
+---
+
+## 6. Elements you were able to experience
+
+| Element | Content |
+|------|------|
+| Workspace separation | The correspondence between user membership and the visible range of collections |
+| Behavior per role | The store switching and exit masking of admin / viewer |
+| `--mode` switching | The configuration differences of text / lite / lite-en |
+| LAN sharing | `--lan` / `--allow-tailscale` / `--allow-subnet` |
+| MCP integration | Operating Cynovela from an external assistant with 11 tools |
+
+---
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。

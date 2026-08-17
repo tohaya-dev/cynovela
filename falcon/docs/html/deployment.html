@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>デプロイメントガイド — Cynovela</title>
+  <title>Deployment / デプロイメントガイド — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,448 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Deployment Guide</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About This Document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that one individual can understand the concepts of an AI platform tool by working on them hands-on. It is not a commercial product or an official implementation.
+      Everything is implemented originally, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+      It does not represent the official view of any company or product in any way.
+    </blockquote>
+    <p>This document collects the procedure for deploying Cynovela into a local environment.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">1. Verified Environments</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela is a tool for personal verification, and the environments it has been verified on are limited. Use the following as a reference.</p>
+    <table>
+      <thead><tr><th>Item</th><th>Verified content</th></tr></thead>
+      <tbody>
+        <tr><td>OS</td><td>macOS (Apple Silicon)</td></tr>
+        <tr><td>Python runtime</td><td>conda (Miniforge)</td></tr>
+        <tr><td>Local LLM</td><td>LM Studio (OpenAI-compatible <code>/v1</code> API)</td></tr>
+        <tr><td>Embedding</td><td>BAAI/bge-m3, paraphrase-multilingual-MiniLM-L12-v2, paraphrase-MiniLM-L3-v2, TF-IDF</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">2. conda Environment Setup</span>
+  </div>
+  <div class="slide-body">
+    <h3>Creating the environment</h3>
+<pre><code>conda create -n cynovela python=3.11 -y
+conda activate cynovela</code></pre>
+    <h3>Installing the dependencies</h3>
+<pre><code>pip install -r requirements.txt</code></pre>
+    <h4>Main dependencies</h4>
+    <table>
+      <thead><tr><th>Library</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>FastAPI</td><td>The API server itself</td></tr>
+        <tr><td>Uvicorn</td><td>ASGI server</td></tr>
+        <tr><td>SQLite (bundled with the standard library)</td><td>Metadata, audit log, and chunk storage</td></tr>
+        <tr><td>ChromaDB</td><td>Vector search</td></tr>
+        <tr><td>cryptography (Fernet)</td><td>Encryption of the raw text</td></tr>
+        <tr><td>huggingface_hub</td><td>Model download</td></tr>
+        <tr><td>BM25Okapi</td><td>Keyword search</td></tr>
+        <tr><td>fugashi / MeCab</td><td>Japanese morphological analysis (BM25 tokenization)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">3. List of Startup Flags</span>
+  </div>
+  <div class="slide-body">
+    <p>These are all the flags that can be passed to <code>python server.py</code>.</p>
+    <table>
+      <thead><tr><th>Flag</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>--demo</code></td><td>bool</td><td>False</td><td>Starts with demo data seeded (reset on restart)</td></tr>
+        <tr><td><code>--lmstudio-url</code></td><td>str</td><td><code>http://localhost:1234</code></td><td>Base URL of LM Studio</td></tr>
+        <tr><td><code>--mode</code></td><td>str</td><td><code>text</code></td><td>Startup mode (<code>text</code> / <code>lite</code> / <code>lite-en</code>)</td></tr>
+        <tr><td><code>--host</code></td><td>str</td><td><code>127.0.0.1</code></td><td>Bind address (loopback only)</td></tr>
+        <tr><td><code>--lan</code></td><td>bool</td><td>False</td><td>Publish on the LAN (explicitly sets host=0.0.0.0)</td></tr>
+        <tr><td><code>--port</code></td><td>int</td><td><code>8765</code></td><td>Port number</td></tr>
+        <tr><td><code>--local-only</code></td><td>bool</td><td>False</td><td>Restricts to this machine only (<code>host=127.0.0.1</code>)</td></tr>
+        <tr><td><code>--allow-tailscale</code></td><td>bool</td><td>False</td><td>Allows access from the Tailscale network</td></tr>
+        <tr><td><code>--reset-admin</code></td><td>bool</td><td>False</td><td>Resets the administrator password, displays it, and exits (add <code>--demo</code> as well when fixing the demo)</td></tr>
+        <tr><td><code>--ingest PATH</code></td><td>str (can be specified multiple times)</td><td>none</td><td>Folders allowed as ingest sources</td></tr>
+        <tr><td><code>--allow-subnet</code></td><td>list</td><td><code>[]</code></td><td>Allowed subnets (can be specified multiple times)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">3. Frequently Used Combinations</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+<pre><code># 学習用（ゼロセットアップ）
+python server.py --demo
+
+# 通常起動（LM Studio 必要）
+python server.py --demo
+
+# LAN 共有 + Tailscale
+python server.py --demo --lan --allow-tailscale
+
+# 表示名を変えて起動する例（動作は text と同じ・切替は未配線）
+python server.py --demo --mode lite</code></pre>
+    <blockquote><strong>PII detection mode</strong>: <code>--pii-mode</code> has been removed as a CLI argument. It is specified with the <code>pii_mode</code> key (<code>lite</code> / <code>standard</code> / <code>quality</code>) in <code>cynovela.yaml</code>.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">4. --mode Selection Guide — Model Size Comparison</span>
+  </div>
+  <div class="slide-body">
+    <p>The configuration of the Embedding and the Reranker changes with the startup mode.</p>
+    <table>
+      <thead><tr><th><code>--mode</code></th><th>Embedding model</th><th>Approximate size</th><th>Reranker</th><th>Recommended environment</th></tr></thead>
+      <tbody>
+        <tr><td><code>text</code> (default)</td><td>BAAI/bge-m3</td><td>about 2.3GB</td><td>Selectable in the settings (<code>reranker.provider</code>)</td><td>No GPU required, general purpose</td></tr>
+        <tr><td><code>lite</code></td><td>Switching is <strong>not wired up</strong>, so BAAI/bge-m3 is what is actually used (the behavior is the same as text; only the display name changes)</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td><code>lite-en</code></td><td>Switching is <strong>not wired up</strong>, so BAAI/bge-m3 is what is actually used (the behavior is the same as text; only the display name changes)</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">4. How to Choose, and Provider Wiring</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>Guideline for choosing</h3>
+    <ul>
+      <li>General Japanese RAG: <code>text</code></li>
+    </ul>
+    <h3>Priority order of the Provider wiring</h3>
+    <ol>
+      <li>The <code>reranker.provider</code> setting in <code>cynovela.yaml</code> (<code>cross_encoder</code> / <code>flashrank</code> / <code>mlx</code> / <code>http</code> / <code>none</code> and others)</li>
+      <li>The legacy <code>rag.reranker_enabled</code> + <code>reranker_url</code> are absorbed as the <code>http</code> path</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">5. Connecting to LM Studio</span>
+  </div>
+  <div class="slide-body">
+    <p>The default LLM provider of Cynovela is LM Studio. It can also connect to any service that has a <code>/v1</code>-compatible API.</p>
+<pre><code>python server.py --demo --lmstudio-url http://localhost:1234</code></pre>
+    <p>An example of the setting in <code>cynovela.yaml</code>:</p>
+<pre><code>llm:
+  provider: lmstudio
+  base_url: http://localhost:1234
+  api_key: ""
+  model: ""
+  max_concurrent: 3
+  timeout_seconds: 120</code></pre>
+    <blockquote><strong>Important</strong>: Do not pass <code>max_tokens</code> to the LM Studio API. It causes the token budget for thinking to run out on Reasoning models.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">5. Ollama / OpenRouter / vLLM / Mock</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>Setting <code>llm.provider</code> to <code>openai_compat</code> lets you switch to an OpenAI-compatible endpoint other than LM Studio (vLLM, the <code>/v1</code>-compatible gateway of Ollama, and so on).</p>
+<pre><code>llm:
+  provider: openai_compat
+  base_url: http://localhost:11434/v1   # 例: Ollama
+  model: llama3</code></pre>
+    <p>The Reranker is a separate path; setting <code>reranker.provider</code> to <code>ollama</code> lets you use Ollama as the Reranker.</p>
+    <h3>Mock LLM</h3>
+    <p>The <code>--mock</code> option that used to exist (which replaced LLM calls with a mock) has been removed. Specifying it now stops with an error.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">6. First Model Download</span>
+  </div>
+  <div class="slide-body">
+    <h3>Preflight check</h3>
+    <p>Unless <code>--mode minimal</code> is used, the existence of the required models is checked at startup.</p>
+    <h4>Skip conditions</h4>
+    <ul>
+      <li><code>--mode minimal</code></li>
+      <li>The required model list for that mode is empty</li>
+    </ul>
+    <h3>Prompt when a model is missing</h3>
+<pre><code>[1] 今すぐダウンロードして起動する
+[2] 代替モードで起動する（例: text / lite / mock）
+[3+] キャンセル</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">6. Non-interactive Startup and the Storage Location</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Choice</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>[1]</code></td><td>Downloads from HuggingFace Hub into <code>~/.cynovela/models/</code></td></tr>
+        <tr><td><code>[2]</code></td><td>Offers an alternative mode (in the order <code>full → text → lite → lite-en → mock</code>)</td></tr>
+        <tr><td><code>[3+]</code></td><td>Cancels the startup</td></tr>
+      </tbody>
+    </table>
+    <h3>Aborting startup in a non-interactive environment</h3>
+<pre><code>CYNOVELA_NONINTERACTIVE=1 python server.py --mode text</code></pre>
+    <h3>Overriding the model paths</h3>
+<pre><code>models:
+  embedding:
+    path: "/path/to/bge-m3"
+    name: "BAAI/bge-m3"
+  reranker:
+    path: ""
+    name: "BAAI/bge-reranker-v2-m3"</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">7. Main Environment Variables — Data and Paths</span>
+  </div>
+  <div class="slide-body">
+    <p>It is recommended to pass confidential information through environment variables rather than writing it directly into <code>cynovela.yaml</code>.</p>
+    <table>
+      <thead><tr><th>Environment variable</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>CYNOVELA_DB</code></td><td>SQLite DB path (the default is <code>~/.cynovela/db/...</code>)</td></tr>
+        <tr><td><code>CYNOVELA_CHROMA</code></td><td>ChromaDB directory</td></tr>
+        <tr><td><code>CYNOVELA_BACKUP_DIR</code></td><td>Backup directory</td></tr>
+        <tr><td><code>CYNOVELA_LOG_DIR</code></td><td>Log directory</td></tr>
+        <tr><td><code>CYNOVELA_DATA_DIR</code></td><td>Application data root</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">7. Environment Variables — LLM / Embedding / Reranker</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Environment variable</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>CYNOVELA_LLM_BASE_URL</code></td><td>LLM base URL</td></tr>
+        <tr><td><em>(no environment variable)</em></td><td>The LLM API key is entered in the settings UI (held only for that session, never saved)</td></tr>
+        <tr><td><code>CYNOVELA_LLM_MODEL</code></td><td>LLM model name</td></tr>
+        <tr><td><code>CYNOVELA_LLM_PROVIDER</code></td><td>LLM provider</td></tr>
+        <tr><td><code>CYNOVELA_LLM_MAX_CONCURRENT</code></td><td>Upper limit of concurrent LLM executions</td></tr>
+        <tr><td><code>CYNOVELA_EMBEDDING_PROVIDER</code></td><td>Embedding provider</td></tr>
+        <tr><td><code>CYNOVELA_EMBEDDING_MODEL</code></td><td>Embedding model name</td></tr>
+        <tr><td><code>CYNOVELA_EMBEDDING_BASE_URL</code></td><td>Embedding base URL</td></tr>
+        <tr><td><code>CYNOVELA_EMBEDDING_API_KEY</code></td><td>Embedding API key</td></tr>
+        <tr><td><code>CYNOVELA_RERANKER_API_KEY</code></td><td>Reranker API key</td></tr>
+        <tr><td><code>CYNOVELA_CLASSIFIER_API_KEY</code></td><td>Classifier API key</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">7. Environment Variables — Operation / Initialization</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>Operation</h3>
+    <table>
+      <thead><tr><th>Environment variable</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>CYNOVELA_NONINTERACTIVE</code></td><td>With <code>1</code>, skips the Preflight dialogue and exits immediately</td></tr>
+        <tr><td><code>CYNOVELA_DISABLE_RATE_LIMIT</code></td><td>Disables the rate limit</td></tr>
+        <tr><td><code>CYNOVELA_MAX_UPLOAD_BYTES</code></td><td>Maximum size of a file upload (default 100MB)</td></tr>
+        <tr><td><code>CYNOVELA_MCP_PYTHON</code></td><td>Python path used to run the MCP server</td></tr>
+        <tr><td><code>CYNOVELA_SECRET_KEY</code></td><td>Fernet encryption key (recommended in production)</td></tr>
+      </tbody>
+    </table>
+    <h3>Initialization</h3>
+    <table>
+      <thead><tr><th>Environment variable</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>The admin password at the first start</td></tr>
+        <tr><td><code>CYNOVELA_ADMIN_USERNAME</code></td><td>The admin user name at the first start (default: <code>cynovela</code>)</td></tr>
+        <tr><td><code>CYNOVELA_SMTP_PASSWORD</code></td><td>SMTP password</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-16">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">8. Overall Diagram of the Startup Flow</span>
+  </div>
+  <div class="slide-body">
+<pre><code>main() 呼び出し
+  ↓
+argparse で CLI 引数パース
+  ↓
+Preflight チェック（必要モデルの存在確認）
+  ├─ モデル不足 → ユーザー選択（DL / 代替 mode / キャンセル）
+  └─ 戻り値 False なら起動中止
+  ↓
+LLM アダプター取得
+  └─ それ以外 → LM Studio など
+  ↓
+AppConfig 構築（mode / demo / mock 反映）
+  ↓
+cynovela.yaml 読み込み
+  ├─ CYNOVELA_* 環境変数で上書き
+  └─ CircuitBreaker / Semaphore 初期化
+  ↓
+Provider 配線（Embedding / Reranker）
+  ↓
+PII 検出モード設定（yaml.pii_mode）
+  ↓
+DB 初期化（--demo ならデモデータ投入）
+  ↓
+Uvicorn で FastAPI 起動</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-17">
+  <div class="slide-header">
+    <span class="doc-name">Deployment Guide</span>
+    <span class="slide-title">9. Ports and Access Control</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Default</th><th>Content</th></tr></thead>
+      <tbody>
+        <tr><td>8765</td><td>Server port</td></tr>
+        <tr><td>127.0.0.1</td><td>Bind address</td></tr>
+        <tr><td>Allowed IPs</td><td><code>127.0.0.1</code> and <code>localhost</code> only</td></tr>
+      </tbody>
+    </table>
+    <p>To allow access from the LAN or from Tailscale, use <code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code> together (see the Operations Guide and the Hands-on Advanced edition).</p>
+    <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-18">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">デプロイメントガイド</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -229,7 +662,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">1. 動作確認済み環境</span>
@@ -252,7 +685,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">2. conda 環境セットアップ</span>
@@ -284,7 +717,7 @@ conda activate cynovela</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">3. 起動フラグ一覧</span>
@@ -314,7 +747,7 @@ conda activate cynovela</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">3. よく使う組み合わせ</span>
@@ -340,7 +773,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">4. --mode 選択ガイド — モデルサイズ比較</span>
@@ -362,7 +795,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">4. 選び方と Provider 配線</span>
@@ -385,7 +818,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">5. LM Studio との接続</span>
@@ -409,7 +842,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-27">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">5. Ollama / OpenRouter / vLLM / モック</span>
@@ -431,7 +864,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-28">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">6. 初回モデルダウンロード</span>
@@ -455,7 +888,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-29">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">6. 非対話起動と保存先</span>
@@ -487,7 +920,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-30">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">7. 主要な環境変数 — データ・パス</span>
@@ -511,7 +944,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-31">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">7. 環境変数 — LLM / Embedding / Reranker</span>
@@ -541,7 +974,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-32">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">7. 環境変数 — 運用 / 初期化</span>
@@ -575,7 +1008,7 @@ python server.py --demo --mode lite</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-33">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">8. 起動フロー全体図</span>
@@ -612,7 +1045,7 @@ Uvicorn で FastAPI 起動</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-34">
   <div class="slide-header">
     <span class="doc-name">デプロイメントガイド</span>
     <span class="slide-title">9. ポートとアクセス制御</span>
@@ -637,9 +1070,9 @@ Uvicorn で FastAPI 起動</code></pre>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 17</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 34</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

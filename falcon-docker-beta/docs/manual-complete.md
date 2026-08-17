@@ -1,11 +1,580 @@
+# Cynovela 完全マニュアル
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built so that an individual can
+> understand the concepts of AI platform tools by actually running them.
+> It is not a commercial product and not an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official view of any company or product.
+
+This manual is an integrated document that collects all the functions of Cynovela in one place. Refer to it when you want to look across the individual documents.
+
+---
+
+## Table of contents
+
+1. Overview
+2. Concepts of AI governance
+3. Installation and startup
+4. Basic operations
+5. Design details
+6. External integration
+7. Known limitations
+8. FAQ
+
+---
+
+# 1. Overview
+
+## 1-1. What Cynovela is
+
+Cynovela is a completely unofficial learning tool, built so that an individual can understand the concepts of AI platform tools by actually running them.
+
+It is designed so that you can experience "what it looks like when you actually build it" for functions such as the following, which the referenced AI platform tools provide.
+
+- Data governance (guardrails, PII detection, audit logs)
+- Data ingest (automatic classification, metadata extraction, differential sync)
+- RAG (Retrieval-Augmented Generation) pipeline
+- Role-based access control (RBAC)
+- MCP (Model Context Protocol) integration
+
+## 1-2. Design concept
+
+Cynovela is designed with the highest priority on "not stopping at reading, but learning by running it yourself".
+
+- **Do not omit the core functions**: essential functions such as guardrails / PII / RAG / RBAC / audit logs are not omitted, but implemented in a simplified form.
+- **Built with OSS only**: uses OSS that is easy to obtain, such as FastAPI, SQLite, ChromaDB, BAAI/bge-m3 and cryptography (Fernet).
+- **Completed locally**: by default it assumes a connection to a local LLM runner such as LM Studio or Ollama. No cloud dependency.
+- **Idempotent and not destructive**: schema changes use `CREATE TABLE IF NOT EXISTS` and `ALTER TABLE` wrapped in `try/except`, and data updates consistently use `INSERT ... ON CONFLICT DO UPDATE`.
+
+## 1-3. Positioning of the project
+
+Cynovela is not a commercial product. It does not represent the official view of any company or product that it references. The implementation is entirely original, and contains none of the source code, trademarks or official documents of the referenced products.
+
+---
+
+# 2. Concepts of AI governance
+
+This section organizes, from eight viewpoints, how Cynovela reproduces the governance functions common to AI platform tools.
+
+## 2-1. Classification and labeling of data
+
+This is a mechanism that mechanically decides "what kind of document this is" per document and assigns a label. Cynovela defines 14 categories.
+
+- Governance and policy documents
+- Incident reports
+- Technical guides and manuals
+- Case studies
+- Meeting minutes
+- Audit and assessment reports
+- POC evaluation reports
+- FAQ / frequently asked questions
+- White papers
+- Checklists
+- Proposals and RFPs
+- Newsletters and technical information
+- References and glossaries
+- Other
+
+In addition, five kinds of document format classification (contract, technical specification, email, report, manual) are performed as a supplement.
+
+## 2-2. Detection of confidentiality
+
+This is a mechanism that detects and masks confidential information (PII, personal information). Cynovela has two lines of detectors.
+
+**Primary (regular expression based, `guardrail.py`)**:
+- URL, EMAIL, PHONE_JP (mobile), PHONE_LAND (landline), CREDIT (credit card), MYNUMBER (My Number), PASSPORT, IPV4
+
+**Secondary (Presidio + GiNZA NER fallback, `utils/metadata/pii.py`)**:
+- PERSON_JP, ORG_JP, LOC_JP, ADDRESS_JP, EMAIL_ADDRESS, PHONE_NUMBER, DATE_TIME, INTERNAL_URL
+
+## 2-3. Access control (RBAC)
+
+This is a mechanism that restricts the information a user can see and the operations they can perform according to their role.
+
+| Role | Description |
+|---|---|
+| `admin` | Full administrative permissions |
+| `viewer` | Viewing only |
+
+> Names such as `curator` / `data-scientist` are accepted as backward compatible values, but in the current implementation they are normalized to `viewer` and have no permissions of their own (the effective roles are the two values `admin` / `viewer`).
+
+RBAC is checked in 33 routers (242 places), and is consolidated into four helper functions (`_require_admin`, `_require_authenticated`, `_require_role`, `_require_admin_or_self`).
+
+## 2-4. Audit logs
+
+Important operations (creating and deleting a Source / Workspace, Publish, Chat, PII detection, authentication failure and so on) are recorded in a form that cannot be tampered with. Cynovela forbids changing or deleting the `audit_logs` table through the API.
+
+## 2-5. Guardrails
+
+This is a mechanism that defines how to handle detected information and input queries. Cynovela has four actions.
+
+| Action | Behavior |
+|---|---|
+| `mask` | Replaces the relevant part with a mask token (`[MASKED:EMAIL]` and so on) |
+| `exclude_from_rag` | Excludes it from the targets of RAG search |
+| `log_only` | Only records the detection, takes no action |
+| `allow` | Allows it (explicitly whitelisted) |
+
+Policies are combined with several classification classes (PII, Financial, HR) and linked to a Workspace. In the seed data, three policies `pol-pii`, `pol-strict` and `pol-log` are prepared.
+
+## 2-6. Encryption
+
+Highly confidential raw text (data before masking) is encrypted and stored with Fernet (symmetric key encryption).
+
+- **Key management**: the `CYNOVELA_SECRET_KEY` environment variable (generated automatically when not specified; explicit specification is recommended for production use)
+- **Targets**: the `chunks` / `parent_chunks` tables of SQLite and the `*__raw` collections of ChromaDB
+- **Format**: an `enc:` prefix + a base64 string (idempotent, no double encryption)
+
+## 2-7. Countermeasures against prompt injection
+
+To prevent malicious instruction injection into the LLM, a three-layer defense is implemented.
+
+1. **Input inspection**: if the query contains one of 14 English and Japanese injection patterns (`ignore previous instructions`, `これまでの指示を無視` and so on), it is blocked immediately with HTTP 400.
+2. **Inspection after retrieval**: chunks in the search results that contain injection wording are excluded.
+3. **Output inspection**: it is checked whether the LLM response contains `HACKED` / `PWNED` / `SECRET-ALPHA-TOKEN` / `[SYSTEM OVERRIDE]`.
+
+On detection, `PROMPT_INJECTION_BLOCKED` is recorded in `audit_logs`.
+
+## 2-8. Data minimization (dual-tier storage)
+
+For the same document, raw (the original text) and masked (the masked text) are stored in separate records and separate vector collections, so the reference target is switched according to the role.
+
+- **admin role**: refers to the raw collection (`{cid}__raw`, encrypted with Fernet)
+- **Other roles**: refer to the masked collection (`{cid}__masked`)
+
+In addition, `_mask_for_viewer` is also applied to the LLM output, achieving a double defense.
+
+---
+
+# 3. Installation and startup
+
+## 3-1. Recommended environment
+
+- macOS (Apple Silicon recommended), Linux, Windows
+- Python 3.10 or later
+- A conda environment (recommended environment name: `cynovela`)
+
+## 3-2. Startup commands
+
+### Demo mode (the easiest)
+
+```bash
+python server.py --demo
+```
+
+Open `http://127.0.0.1:8765` in a browser.
+
+### Real LLM mode
+
+Run the following with LM Studio or Ollama started separately.
+
+```bash
+python server.py --demo --lmstudio-url http://localhost:1234
+```
+
+## 3-3. Startup modes (`--mode`)
+
+| mode | Description | Required model | Recommended environment |
+|---|---|---|---|
+| `text` | All functions of text RAG (default) | BAAI/bge-m3 | No GPU needed |
+| `lite` | The switching is **not wired** = in fact BAAI/bge-m3 (the behavior is the same as text, only the display name changes) | — | — |
+| `lite-en` | The switching is **not wired** = in fact BAAI/bge-m3 (the behavior is the same as text, only the display name changes) | — | — |
+
+## 3-4. List of CLI arguments
+
+| Flag | Description |
+|---|---|
+| `--demo` | Starts with the demo database `store/db/demo.db` (without it, production = `store/db/cynovela.db`. Neither is erased on restart) |
+| `--lmstudio-url` | The LM Studio base URL (default: `http://localhost:1234`) |
+| `--mode` | The startup mode (text / lite / lite-en) |
+| `--host` | The bind address (default: `0.0.0.0`. To narrow it, use `--local-only`) |
+| `--port` | The port number (default: `8765`) |
+| `--lan` | Publishes on the LAN (`host=0.0.0.0`) |
+| `--allow-tailscale` | Allows the Tailscale subnet (`100.64.0.0/10`) |
+| `--allow-subnet` | Adds a custom subnet (can be specified multiple times) |
+| `--local-only` | Narrows it to your own machine only (`host=127.0.0.1`) |
+| `--reset-admin` | Resets the administrator password, shows it and exits (add `--demo` when fixing the demo) |
+
+## 3-5. PII detection modes
+
+Specified with the `pii_mode` key of `cynovela.yaml`.
+
+| Value | Detection method |
+|---|---|
+| `lite` | Regular expressions only |
+| `standard` (default) | Regular expressions + GiNZA NER |
+| `quality` | Regular expressions + GiNZA NER + detailed filtering |
+
+To change it at runtime, PUT `/api/settings/pii-mode`.
+
+## 3-6. Preflight check
+
+At startup the existence of the required models is checked, and if there is a model that has not been obtained, the following choices are presented.
+
+1. Download it now and start (saved from HuggingFace under `~/.cynovela/models/`)
+2. Start in an alternative mode (full → text → lite → lite-en → mock)
+3. Cancel
+
+When running from a script, you can skip this prompt with `CYNOVELA_NONINTERACTIVE=1` (it exits when a model is absent).
+
+---
+
+# 4. Basic operations
+
+## 4-1. Core flow
+
+The main operations of Cynovela proceed along the following flow.
+
+```
+Source 登録 → Scan → Workspace 作成 → Collection 作成 → Publish → RAG Chat
+```
+
+### Step 1: registering a Source
+
+You register the place from which data is obtained (a local folder). POST a path to `/api/sources`, or register it from the UI with the "add Source" button.
+
+### Step 2: Scan
+
+The files under the registered Source are scanned and records are created in the `files` table. Each file is given a deterministic ID derived from its path (`_stable_fid(path)`).
+
+### Step 3: creating a Workspace
+
+A Workspace is "the unit that groups several Collections" and also "the unit that links guardrail policies and users".
+
+### Step 4: creating a Collection
+
+A Collection is the unit of "a group of files + a classification and chunking strategy". Its state moves through `draft → ingested → publishing → ready`.
+
+Main settings:
+- `rag_strategy`: `simple` / `hybrid_bm25` (default) / `contextual`
+- `chunk_size`, `chunk_overlap`
+- `access_level`: `public` / `internal` / `confidential`
+- `allowed_roles_json`: the ACL (access control list)
+
+### Step 5: Publish
+
+The files in the Collection are chunked, vectorized and put into ChromaDB. At Publish time the following are done at the same time.
+
+- Generation of chunks for both the raw and masked tiers
+- PII detection and Fernet encryption (raw side only)
+- Building the BM25 index
+- Recording into `publish_history` (doc_count, chunk_count, pii_count, excluded_count, elapsed_seconds and so on)
+
+### Step 6: RAG Chat
+
+When a user enters a question, the pipeline of search → reranker → LLM generation → applying guardrails → returning the answer is executed.
+
+## 4-2. RAG presets
+
+There are five presets that can be selected from the UI.
+
+| ID | Name | Purpose |
+|---|---|---|
+| `tech_doc` | Technical documents | For manuals |
+| `confidential` | Confidential documents | Internal documents containing PII |
+| `personal_memo` | Personal memos | Minutes and memos |
+| `multimedia` | Multimedia | A mix of images and Office files |
+| `quickstart` | Quick start | Fully automatic, for beginners |
+
+Each preset defines a combination of `chunking`, `rag_mode` and `guardrail`.
+
+## 4-3. Answer modes
+
+There are three RAG modes.
+
+| RAG Mode | Content |
+|---|---|
+| `lite` | Minimal RAG (one search, options omitted) |
+| `standard` | Standard (BM25 hybrid, reranker optional) |
+| `hq` | High quality (CRAG / Multi-Query / HyDE enabled) |
+
+In addition, there is a function that switches the answer style per role.
+
+- `admin`: complete information including technical details, setting values and internal structure
+- `reader`: an explanation focused on the main points, avoiding technical terms
+
+## 4-4. User management
+
+The SQL CHECK constraint allows the three values `admin` / `curator` / `viewer` for backward compatibility, but in the current implementation `curator` is normalized to `viewer`, and the effective roles are the two values `admin` / `viewer`. At the first startup, an admin user can be created with the `CYNOVELA_ADMIN_USERNAME` and `CYNOVELA_ADMIN_INITIAL_PASSWORD` environment variables.
+
+---
+
+# 5. Design details
+
+## 5-1. RAG pipeline
+
+The main function `rag_retrieve()` executes the following flow.
+
+```
+1. Vector Search (ChromaDB)
+   ├ MMR（多様性確保）
+   └ ACL フィルタリング
+2. BM25 Search（メモリ内インデックス）
+   ├ トークン化（日本語: fugashi、英語: 空白区切り）
+   └ ACL フィルタリング
+3. Hybrid Integration
+   └ RRF（k=60、既定）または重み付け（vector 0.7 + bm25 0.3）
+4. Parent-Child 解決
+   └ child hit を parent テキストに置換
+5. Reranker 適用
+   └ CrossEncoder / BGE-Reranker など
+6. Final Ranking
+   └ Top n_results 件を返却
+```
+
+Main parameters (the `rag` section of `cynovela.yaml`):
+
+- `strategy`: `hybrid_bm25` (default)
+- `default_n_results`: 5
+- `confidence_threshold`: 0.40 (the defined parameter value, on the cosine scale)
+- `vector_weight`: 0.7, `bm25_weight`: 0.3
+- `hybrid_method`: `rrf` (default) / `weighted`
+- `rrf_k`: 60
+- `mmr_enabled`: true, `mmr_lambda`: 0.7, `mmr_fetch_k`: 20
+- `parent_child_enabled`: true, `child_chunk_size`: 256, `parent_chunk_size`: 1000
+- `multi_query_enabled`: true, `multi_query_count`: 3
+- `crag_enabled`: true, `crag_max_loops`: 1
+- `hyde_enabled`: false
+- `adaptive_enabled`: true, `adaptive_threshold`: 2.0
+
+## 5-2. Advanced RAG (the PHASE A series)
+
+| Name | Function |
+|---|---|
+| MMR | Adjusts the balance of relevance vs diversity |
+| Parent-Child | Expands the surrounding context of a search hit |
+| Hybrid Search | Integrates BM25 + vector with RRF or weighting |
+| Multi-Query | Expands the query into N queries with the LLM and searches in parallel |
+| CRAG (Corrective RAG) | The LLM evaluates the quality of the search results and searches again if they are insufficient |
+| HyDE | Generates a hypothetical text → searches with its embedding |
+| Adaptive RAG | Judges the complexity of the question and starts an agentic loop |
+
+## 5-3. Smart ingestion and Collection
+
+### Classification engines
+
+| Engine | Behavior |
+|---|---|
+| `LightweightClassifier` | Rule based (the file name + keywords in the first 500 characters) |
+| `LLMClassifier` | Zero-shot classification with a local LLM such as Ollama |
+| `HybridClassifier` | Prefers the lightweight one, falls back to the LLM when the confidence is below 0.65 |
+
+### State transitions of a Collection
+
+```
+draft → ingested → ready
+draft → publishing → ready / failed
+publishing → stopped
+failed → draft
+```
+
+### Hash-based differential sync
+
+`DataSyncService` scans the `sources` table periodically.
+
+- Default interval: 60 seconds (minimum 10 seconds)
+- Compared against: the (source_id, path) records of the `files` table
+- Difference detection: additions / deletions in the set of paths
+
+The integration with publish is not yet unified; currently it only writes logs.
+
+### Chunk splitting
+
+- Default: a sliding window of 500 characters × 50 characters of overlap
+- When contextual chunking is enabled: metadata (file name, type, sensitivity, department, position, tags) is added at the beginning of the chunk
+
+## 5-4. Guardrails and PII (repeated)
+
+### Tier1 (masking at ingest time)
+
+At Publish time, a dual row of raw / masked is generated from each chunk. In ChromaDB, two collections `{cid}__raw` and `{cid}__masked` are created. In the SQLite `chunks` table as well, two rows with `tier='raw'` / `tier='masked'` are stored.
+
+### Tier2 (masking at answer time)
+
+`_mask_for_viewer` is applied to the LLM output at four places on the chat path (normal / compare A / compare B / SSE). For anyone other than admin, masking is forced.
+
+### Fernet encryption
+
+The `enc_raw` / `dec_raw` interface of `vault_enc.py` (an `enc:` prefix, idempotent). Only the raw tier is encrypted; the masked tier is passed through.
+
+---
+
+# 6. External integration
+
+## 6-1. LLM connection
+
+Cynovela can connect to any service that has an OpenAI-compatible `/v1/chat/completions`.
+
+### LM Studio
+
+```bash
+python server.py --lmstudio-url http://localhost:1234
+```
+
+### Ollama
+
+```bash
+python server.py --lmstudio-url http://localhost:11434
+```
+
+### OpenAI compatible (generic)
+
+Configure it in `cynovela.yaml`:
+
+```yaml
+llm:
+  provider: openai_compat
+  base_url: http://localhost:8000
+  model: meta-llama/Llama-3-8B-Instruct
+```
+
+### Mock
+
+```bash
+python server.py --demo
+```
+
+## 6-2. MCP integration
+
+Cynovela publishes 11 tools as an MCP server.
+
+| Category | Tools |
+|---|---|
+| RAG search (4) | `search_collection`, `search_across_collections`, `rag_with_role`, `rag_general` |
+| Information retrieval (4) | `list_workspaces`, `get_workspace_info`, `get_collection_info`, `get_audit_logs` |
+| Management (3) | `list_sources`, `publish_collection`, `create_workspace` |
+
+You can connect from an MCP client such as LM Studio. As a restriction specific to the conda environment, the path of the Python executable must be specified with the `CYNOVELA_MCP_PYTHON` environment variable.
+
+For details, see `mcp-guide.md`.
+
+## 6-3. LAN and Tailscale sharing
+
+### LAN sharing
+
+```bash
+python server.py --lan --allow-subnet 192.168.1.0/24
+```
+
+### Tailscale sharing
+
+```bash
+python server.py --lan --allow-tailscale
+```
+
+The Tailscale IP is detected automatically with `tailscale ip -4`, and the `100.64.0.0/10` subnet is added to the allow list.
+
+For details, see `lan-sharing.md`.
+
+---
+
+# 7. Known limitations
+
+## 7-1. Authentication and authorization
+
+- Authentication is JWT (issued by `POST /api/auth/login`; required even with `--demo`). The old `Bearer demo-token-<user_id>` form has been abolished
+- There is no function to issue an API key per user
+
+## 7-2. Communication encryption
+
+- HTTPS is not supported (TLS must be terminated by a reverse proxy)
+- LLM communication is also plain HTTP
+
+## 7-3. Settings that are not persisted
+
+- Runtime changes to the embedding / reranker settings are not persisted to the YAML (they return to the defaults on restart)
+
+## 7-4. Functions that are only a skeleton
+
+- The Qdrant VectorStore (`add` / `search` and so on are `NotImplementedError`)
+- MLX embedding / reranker (`NotImplementedError`)
+- The LanceDB backend
+- The GraphRAG strategy
+
+## 7-5. DataSyncService
+
+- The integration with publish is not unified (it only writes logs)
+- There is no content_hash comparison (only differences per path)
+
+## 7-6. RAG pipeline
+
+- The structured answer template is not implemented (free-form answers are standard)
+- The low-confidence fallback is partially implemented
+
+## 7-7. UI
+
+- Some UI elements are `display:none` until JavaScript initialization
+- With the language switch (Japanese / English) some elements are fixed
+
+For details, see `security-policy.md`.
+
+---
+
+# 8. FAQ
+
+## Q1. How are ChromaDB and SQLite used differently?
+
+- **SQLite**: metadata (structured information such as Workspace, Collection, Source, File, User, AuditLog and PublishHistory)
+- **ChromaDB**: the vector embeddings and the chunk text (for search)
+
+The two are deleted in sync by the `_purge_chunks_for_*()` helpers.
+
+## Q2. What happens if I lose the Fernet key?
+
+The raw text (the part encrypted with Fernet) can no longer be decrypted. The masked text is passed through, so it can still be read, but referring to the raw text becomes impossible even with the admin role. Please keep `CYNOVELA_SECRET_KEY` safely.
+
+## Q3. How do I run all the tests?
+
+```bash
+bash scripts/run_all_tests.sh
+```
+
+14 PHASEs / more than 405 assertions are executed.
+
+## Q4. Can I check the quality without using an LLM?
+
+No. The `--mock` option that used to exist (the option to run without calling the LLM) has been removed, and specifying it now stops with an error. Please check the quality in a real LLM environment.
+
+## Q5. PII detection does not pick up Japanese addresses. Why?
+
+Please check the PII detection mode. `lite` uses only regular expressions, so natural language PII such as addresses is not detected. Changing it to `standard` or `quality` enables detection of addresses, personal names and organization names by GiNZA NER.
+
+## Q6. I cannot connect from an MCP client
+
+Please check the following.
+- Whether the Cynovela main body (`server.py`) has been started at `http://127.0.0.1:8765`
+- The value of the `CYNOVELA_TOKEN` environment variable, and the validity of the token
+- Whether the Python path of the conda environment has been specified with `CYNOVELA_MCP_PYTHON`
+- Whether the target Collection has reached the `ready` status
+
+## Q7. Is it all right to publish it on the internet?
+
+It is absolutely not recommended. HTTPS is not in place, JWT authentication is not implemented, and the restrictions on file upload are loose, so publishing it directly on the internet carries serious risk.
+
+## Q8. How do I delete data completely?
+
+If you delete a Source / Workspace / Collection from the UI, both SQLite and ChromaDB are cleaned up through the `_purge_chunks_for_*()` family of helpers. If you want to initialize it completely, delete the whole `~/.cynovela/` directory (please take a backup beforehand).
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# Cynovela 完全マニュアル
 
 本マニュアルは、Cynovela のすべての機能を一冊にまとめた統合ドキュメントです。個別ドキュメントを横断したい場合に参照してください。
 

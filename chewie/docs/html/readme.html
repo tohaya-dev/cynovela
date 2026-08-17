@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cynovela README — Cynovela</title>
+  <title>Readme / Cynovela README — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,250 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">Cynovela</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
 </div>
 
 <div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that an individual can understand the concepts of an AI platform tool by working on it hands-on. It is not a commercial product and not an official implementation. The implementation is entirely original, and is composed of an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product in any way.
+    </blockquote>
+    <p>Cynovela is a completely unofficial learning tool, created so that an individual can understand the concepts of an AI platform tool by working on it hands-on.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">1. Project Overview</span>
+  </div>
+  <div class="slide-body">
+    <p>It is designed to experience "what it is like to actually build it" for the following kinds of features provided by the AI platform tool it was inspired by.</p>
+    <ul>
+      <li>Data governance (guardrails, PII detection, audit logs)</li>
+      <li>Data ingest (automatic classification, metadata extraction, differential sync)</li>
+      <li>RAG (Retrieval-Augmented Generation) pipeline (hybrid search, Reranker, Multi-Query, CRAG, HyDE)</li>
+      <li>Role-Based Access Control (RBAC)</li>
+      <li>MCP (Model Context Protocol) integration</li>
+    </ul>
+    <p>The implementation is entirely original and contains no source code from the tool it was inspired by. It is built only from OSS.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">2. Main Features</span>
+  </div>
+  <div class="slide-body">
+    <h3>2-1. Data ingest (Smart Ingestion)</h3>
+    <ul>
+      <li>Automatic classification into 14 document categories (governance policy, incident report, technical guide, meeting minutes, audit report, and so on)</li>
+      <li>3 classification engines (lightweight rule-based, local LLM, hybrid)</li>
+      <li>Automatic tracking of sources by hash-based differential sync</li>
+    </ul>
+    <h3>2-2. Guardrails and PII detection</h3>
+    <ul>
+      <li>Detection of 8 PII (personal information) patterns (email, phone, credit card, My Number, IP address, and so on)</li>
+      <li>Exit masking through dual-tier storage (raw / masked)</li>
+      <li>Protection of raw text by Fernet encryption</li>
+      <li>Three layers of prompt injection countermeasures</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">2. Main Features (continued)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>2-3. RAG pipeline</h3>
+    <ul>
+      <li>Hybrid integration of BM25 + vector search (RRF or weighting)</li>
+      <li>Vector embedding by BAAI/bge-m3</li>
+      <li>Reranker (supports several, such as CrossEncoder, FlashRank, and Ollama)</li>
+      <li>Advanced search features including Multi-Query, CRAG, HyDE, MMR, and Parent-Child chunking</li>
+      <li>Answer style per role (admin / reader)</li>
+    </ul>
+    <h3>2-4. RBAC and auditing</h3>
+    <ul>
+      <li>3 roles (admin / curator / viewer)</li>
+      <li>Recording of important operations into the audit_logs table</li>
+      <li>Tampering with audit logs through the API is prohibited</li>
+    </ul>
+    <h3>2-5. External integration</h3>
+    <ul>
+      <li>LM Studio / Ollama / OpenAI-compatible API connection</li>
+      <li>MCP server (11 tools)</li>
+      <li>LAN sharing and Tailscale sharing</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">3. Technology Stack</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+      <tbody>
+        <tr><td>Web framework</td><td>FastAPI</td></tr>
+        <tr><td>Persistence</td><td>SQLite</td></tr>
+        <tr><td>Vector store</td><td>ChromaDB</td></tr>
+        <tr><td>Embedding model</td><td>BAAI/bge-m3 (default), paraphrase-multilingual-MiniLM-L12-v2, paraphrase-MiniLM-L3-v2, TF-IDF</td></tr>
+        <tr><td>Reranker</td><td>BAAI/bge-reranker-v2-m3, CrossEncoder, FlashRank, Ollama</td></tr>
+        <tr><td>LLM</td><td>LM Studio, Ollama, OpenAI-compatible API, mock</td></tr>
+        <tr><td>Encryption</td><td>cryptography (Fernet)</td></tr>
+        <tr><td>PII detection</td><td>Regular expressions, GiNZA NER, Presidio</td></tr>
+        <tr><td>Integration protocol</td><td>MCP (Model Context Protocol)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">4. Quick Start</span>
+  </div>
+  <div class="slide-body">
+    <h3>4-1. Recommended environment</h3>
+    <ul>
+      <li>macOS (Apple Silicon recommended), Linux, Windows</li>
+      <li>Python 3.10 or later</li>
+      <li>conda environment (recommended environment name: <code>cynovela</code>)</li>
+    </ul>
+    <h3>4-2. Starting in demo mode</h3>
+<pre><code>python server.py --demo</code></pre>
+    <ul>
+      <li><code>--demo</code>: starts with demo data loaded (reset on restart)</li>
+    </ul>
+    <p>Opening <code>http://127.0.0.1:8765</code> in a browser shows the UI.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">4-3. Real LLM Mode and 4-4. Startup Modes</span>
+  </div>
+  <div class="slide-body">
+    <p>Start LM Studio, enable its OpenAI-compatible API, and then run the following.</p>
+<pre><code>python server.py --demo --lmstudio-url http://localhost:1234</code></pre>
+    <p><code>--mode</code> accepts text / lite / lite-en (the switching is not wired up; only the displayed name changes).</p>
+    <table>
+      <thead><tr><th>mode</th><th>Purpose</th><th>Required model</th></tr></thead>
+      <tbody>
+        <tr><td><code>text</code></td><td>All text RAG features (default)</td><td>BAAI/bge-m3</td></tr>
+        <tr><td><code>lite</code></td><td>Switching is <strong>not wired up</strong> = actually BAAI/bge-m3 (behavior is the same as text; only the displayed name changes)</td><td>—</td></tr>
+        <tr><td><code>lite-en</code></td><td>Switching is <strong>not wired up</strong> = actually BAAI/bge-m3 (behavior is the same as text; only the displayed name changes)</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">5. List of Documents</span>
+  </div>
+  <div class="slide-body">
+    <p>The following documents are placed under the <code>docs/</code> directory.</p>
+    <table>
+      <thead><tr><th>Document</th><th>Content</th></tr></thead>
+      <tbody>
+        <tr><td><code>quickstart.md</code></td><td>Shortest procedure for startup and initial setup</td></tr>
+        <tr><td><code>manual-complete.md</code></td><td>A single manual covering all features</td></tr>
+        <tr><td><code>llm-connection.md</code></td><td>Details of the LLM connection (LM Studio / Ollama / OpenAI-compatible)</td></tr>
+        <tr><td><code>mcp-guide.md</code></td><td>MCP server integration and the list of published tools</td></tr>
+        <tr><td><code>lan-sharing.md</code></td><td>Startup procedure for LAN sharing and Tailscale sharing</td></tr>
+        <tr><td><code>security-policy.md</code></td><td>Known limitations and usage that is not recommended</td></tr>
+        <tr><td><code>changelog.md</code></td><td>Release history</td></tr>
+        <tr><td><code>demo-general.html</code></td><td>Interactive demo for a general audience (just open it in a browser)</td></tr>
+        <tr><td><code>demo-tech.html</code></td><td>Interactive demo for engineers</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">README</span>
+    <span class="slide-title">6. License and 7. Disclaimer</span>
+  </div>
+  <div class="slide-body">
+    <h3>6. License</h3>
+    <p>The implementation code is written on the premise that it will be published as OSS. When using it, please respect the licenses of each dependent library (FastAPI, ChromaDB, BAAI/bge-m3, and so on).</p>
+    <p>It contains no source code, trademark, logo, or official documentation of the AI platform tool it was inspired by.</p>
+    <h3>7. Disclaimer</h3>
+    <ul>
+      <li>This tool was created for personal learning and verification purposes.</li>
+      <li>Business use and production operation are not assumed.</li>
+      <li>It does not represent the official position of the referenced company or product in any way.</li>
+      <li>The behavior of features, the API, and data structures may change without notice.</li>
+    </ul>
+    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-11">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Cynovela</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+</div>
+
+<div class="slide" id="slide-12">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +462,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-13">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">1. プロジェクト概要</span>
@@ -249,7 +484,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">2. 主な機能</span>
@@ -275,7 +510,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-15">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">2. 主な機能（続き）</span>
@@ -309,7 +544,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">3. 技術スタック</span>
@@ -336,7 +571,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">4. クイックスタート</span>
@@ -361,7 +596,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">4-3. 実 LLM モードと 4-4. 起動モード</span>
@@ -385,7 +620,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">5. ドキュメント一覧</span>
@@ -413,7 +648,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">README</span>
     <span class="slide-title">6. ライセンス・7. 免責</span>
@@ -439,9 +674,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 10</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 20</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

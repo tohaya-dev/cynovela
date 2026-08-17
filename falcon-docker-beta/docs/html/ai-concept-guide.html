@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI コンセプトガイド — Cynovela</title>
+  <title>AI Concept Guide / AI コンセプトガイド — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,311 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">AI Concept Guide</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">About this document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that an individual could understand the concepts of an AI platform tool by working with their own hands. It is not a commercial product and not an official implementation. The implementation is entirely original, and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
+    </blockquote>
+    <p>This is an explanation of the concepts around RAG, written so that you can understand them by running Cynovela. It is based only on public information and on the implementation in this repository.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">1. The concept of RAG</span>
+  </div>
+  <div class="slide-body">
+    <p>RAG (Retrieval-Augmented Generation) is a method in which external documents are searched for a user's question, and the search results are passed to the LLM as context before the answer is generated. It is used when you want the LLM to answer with in-house information that the LLM alone does not know (regulations, procedures, meeting minutes).</p>
+    <p>In Cynovela, <code>rag_retrieve()</code> in <code>rag.py</code> is the main search function, and it runs the following pipeline (A-3 §10).</p>
+    <ol>
+      <li><strong>Vector Search</strong>: The question is turned into an embedding (dense vector) with BGE-M3, and chunks that are close by cosine similarity are retrieved from ChromaDB.</li>
+      <li><strong>BM25 Search</strong>: Lexically close chunks are retrieved from the in-memory BM25Okapi index (tokenized with fugashi/MeCab).</li>
+      <li><strong>Hybrid Integration</strong>: By default both are integrated with RRF (Reciprocal Rank Fusion, k=60). The <code>weighted</code> method (Vector 0.7 + BM25 0.3) can also be chosen.</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">1. The concept of RAG</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <ol start="4">
+      <li><strong>Parent-Child Resolution</strong>: Child chunks that were hit by the search are replaced with their parent chunks (A-3 PHASE A-3, <code>rag.py:2251-2281</code>).</li>
+      <li><strong>Reranker</strong> (optional): If a reranker provider is configured, the top results are reordered with a CrossEncoder or similar.</li>
+      <li><strong>Final Ranking</strong>: The top <code>n_results</code> items are returned.</li>
+    </ol>
+    <p>The search results are assembled into a context string with citation numbers (<code>build_context_with_citations</code>, A-3 line 291) and placed at the end of the LLM prompt (the CLAUDE.md principle "the system prompt comes after retrieved_content").</p>
+    <p>As applied features, Multi-Query RAG (A-5 §3), CRAG (Corrective RAG: self-evaluation of search results, then re-search, A-6), HyDE (Hypothetical Document Embeddings: generate a hypothetical text, then search with its embedding, A-7), and Adaptive RAG (an agentic loop that follows query complexity, <code>adaptive_rag.py</code>) are all implemented.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">2. Why data cannot be sent to the cloud (data sovereignty)</span>
+  </div>
+  <div class="slide-body">
+    <p>The typical reasons why in-house documents cannot be sent to an external API are listed below.</p>
+    <ul>
+      <li><strong>Data sovereignty</strong>: The principle of not taking documents outside national or organizational borders.</li>
+      <li><strong>Audit requirements</strong>: You want to preserve "when, who, which document, with which query" as an internal audit log. In Cynovela, <code>_log_audit(conn, action, target, detail)</code> is always called for important operations (Source creation and deletion, Publish, Chat, PII detection, prompt injection blocking) (CLAUDE.md, A-2 §1).</li>
+      <li><strong>PII / confidential information</strong>: You do not want documents containing personal information or trade secrets mixed into external training data.</li>
+      <li><strong>Reproducibility</strong>: With an external LLM, the model version changes at the operator's convenience. There are cases in internal verification where you want to keep using the same model.</li>
+    </ul>
+    <p>To meet these requirements, Cynovela adopts an IP allowlist middleware that rejects anything other than loopback by default (A-5 §4), vault encryption with Fernet (A-2 §8), and connection to a local LLM (an OpenAI-compatible /v1 API).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">3. PII protection</span>
+  </div>
+  <div class="slide-body">
+    <p>PII (Personally Identifiable Information) protection has two stages (A-2 §6, §7).</p>
+    <h4>Tier1: Masking at ingest time</h4>
+    <p>At Publish time, <code>_mtws_publish</code> (<code>guardrail.mask_text_with_spans</code>) runs on every chunk and produces both a <code>raw</code> and a <code>masked</code> line. Rows with a <code>__masked</code> suffix are created in the SQLite <code>chunks</code> table, and two collections, <code>{collection_id}__raw</code> and <code>{collection_id}__masked</code>, are created in ChromaDB.</p>
+    <h4>Tier2: Masking at answer time</h4>
+    <p><code>_mask_for_viewer(text, user)</code> is called at four points on the chat response path (normal response / compare A / compare B / SSE streaming). By the decision in <code>tier_for_role(role)</code>, only <code>admin</code> passes through; everything else (<code>curator</code> / <code>viewer</code> / unset) always gets the exit masking applied.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">3. PII protection</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h4>Detection methods and detected types</h4>
+    <p>The primary system (<code>guardrail.py</code>, regular expressions) detects 8 types — URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4 — and replaces each with a token such as <code>[MASKED:URL]</code> or <code>[MASKED:EMAIL]</code>. The secondary system (<code>utils/metadata/pii.py</code>, presidio + GiNZA fallback) additionally detects PERSON_JP / ORG_JP / LOC_JP / ADDRESS_JP / DATE_TIME and others.</p>
+    <p>The PII detection mode can be chosen with the <code>pii_mode</code> key in <code>cynovela.yaml</code> from <code>lite</code> (regular expressions only) / <code>standard</code> (default) / <code>quality</code> (all features) (A-1 §3).</p>
+    <h4>Vault encryption</h4>
+    <p>The body text of the <code>raw</code> tier goes through <code>vault_enc.enc_raw()</code> and is stored Fernet-encrypted with an <code>enc:</code> prefix. The <code>masked</code> side is not encrypted (search performance is preserved, and the double defense is achieved on the raw side). The key is read from the <code>CYNOVELA_SECRET_KEY</code> environment variable (A-2 §8).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">4. What the scores mean (Vector / BM25)</span>
+  </div>
+  <div class="slide-body">
+    <p>Several scores with different scales appear in Cynovela's search. It is important not to confuse them.</p>
+    <h4>Vector Score (cosine similarity)</h4>
+    <p>A 0 to 1 scale. BGE-M3 turns a sentence into a vector, and the ChromaDB distance is converted into a similarity with <code>_dist_to_sim()</code> (A-3 §11, <code>rag.py:1701</code>). The noise floor of BGE-M3 is 0.35 to 0.45, and real queries (ones whose answer is in the material) typically land around 0.55 to 0.75. The low-confidence fallback threshold <code>confidence_threshold</code> is 0.50 by default (<code>config.py:131-135</code>).</p>
+    <h4>BM25 Score</h4>
+    <p>A lexical score based on word occurrence frequency. It is normalized to <code>[0, 1]</code> before integration.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">4. What the scores mean (RRF / Rerank)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h4>RRF Score</h4>
+    <p>The score of reciprocal rank fusion. It is a method that sums <code>1 / (k + rank)</code> for each rank (k=60 by default), and the maximum value is a small number of roughly 0.033. <strong>You must not perform a cosine similarity threshold decision with an RRF score</strong> (CLAUDE.md lesson 2; because the order of magnitude differs, there was a past case where abstention misfired on every query).</p>
+    <h4>Rerank Score</h4>
+    <p>The score that a reranker provider assigns after evaluating a pair of the query and a candidate chunk. It is held as <code>rerank_score: float = 0.0</code> at <code>pipeline_types.py:71</code>, and 0 means it was not applied. The default is <code>NoReranker</code> (disabled); you enable it by choosing <code>yaml.reranker.provider</code> from <code>cross_encoder</code> / <code>flashrank</code> / <code>ollama</code> / <code>cohere</code> / <code>jina</code> / <code>voyage</code> / <code>openai_compat</code> (A-1).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">5. RBAC (role-based access control)</span>
+  </div>
+  <div class="slide-body">
+    <p>There are 3 roles (A-5 §2, the CHECK constraint at line 18 of <code>db.py</code>).</p>
+    <table>
+      <thead><tr><th>Role</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>Full administrative rights. User management, system setting changes, viewing PII detection history. The only role that can see the raw body text (raw tier).</td></tr>
+        <tr><td><code>viewer</code></td><td>Viewing only. RAG search and report viewing.</td></tr>
+      </tbody>
+    </table>
+    <blockquote>Names such as <code>curator</code> / <code>data-scientist</code> are accepted as backward-compatible values, but in the current implementation they are normalized to <code>viewer</code> and have no rights of their own (the effective roles are the 2 values <code>admin</code> / <code>viewer</code>).</blockquote>
+    <p>On the API side, authorization is done with the 4 helpers in <code>core/auth.py</code> (A-5 §2).</p>
+    <ul>
+      <li><code>_require_admin(request)</code>: requires <code>role == 'admin'</code></li>
+      <li><code>_require_authenticated(request)</code>: any role, as long as it is authenticated</li>
+      <li><code>_require_role(request, allowed)</code>: requires a role in the given set</li>
+      <li><code>_require_admin_or_self(request, user_id)</code>: the administrator or the person themselves</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">5. RBAC (continued: the ACL filter)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>There are 242 RBAC checks under routers/, and 13 routers apply <code>_require_admin</code> (A-5 §2).</p>
+    <p>There is also an ACL (Access Control List) filter inside the search pipeline: on both the Vector and BM25 paths of <code>rag_retrieve()</code>, chunks whose <code>metadata.allowed_roles</code> does not contain <code>user_role</code> are excluded (A-3 §10, <code>rag.py</code> <code>_filter_hits_by_role</code>). The ACL filter is always enabled.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">6. Audit logs</span>
+  </div>
+  <div class="slide-body">
+    <p>Audit logs are recorded in the <code>audit_logs</code> table, and deletion or modification through the API is prohibited (CLAUDE.md, Security). The recorded targets are important operations such as the following.</p>
+    <ul>
+      <li>Creation and deletion of Source / Workspace / Collection</li>
+      <li>Start and completion of Publish</li>
+      <li>Chat (the query and referenced sources, and firing of the low-confidence fallback)</li>
+      <li>PII detection (<code>PII_DETECTED</code> / <code>pii_detected</code>, A-2 §1)</li>
+      <li>Prompt injection blocking (<code>PROMPT_INJECTION_BLOCKED</code>, A-2 §9)</li>
+      <li>Authentication failure (<code>user_id_only_login_removed</code> and so on, A-6 §2)</li>
+    </ul>
+    <p>The PII detection history can be obtained from <code>/api/guardrails/pii-detections</code>, and <code>_require_admin</code> is applied to it (A-2 §2, restricted to admin in FIX-026).</p>
+    <p>In <code>_AUDIT_CATEGORY_MAP</code> of <code>core/audit.py</code>, each action is classified into a category (such as <code>security</code>).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">7. Smart Ingestion</span>
+  </div>
+  <div class="slide-body">
+    <p>Smart Ingestion is a mechanism that automatically classifies documents into 14 categories (A-4 §1, <code>utils/metadata/classification.py</code>).</p>
+    <h4>Categories (14 kinds)</h4>
+    <p><code>governance_policy</code> / <code>incident_report</code> / <code>technical_guide</code> / <code>case_study</code> / <code>meeting_minutes</code> / <code>audit_report</code> / <code>poc_report</code> / <code>faq</code> / <code>whitepaper</code> / <code>checklist</code> / <code>proposal_rfp</code> / <code>newsletter</code> / <code>reference</code> / <code>other</code></p>
+    <p>As a separate system, there is also classification of the document type (the 5 kinds <code>contract</code> / <code>technical_spec</code> / <code>email</code> / <code>report</code> / <code>manual</code>).</p>
+    <h4>Classification engines (3 kinds)</h4>
+    <table>
+      <thead><tr><th>Engine</th><th>Mechanism</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td><code>LightweightClassifier</code></td><td>Keyword match on the file name + the first 500 characters</td><td>0.85 (file name) / 0.65 (content)</td></tr>
+        <tr><td><code>LLMClassifier</code></td><td>Zero-shot classification with local Ollama, JSON output enforced</td><td>LLM output</td></tr>
+        <tr><td><code>HybridClassifier</code></td><td>Lightweight first, LLM fallback when the confidence is below 0.65</td><td>Integrated</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">7. Smart Ingestion (continued: chunk strategy)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>In addition, a PII-only <code>RuleBasedClassifier</code> (EMAIL / PHONE / MYNUMBER) and an externally delegated <code>APIClassifier</code> are in <code>providers/classifier.py</code>.</p>
+    <h4>Chunk splitting strategy (A-4 §6)</h4>
+    <p>The sliding window method by default (<code>chunk_size=500</code>, <code>overlap=50</code>, <code>split_chunks()</code>). If you set <code>chunking.contextual=true</code>, contextual chunking runs, which prepends metadata (file name, type, sensitivity, department, position, tags) to the head of the chunk as [context] (<code>chunker.py</code>, <code>build_context_prefix</code>).</p>
+    <p>There are 3 RAG strategies: <code>simple</code> / <code>hybrid_bm25</code> / <code>contextual</code>.</p>
+    <h4>RAG presets (5 kinds, A-3 §4)</h4>
+    <p>Technical documents / confidential documents / personal notes / multimedia / quick start.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">AI Concept Guide</span>
+    <span class="slide-title">8. Relationship with the referenced tool</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela is a re-implementation, using only OSS and for an individual's learning purposes, of the concept that the referenced AI platform tool tries to solve (a RAG platform that safely connects in-house documents to a local LLM).</p>
+    <ul>
+      <li><strong>The implementation is entirely original</strong>: There is no compatibility with the referenced tool in the source code, the API specification, or the data model. It is assembled from OSS parts: FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.</li>
+      <li><strong>It does not represent an official position</strong>: The design decisions, trade-offs, and implementation content are all the responsibility of an individual, and do not represent any official specification or position of the referenced AI platform tool or its affiliated companies.</li>
+      <li><strong>Purpose</strong>: To understand the concept "by working with your own hands". Commercial use and production operation are not assumed.</li>
+    </ul>
+    <p>For the formal specification and features of the referenced AI platform tool, please refer to the official documentation of its provider.</p>
+    <p style="margin-top:18px; color:var(--cyn-muted); font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-16">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">AI コンセプトガイド</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +523,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">1. RAG の概念</span>
@@ -247,7 +543,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">1. RAG の概念</span>
@@ -268,7 +564,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">2. クラウドに送信できない理由（データ主権）</span>
@@ -289,7 +585,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">3. PII 保護</span>
@@ -307,7 +603,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">3. PII 保護</span>
@@ -326,7 +622,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">4. スコアの意味（Vector / BM25）</span>
@@ -344,7 +640,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">4. スコアの意味（RRF / Rerank）</span>
@@ -362,7 +658,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">5. RBAC（ロールベースアクセス制御）</span>
@@ -391,7 +687,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">5. RBAC（続き：ACL フィルター）</span>
@@ -407,7 +703,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-27">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">6. 監査ログ</span>
@@ -431,7 +727,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-28">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">7. Smart Ingestion（賢い取り込み）</span>
@@ -457,7 +753,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-29">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">7. Smart Ingestion（続き：チャンク戦略）</span>
@@ -477,7 +773,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-30">
   <div class="slide-header">
     <span class="doc-name">AI コンセプトガイド</span>
     <span class="slide-title">8. 参照元との関係</span>
@@ -500,9 +796,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 15</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 30</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

@@ -41,7 +41,8 @@ Pick **lightweight** if you already have the embedding model locally, or if you
 are happy to fetch it on first start.
 Pick **all-in-one** if you want everything in the download and no fetching.
 The all-in-one packages are too large for a single file, so they are split.
-Each release ships a `HOW-TO-ASSEMBLE.md` and a `SHA256SUMS` next to the parts.
+Each release ships a `HOW-TO-ASSEMBLE.md` and a `SHA256SUMS` next to the parts;
+the same guide is in this repository at [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md).
 Download every part, follow that file to join them, and check the result against
 `SHA256SUMS` before starting. If no release is listed yet, the packages are not
 published at this point.
@@ -53,7 +54,10 @@ The docker-beta package is a single file named
 3. Open the address the launcher prints, and sign in with the account described
    in `STARTUP.md`. The administrator account is asked to change its password on
    first sign-in.
-Detailed guides inside the packages are written in Japanese.
+Every guide inside the packages is bilingual: English first, Japanese after.
+If this is your first time, start from `HAJIMETE.md`
+([falcon](falcon/HAJIMETE.md) / [chewie](chewie/HAJIMETE.md) /
+[falcon-docker-beta](falcon-docker-beta/HAJIMETE.md)), then `STARTUP.md`.
 ## What it does not do
 - **Masking is not complete.** It applies pattern-based replacement before text
   leaves the machine, but it does not catch everything. Known gaps include names

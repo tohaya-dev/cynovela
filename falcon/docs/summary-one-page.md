@@ -1,11 +1,68 @@
+# Cynovela 概要（1ページ版）
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool built by an individual to
+> understand the concepts of AI infrastructure tools by working on them by hand.
+> It is not a commercial product or an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+## Core Message
+
+Cynovela is a learning-purpose verification implementation that keeps a RAG (Retrieval-Augmented Generation) pipeline for in-house documents entirely within a local environment. The whole flow — document ingest, PII (personal information) detection, vector search, and answer generation by a local LLM — is built from OSS parts only. Its purpose is to understand, by running it yourself, the problems that the referenced AI infrastructure tools try to solve.
+
+## Problems It Solves
+
+1. **In-house documents do not reach the LLM's context**
+   A general-purpose LLM does not know in-house terms, rules, or operating procedures. Having a person copy and paste a summary by hand every time they ask a question is not realistic.
+2. **Documents cannot be sent to the cloud**
+   Sending in-house documents that contain confidential information to an external API creates constraints from the standpoint of data sovereignty, audit requirements, and compliance. A RAG that runs fully locally is needed.
+3. **You do not want documents containing PII to go into the search index as they are**
+   If personal names, email addresses, phone numbers and the like are indexed without masking, there is a risk of leakage through answers. A two-stage design is needed: masking at ingest time (Tier1) and masking at answer time (Tier2).
+
+## How It Works (3 Steps)
+
+1. **Register a Source → Scan**
+   When you register a local directory as a Source, the target files are detected recursively and registered in the `files` table. Because a deterministic file_id derived from the path is used even on a re-scan, the impact on existing Collections is minimized.
+2. **Workspace → Collection → Publish**
+   Under a Workspace (the unit of permission and policy management) you create a Collection (a set of files plus a chunking strategy), and at Publish time the documents are split into chunks, embedded, and loaded into ChromaDB. At the same time PII is detected, and both lines, `tier="raw"` and `tier="masked"`, are generated.
+3. **RAG Chat**
+   For a user's question, related chunks are retrieved by a hybrid of BM25 and vector search (RRF: Reciprocal Rank Fusion by default), and passed as context to the local LLM to generate an answer. Citation numbers, a low-confidence fallback, prompt injection countermeasures, and output-time masking are built in.
+
+## List of OSS Parts
+
+| Part | Role |
+|------|------|
+| **FastAPI** | The HTTP API server itself (started with uvicorn) |
+| **SQLite** | Persistence of metadata, audit logs, and chunk text (foreign keys enabled) |
+| **ChromaDB** | Vector store (creates two lines of Collections, raw / masked) |
+| **BGE-M3** | Multilingual embedding model (the default text mode) |
+| **Local LLM** | To avoid the external transmission that the referenced AI infrastructure tools assume, a local inference server with an OpenAI-compatible /v1 API is used |
+
+As supporting parts, BM25Okapi (keyword search), fugashi/MeCab (Japanese morphological analysis), cryptography.fernet (vault encryption), and presidio + GiNZA (the secondary path for PII detection) are used.
+
+## Disclaimer
+
+Cynovela is a personal implementation for learning purposes; commercial use and production use are not assumed. It does not represent the official position of the referenced AI infrastructure tools, and it contains no company or product names. All implementation decisions and design trade-offs are the individual's own.
+
+---
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# Cynovela 概要（1ページ版）
 
 ## 核心メッセージ
 

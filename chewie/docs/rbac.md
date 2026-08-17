@@ -1,11 +1,152 @@
+# RBAC（ロールベースアクセス制御）
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built so that an individual can
+> understand the concepts of AI platform tools by actually running them.
+> It is not a commercial product and not an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official view of any company or product.
+
+Cynovela manages the permissions of API requests on a **role** basis. What each user can do is decided by a role, and the implementation calls a role check helper at the beginning of each API endpoint.
+
+---
+
+## 1. Role definitions (3 roles)
+
+The following CHECK constraint is applied on the database side, so only these three roles can be registered.
+
+```sql
+role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))
+```
+
+| Role | Assumed user | Main permissions |
+|---|---|---|
+| **admin** | System administrator | All API endpoints. User management, changing system settings, viewing audit logs, viewing the original PII (personal information) text |
+| **viewer** | General user | Read operations such as RAG (Retrieval-Augmented Generation) queries and report viewing |
+
+> The DB CHECK constraint allows `role IN ('admin', 'curator', 'viewer')` for backward compatibility, but in the current implementation `curator` (and `data-scientist` and so on) is normalized to `viewer` and has no permissions of its own. The effective roles are the two values `admin` / `viewer`.
+
+---
+
+## 2. Role check helpers
+
+`core/auth.py` provides four role check functions, and each endpoint in the router layer calls them to perform authorization (permission checking).
+
+| Function name | What it checks | Behavior when it fails |
+|---|---|---|
+| `_require_admin()` | Whether the role is admin | Raises an exception (insufficient permission) |
+| `_require_authenticated()` | Whether the request is authenticated (any role) | Raises an exception |
+| `_require_role(roles)` | Whether the role matches one of the given roles | Raises an exception |
+| `_require_admin_or_self()` | Whether the user is admin, or is the user_id in question | Raises an exception |
+
+The role check calls are spread over **about 242 places** under the routers.
+
+---
+
+## 3. Main endpoints by role (admin only)
+
+An excerpt of the routers on which `_require_admin` is applied is as follows. **13 routers** contain admin-only endpoints.
+
+| Router | Admin-only targets | Role |
+|---|---|---|
+| `routers/alerts.py` | Alert operations | Management of notifications |
+| `routers/auth.py` | Creating, deleting and listing users | Account management |
+| `routers/files.py` | File deletion, bulk operations, changing limits | Upload management |
+| `routers/catalog.py` | Catalog editing | Data catalog management |
+| `routers/archived.py` | Archive lookup and restore | Organizing stored items |
+| `routers/models.py` | Model settings | Selecting the LLM / embedding model |
+| `routers/compliance.py` | Compliance operations | Audit and policy area |
+| `routers/health.py` | Part of the health checks | Reading internal state |
+| `routers/sessions.py` | Session management | Management of chat history |
+| `routers/llm.py` | LLM connection settings | Switching providers |
+| `routers/feedback.py` | Getting and editing feedback | Lookup of 👍👎 totals |
+| `routers/guardrails.py` | PII detection history, editing forbidden topics | Management of protection rules |
+| `routers/policies.py` | Editing guardrail policies | Policy matrix |
+
+In addition, `/api/guardrails/pii-detections`, which returns the PII detection history, is fixed to **admin only** (the implementation calls `_require_admin(request)` at the beginning in `routers/guardrails.py`).
+
+---
+
+## 4. Differences in answers by role (how PII is seen)
+
+Cynovela switches the content of answers according to the role by two-stage PII masking (masking of personal information).
+
+### 4.1 Masking at ingest time (Tier1)
+
+At the Publish stage, **both** the original text (raw) and the masked text (masked) are stored.
+- In the SQLite `chunks` table, two rows with `tier='raw'` and `tier='masked'` are placed side by side.
+- On the ChromaDB (vector search) side as well, two collections `{cid}__raw` and `{cid}__masked` are created in parallel.
+
+### 4.2 Masking at answer time (Tier2)
+
+At the exit of the chat response (against the LLM generation result), the text for display is masked again according to the role of the user. The decision logic is as follows.
+
+```python
+def tier_for_role(role: str) -> str:
+    return "raw" if (role or "").strip() == "admin" else "masked"
+```
+
+- **admin** → refers to the collection on the `raw` side, and the exit masking is passed through in the answer display (the original text is shown as it is)
+- **viewer / not specified** (`curator` and so on are normalized to viewer) → refers to the collection on the `masked` side, and the exit masking is also applied (the text stays masked when displayed)
+
+> However, when an external (non-local) LLM is used, crag-egress-guard prevents the preliminary reading of raw (context_preview) from being sent outside even for admin (CRAG is skipped). The admin pass-through described above assumes "answer display with a local LLM"; it does not mean "admin = the original text is always passed to an external LLM".
+
+The exit masking is called on all four paths in `routers/chat.py`: the normal response, compare A, compare B, and SSE (event stream).
+
+### 4.3 Differences in answer style by role
+
+The role prefix in `rag.py` also switches the tone of the answer.
+
+| Role | Policy of the prefix |
+|---|---|
+| admin | Provides complete information including technical details, setting values and internal structure |
+| reader | An easy-to-understand explanation focused on the main points, avoiding technical terms |
+
+---
+
+## 5. Access control per workspace
+
+A workspace (Workspace, the unit in which data is stored) has an intermediate table `workspace_users (workspace_id, user_id)` for assigning users to it. This makes it possible to limit the workspaces a user can access.
+
+In addition, a collection (Collection, the unit of a group of files) carries the following metadata.
+
+| Column | Purpose |
+|---|---|
+| `access_level` | Three levels: `public` / `internal` / `confidential` |
+| `allowed_roles_json` | The list of roles allowed per collection (JSON) |
+| `acl_roles` | The set of roles equivalent to an ACL (access control list) |
+
+An **ACL filter** works inside the search pipeline (`rag_retrieve` in `rag.py`), and if the role of the user is not included in `allowed_roles`, the item is excluded from the search results.
+
+Setting `features.acl_filter` to `false` makes it possible to skip the ACL filter (the default is `true`).
+
+---
+
+## 6. Limitations as of Alpha GA
+
+- Authentication is only the JWT (JSON Web Token) issued by `/api/auth/login`. The simple token of the form `Bearer demo-token-{user_id}` was abolished on 2026-07-29, and is rejected with 401 even when started with `--demo`.
+- Because the implementation of the role checks is **spread over about 242 places**, unifying it (for example, consolidating it into a FastAPI Depends base) is a candidate for future cleanup.
+- One-click entry (unauthenticated login from a user card) has been completely removed. Entering `username` and `password` is now required.
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# RBAC（ロールベースアクセス制御）
 
 Cynovela は、API リクエストの権限管理を **ロール（役割）ベース** で行います。利用者ごとに「何ができるか」をロールで決め、各 API エンドポイントの先頭でロール検査ヘルパーを呼ぶ実装方式を取っています。
 

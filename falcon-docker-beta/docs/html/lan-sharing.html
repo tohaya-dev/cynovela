@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAN 共有・Tailscale 共有ガイド — Cynovela</title>
+  <title>LAN Sharing / LAN 共有・Tailscale 共有ガイド — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,224 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">LAN Sharing / Tailscale Sharing Guide</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool built by an individual to understand the concepts behind AI platform tools by hands-on work. It is not a commercial product or an official implementation. The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product in any way.
+    </blockquote>
+    <p>By default Cynovela listens on localhost (<code>127.0.0.1</code>) only. To access it from another machine on the same LAN (local network) or through Tailscale (a VPN service), you must explicitly allow it with a startup flag.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">1. Default Behavior (Safest)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>python server.py</code></pre>
+    <ul>
+      <li><strong>Bind address</strong>: <code>127.0.0.1</code> (localhost only)</li>
+      <li><strong>Clients that can access it</strong>: only browsers and CLIs on the same machine</li>
+      <li><strong>Seen from outside</strong>: the port appears closed</li>
+    </ul>
+    <p>When you run it this way, access over the network cannot happen in principle. This configuration is recommended for testing and personal use.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">2. LAN Sharing Mode</span>
+  </div>
+  <div class="slide-body">
+    <p>If you want to access Cynovela from another machine on the same LAN, add the <code>--lan</code> flag.</p>
+    <h3>2-1. Startup command</h3>
+<pre><code>python server.py --lan</code></pre>
+    <p>This flag switches the bind address to <code>0.0.0.0</code> (all interfaces), which makes connections from other machines on the LAN possible.</p>
+    <h3>2-2. Connection example</h3>
+    <p>If the LAN IP of the server machine is <code>192.168.1.20</code>, connect from a browser on another machine as follows.</p>
+<pre><code>http://192.168.1.20:8765</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">2-3. IP Allowlist</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela has an IP allowlist feature. <code>127.0.0.1</code> and <code>localhost</code> are always allowed, but any other source address must be allowed explicitly. Use <code>--allow-subnet</code> to add a source subnet.</p>
+<pre><code>python server.py --lan --allow-subnet 192.168.1.0/24</code></pre>
+    <p>To specify several of them, repeat <code>--allow-subnet</code>.</p>
+<pre><code>python server.py --lan --allow-subnet 192.168.1.0/24 --allow-subnet 10.0.0.0/24</code></pre>
+    <p>Requests from a source that is not allowed receive HTTP 403 Forbidden.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">3. Tailscale Sharing Mode</span>
+  </div>
+  <div class="slide-body">
+    <p>With Tailscale you can connect over a VPN even between networks that are far apart, such as home and a remote location. Cynovela provides the <code>--allow-tailscale</code> flag, which automatically allows the Tailscale subnet (<code>100.64.0.0/10</code>).</p>
+    <h3>3-1. Prerequisites</h3>
+    <ul>
+      <li>The Tailscale client is installed on the server machine and logged in</li>
+      <li>The client machine is logged in to the same Tailscale account</li>
+      <li>On the server, the <code>tailscale ip -4</code> command returns a Tailscale IP</li>
+    </ul>
+    <h3>3-2. Startup command</h3>
+<pre><code>python server.py --lan --allow-tailscale</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">3-3. How Tailscale Sharing Mode Works</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>At startup it runs <code>tailscale ip -4</code> to detect the IP assigned by Tailscale (timeout 3 seconds).</li>
+      <li>It automatically adds the <code>100.64.0.0/10</code> subnet to the IP allowlist.</li>
+      <li>Clients coming through Tailscale can then connect.</li>
+    </ul>
+    <p>To see the Tailscale name or IP of a client, run <code>tailscale status</code> on the Tailscale client side.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">4. Changing the Port Number</span>
+  </div>
+  <div class="slide-body">
+    <p>The default port is <code>8765</code>. You can change it with <code>--port</code>.</p>
+<pre><code>python server.py --lan --port 9000</code></pre>
+    <p>Privileged ports such as 80 or 443 require administrator rights, so going through a reverse proxy (nginx or similar) is recommended.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">5. Security Notes</span>
+  </div>
+  <div class="slide-body">
+    <p>LAN sharing and Tailscale sharing are convenient, but they come with several risks you should be aware of.</p>
+    <h3>5-1. Traffic is plaintext HTTP</h3>
+    <p>Cynovela itself listens over HTTP. HTTPS is not built in, so the contents of the traffic travel in plaintext inside the network. If you handle highly confidential documents, consider one of the following.</p>
+    <ul>
+      <li>Access it only through an encrypted VPN such as Tailscale</li>
+      <li>Terminate TLS at a reverse proxy (nginx or similar)</li>
+    </ul>
+    <h3>5-2. Never expose it directly to the internet</h3>
+    <p>Given the incomplete authentication and the lack of encryption, you must absolutely avoid exposing it directly to the internet while it is bound to <code>0.0.0.0</code>.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">5. Security Notes (continued)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>5-3. Limits of authentication</h3>
+    <p>Authentication uses JWT (issued by <code>POST /api/auth/login</code>) and is required even when started with <code>--demo</code>. The old <code>Bearer demo-token-&lt;user_id&gt;</code> form has been removed and is no longer accepted. When sharing over a LAN, operate on the assumption that only trusted users are on the network.</p>
+    <h3>5-4. Permissions for file upload</h3>
+    <p>Because the configuration can end up accepting file uploads from any user on the LAN, always check the validation of the path argument of <code>/api/sources</code> and the upload limit setting (<code>CYNOVELA_MAX_UPLOAD_BYTES</code>, default 100 MB).</p>
+    <h3>5-5. Recommended configurations</h3>
+    <ul>
+      <li>Fully local: no flags at all, running on <code>127.0.0.1</code> only</li>
+      <li>Personal VPN: add only <code>--allow-tailscale</code> and avoid exposure to the LAN</li>
+      <li>Restricted LAN: narrow the sources strictly with <code>--lan --allow-subnet</code></li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">LAN Sharing Guide</span>
+    <span class="slide-title">6. Summary of Related Startup Flags</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Flag</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>--host</code></td><td><code>127.0.0.1</code></td><td>Bind address</td></tr>
+        <tr><td><code>--port</code></td><td><code>8765</code></td><td>Port number</td></tr>
+        <tr><td><code>--lan</code></td><td>disabled</td><td>Explicitly set <code>host=0.0.0.0</code> and listen on all interfaces</td></tr>
+        <tr><td><code>--allow-tailscale</code></td><td>disabled</td><td>Allow the Tailscale subnet (<code>100.64.0.0/10</code>)</td></tr>
+        <tr><td><code>--allow-subnet</code></td><td>empty</td><td>Add a custom subnet (can be given several times)</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+<div class="slide cover" id="slide-12">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">LAN 共有・Tailscale 共有ガイド</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-13">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +436,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">1. 既定の動作（最も安全）</span>
@@ -247,7 +456,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-15">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">2. LAN 共有モード</span>
@@ -267,7 +476,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">2-3. IP アローリスト</span>
@@ -285,7 +494,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">3. Tailscale 共有モード</span>
@@ -307,7 +516,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">3-3. Tailscale 共有モードの動作</span>
@@ -326,7 +535,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">4. ポート番号の変更</span>
@@ -342,7 +551,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">5. セキュリティ上の注意</span>
@@ -364,7 +573,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">5. セキュリティ上の注意（続き）</span>
@@ -388,7 +597,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">LAN 共有ガイド</span>
     <span class="slide-title">6. 関連する起動フラグまとめ</span>
@@ -414,9 +623,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 11</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 22</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;
