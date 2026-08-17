@@ -1,9 +1,6 @@
 **日本語版はこちら → [README.ja.md](README.ja.md)**
-> Cynovela（シノヴェラ）は、資料を取り込み、個人情報を伏せてから答えを返す仕組みを、
-> 手元の Mac だけで動かしてみるための道具です。日本語の文書を想定して作っています。
-> 売り物ではなく、学びと試しのためのものです。
 
-本命は Podman で動くコンテナ版（falcon）です。`falcon-docker-beta` は Docker 対応の開発中のベータです（`falcon` とはファイルを共有しない、独立したフォルダです）。 / The Podman-based falcon is the primary form; `falcon-docker-beta` is a separate, in-development beta for Docker that shares no files with `falcon`.
+The Podman-based falcon is the primary form; `falcon-docker-beta` is a separate, in-development beta for Docker that shares no files with `falcon`.
 ---
 # Cynovela
 A small-scale model of an enterprise AI data pipeline: ingest documents, mask

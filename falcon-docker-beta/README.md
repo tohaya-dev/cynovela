@@ -1,5 +1,32 @@
 # Cynovela (docker-beta)
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+<!-- cynovela:welcome-en:start -->
+**Cynovela lets you point an AI at the documents already on your Mac and ask about them, in Japanese or English. But answering is not the point.**
+
+**When documents are handed to an AI, what happens in between is normally invisible.** Cynovela makes it visible. Reading, masking and vectorising each show up as they progress, with counts of what was masked and of what kind. Answers cite the passage they came from, and if no supporting passage is found, none is invented. Who looked at what, and when, is recorded.
+
+**Seeing that end to end, on your own machine, is what this tool is for.**
+
+**How your documents are handled**
+
+**Reading, search and answering all happen on your own Mac. Nothing is sent to the internet** — with one exception.
+**Exception: API connection.** If you enable a connection to a cloud AI service, your question and the relevant excerpts are sent to that service. It is off by default.
+**What is sent is text that has been through the masking step**, and the tool is built so that text which has not been through it is never routed outside. There is no exception by role — the same applies to administrator accounts.
+**The masking step is not exhaustive.** Some names and address details are known to slip through. Do not load confidential material on the assumption that it will be protected.
+
+**Before you start**
+
+Requires an Apple silicon Mac. This is a learning and demonstration tool, not a production system. Provided as is, without warranty. Answers can be wrong; always open the cited source and check.
+<!-- cynovela:welcome-en:end -->
+
+---
+
+# 日本語
+
 > **この `falcon-docker-beta` は Docker 対応の開発中ベータ（docker-beta）です。** 本命は Podman 版（falcon）で、
 > この docker-beta は falcon とファイルを1つも共有しない、完全に独立したフォルダです。実行エンジンの既定は docker
 > （`cynovela.yaml` の `engine: docker`）になっています。
@@ -182,29 +209,6 @@ bash uninstall.sh
 - `BUNDLED-DATA.md` — 同梱データについての説明
 - `NOTICE.md` — 使う前のご注意（免責）
 - `SECURITY.md` — セキュリティについて
-
----
-
-## English
-
-<!-- cynovela:welcome-en:start -->
-**Cynovela lets you point an AI at the documents already on your Mac and ask about them, in Japanese or English. But answering is not the point.**
-
-**When documents are handed to an AI, what happens in between is normally invisible.** Cynovela makes it visible. Reading, masking and vectorising each show up as they progress, with counts of what was masked and of what kind. Answers cite the passage they came from, and if no supporting passage is found, none is invented. Who looked at what, and when, is recorded.
-
-**Seeing that end to end, on your own machine, is what this tool is for.**
-
-**How your documents are handled**
-
-**Reading, search and answering all happen on your own Mac. Nothing is sent to the internet** — with one exception.
-**Exception: API connection.** If you enable a connection to a cloud AI service, your question and the relevant excerpts are sent to that service. It is off by default.
-**What is sent is text that has been through the masking step**, and the tool is built so that text which has not been through it is never routed outside. There is no exception by role — the same applies to administrator accounts.
-**The masking step is not exhaustive.** Some names and address details are known to slip through. Do not load confidential material on the assumption that it will be protected.
-
-**Before you start**
-
-Requires an Apple silicon Mac. This is a learning and demonstration tool, not a production system. Provided as is, without warranty. Answers can be wrong; always open the cited source and check.
-<!-- cynovela:welcome-en:end -->
 
 ---
 
