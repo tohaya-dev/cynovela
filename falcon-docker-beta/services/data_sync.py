@@ -93,7 +93,7 @@ class DataSyncService:
         new_paths = discovered_paths - set(existing.keys())
         deleted_paths = set(existing.keys()) - discovered_paths
         if new_paths or deleted_paths:
-            # DD-CYN-0126 段B: 自動 republish はしないと決めた。利用者が意図しない資料が
+            # unlinked-files-20260817: 自動 republish はしないと決めた。利用者が意図しない資料が
             # 黙って取り込まれると、マスキングと権限の設計に触れるためである。
             # 増えたファイルは GET /api/collections/{id}/unlinked-files が見せ、
             # POST /api/collections/{id}/link-files で利用者が選んで紐づける。

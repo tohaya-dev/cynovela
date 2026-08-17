@@ -449,7 +449,7 @@ async function startPublishStream(colId) {
     const diff = await API.get(`/api/collections/${colId}/publish-diff`);
     if (diff && diff.has_changes === false) {
       // #4: confirm を廃止し、変更なし時は再Publish を完全ブロック (即リターン)。
-      // DD-CYN-0126 段B: 紐づいていない新しいファイルがあるなら、理由はそちらを出す。
+      // unlinked-files-20260817: 紐づいていない新しいファイルがあるなら、理由はそちらを出す。
       try {
         const ul = await API.get(`/api/collections/${colId}/unlinked-files`);
         if (ul && ul.count > 0) {

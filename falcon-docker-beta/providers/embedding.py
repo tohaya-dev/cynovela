@@ -1,6 +1,6 @@
 """Cynovela — EmbeddingProvider 抽象層。
 
-注意: v11では ChromaDB の get_or_create_collection が内部で sentence-transformers を
+注意: ChromaDB の get_or_create_collection が内部で sentence-transformers を
 呼び出しており、rag.py から直接 sentence-transformers を呼ぶ箇所は無い。
 本Providerは将来 ChromaDB 経由を bypass して埋め込みを差し替えるための
 インターフェイスを提供する（現状は test_connection / 直接embed の試験経路）。

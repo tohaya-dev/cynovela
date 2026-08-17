@@ -186,7 +186,7 @@ def migrate_db(conn) -> None:
         pass
 
     # ---- Phase 1 追加: chunks テーブル（UIからの可視化用メタデータ） ----
-    # v11はChromaDB主体だが、Chunksビューア／RAGデバッグ用にメタデータをSQLite側にも保持する。
+    # ChromaDB主体だが、Chunksビューア／RAGデバッグ用にメタデータをSQLite側にも保持する。
     conn.execute("""
         CREATE TABLE IF NOT EXISTS chunks (
             chunk_id      TEXT PRIMARY KEY,

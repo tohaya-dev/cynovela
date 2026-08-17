@@ -1710,7 +1710,7 @@ async function _publishGateState(colId) {
   try {
     const diff = await API.get(`/api/collections/${colId}/publish-diff`);
     if (diff && diff.has_changes === false) {
-      // DD-CYN-0126 段B: 「変更なし」でも、コレクションに紐づいていない新しいファイルが
+      // unlinked-files-20260817: 「変更なし」でも、コレクションに紐づいていない新しいファイルが
       // あるなら理由はそちらである (紐づけない限り差分には数えられない)。
       try {
         const ul = await API.get(`/api/collections/${colId}/unlinked-files`);
@@ -1754,7 +1754,7 @@ async function _applyPublishGate() {
   });
 }
 
-// DD-CYN-0126 段B: 再スキャンで増えたファイルは自動では紐づけない。代わりに、紐づいて
+// unlinked-files-20260817: 再スキャンで増えたファイルは自動では紐づけない。代わりに、紐づいて
 // いないファイルがあるコレクションの行へ知らせを出し、[追加する] で利用者が選んで紐づける。
 // 紐づけただけでは公開されない。公開は従来どおり Publish を押す。
 async function _applyUnlinkedFilesNotice() {
@@ -1955,7 +1955,7 @@ async function renderCollections() {
   if (typeof IngestViz !== 'undefined' && typeof IngestViz.resumeOnLoad === 'function') IngestViz.resumeOnLoad();
   // U-8: 描き終えてから差分を見て、押せない理由があるボタンを無効にする (待たずに描く)。
   _applyPublishGate();
-  // DD-CYN-0126 段B: 紐づいていない新しいファイルの知らせも描き終えてから足す。
+  // unlinked-files-20260817: 紐づいていない新しいファイルの知らせも描き終えてから足す。
   _applyUnlinkedFilesNotice();
 }
 
@@ -2319,7 +2319,7 @@ async function publishCollection(id) {
   try {
     const _diff = await API.get(`/api/collections/${id}/publish-diff`);
     if (_diff && _diff.has_changes === false) {
-      // DD-CYN-0126 段B: 紐づいていない新しいファイルがあるなら、理由はそちらを出す。
+      // unlinked-files-20260817: 紐づいていない新しいファイルがあるなら、理由はそちらを出す。
       try {
         const _ul = await API.get(`/api/collections/${id}/unlinked-files`);
         if (_ul && _ul.count > 0) {
@@ -2820,7 +2820,7 @@ async function _enterApp(result) {
   if (result && result.must_change_password) {
     try { _showMustChangePasswordModal(); } catch (e) { /* ignore */ }
   } else {
-    // DD-CYN-0126 3-9(c): 初回ログイン後に1回だけ「はじめての方へ」を出す。
+    // first-run-tour-20260817: 初回ログイン後に1回だけ「はじめての方へ」を出す。
     // パスワード変更のモーダルが出るときは、そちらが済んでから出す (同時に2枚出さない)。
     try { if (_shouldShowFirstRunTour()) showFirstRunTour(); } catch (e) { /* ignore */ }
   }
@@ -3660,7 +3660,7 @@ window._submitMustChangePw = async function () {
     if (res.ok) {
       const overlay = document.getElementById('must-change-pw-overlay');
       if (overlay) overlay.style.display = 'none';
-      // DD-CYN-0126 3-9(c): 初回パスワード変更が先。済んでから「はじめての方へ」を出す
+      // first-run-tour-20260817: 初回パスワード変更が先。済んでから「はじめての方へ」を出す
       // (同時に2枚出さない)。
       try { if (_shouldShowFirstRunTour()) showFirstRunTour(); } catch {}
     } else {
@@ -3672,7 +3672,7 @@ window._submitMustChangePw = async function () {
   }
 };
 
-// === DD-CYN-0126 3-9(c): はじめての方へ (初回ログイン後に1回だけ・4枚) ===
+// === first-run-tour-20260817: はじめての方へ (初回ログイン後に1回だけ・4枚) ===
 // 出す条件 = localStorage に印が無いとき。最後の枚を閉じたら印を書く。
 // 初回パスワード変更のモーダルが出ているときは、そちらを先に済ませてから出す。
 const _FRT_KEY = 'cynovela_first_run_tour_done';

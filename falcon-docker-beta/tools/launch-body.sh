@@ -577,7 +577,7 @@ _resolve_model_or_block() {
     add_blocker "埋め込みモデル bge-m3 がありません: $MODEL_DIR"
 }
 
-# DD-CYN-0126 3-6/3-9: 検索の対象にするフォルダを1つ選んで足す。選ばれなければ 1 を返す。
+# search-folder-ask-20260817: 検索の対象にするフォルダを1つ選んで足す。選ばれなければ 1 を返す。
 #   run_interactive の問い1 と、--demo のときの1問の両方から使う。
 _ask_search_folder() {
     local _sel _name
@@ -589,7 +589,7 @@ _ask_search_folder() {
     return 0
 }
 
-# DD-CYN-0126 3-9: 初回かどうか = データベースのファイルがまだ無いこと
+# first-run-guide-20260817: 初回かどうか = データベースのファイルがまだ無いこと
 #   (print_first_login と同じ判定)。
 _is_first_run() {
     local _dir _db
@@ -602,7 +602,7 @@ _is_first_run() {
     [ ! -f "$_db" ]
 }
 
-# DD-CYN-0126 3-9(b): 初回だけ出す「はじめての方へ」。問いを出す直前に置く
+# first-run-guide-20260817: 初回だけ出す「はじめての方へ」。問いを出す直前に置く
 #   (選択はここで行われるので、説明もここに要る)。英語が先・日本語が後ろ (決定 §65)。
 print_first_run_guide() {
     _is_first_run || return 0
@@ -674,7 +674,7 @@ print_first_run_guide() {
 FIRSTRUN
 }
 
-# DD-CYN-0126 3-6: --demo は「同梱の資料を載せる」という意味であって「検索の対象は
+# demo-folder-ask-20260817: --demo は「同梱の資料を載せる」という意味であって「検索の対象は
 #   要らない」という意味ではない。∴ --demo でも、フォルダを足すかどうかの1問だけ聞く。
 run_demo_prompt() {
     local _c=""
@@ -1027,7 +1027,7 @@ if [ "$MODE_CHECK" = "1" ] && [ "$MODE_SETUP" = "1" ]; then
     exit 2
 fi
 
-# §7-5-2 + DD-CYN-0126 3-6: 人が端末から叩いていて --no-prompt が無いときは聞く。
+# §7-5-2 + demo-folder-ask-20260817: 人が端末から叩いていて --no-prompt が無いときは聞く。
 #   従来は「引数が1つも無いとき」だけだったが、--demo は「同梱の資料を載せる」という
 #   意味であって「検索の対象は要らない」という意味ではない。∴ --demo でも、フォルダを
 #   足すかどうかの1問だけ聞く (問い1は出さない)。
