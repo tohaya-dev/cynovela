@@ -441,7 +441,7 @@ def _load_ingest_roots() -> list:
 
     portable-roots-20260808 (F-2): バックアップには配布物のルートディレクトリからの相対の書き方
     ("@app/…") が入りうる。ここで生の JSON を直に読むと、その書き方のまま画面へ出て
-    しまう。∴ 入口スクリプトと同じ部品 (scripts/ingest_roots.py) に読ませ、解いた
+    しまう。∴ 入口スクリプトと同じ部品 (scripts/ingest_roots.py) で読み、解いた
     絶対パスだけを受け取る。読めないときだけ従来どおり生読みへ落ちる。
     """
     _p = _ingest_roots_file()

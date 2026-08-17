@@ -93,10 +93,11 @@ class DataSyncService:
         new_paths = discovered_paths - set(existing.keys())
         deleted_paths = set(existing.keys()) - discovered_paths
         if new_paths or deleted_paths:
-            # TODO(P1-5): data_sync publish 連携。差分検出後に該当 source を含む collection を
-            # 特定して republish をトリガする実装が必要。タイマー駆動の自動 republish は重い処理を
-            # 誘発しうるため、対象 collection の決定と多重実行防止 (publish_jobs の pending/running
-            # ガード) を設計してから接続する。現状は検出ログのみ (ANDON 非該当・報告のみ)。
+            # DD-CYN-0126 段B: 自動 republish はしないと決めた。利用者が意図しない資料が
+            # 黙って取り込まれると、マスキングと権限の設計に触れるためである。
+            # 増えたファイルは GET /api/collections/{id}/unlinked-files が見せ、
+            # POST /api/collections/{id}/link-files で利用者が選んで紐づける。
+            # 公開は従来どおり利用者が Publish を押す。ここは検出ログのみ。
             logger.info(
                 f"[DataSync] source={source['id']} new={len(new_paths)} "
                 f"deleted={len(deleted_paths)} (publish連携は未統合)"

@@ -184,7 +184,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 
 ● 何も付けないとき
   ./launch.sh                     聞かれたことに番号で答えるだけで起動します。
-                                  (何を読ませるか)
+                                  (検索の対象にするフォルダ)
 
 ● 番号で答えずに、はじめから決めて起動する
   ./launch.sh --demo              同梱のダミー資料が載った状態で起動します。
@@ -571,26 +571,135 @@ _resolve_model_or_block() {
     add_blocker "埋め込みモデル bge-m3 がありません: $MODEL_DIR"
 }
 
+# DD-CYN-0126 3-6/3-9: 検索の対象にするフォルダを1つ選んで足す。選ばれなければ 1 を返す。
+#   run_interactive の問い1 と、--demo のときの1問の両方から使う。
+_ask_search_folder() {
+    local _sel _name
+    _sel="$(osascript -e 'POSIX path of (choose folder with prompt "検索の対象にするフォルダを選んでください")' 2>/dev/null || true)"
+    [ -n "$_sel" ] || return 1
+    _name="$(_roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$_sel")"
+    echo "  → 足しました: $_sel"
+    echo "     (この中の名前: $_name)"
+    return 0
+}
+
+# DD-CYN-0126 3-9: 初回かどうか = データベースのファイルがまだ無いこと
+#   (print_first_login と同じ判定)。
+_is_first_run() {
+    local _dir _db
+    _dir="${DATA_DIR:-$SCRIPT_DIR/store}"
+    if printf '%s' "${PART_ARGS[*]:-}" | grep -q -- '--demo'; then
+        _db="$_dir/db/demo.db"
+    else
+        _db="$_dir/db/cynovela.db"
+    fi
+    [ ! -f "$_db" ]
+}
+
+# DD-CYN-0126 3-9(b): 初回だけ出す「はじめての方へ」。問いを出す直前に置く
+#   (選択はここで行われるので、説明もここに要る)。英語が先・日本語が後ろ (決定 §65)。
+print_first_run_guide() {
+    _is_first_run || return 0
+    cat <<'FIRSTRUN'
+
+  ────────────────────────────────────────
+    If this is your first time / はじめての方へ
+  ────────────────────────────────────────
+    Cynovela searches documents on this Mac and answers from what they say.
+    It does not use knowledge from the internet — only the documents you point
+    it at.
+
+    [ What happens next ]
+      1. Choose the folders to search (you will be asked in a moment)
+      2. It prepares what it needs to run (the first time takes about 10-20 min)
+      3. A browser opens. The sign-in name and password appear on this screen
+      4. You can start asking questions
+
+    [ About the search targets ]
+      If you specify nothing, only the bundled sample documents are searched.
+      To ask about your own documents, add their folder. You do not have to add
+      it now — you can add one at any time later. The three ways to add one are
+      in START-HERE.md, under "Adding search targets".
+
+    [ First things to do after it starts ]
+      1) Open "Settings" on the left and choose the language-model connection.
+         Recommended: LM Studio (localhost:1234) or Ollama (localhost:11434).
+         Both run inside this Mac, so your documents never leave it.
+      2) Open "Chat" on the left and choose a workspace.
+      3) Try asking:
+           資料の概要を教えてください
+
+    [ Good to know ]
+      A language model that runs inside this Mac takes time before it starts
+      answering — the first character can take about 30 seconds. This is not a
+      fault. If it looks stuck, just wait.
+
+  ────────────────────────────────────────
+    はじめての方へ
+  ────────────────────────────────────────
+    Cynovela は、Mac の中にある資料を検索して、その中身をもとに答えます。
+    インターネット上の知識ではなく、あなたが指定した資料だけを見ます。
+
+    【 これから進む順番 】
+      1. 検索の対象にするフォルダを決めます（このあと聞きます）
+      2. 動かすのに必要なものを用意します（初回は 10〜20 分ほどかかります）
+      3. ブラウザが開きます。ログインに使う名前とパスワードは画面に出します
+      4. 質問できるようになります
+
+    【 検索の対象について 】
+      何も指定しない場合は、同梱のサンプル資料だけが対象になります。
+      自分の資料について聞きたいときは、そのフォルダを追加してください。
+      いま追加しなくても構いません。あとからいつでも追加できます。
+      追加の方法は START-HERE.md の「検索の対象を追加する」に3通り書いてあります。
+
+    【 起動したあと、最初にやること 】
+      1) 画面左の「設定」を開き、言語モデルの接続先を決めます
+         おすすめ: LM Studio（localhost:1234）または Ollama（localhost:11434）
+         どちらも Mac の中で動くので、資料が外に出ません
+      2) 画面左の「チャット」を開き、作業場所を選びます
+      3) 次のように質問してみてください
+           資料の概要を教えてください
+
+    【 知っておいてください 】
+      Mac の中で動く言語モデルは、応答が始まるまでに時間がかかります。
+      最初の1文字が出るまで 30 秒ほど待つことがあります。故障ではありません。
+      止まったように見えても、そのまま待ってください。
+  ────────────────────────────────────────
+FIRSTRUN
+}
+
+# DD-CYN-0126 3-6: --demo は「同梱の資料を載せる」という意味であって「検索の対象は
+#   要らない」という意味ではない。∴ --demo でも、フォルダを足すかどうかの1問だけ聞く。
+run_demo_prompt() {
+    local _c=""
+    echo ""
+    echo "同梱のお試し資料で始めます。"
+    printf "自分のフォルダも足しますか？ [y/N]: "
+    read -r _c || _c=""
+    case "$_c" in
+        y|Y)
+            if ! _ask_search_folder; then
+                echo "  → 選ばれませんでした。同梱のお試し資料だけで始めます。"
+            fi
+            ;;
+        *) ;;
+    esac
+}
+
 run_interactive() {
     local _c=""
     echo ""
     echo "はじめる前に、1つだけ聞きます。分からなければ Enter を押してください。"
     echo ""
 
-    echo "1. 何を読ませますか？"
+    echo "1. 検索の対象にするフォルダを選びます。"
     echo "    1) 同梱のお試し資料で始める"
     echo "    2) 自分のフォルダを足す (フォルダを選ぶ画面が出ます)"
     printf "  選んでください [1-2] (Enter は 1): "
     read -r _c || _c=""
     case "$_c" in
         2)
-            local _sel _name
-            _sel="$(osascript -e 'POSIX path of (choose folder with prompt "読ませるフォルダを選んでください")' 2>/dev/null || true)"
-            if [ -n "$_sel" ]; then
-                _name="$(_roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$_sel")"
-                echo "  → 足しました: $_sel"
-                echo "     (この中の名前: $_name)"
-            else
+            if ! _ask_search_folder; then
                 echo "  → 選ばれませんでした。同梱のお試し資料で始めます。"
                 PART_ARGS+=(--demo)
             fi
@@ -931,10 +1040,20 @@ if [ "$MODE_CHECK" = "1" ] && [ "$MODE_SETUP" = "1" ]; then
     exit 2
 fi
 
-# §7-5-2: 引数が1つも無く、人が端末から叩いたときだけ番号で聞く。
-#   非対話 (手順書・試験・アイコンからの起動) では聞かず、従来どおり既定で進む。
-if [ "$ARGC_AT_START" = "0" ] && [ -t 0 ] && [ "$NO_PROMPT" != "1" ]; then
-    run_interactive
+# §7-5-2 + DD-CYN-0126 3-6: 人が端末から叩いていて --no-prompt が無いときは聞く。
+#   従来は「引数が1つも無いとき」だけだったが、--demo は「同梱の資料を載せる」という
+#   意味であって「検索の対象は要らない」という意味ではない。∴ --demo でも、フォルダを
+#   足すかどうかの1問だけ聞く (問い1は出さない)。
+#   --check / --setup は起動ではないので聞かない。非対話 (手順書・試験・アイコンからの
+#   起動) と --no-prompt では従来どおり何も聞かない。
+if [ -t 0 ] && [ "$NO_PROMPT" != "1" ] && [ "$MODE_CHECK" != "1" ] && [ "$MODE_SETUP" != "1" ]; then
+    if printf '%s' " ${PART_ARGS[*]:-} " | grep -q -- ' --demo '; then
+        print_first_run_guide
+        run_demo_prompt
+    elif [ "$ARGC_AT_START" = "0" ]; then
+        print_first_run_guide
+        run_interactive
+    fi
 fi
 
 # アイコンの道 (非対話) で「ダウンロードする」が押されたときの取得。

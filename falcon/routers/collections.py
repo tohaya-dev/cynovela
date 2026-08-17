@@ -640,6 +640,70 @@ def publish_diff(request: Request, col_id: str):
         conn.close()
 
 
+# DD-CYN-0126 段B: 再スキャンで見つかった新しいファイルは、どのコレクションにも自動では
+# 紐づけない (利用者が意図しない資料が黙って取り込まれると、マスキングと権限の設計に触れる)。
+# 代わりに「紐づいていないファイル」を見せる口と、選んで紐づける口を置く。
+# 紐づけただけでは公開しない。公開は従来どおり利用者が Publish を押す。
+
+
+@router.get("/api/collections/{col_id}/unlinked-files", response_model=None)
+def get_unlinked_files(request: Request, col_id: str):
+    _require_admin(request)
+    conn = get_db()
+    try:
+        col = conn.execute("SELECT * FROM collections WHERE id = ?", (col_id,)).fetchone()
+        if not col:
+            raise HTTPException(404, "Collection not found")
+        rows = conn.execute(
+            "SELECT f.id, f.path, f.name FROM files f "
+            "JOIN workspace_sources ws ON ws.source_id = f.source_id "
+            "WHERE ws.workspace_id = ? "
+            "AND f.id NOT IN (SELECT file_id FROM collection_files WHERE collection_id = ?) "
+            "ORDER BY f.path",
+            (col["workspace_id"], col_id),
+        ).fetchall()
+        files = [{"id": r["id"], "path": r["path"], "name": r["name"]} for r in rows]
+        return {"count": len(files), "files": files}
+    finally:
+        conn.close()
+
+
+@router.post("/api/collections/{col_id}/link-files", response_model=None)
+async def link_files(col_id: str, request: Request):
+    _require_admin(request)
+    body = await parse_body_pydantic(request)
+    file_ids = body.get("file_ids")
+    if not isinstance(file_ids, list) or not all(isinstance(x, str) for x in file_ids):
+        raise HTTPException(400, "file_ids must be a list of ids")
+    conn = get_db()
+    try:
+        col = conn.execute("SELECT * FROM collections WHERE id = ?", (col_id,)).fetchone()
+        if not col:
+            raise HTTPException(404, "Collection not found")
+        if col["status"] == "publishing":
+            raise HTTPException(409, "Publish進行中はファイル構成を変更できません")
+        already = {
+            r["file_id"]
+            for r in conn.execute(
+                "SELECT file_id FROM collection_files WHERE collection_id = ?", (col_id,)
+            ).fetchall()
+        }
+        try:
+            for fid in file_ids:
+                if fid in already:
+                    continue
+                conn.execute(
+                    "INSERT INTO collection_files (collection_id, file_id) VALUES (?, ?)",
+                    (col_id, fid),
+                )
+        except sqlite3.IntegrityError:
+            raise HTTPException(400, "存在しないfile_idが含まれています")
+        conn.commit()
+    finally:
+        conn.close()
+    return {"ok": True, "id": col_id}
+
+
 # B: dup-publish-guard-20260710 (同一ファイルの別コレクション重複publishの
 # 遮断) は撤去した。主キー (chunks.chunk_id) にまとまりの識別子を含めたため、同じ
 # ファイルが別のまとまりに在っても主キーはぶつからない。同一まとまりへの再publishは

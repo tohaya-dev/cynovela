@@ -10,8 +10,11 @@ This package is the **container build (Docker, in-development beta)**.
 2. **Sign in.** The user name and the first password are printed on the screen
    when it starts for the first time. You will be asked to change the password
    straight away.
-3. **Add what it should read.** Double-click `Cynovela-add-folder.command` and
-   pick a folder.
+3. **Add search targets.** There are three ways:
+   answer the question shown when it starts;
+   use "Add a search folder" under "Settings" in the app screen;
+   or run `./launch.sh --add` in the terminal (list them with
+   `./launch.sh --list`; or double-click `Cynovela-add-folder.command`).
 4. **Ask a question.** Open `http://localhost:8801` and type in plain
    language. Every answer carries the passage it came from — open it and check.
 5. **Stop it.** Double-click `Cynovela-stop.command`.
@@ -49,8 +52,11 @@ This package is the **container build (Docker, in-development beta)**.
 1. **起動する。** `Cynovela-start.command` をダブルクリックします。
 2. **ログインする。** ユーザー名と最初のパスワードは、はじめて起動したときに
    画面に出ます。入るとすぐパスワードの変更を求められます。
-3. **読ませるものを足す。** `Cynovela-add-folder.command` をダブルクリックして
-   フォルダを選びます。
+3. **検索の対象を追加する。** 足し方は3通りあります。
+   起動したときに聞かれる画面で足す /
+   アプリ画面の「設定」にある「検索の対象フォルダを足す」から足す /
+   ターミナルで `./launch.sh --add` を使う (一覧は `./launch.sh --list`。
+   アイコンなら `Cynovela-add-folder.command`)。
 4. **質問する。** `http://localhost:8801` を開き、普通の言葉で聞きます。
    答えには必ず根拠にした箇所が付きます。開いて原文を確かめてください。
 5. **止める。** `Cynovela-stop.command` をダブルクリックします。

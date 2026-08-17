@@ -1710,6 +1710,16 @@ async function _publishGateState(colId) {
   try {
     const diff = await API.get(`/api/collections/${colId}/publish-diff`);
     if (diff && diff.has_changes === false) {
+      // DD-CYN-0126 段B: 「変更なし」でも、コレクションに紐づいていない新しいファイルが
+      // あるなら理由はそちらである (紐づけない限り差分には数えられない)。
+      try {
+        const ul = await API.get(`/api/collections/${colId}/unlinked-files`);
+        if (ul && ul.count > 0) {
+          return { blocked: true, reason: lj(
+            `This collection does not include ${ul.count} new file(s). Add them, then publish.`,
+            `このコレクションに入っていない新しいファイルが ${ul.count} 件あります。追加してから Publish してください。`) };
+        }
+      } catch {}
       return { blocked: true, reason: lj(
         'No changes since the last publish. Update a document to publish again.',
         '前回の Publish から変更がありません。資料を更新すると再び押せます。') };
@@ -1742,6 +1752,55 @@ async function _applyPublishGate() {
       el.style.display = '';
     });
   });
+}
+
+// DD-CYN-0126 段B: 再スキャンで増えたファイルは自動では紐づけない。代わりに、紐づいて
+// いないファイルがあるコレクションの行へ知らせを出し、[追加する] で利用者が選んで紐づける。
+// 紐づけただけでは公開されない。公開は従来どおり Publish を押す。
+async function _applyUnlinkedFilesNotice() {
+  const hosts = [...document.querySelectorAll('[data-unlinked-notice]')];
+  if (!hosts.length) return;
+  // unlinked-files は管理者限定の口。viewer には [追加する] も出さない。
+  const role = (State.demoRole || State.user?.role || '').toLowerCase();
+  if (role !== 'admin') return;
+  const ids = [...new Set(hosts.map(h => h.dataset.unlinkedNotice))];
+  await Promise.all(ids.map(async (id) => {
+    let count = 0;
+    try {
+      const ul = await API.get(`/api/collections/${id}/unlinked-files`);
+      count = (ul && ul.count) || 0;
+    } catch { return; }   // 読めないときは知らせ自体を出さない (Publish のゲートは別に守る)
+    if (count <= 0) return;
+    document.querySelectorAll(`[data-unlinked-notice="${id}"]`).forEach(el => {
+      el.innerHTML = `⚠ ${bi(
+        `This collection does not include ${count} new file(s).`,
+        `このコレクションに入っていない新しいファイルが ${count} 件あります。`)}
+        <button class="btn btn-sm" onclick="linkUnlinkedFiles('${id}')"
+                style="padding:2px 10px;font-size:15px;margin-left:6px;background:#fff;border:1px solid #fde68a;color:#92400e;">${bi('Add', '追加する')}</button>`;
+      el.style.display = '';
+    });
+  }));
+}
+
+async function linkUnlinkedFiles(colId) {
+  try {
+    const ul = await API.get(`/api/collections/${colId}/unlinked-files`);
+    const files = (ul && ul.files) || [];
+    if (!files.length) {
+      showToast(lj('No files to add.', '追加するファイルはありません。'), 'info');
+      renderCollections();
+      return;
+    }
+    await API.post(`/api/collections/${colId}/link-files`, { file_ids: files.map(f => f.id) });
+    showToast(lj(
+      `Added ${files.length} file(s) to the collection. Press Publish to make them searchable.`,
+      `${files.length} 件のファイルをコレクションへ追加しました。Publish を押すと検索できるようになります。`), 'success');
+  } catch (e) {
+    showToast(lj(`Could not add the files: ${e.message}`,
+      `ファイルを追加できませんでした: ${e.message}`), 'error');
+    return;
+  }
+  renderCollections();   // 知らせと再Publish ボタンの理由を描き直す
 }
 
 async function renderCollections() {
@@ -1810,6 +1869,7 @@ async function renderCollections() {
           <div class="card-meta" style="font-size:16px;color:#94a3b8;">
             ${pubAt ? `🕒 最終公開日時: ${escapeHtml(pubAt)}` : '—'}
           </div>
+          <div data-unlinked-notice="${col.id}" style="display:none;font-size:15px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:6px 10px;margin-top:6px;"></div>
         </div>
         <div class="card-item-footer">
           ${_colPublishStateBadge(col)}
@@ -1843,6 +1903,7 @@ async function renderCollections() {
         return `<tr data-col-id="${col.id}" style="border-bottom:1px solid #f0f0f0;">
           <td style="padding:10px 12px;font-weight:700;">📦 ${escapeHtml(col.name)}
             ${published ? '' : ` <span class="tag" style="background:#f1f5f9;color:#64748b;font-size:16px;">📭 ${t('unpublished_badge')}</span>`}
+            <div data-unlinked-notice="${col.id}" style="display:none;font-weight:400;font-size:15px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:4px 8px;margin-top:4px;white-space:normal;"></div>
           </td>
           <td style="padding:10px 12px;font-size:17px;color:#64748b;">${ws ? escapeHtml(ws.name) : '—'}</td>
           <td style="padding:10px 12px;font-size:17px;text-align:right;">${(col.file_ids||[]).length}</td>
@@ -1894,6 +1955,8 @@ async function renderCollections() {
   if (typeof IngestViz !== 'undefined' && typeof IngestViz.resumeOnLoad === 'function') IngestViz.resumeOnLoad();
   // U-8: 描き終えてから差分を見て、押せない理由があるボタンを無効にする (待たずに描く)。
   _applyPublishGate();
+  // DD-CYN-0126 段B: 紐づいていない新しいファイルの知らせも描き終えてから足す。
+  _applyUnlinkedFilesNotice();
 }
 
 function setAclRole(role) {
@@ -2256,6 +2319,16 @@ async function publishCollection(id) {
   try {
     const _diff = await API.get(`/api/collections/${id}/publish-diff`);
     if (_diff && _diff.has_changes === false) {
+      // DD-CYN-0126 段B: 紐づいていない新しいファイルがあるなら、理由はそちらを出す。
+      try {
+        const _ul = await API.get(`/api/collections/${id}/unlinked-files`);
+        if (_ul && _ul.count > 0) {
+          showToast(lj(
+            `This collection does not include ${_ul.count} new file(s). Add them, then publish.`,
+            `このコレクションに入っていない新しいファイルが ${_ul.count} 件あります。追加してから Publish してください。`), 'warning');
+          return;
+        }
+      } catch {}
       showToast('変更がないため Publish できません。ドキュメントを更新してから再試行してください。', 'warning');
       return;
     }
@@ -2746,6 +2819,10 @@ async function _enterApp(result) {
   // Batch-B S1-1: 初回パスワード変更チェック
   if (result && result.must_change_password) {
     try { _showMustChangePasswordModal(); } catch (e) { /* ignore */ }
+  } else {
+    // DD-CYN-0126 3-9(c): 初回ログイン後に1回だけ「はじめての方へ」を出す。
+    // パスワード変更のモーダルが出るときは、そちらが済んでから出す (同時に2枚出さない)。
+    try { if (_shouldShowFirstRunTour()) showFirstRunTour(); } catch (e) { /* ignore */ }
   }
 }
 
@@ -3583,6 +3660,9 @@ window._submitMustChangePw = async function () {
     if (res.ok) {
       const overlay = document.getElementById('must-change-pw-overlay');
       if (overlay) overlay.style.display = 'none';
+      // DD-CYN-0126 3-9(c): 初回パスワード変更が先。済んでから「はじめての方へ」を出す
+      // (同時に2枚出さない)。
+      try { if (_shouldShowFirstRunTour()) showFirstRunTour(); } catch {}
     } else {
       const d = await res.json().catch(() => ({}));
       if (errEl) errEl.textContent = d.detail || 'エラーが発生しました';
@@ -3590,4 +3670,78 @@ window._submitMustChangePw = async function () {
   } catch (e) {
     if (errEl) errEl.textContent = 'サーバーに接続できません';
   }
+};
+
+// === DD-CYN-0126 3-9(c): はじめての方へ (初回ログイン後に1回だけ・4枚) ===
+// 出す条件 = localStorage に印が無いとき。最後の枚を閉じたら印を書く。
+// 初回パスワード変更のモーダルが出ているときは、そちらを先に済ませてから出す。
+const _FRT_KEY = 'cynovela_first_run_tour_done';
+let _frtSlide = 1;
+
+function _shouldShowFirstRunTour() {
+  try { return !localStorage.getItem(_FRT_KEY); } catch { return false; }
+}
+
+function showFirstRunTour(force) {
+  if (!force && !_shouldShowFirstRunTour()) return;
+  const el = document.getElementById('first-run-tour-overlay');
+  if (!el) return;
+  _frtSlide = 1;
+  _frtRender();
+  el.style.display = 'block';
+}
+
+function _frtRender() {
+  document.querySelectorAll('.frt-slide').forEach(s => {
+    s.style.display = (s.dataset.frtSlide === String(_frtSlide)) ? '' : 'none';
+  });
+  const label = document.getElementById('frt-step-label');
+  if (label) label.textContent = `${_frtSlide} / 4`;
+  const next = document.getElementById('frt-next-btn');
+  const close = document.getElementById('frt-close-btn');
+  if (next)  next.style.display  = (_frtSlide < 4) ? '' : 'none';
+  if (close) close.style.display = (_frtSlide < 4) ? 'none' : '';
+}
+
+window._frtNext = function () {
+  if (_frtSlide < 4) { _frtSlide += 1; _frtRender(); }
+};
+
+window._frtClose = function () {
+  try { localStorage.setItem(_FRT_KEY, '1'); } catch {}
+  const el = document.getElementById('first-run-tour-overlay');
+  if (el) el.style.display = 'none';
+};
+
+window._frtOpenSettings = function () {
+  window._frtClose();
+  navigate('settings');
+};
+
+window._frtOpenAddFolder = function () {
+  window._frtClose();
+  // 検索の対象フォルダの一覧は Settings の中にある (ingest-roots-panel)。
+  if (typeof irGoToSettingsRoots === 'function') { irGoToSettingsRoots(); return; }
+  navigate('settings');
+};
+
+window._frtCopySample = function () {
+  const text = document.getElementById('frt-sample-q')?.textContent || '資料の概要を教えてください';
+  const done = () => showToast(lj('Copied.', 'コピーしました。'), 'success');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => {});
+      return;
+    }
+  } catch {}
+  // http などで clipboard API が使えないときの退避
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    done();
+  } catch {}
 };

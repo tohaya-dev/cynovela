@@ -449,6 +449,16 @@ async function startPublishStream(colId) {
     const diff = await API.get(`/api/collections/${colId}/publish-diff`);
     if (diff && diff.has_changes === false) {
       // #4: confirm を廃止し、変更なし時は再Publish を完全ブロック (即リターン)。
+      // DD-CYN-0126 段B: 紐づいていない新しいファイルがあるなら、理由はそちらを出す。
+      try {
+        const ul = await API.get(`/api/collections/${colId}/unlinked-files`);
+        if (ul && ul.count > 0) {
+          showToast(lj(
+            `This collection does not include ${ul.count} new file(s). Add them, then publish.`,
+            `このコレクションに入っていない新しいファイルが ${ul.count} 件あります。追加してから Publish してください。`), 'warning');
+          return;
+        }
+      } catch {}
       showToast(lj('No changes since last publish. Update documents before re-publishing.',
         '変更がないため Publish できません。ドキュメントを更新してから再試行してください。'), 'warning');
       return;

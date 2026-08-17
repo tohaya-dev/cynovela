@@ -1,4 +1,4 @@
-// B4: 取り込み元 (読ませるフォルダ) を画面から足す・見る・外す。
+// B4: 検索の対象フォルダを画面から足す・見る・外す。
 //
 //   端末を叩かせないための画面。管理者だけに出す (受け口の側も _require_admin)。
 //   決定 3-4 に従い、足すときはフォルダを辿って選ばせる。フルパスの手入力欄は作らない。
@@ -18,7 +18,7 @@ async function renderIngestRoots() {
     data = await API.get('/api/ingest-roots');
   } catch (e) {
     host.innerHTML = `<div style="padding:10px;color:#b91c1c;">${escapeHtml(
-      lj(`Could not read the ingest sources: ${e.message}`, `取り込み元を読めませんでした: ${e.message}`)
+      lj(`Could not read the search folders: ${e.message}`, `検索の対象フォルダを読めませんでした: ${e.message}`)
     )}</div>`;
     return;
   }
@@ -43,28 +43,28 @@ async function renderIngestRoots() {
     </tr>`).join('');
 
   const empty = `<tr><td colspan="4" style="padding:14px;text-align:center;color:#94a3b8;">${
-    lj('No ingest sources yet. Add one below.', 'まだ1件もありません。下から足してください。')
+    lj('No search folders yet. Add one below.', 'まだ1件もありません。下から足してください。')
   }</td></tr>`;
 
   const addBlock = _irState.canAdd
     ? `<button class="btn btn-primary" data-role-min="admin" onclick="irOpenPicker()">
-         📁 ${lj('Add an ingest source', '取り込み元を足す')}
+         📁 ${lj('Add a search folder', '検索の対象フォルダを足す')}
        </button>
        <div style="margin-top:6px;color:#64748b;font-size:14px;">
          ${lj('Pick a folder by walking into it. One at a time.',
               'フォルダを辿って選びます。一度に選べるのは1件です。')}
        </div>`
     : `<button class="btn btn-primary" data-role-min="admin" onclick="irOpenTerminalGuide()">
-         📁 ${lj('Add an ingest source', '取り込み元を足す')}
+         📁 ${lj('Add a search folder', '検索の対象フォルダを足す')}
        </button>`;
 
   const restartNote = _irState.restartNeeded
     ? `<div style="margin-top:8px;color:#b45309;">${lj(
-        'Newly added sources become readable the next time you run the entry point.',
-        '足した取り込み元が読めるようになるのは、次に入口を叩いたあとです。')}</div>`
+        'Newly added folders become readable the next time you run the entry point.',
+        '足したフォルダが読めるようになるのは、次に入口を叩いたあとです。')}</div>`
     : `<div style="margin-top:8px;color:#059669;">${lj(
-        'Added sources stay after a restart and take effect right away.',
-        '足した取り込み元は起動し直しても残り、すぐに使えます。')}</div>`;
+        'Added folders stay after a restart and take effect right away.',
+        '足したフォルダは起動し直しても残り、すぐに使えます。')}</div>`;
 
   host.innerHTML = `
     <div style="margin-bottom:8px;color:#475569;">${lj(
@@ -80,7 +80,12 @@ async function renderIngestRoots() {
       <tbody>${rows || empty}</tbody>
     </table>
     <div style="margin-top:12px;">${addBlock}</div>
-    ${restartNote}`;
+    ${restartNote}
+    <div style="margin-top:10px;font-size:14px;">
+      <a href="#" onclick="if(typeof showFirstRunTour==='function')showFirstRunTour(true);return false;" style="color:#2563eb;">
+        ${lj('Open the first-time guide again', '「はじめての方へ」をもう一度読む')}
+      </a>
+    </div>`;
   if (typeof applyRoleRestrictions === 'function') applyRoleRestrictions();
 }
 
@@ -158,7 +163,7 @@ async function irAddCurrent() {
   }
 }
 
-// P-1 (決定 31-1): コンテナで動く形で「取り込み元を足す」を押したときのガイド。
+// P-1 (決定 31-1): コンテナで動く形で「検索の対象フォルダを足す」を押したときのガイド。
 //   弾いて終わらせない。ターミナルへ貼る1行をコピーできる形で出し、
 //   Cynovela-add-folder.command でも同じことができる旨を添える。
 //   can_add_from_screen が true の形態 (この Mac で直接動く形) ではこのガイドは出さない。
@@ -170,7 +175,7 @@ function irOpenTerminalGuide() {
   m.className = 'modal-overlay active';
   m.innerHTML = `
     <div class="modal" style="width:560px;max-width:90vw;">
-      <h3 style="margin:0 0 10px 0;">📁 ${lj('Add an ingest source', '取り込み元を足す')}</h3>
+      <h3 style="margin:0 0 10px 0;">📁 ${lj('Add a search folder', '検索の対象フォルダを足す')}</h3>
       <div style="margin-bottom:6px;">${lj('This build cannot add a folder from this screen.', 'この形では、画面からフォルダを足せません。')}</div>
       <div style="margin-bottom:4px;">${lj('Instead, run this one line in the terminal:', 'かわりに、ターミナルで次の1行を叩いてください。')}</div>
       <code id="ir-add-line" style="display:inline-block;margin:2px 0 4px 16px;padding:6px 10px;background:#0f172a;color:#e2e8f0;border-radius:4px;">${escapeHtml(line)}</code>
@@ -215,7 +220,7 @@ async function irCopyAddLine() {
 
 function irRemoveRoot(name) {
   confirmAction(
-    lj('Remove ingest source', '取り込み元を外す'),
+    lj('Remove search folder', '検索の対象フォルダを外す'),
     lj('This app will stop reading from that folder. The folder and its files are not touched.',
        'このアプリはそのフォルダを読まなくなります。フォルダと中の資料には触りません。'),
     '🗑',
@@ -231,14 +236,14 @@ function irRemoveRoot(name) {
   );
 }
 
-// B4: 取り込み元が0件のときに、フォルダ選びの画面から足す道へ渡すガイド。
+// B4: 検索の対象フォルダが0件のときに、フォルダ選びの画面から足す道へ渡すガイド。
 //   「登録されていません」で終わらせず、押せる道を1つ出す。
 function irNoRootsHtml() {
   return `<div style="padding:16px;text-align:center;">
-    <div style="font-weight:600;color:#0f172a;margin-bottom:6px;">${lj('No ingest sources yet', '取り込み元がまだ1件もありません')}</div>
-    <div style="color:#64748b;margin-bottom:10px;">${lj('Add a folder to let this app read from it.', '読ませたいフォルダを足すと、ここに出ます。')}</div>
+    <div style="font-weight:600;color:#0f172a;margin-bottom:6px;">${lj('No search folders yet', '検索の対象フォルダがまだ1件もありません')}</div>
+    <div style="color:#64748b;margin-bottom:10px;">${lj('Add a folder to make it searchable.', '検索の対象にしたいフォルダを足すと、ここに出ます。')}</div>
     <button class="btn btn-primary" onclick="document.getElementById('folder-browser-modal')?.remove(); irGoToSettingsRoots();">
-      \u{1F4C1} ${lj('Add an ingest source', '取り込み元を足す')}
+      \u{1F4C1} ${lj('Add a search folder', '検索の対象フォルダを足す')}
     </button>
     <div style="margin-top:8px;color:#94a3b8;font-size:13px;">${lj('or from the entry point: ./launch.sh --add', 'または入口から: ./launch.sh --add')}</div>
   </div>`;

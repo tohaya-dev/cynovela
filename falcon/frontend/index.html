@@ -2083,5 +2083,80 @@ body.lang-ja .en-block { display: none !important; }
 </div>
 </div>
 </div>
+
+<!-- DD-CYN-0126 3-9(c): はじめての方へ (初回ログイン後に1回だけ・4枚) -->
+<div id="first-run-tour-overlay"
+     style="display:none; position:fixed; inset:0; z-index:10001;
+            background:rgba(15,23,42,0.85); backdrop-filter:blur(6px);">
+<div style="display:flex; align-items:center; justify-content:center; height:100%;">
+<div style="background:#fff; border-radius:14px; padding:28px 32px;
+                width:460px; max-width:92vw; box-shadow:0 8px 32px rgba(0,0,0,.2);">
+<div class="frt-slide" data-frt-slide="1">
+<h3 style="margin:0 0 8px; font-size:18px;"><span class="en">What Cynovela is</span><span class="ja">Cynovela とは</span></h3>
+<p style="color:#475569; font-size:15px; margin:0 0 16px; line-height:1.7;">
+<span class="en">Cynovela searches the documents on this Mac and answers from what they say. It does not use knowledge from the internet — only the documents you point it at.</span>
+<span class="ja">Cynovela は、Mac の中の資料を検索して、その中身から答えます。インターネットの知識は使いません。あなたが指定した資料だけを見ます。</span>
+</p>
+</div>
+<div class="frt-slide" data-frt-slide="2" style="display:none;">
+<h3 style="margin:0 0 8px; font-size:18px;"><span class="en">Connect a language model</span><span class="ja">言語モデルをつなぐ</span></h3>
+<p style="color:#475569; font-size:15px; margin:0 0 12px; line-height:1.7;">
+<span class="en">Open "Settings" and choose LM Studio (<code>localhost:1234</code>) or Ollama (<code>localhost:11434</code>). Both run inside this Mac, so your documents never leave it.</span>
+<span class="ja">「設定」を開き、LM Studio（<code>localhost:1234</code>）か Ollama（<code>localhost:11434</code>）を選びます。両方とも Mac の中で動くので、資料が外に出ません。</span>
+</p>
+<button onclick="window._frtOpenSettings()"
+        style="padding:8px 16px; background:#2563eb; color:#fff; border:none; border-radius:8px; font-size:14px; cursor:pointer;">
+<span class="en">Open Settings</span><span class="ja">設定を開く</span>
+</button>
+</div>
+<div class="frt-slide" data-frt-slide="3" style="display:none;">
+<h3 style="margin:0 0 8px; font-size:18px;"><span class="en">Try a question</span><span class="ja">質問してみる</span></h3>
+<p style="color:#475569; font-size:15px; margin:0 0 12px; line-height:1.7;">
+<span class="en">Open "Chat", choose a workspace, and type the question below.</span>
+<span class="ja">「チャット」を開き、作業場所を選び、下の文を入力します。</span>
+</p>
+<div style="display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; margin-bottom:8px;">
+<code id="frt-sample-q" style="font-size:14px; flex:1;">資料の概要を教えてください</code>
+<button onclick="window._frtCopySample()"
+        style="padding:6px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; cursor:pointer; white-space:nowrap;">
+<span class="en">Copy</span><span class="ja">コピー</span>
+</button>
+</div>
+</div>
+<div class="frt-slide" data-frt-slide="4" style="display:none;">
+<h3 style="margin:0 0 8px; font-size:18px;"><span class="en">Add your own documents</span><span class="ja">自分の資料を足す</span></h3>
+<p style="color:#475569; font-size:15px; margin:0 0 12px; line-height:1.7;">
+<span class="en">Right now only the bundled sample documents are searched. You can add your own folders at any time, in three ways: at the question shown on start-up, from "Add a search folder" on this screen, or with <code>./launch.sh --add</code> in the terminal.</span>
+<span class="ja">いまはサンプル資料だけが検索の対象です。自分のフォルダはあとからいつでも追加できます。追加は3通り: 起動したときに聞かれる画面で足す / この画面の「検索の対象フォルダを足す」から足す / ターミナルで <code>./launch.sh --add</code> を使う。</span>
+</p>
+<button onclick="window._frtOpenAddFolder()"
+        style="padding:8px 16px; background:#2563eb; color:#fff; border:none; border-radius:8px; font-size:14px; cursor:pointer;">
+<span class="en">Add a search folder</span><span class="ja">検索の対象を追加する</span>
+</button>
+</div>
+<p style="color:#92400e; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:8px 10px; font-size:13px; line-height:1.6; margin:16px 0 12px;">
+<span class="en">A language model that runs inside this Mac can take about 30 seconds before it starts answering. If it looks stuck, just wait.</span>
+<span class="ja">Mac の中で動く言語モデルは、応答が始まるまで 30 秒ほどかかることがあります。止まったように見えても、そのまま待ってください。</span>
+</p>
+<div style="display:flex; align-items:center; justify-content:space-between;">
+<button onclick="window._frtClose()"
+        style="background:none; border:none; color:#64748b; font-size:14px; cursor:pointer;">
+<span class="en">Later</span><span class="ja">あとで</span>
+</button>
+<div style="display:flex; align-items:center; gap:10px;">
+<span id="frt-step-label" style="color:#94a3b8; font-size:13px;">1 / 4</span>
+<button id="frt-next-btn" onclick="window._frtNext()"
+        style="padding:9px 22px; background:#16a34a; color:#fff; border:none; border-radius:8px; font-size:15px; cursor:pointer; font-weight:600;">
+<span class="en">Next</span><span class="ja">次へ</span>
+</button>
+<button id="frt-close-btn" onclick="window._frtClose()" style="display:none;
+        padding:9px 22px; background:#16a34a; color:#fff; border:none; border-radius:8px; font-size:15px; cursor:pointer; font-weight:600;">
+<span class="en">Close</span><span class="ja">閉じる</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
 </body>
 </html>

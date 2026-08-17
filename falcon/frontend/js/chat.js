@@ -52,10 +52,14 @@ async function renderChat() {
   const sel = $('chat-ws-sel');
   const currentVal = sel.value;
   // BETA: selectable エンドポイントから取得（N+1ゼロ・全件返却）
-  if (!State._selectableWS) {
-    try {
-      State._selectableWS = await API.get('/api/workspaces/selectable');
-    } catch (e) {
+  // DD-CYN-0126 段B 3-7: 一度読んだら二度と読み直さない作りだと、新しく公開した
+  // ワークスペースがブラウザ更新まで選択肢に出なかった。チャット画面へ入るたびに
+  // 引き直す (この口は全件を1回で返すので負荷は問題にならない)。
+  // 失敗したときは、前に持っていた一覧を使い続ける。空にしない。
+  try {
+    State._selectableWS = await API.get('/api/workspaces/selectable');
+  } catch (e) {
+    if (!State._selectableWS) {
       // §6-B: 読めないと選択肢が空になり、公開済みでも「選べるものが無い」
       //   ように見える。読めなかったことを出す。
       State._selectableWS = [];
@@ -63,6 +67,7 @@ async function renderChat() {
       showToast(lj(`Could not read the list of workspaces: ${_m}`,
         `作業場所の一覧を読めませんでした: ${_m}`), 'error');
     }
+    // 既に持っているときは前回の一覧をそのまま使う
   }
   const userWS = (State._selectableWS || []).filter(
     ws => ws.user_accessible && (ws.published_collections || 0) > 0
