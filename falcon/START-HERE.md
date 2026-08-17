@@ -37,6 +37,7 @@ This package is the **container build (Podman)**.
 | `docs/SETUP-ACCELERATOR.md` | Setting up the external inference server (only if you want it) |
 | `docs/USE-FROM-TERMINAL.txt` | Running it from the terminal instead of the icons |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | Read this before you pass the package on to anyone |
+| `docs/NOTICE.md` | Before you start: no warranty, masking limits, checking answers |
 | `docs/` | Reference documents: how masking works, permissions, the API, and more |
 
 ---
@@ -74,4 +75,5 @@ This package is the **container build (Podman)**.
 | `docs/SETUP-ACCELERATOR.md` | 外部の推論サーバの立て方 (使いたいときだけ) |
 | `docs/USE-FROM-TERMINAL.txt` | アイコンではなくターミナルから使う方法 |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | 誰かに配る前にお読みください |
+| `docs/NOTICE.md` | 使う前のご注意。無保証・マスキングの限界・答えの確かめ方 |
 | `docs/` | 参照用の資料。マスキングの仕組み・権限・API など |

@@ -363,6 +363,7 @@ cmd_check() {
 cmd_doc() {  # cmd_doc welcome|about|env|cleanup|notice
     local f mark
     case "$1" in
+        notice) f="$REPO/docs/NOTICE.md"; mark="$1" ;;
         *)      f="$REPO/README.md"; mark="$1" ;;
     esac
     awk -v m="$mark" '

@@ -23,25 +23,7 @@
 Requires an Apple silicon Mac. This is a learning and demonstration tool, not a production system. Provided as is, without warranty. Answers can be wrong; always open the cited source and check.
 <!-- cynovela:welcome-en:end -->
 
-### Before you rely on it
-
-**1. This is for learning and experimentation.** It was not built to serve as a
-production system for real work. Availability, performance and long-term
-maintenance have not been considered.
-
-**2. It comes with no warranty.** It is provided as is. The author accepts no
-liability for any damage arising from its use. Use it at your own risk.
-
-**3. Masking is not complete.** Names, phone numbers and the like are masked
-automatically, but some will be missed. **Do not load confidential material on
-the assumption that it will be masked.** Always check the masking result
-yourself.
-
-**4. Answers can be wrong.** The tool may answer plausibly about things the
-documents do not say. **Always open the citation and check the original text.**
-
-**5. Check the rights on the material you load.** If the material is subject to
-handling restrictions, follow the rules of your organisation.
+See docs/NOTICE.md ("Before You Start") before you rely on it.
 
 ---
 
@@ -60,7 +42,7 @@ handling restrictions, follow the rules of your organisation.
 
 **読み込むときに、氏名・電話番号・住所などを伏せる処理を挟みます。** 閲覧者に返るのはマスキング処理を通したあとの文だけです。API連携で外部へ送るのも、マスキング処理を通したあとの文です。**ただしマスキング処理は完全ではなく、伏せきれずに残るものがあります。**
 
-**学習と試用のためのツールです。** 業務の本番システムとして使うことを想定していません。**先に下の「使う前のご注意」をお読みください。**
+**学習と試用のためのツールです。** 業務の本番システムとして使うことを想定していません。**先に「使う前のご注意」(同梱の docs/NOTICE.md) をお読みください。**
 <!-- cynovela:welcome:end -->
 
 ---
@@ -218,25 +200,12 @@ bash uninstall.sh
 - `LICENSES-MODELS.md` — 同梱・参照するAIモデルのライセンス表記
 - `THIRD_PARTY_NOTICES.md` — 画面側の部品とマスキングの仕組みが使う第三者ソフトウェアのライセンス表記
 - `docs/BUNDLED-DATA.md` — 同梱データについての説明
+- `docs/NOTICE.md` — 使う前のご注意（免責）
 - `SECURITY.md` — セキュリティについて
 
 ---
 
 ## この配布物でできないこと
-
-### 使う前のご注意
-
-<!-- cynovela:notice:start -->
-**1. これは学習と試用のためのものです。** 業務の本番システムとして使うことを想定して作られていません。可用性・性能・長期の保守は考慮していません。
-
-**2. 無保証です。** 現状のまま提供します。作者は、これを使ったことで生じたいかなる損害についても責任を負いません。自己の責任でお使いください。
-
-**3. マスキングは完全ではありません。** 氏名・電話番号などを自動で伏せますが、取りこぼしは起こります。**伏せられることを前提に、機密資料を入れないでください。** マスキングの結果は必ずご自身で確かめてください。
-
-**4. 答えは間違うことがあります。** 資料に書かれていないことを、それらしく答える場合があります。**必ず出典を開いて、原文で確かめてください。**
-
-**5. 入れる資料の権利はご自身でご確認ください。** 取り扱いに制限がある資料を入れる場合は、所属の規程に従ってください。
-
 
 - 画面の表示は日本語のみです。英語には切り替わりません。
 - はじめての方へのガイドは、起動時に自動では出ません。最初の画面の「このツールについて」からいつでも開けます。
@@ -246,7 +215,6 @@ bash uninstall.sh
 - 資料のフォルダを足したあと、起動し直す前に外そうとすると失敗します。起動し直してから外してください。
 - 構成の「動作確認用」は、いまは「容量を優先」と同じモデルを使います。容量は変わりません。
 
-<!-- cynovela:notice:end -->
 ## 何も入れずに始めた場合の、閲覧者の作り方
 
 何も入れずに始めた場合、最初に居るのは管理者だけです。閲覧者はご自身で作ります。
