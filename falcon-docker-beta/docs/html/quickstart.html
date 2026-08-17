@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>クイックスタート — Cynovela</title>
+  <title>Quickstart / クイックスタート — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,306 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Quick Start</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About This Document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that one individual can understand the concepts of an AI platform tool by working on them hands-on. It is not a commercial product or an official implementation. Everything is implemented originally, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official view of any company or product in any way.
+    </blockquote>
+    <p>This document shows the shortest procedure from starting Cynovela for the first time to asking your first RAG (Retrieval-Augmented Generation) question.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">1. Prerequisites</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela runs on a local PC. The following must be in place beforehand.</p>
+    <table>
+      <thead><tr><th>Item</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Python</td><td>A conda (Anaconda / Miniforge) environment is used</td></tr>
+        <tr><td>Local LLM</td><td>LM Studio, or a local service that provides an OpenAI-compatible API</td></tr>
+        <tr><td>Recommended RAM</td><td>4GB to 128GB, depending on the startup mode (<code>--mode</code>)</td></tr>
+        <tr><td>Network</td><td>Required for the model download on the first start</td></tr>
+      </tbody>
+    </table>
+    <p>A real LLM is required to produce answers to questions. The <code>--mock</code> (mock LLM) option that used to exist has been removed, and specifying it now stops with an error.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">2. Setting Up the conda Environment</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela has been verified on a conda environment. Create the environment with the following procedure.</p>
+    <pre><code># conda 環境を作成（任意の名前。例: cynovela）
+conda create -n cynovela python=3.11 -y
+conda activate cynovela
+
+# 依存ライブラリをインストール
+pip install -r requirements.txt</code></pre>
+    <blockquote><strong>Note</strong>: The required libraries are listed in <code>requirements.txt</code>. They include FastAPI, SQLite, ChromaDB, cryptography (Fernet encryption), huggingface_hub (model download), and others.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">3. First Model Download (by Mode)</span>
+  </div>
+  <div class="slide-body">
+    <p>At startup Cynovela runs a model existence check called the "Preflight check". The required Embedding (the model that turns text into vectors) differs depending on the startup mode (<code>--mode</code>).</p>
+    <h4>Model Size by Mode</h4>
+    <table>
+      <thead><tr><th>Mode</th><th>Required model</th><th>Approximate size</th></tr></thead>
+      <tbody>
+        <tr><td><code>text</code> (default)</td><td>BAAI/bge-m3</td><td>about 2.3GB</td></tr>
+        <tr><td><code>lite</code></td><td>Switching is <strong>not wired up</strong>, so BAAI/bge-m3 is what is actually used (the behavior is the same as text; only the display name changes)</td><td>—</td></tr>
+        <tr><td><code>lite-en</code></td><td>Switching is <strong>not wired up</strong>, so BAAI/bge-m3 is what is actually used (the behavior is the same as text; only the display name changes)</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <blockquote><strong>Important</strong>: If you choose a mode of <code>text</code> or above on the first start, a download of about 2.3GB occurs. Depending on the network it can take from several minutes to more than ten minutes.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">3. Flow of the Preflight Check</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>If the model has not been fetched, an interactive prompt is shown at startup.</p>
+    <pre><code>[1] 今すぐダウンロードして起動する
+[2] 代替モードで起動する（例: text / lite / mock）
+[3+] キャンセル</code></pre>
+    <p>If you choose <code>[1]</code>, the model is downloaded from HuggingFace Hub into <code>~/.cynovela/models/</code>.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">4. Startup Command</span>
+  </div>
+  <div class="slide-body">
+    <p>At the beginning it is safest to start in the "demo data seeded + mock LLM" mode. It works without an LLM and without a model download.</p>
+    <pre><code>python server.py --demo</code></pre>
+    <p>The options mean the following.</p>
+    <table>
+      <thead><tr><th>Flag</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td><code>--demo</code></td><td>Starts with demo data seeded (reset on restart)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">4. Startup Command (When Using a Real LLM)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>When using a real LLM, start LM Studio at <code>http://localhost:1234</code> and then run the following command.</p>
+    <pre><code>python server.py --demo</code></pre>
+    <p>If LM Studio is on another port or on a remote host, specify it as follows.</p>
+    <pre><code>python server.py --demo --lmstudio-url http://localhost:1234</code></pre>
+    <p>When the startup succeeds, the GUI and the API are published at <code>http://127.0.0.1:8765</code> by default.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">5. Logging In with a Demo Account</span>
+  </div>
+  <div class="slide-body">
+    <p>Open <code>http://127.0.0.1:8765</code> in a browser. When started with <code>--demo</code>, demo users are seeded automatically.</p>
+    <p>The roles the DB holds are the two values <code>admin</code> / <code>viewer</code>.</p>
+    <table>
+      <thead><tr><th>Role</th><th>Permissions</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>All features. Full permissions, including user management, system settings, and viewing the PII detection history</td></tr>
+        <tr><td><code>viewer</code></td><td>Viewing only. RAG search and report viewing</td></tr>
+      </tbody>
+    </table>
+    <blockquote>Names such as <code>curator</code> / <code>data-scientist</code> are normalized internally to <code>viewer</code>.</blockquote>
+    <p>The actual login information of the shipped <code>demo.db</code>:</p>
+    <table>
+      <thead><tr><th>User name</th><th>Role</th><th>Password</th></tr></thead>
+      <tbody>
+        <tr><td><code>cynovela</code></td><td>admin</td><td>A change is forced at the first login (no fixed password is distributed)</td></tr>
+        <tr><td><code>demo</code></td><td>viewer</td><td>See <code>viewer_password</code> in the bundled credential file (the <code>*.admin-password.txt</code> received separately from the package tar). No fixed password is distributed</td></tr>
+      </tbody>
+    </table>
+    <p>After logging in, the screens that are shown and the range of operations available change according to the role.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">6. Creating Your First Workspace</span>
+  </div>
+  <div class="slide-body">
+    <p>A "Workspace" is the management unit that groups users, policies, and collections together. In a <code>--demo</code> start, only one workspace, containing the bundled dummy documents, is present (the three empty seed workspaces were removed on 2026-07-30 and are stripped out at startup). Three guardrail policies are seeded, so assign them to the workspace you create and use them.</p>
+    <p>To create a new workspace, you can create it from the "Workspace Management" screen of the GUI. The detailed procedure is shown in "Hands-on (Basics)" described later.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">7. Ingesting Your First File</span>
+  </div>
+  <div class="slide-body">
+    <p>Create a "Collection" under the workspace and ingest the target files into it. A collection is the unit of a set of files and a chunking strategy, and it has the state transitions <code>draft → ingested → ready</code>.</p>
+    <p>On the GUI, operate in the following order.</p>
+    <ol>
+      <li>Select a workspace</li>
+      <li>Press the "Create Collection" button and specify a name and a RAG strategy (<code>simple</code> / <code>hybrid_bm25</code> / <code>contextual</code>)</li>
+      <li>Upload the files (drag and drop is supported)</li>
+      <li>Run "Publish" to bring it to the <code>ready</code> state</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">7. What Publish Does</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>The following are performed during Publish.</p>
+    <ul>
+      <li>Text extraction (PDF / DOCX / image OCR and others)</li>
+      <li>Chunking (500 characters by default, with 50 characters of overlap)</li>
+      <li>PII detection and masking (ingest-time masking)</li>
+      <li>Embedding generation and storage into ChromaDB</li>
+      <li>BM25 index build</li>
+    </ul>
+    <blockquote><strong>Note</strong>: Publish runs in the background and returns progress over SSE (Server-Sent Events). On completion, the number of items and the elapsed time are recorded in the <code>publish_history</code> table.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">8. Your First Question</span>
+  </div>
+  <div class="slide-body">
+    <p>Against a collection in the <code>ready</code> state, ask a question from the "RAG Chat" screen of the GUI.</p>
+    <p>For example, ask it like this.</p>
+    <pre><code>このドキュメントで扱われている主なトピックは何ですか？</code></pre>
+    <p>Together with the answer, the chunks are shown as citations with reference numbers such as <code>[1][2]</code> (when <code>config.rag.citation_enabled = true</code>).</p>
+    <p>You can also experience the difference made by the role.</p>
+    <ul>
+      <li>When logged in as <code>admin</code>: searches the raw text store. No masking is applied to the output either.</li>
+      <li>When logged in as <code>viewer</code>: searches the masked text store. Exit masking is also applied to the LLM output, and PII (Personally Identifiable Information) is replaced by masking (<code>curator</code> / <code>data-scientist</code> and so on are normalized to <code>viewer</code>).</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">Quick Start</span>
+    <span class="slide-title">9. What You Have Experienced So Far</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Element</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Startup mode</td><td>Start the demo containing the dummy documents with <code>--demo</code></td></tr>
+        <tr><td>Role permissions</td><td>The difference in how things look for <code>admin</code> / <code>viewer</code></td></tr>
+        <tr><td>RAG pipeline</td><td>Ingest → chunking → embedding → search → LLM answer</td></tr>
+        <tr><td>Guardrails</td><td>The double defense of ingest-time masking (Tier1) and answer-time masking (Tier2)</td></tr>
+      </tbody>
+    </table>
+    <p>As the next step, please proceed to "Hands-on (Basics)". There you experience, in order, how to read the scores, the audit log, and the behavior of the guardrails.</p>
+    <p style="margin-top:18px; color:var(--cyn-muted); font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-15">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">クイックスタート</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +518,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">1. 前提環境</span>
@@ -251,7 +542,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">2. conda 環境のセットアップ</span>
@@ -272,7 +563,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">3. 初回モデルダウンロード（モード別）</span>
@@ -296,7 +587,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">3. Preflight チェックの流れ</span>
@@ -315,7 +606,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">4. 起動コマンド</span>
@@ -337,7 +628,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">4. 起動コマンド（実 LLM 利用時）</span>
@@ -356,7 +647,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">5. デモアカウントでログイン</span>
@@ -388,7 +679,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">6. 最初のワークスペース作成</span>
@@ -403,7 +694,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">7. 最初のファイル取り込み</span>
@@ -424,7 +715,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">7. Publish で行われる処理</span>
@@ -447,7 +738,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-27">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">8. 最初の質問</span>
@@ -469,7 +760,7 @@ pip install -r requirements.txt</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-28">
   <div class="slide-header">
     <span class="doc-name">クイックスタート</span>
     <span class="slide-title">9. ここまでで体験できた要素</span>
@@ -495,9 +786,9 @@ pip install -r requirements.txt</code></pre>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 14</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 28</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

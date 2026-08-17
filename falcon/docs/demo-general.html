@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cynovela 体験デモ（一般向け）</title>
+<title>Cynovela Hands-on Demo (General) / Cynovela 体験デモ（一般向け）</title>
 <style>
   :root {
     color-scheme: light only;
@@ -720,16 +720,17 @@
   }
 </style>
 </head>
+<!-- This page is bilingual: English first, then 日本語. -->
 <body>
 
 <header>
   <div class="brand">
     <div class="logo">Cyno<span class="accent">vela</span></div>
-    <div class="tagline">体験デモ（一般向け） / AI 基盤ツールのコンセプトを 8 ステップで</div>
+    <div class="tagline">Hands-on Demo (General) / An AI platform tool concept in 8 steps ／ 体験デモ（一般向け） / AI 基盤ツールのコンセプトを 8 ステップで</div>
   </div>
   <div class="mode-switch">
-    <button id="mode-demo" class="active" onclick="setMode('demo')">デモモード</button>
-    <button id="mode-explain" onclick="setMode('explain')">解説モード</button>
+    <button id="mode-demo" class="active" onclick="setMode('demo')">Demo／デモモード</button>
+    <button id="mode-explain" onclick="setMode('explain')">Explain／解説モード</button>
   </div>
 </header>
 
@@ -739,65 +740,71 @@
       <div class="progress-bar" id="progress-bar" style="width: 12.5%;"></div>
     </div>
     <div class="progress-labels" id="progress-labels">
-      <span class="active"><span class="dot">1</span>WS作成</span>
-      <span><span class="dot">2</span>ファイル選択</span>
-      <span><span class="dot">3</span>PIIマスク</span>
-      <span><span class="dot">4</span>ベクター化</span>
-      <span><span class="dot">5</span>質問入力</span>
-      <span><span class="dot">6</span>回答表示</span>
-      <span><span class="dot">7</span>比較表</span>
-      <span><span class="dot">8</span>まとめ</span>
+      <span class="active"><span class="dot">1</span>Create WS／WS作成</span>
+      <span><span class="dot">2</span>Select files／ファイル選択</span>
+      <span><span class="dot">3</span>Mask PII／PIIマスク</span>
+      <span><span class="dot">4</span>Vectorize／ベクター化</span>
+      <span><span class="dot">5</span>Ask／質問入力</span>
+      <span><span class="dot">6</span>Answer／回答表示</span>
+      <span><span class="dot">7</span>Comparison／比較表</span>
+      <span><span class="dot">8</span>Summary／まとめ</span>
     </div>
   </div>
 </div>
 
 <main>
 
-<!-- Step 1: Workspace 作成 -->
+<!-- Step 1: Create workspace / Workspace 作成 -->
 <section class="step active" id="step-1">
-  <h2><span class="step-number">1</span>ワークスペースを作る</h2>
-  <p class="step-desc">Cynovela では「ワークスペース」が文書をまとめる箱になります。名前と機密レベルを決めてみましょう。</p>
+  <h2><span class="step-number">1</span>Create a workspace／ワークスペースを作る</h2>
+  <p class="step-desc">In Cynovela, a "workspace" is the box that holds a set of documents. Let us decide its name and confidentiality level.<br>Cynovela では「ワークスペース」が文書をまとめる箱になります。名前と機密レベルを決めてみましょう。</p>
   <div class="explain-panel">
+    <strong>Why it matters:</strong> Separating workspaces lets you vary access rights and guardrails (masking and exclusion rules) per department or purpose. It is the mechanism that answers a request such as: even on the same AI platform tool, do not let HR material and technical documents be searched together.<br>
     <strong>なぜ必要か:</strong> ワークスペースを分けると、部門や用途ごとにアクセス権限とガードレール（マスクや除外のルール）を変えられます。同じ AI 基盤ツールでも、人事資料と技術文書を一緒に検索させたくない、という要望に応えるための仕組みです。
   </div>
   <div class="content-block">
     <div class="form-row">
-      <label>ワークスペース名</label>
-      <input type="text" id="ws-name" value="営業部ナレッジ" placeholder="例: 営業部ナレッジ">
+      <label>Workspace name／ワークスペース名</label>
+      <input type="text" id="ws-name" value="営業部ナレッジ" placeholder="e.g. Sales Knowledge ／ 例: 営業部ナレッジ">
     </div>
     <div class="form-row">
-      <label>機密レベル</label>
+      <label>Confidentiality level／機密レベル</label>
       <select id="ws-level">
-        <option value="public">公開（誰でも閲覧可）</option>
-        <option value="internal" selected>社内限定</option>
-        <option value="confidential">機密（admin のみ raw 参照可）</option>
+        <option value="public">Public (anyone can view)／公開（誰でも閲覧可）</option>
+        <option value="internal" selected>Internal only／社内限定</option>
+        <option value="confidential">Confidential (raw viewable by admin only)／機密（admin のみ raw 参照可）</option>
       </select>
     </div>
-    <svg class="svg-illust" width="400" height="120" viewBox="0 0 400 120">
+    <svg class="svg-illust" width="400" height="140" viewBox="0 0 400 140">
       <rect x="20" y="30" width="100" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="70" y="65" text-anchor="middle" font-size="13" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">営業WS</text>
+      <text x="70" y="56" text-anchor="middle" font-size="12" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">Sales WS</text>
+      <text x="70" y="75" text-anchor="middle" font-size="12" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">営業WS</text>
       <rect x="150" y="30" width="100" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="200" y="65" text-anchor="middle" font-size="13" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">人事WS</text>
+      <text x="200" y="56" text-anchor="middle" font-size="12" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">HR WS</text>
+      <text x="200" y="75" text-anchor="middle" font-size="12" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">人事WS</text>
       <rect x="280" y="30" width="100" height="60" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
-      <text x="330" y="65" text-anchor="middle" font-size="13" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">技術WS</text>
-      <text x="200" y="110" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">3つのワークスペースを独立管理</text>
+      <text x="330" y="56" text-anchor="middle" font-size="12" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">Tech WS</text>
+      <text x="330" y="75" text-anchor="middle" font-size="12" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">技術WS</text>
+      <text x="200" y="112" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">Three workspaces managed independently</text>
+      <text x="200" y="130" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">3つのワークスペースを独立管理</text>
     </svg>
   </div>
   <div class="nav-row">
     <span></span>
-    <button class="btn" onclick="next()">次へ</button>
+    <button class="btn" onclick="next()">Next／次へ</button>
   </div>
 </section>
 
-<!-- Step 2: ファイル選択 -->
+<!-- Step 2: Select files / ファイル選択 -->
 <section class="step" id="step-2">
-  <h2><span class="step-number">2</span>ファイルを選ぶ</h2>
-  <p class="step-desc">取り込みたいファイルをクリックして選択します。フォルダから自動検出された想定のファイル一覧です。</p>
+  <h2><span class="step-number">2</span>Select files／ファイルを選ぶ</h2>
+  <p class="step-desc">Click the files you want to ingest in order to select them. This is a list of files assumed to have been detected automatically from a folder.<br>取り込みたいファイルをクリックして選択します。フォルダから自動検出された想定のファイル一覧です。</p>
   <div class="explain-panel">
+    <strong>Why it matters:</strong> Replacing documents one by one by hand is hard work. When you register a whole folder, Cynovela discovers the files under it automatically, and also detects additions and deletions as differences.<br>
     <strong>なぜ必要か:</strong> 文書 1 つ 1 つを手作業で入れ替えるのは大変です。Cynovela はフォルダを丸ごと登録すると、配下のファイルを自動で発見し、追加・削除も差分検出します。
   </div>
   <div class="content-block">
-    <p style="margin-bottom: 16px; color: var(--cyn-muted); font-size: 13px;">📁 /sample/sales/ から検出された 8 ファイル</p>
+    <p style="margin-bottom: 16px; color: var(--cyn-muted); font-size: 13px;">📁 8 files detected under /sample/sales/<br>📁 /sample/sales/ から検出された 8 ファイル</p>
     <div class="file-list" id="file-list">
       <div class="file-item selected" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">提案書_2026Q1.pdf</div></div>
       <div class="file-item selected" onclick="toggleFile(this)"><div class="icon">📄</div><div class="name">顧客リスト.xlsx</div></div>
@@ -810,22 +817,23 @@
     </div>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="prev()">戻る</button>
-    <button class="btn" onclick="next()">次へ</button>
+    <button class="btn btn-secondary" onclick="prev()">Back／戻る</button>
+    <button class="btn" onclick="next()">Next／次へ</button>
   </div>
 </section>
 
-<!-- Step 3: PII マスキング -->
+<!-- Step 3: PII masking / PII マスキング -->
 <section class="step" id="step-3">
-  <h2><span class="step-number">3</span>個人情報をマスキングにする</h2>
-  <p class="step-desc">ファイルの中身を取り込む前に、Cynovela は個人情報（PII）を自動検出してマスキングに置き換えます。左が原文、右がマスキング後です。</p>
+  <h2><span class="step-number">3</span>Mask personal information／個人情報をマスキングにする</h2>
+  <p class="step-desc">Before ingesting the contents of a file, Cynovela automatically detects personal information (PII) and replaces it with masks. The left side is the original text, the right side is the text after masking.<br>ファイルの中身を取り込む前に、Cynovela は個人情報（PII）を自動検出してマスキングに置き換えます。左が原文、右がマスキング後です。</p>
   <div class="explain-panel">
+    <strong>Why it matters:</strong> Business documents often contain personal information such as phone numbers, email addresses and My Number IDs. Exposing them as they are to LLM training material or to search results creates a risk of information leakage. Cynovela masks in two stages: <strong>at ingest time</strong> and <strong>at answer time</strong>.<br>
     <strong>なぜ必要か:</strong> 業務文書には電話番号やメール、マイナンバーなどの個人情報がしばしば混ざります。これらを LLM の学習材料や検索結果にそのまま出すと、情報漏洩のリスクがあります。Cynovela は <strong>取り込み時</strong>と<strong>回答時</strong>の二段階でマスキングします。
   </div>
   <div class="content-block">
     <div class="compare-grid">
       <div class="compare-col raw">
-        <h3>原文（admin のみ参照可）</h3>
+        <h3>Original (admin only)／原文（admin のみ参照可）</h3>
         <div class="doc-content">
           【商談議事録】<br>
           日時: 2026年5月15日<br>
@@ -838,7 +846,7 @@
         </div>
       </div>
       <div class="compare-col masked">
-        <h3>マスキング後（一般ユーザーが参照）</h3>
+        <h3>After masking (what general users see)／マスキング後（一般ユーザーが参照）</h3>
         <div class="doc-content">
           【商談議事録】<br>
           日時: 2026年5月15日<br>
@@ -853,11 +861,14 @@
     </div>
     <svg class="svg-illust" width="400" height="80" viewBox="0 0 400 80">
       <rect x="20" y="20" width="80" height="40" rx="6" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="60" y="44" text-anchor="middle" font-size="12" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">原文</text>
+      <text x="60" y="36" text-anchor="middle" font-size="11" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">Original</text>
+      <text x="60" y="52" text-anchor="middle" font-size="11" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">原文</text>
       <path d="M 110 40 L 180 40" stroke="#637a96" stroke-width="2" marker-end="url(#arr1)"/>
-      <text x="145" y="32" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">PII検出</text>
+      <text x="145" y="22" text-anchor="middle" font-size="10" fill="#637a96" font-family="Inter, sans-serif">PII detection</text>
+      <text x="145" y="34" text-anchor="middle" font-size="10" fill="#637a96" font-family="Inter, sans-serif">PII検出</text>
       <rect x="200" y="20" width="80" height="40" rx="6" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
-      <text x="240" y="44" text-anchor="middle" font-size="12" fill="#c0392b" font-family="Inter, sans-serif" font-weight="600">マスク</text>
+      <text x="240" y="36" text-anchor="middle" font-size="11" fill="#c0392b" font-family="Inter, sans-serif" font-weight="600">Masked</text>
+      <text x="240" y="52" text-anchor="middle" font-size="11" fill="#c0392b" font-family="Inter, sans-serif" font-weight="600">マスク</text>
       <path d="M 290 40 L 360 40" stroke="#637a96" stroke-width="2" marker-end="url(#arr1)"/>
       <rect x="370" y="20" width="20" height="40" rx="6" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
       <defs>
@@ -868,194 +879,209 @@
     </svg>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="prev()">戻る</button>
-    <button class="btn" onclick="next()">次へ</button>
+    <button class="btn btn-secondary" onclick="prev()">Back／戻る</button>
+    <button class="btn" onclick="next()">Next／次へ</button>
   </div>
 </section>
 
-<!-- Step 4: ベクター化 -->
+<!-- Step 4: Vectorization / ベクター化 -->
 <section class="step" id="step-4">
-  <h2><span class="step-number">4</span>ベクター化（数値の地図に変換）</h2>
-  <p class="step-desc">マスキングしたテキストは「意味の似たもの同士が近くに集まる数値の地図」に変換されます。</p>
+  <h2><span class="step-number">4</span>Vectorization (converting to a numeric map)／ベクター化（数値の地図に変換）</h2>
+  <p class="step-desc">The masked text is converted into a "numeric map in which items with similar meaning gather close together".<br>マスキングしたテキストは「意味の似たもの同士が近くに集まる数値の地図」に変換されます。</p>
   <div class="explain-panel">
+    <strong>Why it matters:</strong> Exact word matching alone has its limits for search. With vectorization (embedding), a question about "pricing" can also pick up a document that discusses a "fee structure". Cynovela uses the OSS embedding model BAAI/bge-m3.<br>
     <strong>なぜ必要か:</strong> 検索は単語の完全一致だけでは限界があります。ベクター化（埋め込み）すると、「価格について」という質問で「料金体系」を扱った文書も拾えるようになります。Cynovela は BAAI/bge-m3 という OSS の埋め込みモデルを使います。
   </div>
   <div class="content-block">
     <div class="pipeline-steps" id="pipeline-steps">
-      <div class="pipeline-step" data-idx="0"><span class="number">1</span><span class="label">テキスト抽出</span><span class="detail">PDF / Word / Excel から本文を取り出し</span></div>
-      <div class="pipeline-step" data-idx="1"><span class="number">2</span><span class="label">チャンク分割</span><span class="detail">500文字ごとに切り分け</span></div>
-      <div class="pipeline-step" data-idx="2"><span class="number">3</span><span class="label">埋め込み生成</span><span class="detail">BAAI/bge-m3 で 1024 次元ベクター</span></div>
-      <div class="pipeline-step" data-idx="3"><span class="number">4</span><span class="label">ChromaDB へ保存</span><span class="detail">検索可能な状態に Publish</span></div>
+      <div class="pipeline-step" data-idx="0"><span class="number">1</span><span class="label">Text extraction／テキスト抽出</span><span class="detail">Extract body text from PDF / Word / Excel<br>PDF / Word / Excel から本文を取り出し</span></div>
+      <div class="pipeline-step" data-idx="1"><span class="number">2</span><span class="label">Chunk splitting／チャンク分割</span><span class="detail">Split every 500 characters<br>500文字ごとに切り分け</span></div>
+      <div class="pipeline-step" data-idx="2"><span class="number">3</span><span class="label">Embedding generation／埋め込み生成</span><span class="detail">1024-dimension vectors with BAAI/bge-m3<br>BAAI/bge-m3 で 1024 次元ベクター</span></div>
+      <div class="pipeline-step" data-idx="3"><span class="number">4</span><span class="label">Save to ChromaDB／ChromaDB へ保存</span><span class="detail">Publish so that it becomes searchable<br>検索可能な状態に Publish</span></div>
     </div>
-    <svg class="svg-illust" width="400" height="100" viewBox="0 0 400 100">
-      <text x="200" y="20" text-anchor="middle" font-size="12" fill="#637a96" font-family="Inter, sans-serif">意味空間に配置されたチャンク群</text>
+    <svg class="svg-illust" width="400" height="118" viewBox="0 0 400 118">
+      <text x="200" y="14" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">Chunks placed in a semantic space</text>
+      <text x="200" y="30" text-anchor="middle" font-size="11" fill="#637a96" font-family="Inter, sans-serif">意味空間に配置されたチャンク群</text>
       <circle cx="80" cy="60" r="8" fill="#0078d4"/>
       <circle cx="100" cy="55" r="8" fill="#0078d4"/>
       <circle cx="95" cy="75" r="8" fill="#0078d4"/>
-      <text x="90" y="98" text-anchor="middle" font-size="10" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">価格関連</text>
+      <text x="90" y="98" text-anchor="middle" font-size="10" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">Pricing</text>
+      <text x="90" y="112" text-anchor="middle" font-size="10" fill="#0078d4" font-family="Inter, sans-serif" font-weight="600">価格関連</text>
       <circle cx="200" cy="60" r="8" fill="#b45309"/>
       <circle cx="220" cy="65" r="8" fill="#b45309"/>
       <circle cx="210" cy="80" r="8" fill="#b45309"/>
-      <text x="210" y="98" text-anchor="middle" font-size="10" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">機能仕様</text>
+      <text x="210" y="98" text-anchor="middle" font-size="10" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">Features</text>
+      <text x="210" y="112" text-anchor="middle" font-size="10" fill="#b45309" font-family="Inter, sans-serif" font-weight="600">機能仕様</text>
       <circle cx="320" cy="55" r="8" fill="#0e8a4a"/>
       <circle cx="340" cy="70" r="8" fill="#0e8a4a"/>
       <circle cx="325" cy="80" r="8" fill="#0e8a4a"/>
-      <text x="330" y="98" text-anchor="middle" font-size="10" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">事例集</text>
+      <text x="330" y="98" text-anchor="middle" font-size="10" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">Case files</text>
+      <text x="330" y="112" text-anchor="middle" font-size="10" fill="#0e8a4a" font-family="Inter, sans-serif" font-weight="600">事例集</text>
     </svg>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="prev()">戻る</button>
-    <button class="btn" onclick="next()" id="step4-next" disabled>準備中…</button>
+    <button class="btn btn-secondary" onclick="prev()">Back／戻る</button>
+    <button class="btn" onclick="next()" id="step4-next" disabled>Preparing…／準備中…</button>
   </div>
 </section>
 
-<!-- Step 5: 質問入力 -->
+<!-- Step 5: Ask a question / 質問入力 -->
 <section class="step" id="step-5">
-  <h2><span class="step-number">5</span>質問する（RAG チャット）</h2>
-  <p class="step-desc">取り込んだ文書を元に、自然な日本語で質問します。下の例をクリックすると入力欄に入ります。</p>
+  <h2><span class="step-number">5</span>Ask a question (RAG chat)／質問する（RAG チャット）</h2>
+  <p class="step-desc">Ask questions in natural Japanese based on the ingested documents. Click one of the examples below to put it into the input box.<br>取り込んだ文書を元に、自然な日本語で質問します。下の例をクリックすると入力欄に入ります。</p>
   <div style="border: 2px solid #c0392b; border-radius: 8px; padding: 10px 14px;
               background: #fef2f2; color: #7f1d1d; font-size: 14px; margin-bottom: 12px;">
+    ⚠️ This is a Cynovela-only hands-on learning feature that the reference AI platform tool does not have.<br>
     ⚠️ 参照元 AI 基盤ツールにはない Cynovela 独自の学習体験機能です
   </div>
   <div class="explain-panel">
+    <strong>Why it matters:</strong> RAG (retrieval-augmented generation) first searches in-house documents when a question arrives, and passes the documents it finds to the LLM as reference material, so that the answer is grounded in the material. An LLM on its own carries the risk of generating plausible text unrelated to the facts (hallucination).<br>
     <strong>なぜ必要か:</strong> RAG（検索拡張生成）は、質問を受けたときにまず社内文書を検索し、見つかった文書を LLM の参考材料として渡すことで「資料に基づいた回答」を実現します。LLM 単体だと事実と関係のないもっともらしい文章を生成する（ハルシネーション）リスクがあります。
   </div>
   <div class="content-block">
     <div class="chat-window" id="chat-window">
-      <div class="chat-bubble bot">こんにちは。営業部ナレッジ ワークスペースに接続しました。何でも聞いてください。</div>
+      <div class="chat-bubble bot">Hello. You are connected to the 営業部ナレッジ workspace. Please ask me anything.<br>こんにちは。営業部ナレッジ ワークスペースに接続しました。何でも聞いてください。</div>
     </div>
     <div class="quick-questions">
-      <button onclick="setQ('製品Aの価格体系を教えて')">製品Aの価格体系を教えて</button>
-      <button onclick="setQ('2026Q1の提案で重視すべきポイントは？')">2026Q1の重視点</button>
-      <button onclick="setQ('顧客リストにある法人数は？')">顧客リストの法人数</button>
+      <button onclick="setQ('製品Aの価格体系を教えて')">Tell me Product A pricing plans／製品Aの価格体系を教えて</button>
+      <button onclick="setQ('2026Q1の提案で重視すべきポイントは？')">Key points for 2026Q1／2026Q1の重視点</button>
+      <button onclick="setQ('顧客リストにある法人数は？')">Companies in the customer list／顧客リストの法人数</button>
     </div>
     <div class="chat-input-row">
-      <input type="text" id="chat-input" placeholder="質問を入力してください…">
-      <button class="btn" onclick="sendChat()">送信</button>
+      <input type="text" id="chat-input" placeholder="Type your question… ／ 質問を入力してください…">
+      <button class="btn" onclick="sendChat()">Send／送信</button>
     </div>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="prev()">戻る</button>
-    <button class="btn" onclick="next()" id="step5-next" disabled>送信後に有効化</button>
+    <button class="btn btn-secondary" onclick="prev()">Back／戻る</button>
+    <button class="btn" onclick="next()" id="step5-next" disabled>Enabled after sending／送信後に有効化</button>
   </div>
 </section>
 
-<!-- Step 6: 回答と根拠 -->
+<!-- Step 6: Answer and evidence / 回答と根拠 -->
 <section class="step" id="step-6">
-  <h2><span class="step-number">6</span>回答と根拠スコア</h2>
-  <p class="step-desc">Cynovela は回答だけでなく、どの文書を参照したか、どの程度マッチしているかを示します。</p>
+  <h2><span class="step-number">6</span>Answer and evidence scores／回答と根拠スコア</h2>
+  <p class="step-desc">Cynovela shows not only the answer, but also which documents it referred to and how well they match.<br>Cynovela は回答だけでなく、どの文書を参照したか、どの程度マッチしているかを示します。</p>
   <div class="explain-panel">
+    <strong>Why it matters:</strong> A black-box answer cannot be trusted. By showing where a passage was quoted from (the citation) and how close it is (the score), Cynovela lets the user check whether the answer is valid.<br>
     <strong>なぜ必要か:</strong> ブラックボックスの回答は信用できません。Cynovela は「どこから引用したか（出典）」と「どれくらい近いか（スコア）」を明示することで、ユーザーが回答の妥当性を確認できるようにします。
   </div>
   <div class="content-block">
     <div class="answer-bubble">
+      Product A has a three-plan pricing structure: Starter (JPY 9,800 / month), Business (JPY 29,800 / month) and Enterprise (individual quote). All plans include unlimited users, plus an additional fee structure based on data volume<sup>[1][2]</sup>.<br>
       製品Aの価格体系は 3 プラン構成で、Starter（月額 ¥9,800）、Business（月額 ¥29,800）、Enterprise（個別見積）の段階制です。各プラン共通でユーザー無制限、データ容量に応じた追加料金体系があります<sup>[1][2]</sup>。
     </div>
-    <h4 class="section-heading">📊 根拠スコア</h4>
+    <h4 class="section-heading">📊 Evidence scores／根拠スコア</h4>
     <div class="score-grid">
       <div class="score-card">
-        <div class="label">コサイン類似度（最高）</div>
+        <div class="label">Cosine similarity (max)／コサイン類似度（最高）</div>
         <div class="value">0.74</div>
       </div>
       <div class="score-card">
-        <div class="label">Reranker スコア（最高）</div>
+        <div class="label">Reranker score (max)／Reranker スコア（最高）</div>
         <div class="value">0.91</div>
       </div>
     </div>
-    <h4 class="section-heading">📚 引用元（2 件）</h4>
+    <h4 class="section-heading">📚 Citations (2)／引用元（2 件）</h4>
     <div class="source-card">
+      <strong>[1] 価格表.pdf</strong> / Chapter 2 "Pricing plans" / cosine similarity: 0.74 / Reranker: 0.91<br>
       <strong>[1] 価格表.pdf</strong> / 第 2 章「料金プラン」/ コサイン類似度: 0.74 / Reranker: 0.91<br>
+      <small>"The Starter plan is 9,800 yen per month and includes up to 5 users…"</small><br>
       <small>「Starter プランは月額 9,800 円で、5 ユーザーまで含まれる…」</small>
     </div>
     <div class="source-card">
+      <strong>[2] 提案書_2026Q1.pdf</strong> / Chapter 3 "Pricing proposal" / cosine similarity: 0.68 / Reranker: 0.85<br>
       <strong>[2] 提案書_2026Q1.pdf</strong> / 第 3 章「料金提案」/ コサイン類似度: 0.68 / Reranker: 0.85<br>
+      <small>"Recommend the Business plan or above. Enterprise can be customized individually…"</small><br>
       <small>「Business プラン以上を推奨。Enterprise は個別カスタマイズ可能…」</small>
     </div>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="prev()">戻る</button>
-    <button class="btn" onclick="next()">次へ</button>
+    <button class="btn btn-secondary" onclick="prev()">Back／戻る</button>
+    <button class="btn" onclick="next()">Next／次へ</button>
   </div>
 </section>
 
-<!-- Step 7: 比較表 -->
+<!-- Step 7: Comparison table / 比較表 -->
 <section class="step" id="step-7">
-  <h2><span class="step-number">7</span>参照元 AI 基盤ツールとの対応</h2>
-  <p class="step-desc">参照元のツールが提供する機能と、Cynovela での再現状況を一覧で比較します。</p>
+  <h2><span class="step-number">7</span>Mapping to the reference AI platform tool／参照元 AI 基盤ツールとの対応</h2>
+  <p class="step-desc">This table compares the features the reference tool provides with how far Cynovela reproduces them.<br>参照元のツールが提供する機能と、Cynovela での再現状況を一覧で比較します。</p>
   <div class="explain-panel">
+    <strong>Why it matters:</strong> The purpose of Cynovela is to understand the concepts; it is not a full replacement for the reference tool. Making clear what is supported and what is a Cynovela-only feature avoids misunderstanding.<br>
     <strong>なぜ必要か:</strong> Cynovela の目的は「コンセプトの理解」であり、参照元ツールの完全な代替ではありません。何が対応していて、何が独自機能かを明示することで、誤解を避けます。
   </div>
   <div class="content-block">
     <div class="table-wrap">
       <table class="compare-table">
         <thead>
-          <tr><th style="width: 30%;">機能</th><th style="width: 35%;">参照元 AI 基盤ツール</th><th style="width: 35%;">Cynovela</th></tr>
+          <tr><th style="width: 30%;">Feature／機能</th><th style="width: 35%;">Reference AI platform tool／参照元 AI 基盤ツール</th><th style="width: 35%;">Cynovela</th></tr>
         </thead>
         <tbody>
-          <tr><td>データ取り込み</td><td class="original-feature">対応</td><td>対応（14 カテゴリ自動分類）</td></tr>
-          <tr><td>PII マスキング</td><td class="original-feature">対応</td><td>対応（8 種類 + Dual-Tier）</td></tr>
-          <tr><td>ガードレール</td><td class="original-feature">対応</td><td>対応（4 アクション）</td></tr>
-          <tr><td>RBAC</td><td class="original-feature">対応</td><td>対応（3 ロール）</td></tr>
-          <tr><td>監査ログ</td><td class="original-feature">対応</td><td>対応（改ざん禁止）</td></tr>
-          <tr><td>MCP サーバー</td><td class="original-feature">対応</td><td>対応（11 ツール）</td></tr>
-          <tr><td>ベクター検索</td><td class="original-feature">対応</td><td>対応（BAAI/bge-m3）</td></tr>
-          <tr class="cynovela-only"><td>RAG チャット UI</td><td class="original-feature">非対応（検索 API のみ）</td><td class="cynovela-extra">独自機能（学習用 UI）</td></tr>
-          <tr class="cynovela-only"><td>ベクター化アニメーション</td><td class="original-feature">非対応</td><td class="cynovela-extra">独自機能（理解促進）</td></tr>
+          <tr><td>Data ingest／データ取り込み</td><td class="original-feature">Supported／対応</td><td>Supported (14 auto-classified categories)／対応（14 カテゴリ自動分類）</td></tr>
+          <tr><td>PII masking／PII マスキング</td><td class="original-feature">Supported／対応</td><td>Supported (8 types + Dual-Tier)／対応（8 種類 + Dual-Tier）</td></tr>
+          <tr><td>Guardrails／ガードレール</td><td class="original-feature">Supported／対応</td><td>Supported (4 actions)／対応（4 アクション）</td></tr>
+          <tr><td>RBAC</td><td class="original-feature">Supported／対応</td><td>Supported (3 roles)／対応（3 ロール）</td></tr>
+          <tr><td>Audit log／監査ログ</td><td class="original-feature">Supported／対応</td><td>Supported (tamper-proof)／対応（改ざん禁止）</td></tr>
+          <tr><td>MCP server／MCP サーバー</td><td class="original-feature">Supported／対応</td><td>Supported (11 tools)／対応（11 ツール）</td></tr>
+          <tr><td>Vector search／ベクター検索</td><td class="original-feature">Supported／対応</td><td>Supported (BAAI/bge-m3)／対応（BAAI/bge-m3）</td></tr>
+          <tr class="cynovela-only"><td>RAG chat UI／RAG チャット UI</td><td class="original-feature">Not supported (search API only)／非対応（検索 API のみ）</td><td class="cynovela-extra">Cynovela-only feature (learning UI)／独自機能（学習用 UI）</td></tr>
+          <tr class="cynovela-only"><td>Vectorization animation／ベクター化アニメーション</td><td class="original-feature">Not supported／非対応</td><td class="cynovela-extra">Cynovela-only feature (aids understanding)／独自機能（理解促進）</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="table-note">※ 赤背景の行は参照元には無い Cynovela 独自の学習体験機能です。</p>
+    <p class="table-note">* Rows with a red background are Cynovela-only hands-on learning features that the reference tool does not have.<br>※ 赤背景の行は参照元には無い Cynovela 独自の学習体験機能です。</p>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="prev()">戻る</button>
-    <button class="btn" onclick="next()">次へ</button>
+    <button class="btn btn-secondary" onclick="prev()">Back／戻る</button>
+    <button class="btn" onclick="next()">Next／次へ</button>
   </div>
 </section>
 
-<!-- Step 8: まとめ -->
+<!-- Step 8: Summary / まとめ -->
 <section class="step" id="step-8">
-  <h2><span class="step-number">8</span>まとめ</h2>
-  <p class="step-desc">8 ステップで体験した内容を 4 つの観点で振り返ります。</p>
+  <h2><span class="step-number">8</span>Summary／まとめ</h2>
+  <p class="step-desc">Look back on what you experienced in the 8 steps from four points of view.<br>8 ステップで体験した内容を 4 つの観点で振り返ります。</p>
   <div class="content-block">
     <div class="summary-grid">
       <div class="summary-card">
         <div class="icon-big">🗂️</div>
-        <h4>整理する</h4>
-        <p>ワークスペース・コレクションで文書を分類し、ガードレールを紐付ける。</p>
+        <h4>Organize／整理する</h4>
+        <p>Classify documents by workspace and collection, and attach guardrails to them.<br>ワークスペース・コレクションで文書を分類し、ガードレールを紐付ける。</p>
       </div>
       <div class="summary-card">
         <div class="icon-big">🔒</div>
-        <h4>守る</h4>
-        <p>PII を取り込み時と回答時の二段階でマスキング。raw 本文は暗号化保管。</p>
+        <h4>Protect／守る</h4>
+        <p>Mask PII in two stages, at ingest time and at answer time. Raw body text is stored encrypted.<br>PII を取り込み時と回答時の二段階でマスキング。raw 本文は暗号化保管。</p>
       </div>
       <div class="summary-card">
         <div class="icon-big">🔍</div>
-        <h4>探す</h4>
-        <p>BM25 + ベクター検索のハイブリッドで、単語一致と意味類似を両立。</p>
+        <h4>Search／探す</h4>
+        <p>Combine BM25 and vector search in a hybrid, so that word matching and semantic similarity work together.<br>BM25 + ベクター検索のハイブリッドで、単語一致と意味類似を両立。</p>
       </div>
       <div class="summary-card">
         <div class="icon-big">💬</div>
-        <h4>答える</h4>
-        <p>引用元とスコアを明示し、回答の根拠を確認できる状態で返却。</p>
+        <h4>Answer／答える</h4>
+        <p>Return the answer with its citations and scores shown, so the grounds for the answer can be checked.<br>引用元とスコアを明示し、回答の根拠を確認できる状態で返却。</p>
       </div>
     </div>
     <p style="margin-top: 22px; text-align: center; color: var(--cyn-muted); font-size: 13px;">
+      * For further technical detail, please see <code style="font-family: var(--cyn-mono); background: var(--cyn-bg); padding: 2px 6px; border-radius: 4px; color: var(--cyn-accent);">demo-tech.html</code>.<br>
       ※ さらに技術的な詳細は <code style="font-family: var(--cyn-mono); background: var(--cyn-bg); padding: 2px 6px; border-radius: 4px; color: var(--cyn-accent);">demo-tech.html</code> をご覧ください。
     </p>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="prev()">戻る</button>
-    <button class="btn" onclick="reset()">最初から</button>
+    <button class="btn btn-secondary" onclick="prev()">Back／戻る</button>
+    <button class="btn" onclick="reset()">Start over／最初から</button>
   </div>
 </section>
 
 </main>
 
 <footer>
-  <p class="disclaimer-title">免責</p>
-  <p>Cynovela は AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。商用製品ではなく、参照元のソースコード・公式実装は一切含みません。</p>
-  <p>本デモのデータはすべて架空であり、いかなる実在の人物・組織・製品を表すものではありません。会社・製品の公式見解を一切代表しません。</p>
-  <p class="stamp">最終更新: 2026-05-26 / Alpha GA 対応版</p>
+  <p class="disclaimer-title">Disclaimer／免責</p>
+  <p>Cynovela is a completely unofficial learning tool, built by an individual in order to understand the concepts of an AI platform tool hands-on. It is not a commercial product, and it contains none of the reference product's source code or official implementation.<br>Cynovela は AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。商用製品ではなく、参照元のソースコード・公式実装は一切含みません。</p>
+  <p>All data in this demo is fictitious, and represents no real person, organization or product whatsoever. It does not represent any official view of any company or product.<br>本デモのデータはすべて架空であり、いかなる実在の人物・組織・製品を表すものではありません。会社・製品の公式見解を一切代表しません。</p>
+  <p class="stamp">Last updated: 2026-05-26 / Alpha GA release ／ 最終更新: 2026-05-26 / Alpha GA 対応版</p>
 </footer>
 
 <script>
@@ -1101,7 +1127,7 @@
     const steps = document.querySelectorAll('#pipeline-steps .pipeline-step');
     steps.forEach(s => s.classList.remove('active', 'done'));
     document.getElementById('step4-next').disabled = true;
-    document.getElementById('step4-next').textContent = '処理中…';
+    document.getElementById('step4-next').textContent = 'Processing… / 処理中…';
     let idx = 0;
     const tick = () => {
       if (idx > 0) steps[idx - 1].classList.replace('active', 'done');
@@ -1111,7 +1137,7 @@
         setTimeout(tick, 900);
       } else {
         document.getElementById('step4-next').disabled = false;
-        document.getElementById('step4-next').textContent = '次へ';
+        document.getElementById('step4-next').textContent = 'Next / 次へ';
       }
     };
     setTimeout(tick, 400);
@@ -1137,7 +1163,7 @@
       cw.appendChild(b);
       cw.scrollTop = cw.scrollHeight;
       document.getElementById('step5-next').disabled = false;
-      document.getElementById('step5-next').textContent = '次へ';
+      document.getElementById('step5-next').textContent = 'Next / 次へ';
       setTimeout(() => { if (currentStep === 5) next(); }, 2000);
     }, 700);
   }

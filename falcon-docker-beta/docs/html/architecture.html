@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>architecture — Cynovela</title>
+  <title>Architecture / architecture — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -183,15 +183,379 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
-
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Cynovela Architecture</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About This Document</strong><br>
+      Cynovela is a completely unofficial learning tool built by an individual in order to understand the concepts of AI infrastructure tools hands-on. It is not a commercial product and not an official implementation. The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official view of any company or product in any way.
+    </blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">1. Overall Component Diagram</span>
+  </div>
+  <div class="slide-body">
+<pre><code>            +-----------------------------------------------------+
+            |              フロントエンド (frontend/)              |
+            |  Pages / Workspace UI / Chat UI / Dashboard         |
+            +-----------------------------------------------------+
+                                  |  HTTP / SSE (Server-Sent Events)
+                                  v
++-----------------------------------------------------------------------+
+|                       FastAPI アプリ (server.py)                       |
+|  +----------------+   +----------------+   +----------------------+   |
+|  | IP アローリスト |   |  認証ミドル     |   |  RBAC ヘルパー        |   |
+|  | (lan/tailscale)|   |  (Bearer Token)|   |  core/auth.py        |   |
+|  +----------------+   +----------------+   +----------------------+   |
+|  +-----------------------------------------------------------------+  |
+|  |  ルーター層 (routers/) 36 個                                      |  |
+|  |  workspaces / collections / sources / chat / settings / ...     |  |
+|  +-----------------------------------------------------------------+  |
++-----------------------------------------------------------------------+</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">1. Overall Component Diagram</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>|  サービス・ドメイン層                                              |
+|  rag.py            : RAG パイプライン本体                          |
+|  guardrail.py      : PII マスク / ガードレール                     |
+|  chunker.py        : Contextual Chunking                          |
+|  adaptive_rag.py   : 複雑度判定 / Agentic ループ                   |
+|  services/data_sync.py : ハッシュ差分同期                          |
+|  vault_enc.py      : Fernet 暗号化インターフェース (enc:)                     |
+
+|  Provider 抽象 (providers/)                                        |
+|  llm_adapter.py  (LMStudioAdapter / MockAdapter)                  |
+|  embedding.py    (BGE-M3 / MiniLM / TF-IDF / MLX 骨格)             |
+|  reranker.py     (NoReranker / CrossEncoder / FlashRank / ...)    |
+|  classifier.py   (RuleBased / API)                                |
+|  vector_store.py (Chroma 実装 / Qdrant 骨格)                       |</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">1. Overall Component Diagram</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>+----------------+         +-------------------+    +-------------------+
+| SQLite DB      |         | ChromaDB          |    | LM Studio (LLM)   |
+| ~/.cynovela/    |         | ~/.cynovela/       |    | (HTTP /v1)        |
+| db/*.db        |         | vector/*/chroma   |    | またはモック       |
+| 38 テーブル     |         | __raw / __masked  |    |                   |
++----------------+         +-------------------+    +-------------------+</code></pre>
+    <p>External connections are also offered through an MCP (Model Context Protocol: a standard for connecting external tools to an LLM) server; <code>mcp_server.py</code> receives JSON-RPC and calls the endpoints on the FastAPI side.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">2. Role of Each Layer</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.1 Frontend Layer</h3>
+    <p>A static UI whose entry point is <code>frontend/index.html</code>. It has screens such as the workspace list, Collection details, Chat, and Dashboard, and FastAPI serves them from the same origin. Some areas are hidden with <code>display:none</code> until JavaScript initialization finishes, and after initialization the display switches according to role and settings.</p>
+    <h3>2.2 Middleware Layer (IP allowlist / authentication)</h3>
+    <ul>
+      <li><strong>IP allowlist</strong>: By default only <code>127.0.0.1</code> and <code>localhost</code> are allowed. <code>--lan</code> binds <code>0.0.0.0</code>, <code>--allow-tailscale</code> adds the Tailscale network, and <code>--allow-subnet</code> adds an arbitrary CIDR. HTTP 403 is returned to IP addresses that are not allowed.</li>
+      <li><strong>Authentication</strong>: Received in the form <code>Authorization: Bearer &lt;token&gt;</code>, and the user information is resolved by <code>get_user_from_token()</code> in <code>core/auth.py</code>. Authentication is only the JWT issued by <code>POST /api/auth/login</code> (the same applies when starting with <code>--demo</code>). The former <code>Bearer demo-token-{user_id}</code> has been removed and is not accepted.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">2. Role of Each Layer</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.3 Router Layer (routers/)</h3>
+    <p>36 routers are in charge of the API endpoints. Role checks are consolidated into the 4 helpers <code>_require_admin</code> <code>_require_authenticated</code> <code>_require_role</code> <code>_require_admin_or_self</code>, and are used in 242 places in total.</p>
+    <h3>2.4 Service / Domain Layer</h3>
+    <p>The RAG pipeline itself is consolidated in <code>rag.py</code> (44 functions), PII masking is handled by <code>guardrail.py</code>, contextual chunking by <code>chunker.py</code>, and complexity assessment and the Agentic loop by <code>adaptive_rag.py</code>. Fernet encryption is provided as a thin wrapper by <code>vault_enc.py</code>, which encrypts only the body text of the raw tier.</p>
+    <h3>2.5 Provider Abstraction (providers/)</h3>
+    <p>The LLM, embedding, Reranker, classifier, and vector store are held as replaceable abstractions. Implementations that are complete (LM Studio / BGE-M3 / Chroma / NoReranker / CrossEncoder / FlashRank / Ollama Reranker / RuleBased Classifier) and ones that are skeletons only and return <code>NotImplementedError</code> (MLX Embedding / MLX Reranker / Qdrant VectorStore / GraphRAG Strategy) coexist.</p>
+    <h3>2.6 Storage Layer</h3>
+    <ul>
+      <li><strong>SQLite</strong>: Default <code>~/.cynovela/db/cynovela.db</code> (<code>demo.db</code> in demo mode). Can be overridden with <code>CYNOVELA_DB</code>.</li>
+      <li><strong>ChromaDB</strong>: Default <code>~/.cynovela/vector/default/chroma</code>. Can be overridden with <code>CYNOVELA_CHROMA</code>. Two per Collection: <code>{cid}__raw</code> / <code>{cid}__masked</code>.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">3. RAG Pipeline Flow</span>
+  </div>
+  <div class="slide-body">
+    <p>A user query enters through <code>routers/chat.py</code> and finally reaches the LLM response by way of <code>rag_retrieve()</code> (asynchronous) in <code>rag.py</code>.</p>
+<pre><code>ユーザ クエリ
+   |
+   v
+[1] 入力検査 (detect_prompt_injection)
+   |  --- 注入パターン検出 → 400 + audit_logs(PROMPT_INJECTION_BLOCKED)
+   v
+[2] クエリ展開 (任意)
+   |  Multi-Query RAG : LLM で N-1 個の言い換えを生成
+   |  HyDE           : 仮想回答を生成してその埋め込みで検索
+   v
+[3] ベクター検索 (Chroma / BGE-M3)
+   |  fetch_k 件取得 → MMR(Maximal Marginal Relevance) で多様性を確保
+   |  ACL: allowed_roles と user_role を照合
+   v
+[4] BM25 検索 (メモリ内インデックス)
+   |  形態素解析 (fugashi/MeCab) で日本語トークン化
+   |  ACL チェック</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">3. RAG Pipeline Flow</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+<pre><code>[5] ハイブリッド統合
+   |  RRF (Reciprocal Rank Fusion, k=60) または weighted (v0.7 + bm0.3)
+   v
+[6] Parent-Child 解決
+   |  child hit → parent_chunks の長文に差し替え
+   v
+[7] Reranker (任意)
+   |  CrossEncoder / FlashRank / Ollama Reranker などで rerank_score 付与
+   v
+[8] 取得結果検査 (filter_poisoned_chunks)
+   |  注入パターンを含む chunk を context 構築前に除外
+   v
+[9] LLM 呼び出し (call_llm)
+   |  CRAG : 検索結果が質問に十分か LLM が評価
+   |  Adaptive: 複雑度スコア >= 2.0 で Agentic ループ (最大 3 反復)
+   v
+[10] 出力検査 (detect_output_exfiltration)
+   |  HACKED / PWNED / SECRET-ALPHA-TOKEN / [SYSTEM OVERRIDE] を検査
+   v
+[11] 出口マスク (_mask_for_viewer)
+   |  tier_for_role(role) == 'raw'(admin) は素通し、それ以外は再マスク
+   v
+LLM 回答 + Citation([1][2]...)</code></pre>
+    <p>The measured values of each stage (<code>vector_elapsed</code> <code>llm_elapsed</code> <code>total_elapsed</code> <code>rerank_latency_ms</code> <code>rerank_scores</code> <code>bm25_scores</code>) are held in the <code>RetrievalResult</code> data class.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">4. How Workspace Separation Works</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela separates things into two layers: <strong>&quot;Workspace (the unit that groups users and guardrail policies)&quot;</strong> and <strong>&quot;Collection (the unit that holds the actual files and the search strategy)&quot;</strong>.</p>
+    <h3>4.1 Table Structure</h3>
+<pre><code>workspaces  ──┬── workspace_users    (user の所属)
+              ├── workspace_policies (ガードレールポリシー紐付け)
+              └── workspace_sources  (Source の紐付け)
+                       |
+                       v
+                  collections (workspace_id を FK で持つ、ON DELETE CASCADE)
+                       |
+                       └── collection_files (file_id 紐付け)
+                       └── collection_locks (publish 中のロック)</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">4. Workspace Separation (State Transitions)</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.2 Collection State Transitions</h3>
+<pre><code>draft ──&gt; ingested ──&gt; ready
+  │           │
+  │           └──&gt; publishing ──&gt; ready
+  │                       └────&gt; failed ──&gt; draft
+  │                       └────&gt; stopped
+  ready ──&gt; draft (再公開のため)</code></pre>
+    <h3>4.3 Separation on ChromaDB</h3>
+    <p>For each Collection ID, two Chroma collections <code>{cid}__raw</code> and <code>{cid}__masked</code> are created, and the lookup target changes by role. Because <code>tier_for_role(role)</code> returns <code>raw</code> for an administrator and <code>masked</code> for everyone else, a viewer (curator and others are normalized to viewer) structurally cannot reach the raw body text. The <code>chunks</code> table in SQLite also holds two rows, <code>tier='raw'</code> and <code>tier='masked'</code>.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">4. Workspace Separation (continued)</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.4 Additional Separation per Workspace</h3>
+    <p>The BM25 index is held in a dictionary keyed by <code>(workspace_id, tier)</code>, so the key design itself also keeps searches from spanning workspaces (<code>rag.py:101-107</code>).</p>
+    <blockquote>Note: A physical boundary at the ChromaDB level is a subject for a future phase. At present, separation per collection_id is the premise.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">5. Startup Mode (mode)</span>
+  </div>
+  <div class="slide-body">
+    <p>The <code>--mode</code> flag switches the model and the Provider that are loaded.</p>
+    <table>
+      <thead>
+        <tr><th>mode</th><th>Main use</th><th>Embedding</th><th>Reranker</th><th>Assumed environment</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>text</code> (default)</td><td>All text RAG features</td><td>BAAI/bge-m3</td><td>Selectable in yaml</td><td>No GPU required, general purpose</td></tr>
+        <tr><td><code>lite</code></td><td>The switch is <strong>not wired</strong> = in fact BAAI/bge-m3 (the behavior is the same as text, only the display name changes)</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td><code>lite-en</code></td><td>The switch is <strong>not wired</strong> = in fact BAAI/bge-m3 (the behavior is the same as text, only the display name changes)</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p>Previously the <code>--mock</code> flag was applied with the highest priority and fixed <code>Embedding</code> to <code>TFIDFEmbedding</code> and <code>Reranker</code> to <code>NoReranker</code>. This option has been removed, and specifying it now stops with an error.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">5.1 Startup Flow</span>
+  </div>
+  <div class="slide-body">
+<pre><code>main() 呼び出し
+   ↓
+argparse で CLI 引数パース
+   ↓
+_preflight_model_check()
+  ├─ 必要モデルが ~/.cynovela/models/ に存在するか確認
+  └─ 不足時はユーザに DL / 代替モード / キャンセルを提示
+       （CYNOVELA_NONINTERACTIVE=1 なら即 exit）
+   ↓
+get_llm_adapter()  : cynovela.yaml の llm 設定に従う
+   ↓
+load_yaml_config() : cynovela.yaml を読み、CYNOVELA_* で上書き
+   ↓
+_wire_providers_for_mode()
+  ├─ Reranker (yaml.reranker.provider)
+  ├─ 例外 → NoReranker フォールバック
+   ↓
+set_pii_detection_mode(lite / standard / quality)
+   ↓
+init_db(demo=args.demo)
+   ↓
+uvicorn.run() で FastAPI 起動</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">architecture</span>
+    <span class="slide-title">5.2 Configuration Overrides / features Flags</span>
+  </div>
+  <div class="slide-body">
+    <h3>5.2 Priority of Configuration Overrides</h3>
+    <ol>
+      <li>CLI arguments (<code>--port</code> <code>--host</code> <code>--lan</code> and so on) have the highest priority</li>
+      <li>Environment variables <code>CYNOVELA_*</code> (overridden onto yaml by <code>_ENV_OVERRIDES</code> in <code>config.py</code>)</li>
+      <li><code>cynovela.yaml</code></li>
+      <li>Hardcoded default values</li>
+    </ol>
+    <h3>5.3 features Flags</h3>
+    <p>In the <code>features</code> section of <code>cynovela.yaml</code> you can turn <code>metadata_engine</code> <code>data_guardrails</code> <code>data_sync</code> <code>audit_log</code> <code>pipeline_visualization</code> <code>session_history</code> <code>feedback</code> on and off individually. The ACL filter is always enabled.</p>
+    <blockquote>Last updated: 2026-05-26 / Alpha GA edition</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+
+<div class="slide cover" id="slide-16">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">Cynovela アーキテクチャ</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -208,7 +572,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">1. コンポーネント全体図</span>
@@ -238,7 +602,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">1. コンポーネント全体図</span>
@@ -266,7 +630,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">1. コンポーネント全体図</span>
@@ -287,7 +651,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">2. 各レイヤーの役割</span>
@@ -307,7 +671,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">2. 各レイヤーの役割</span>
@@ -332,7 +696,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">3. RAG パイプラインのフロー</span>
@@ -363,7 +727,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">3. RAG パイプラインのフロー</span>
@@ -401,7 +765,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">4. Workspace 分離の仕組み</span>
@@ -425,7 +789,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">4. Workspace 分離（状態遷移）</span>
@@ -448,7 +812,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-27">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">4. Workspace 分離（続き）</span>
@@ -465,7 +829,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-28">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">5. 起動モード（mode）</span>
@@ -490,7 +854,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-29">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">5.1 起動フロー</span>
@@ -525,7 +889,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-30">
   <div class="slide-header">
     <span class="doc-name">architecture</span>
     <span class="slide-title">5.2 設定上書き・features フラグ</span>
@@ -550,9 +914,9 @@ uvicorn.run() で FastAPI 起動</code></pre>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 15</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 30</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

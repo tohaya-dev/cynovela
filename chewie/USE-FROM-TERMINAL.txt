@@ -1,3 +1,46 @@
+=== English ===
+
+Cynovela entry point — this is the only one the recipient runs.
+
+● With nothing attached
+  ./launch.sh                     It starts by just answering the questions with a number.
+                                  (what to read / which configuration to run in)
+
+● Deciding beforehand instead of answering with a number
+  ./launch.sh --demo              Starts with the bundled dummy documents loaded.
+  ./launch.sh --add               Shows a screen for choosing a folder to read, and adds it.
+  ./launch.sh --list              Lists the folders that are currently added.
+  ./launch.sh --remove <名前>     Removes an added folder (the name is the one shown by --list).
+                                  * You can also add / see / remove them from the screen at
+                                    設定 (Settings) → 取り込み元 (ingest sources).
+
+● Install / inspect
+  ./launch.sh --setup             Installs what is required to run (it stops after installing).
+  ./launch.sh --check             Does not start; only checks the conditions for running and
+                                  writes them to a single file.
+  ./launch.sh --base conda|venv|none
+                                  Decides in advance where python is prepared (used with --setup).
+
+● Others
+  ./launch.sh --port <番号>       Changes the number it listens on (default 8765).
+                                  With nothing attached, it chooses a free number itself.
+  ./launch.sh --local-only        Limits listening to the inside of your own machine only.
+  bash stop.sh                    Stops it.
+
+● Where to open and how to log in
+  Where to open : http://localhost:8765   (the number you gave when you used --port)
+  How to log in : administrator cynovela / viewer demo
+                  The initial passwords are in the "ログイン" (Login) section of the
+                  bundled STARTUP.md.
+                  The administrator is asked to change the password on the first login.
+                  Administrative operations do not go through until the change is finished.
+
+The shared conda environment 'cynovela' is only read, never rewritten.
+
+Specifications for testing and development can be seen with ./launch.sh --help-all.
+
+=== 日本語 ===
+
 Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 
 ● 何も付けないとき

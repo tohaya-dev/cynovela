@@ -1,11 +1,162 @@
+# 変更履歴（Changelog）
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool built by an individual to
+> understand the concepts of AI platform tools hands-on. It is not a commercial
+> product nor an official implementation.
+> The implementation is entirely original, built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+This records the main changes to Cynovela in chronological order.
+
+---
+
+## Public repository and package form (2026-08-12)
+
+- In the public GitHub repository (cynovela), two forms were placed side by side:
+  falcon (the form that runs inside a container) and chewie (the form that runs directly on a Mac).
+- There are now four package forms: falcon all-in-one, falcon lightweight, chewie all-in-one, and chewie lightweight.
+- The all-in-one form (the form that bundles the models) is too large to fit in a single file, so it is
+  distributed **split into multiple files**. `HOW-TO-ASSEMBLE.md` and `SHA256SUMS` are placed in the same location as the split files;
+  assemble them and verify the SHA256 before use.
+- The lightweight form (the form that does not bundle the models) is distributed as **a single file**. At first startup you can choose to
+  download the models (no communication starts until you choose).
+
+## Alpha GA (2026-05-26)
+
+Alpha GA is the milestone for "a state in which the core flows work end to end as a personal learning tool". After going through Stage 0 to Stage 6, the main features of guardrails, PII detection, RAG, and MCP integration became operational.
+
+### Stage 0: Startup foundation
+
+- Organizing the CLI argument definitions with argparse
+- Introducing the 5 values of `--mode` (full / text / lite / lite-en / minimal)
+- Startup preflight (checking that the required models exist, and offering download or an alternative mode when they are not obtained)
+- Skipping the dialog during script execution with `CYNOVELA_NONINTERACTIVE=1`
+- Centralizing configuration with `cynovela.yaml`, plus environment variable overrides
+
+### Stage 1: Data persistence and FK integrity
+
+- Setting up the SQLite schema (`workspaces`, `collections`, `sources`, `files`, `chunks`, `audit_logs`, etc.)
+- Applying `PRAGMA foreign_keys = ON` to all connections
+- The `_purge_chunks_for_*()` family of helpers that clean up both SQLite and ChromaDB on deletion
+- Introducing `_stable_fid(path)` for `file_id` stability after a rescan
+- Thorough use of the audit recording helper `_log_audit(conn, action, target, detail)`
+
+### Stage 2: Guardrails and PII
+
+- 4 guardrail actions (`mask` / `exclude_from_rag` / `log_only` / `allow`)
+- Detection of 8 kinds of PII patterns (URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4)
+- Generation of dual-tier storage (raw / masked) at publish time
+- Protection of the raw body text by Fernet encryption (`vault_enc.py`)
+- 3-layer prompt injection countermeasures (input inspection, post-retrieval inspection, output inspection)
+
+### Stage 3: RAG pipeline
+
+- Hybrid fusion of BM25 and vector search (default: RRF, k=60)
+- BAAI/bge-m3 vector embeddings
+- Replaceable Reranker (CrossEncoder, FlashRank, Ollama, HTTP)
+- Advanced search features (MMR, Parent-Child chunking, Multi-Query, CRAG, HyDE, Adaptive RAG)
+- Adoption of a confidence threshold (cosine similarity 0.50)
+
+### Stage 4: Smart Ingestion
+
+- Automatic classification into 14 document categories
+- 3 kinds of classification engines (lightweight, LLM, hybrid)
+- Hash-based differential sync per path by DataSyncService (default interval 60 seconds)
+- Contextual Chunking (prepending metadata to the beginning of a chunk)
+
+### Stage 5: RBAC and auditing
+
+- Applying a SQL CHECK constraint for the 3 roles (admin / curator / viewer)
+- Setting up the 4 RBAC helper functions (`_require_admin`, `_require_authenticated`, `_require_role`, `_require_admin_or_self`)
+- Applying RBAC checks to 33 routers (242 places)
+- Prohibiting modification and deletion of audit_logs via the API
+
+### Stage 6: External integration
+
+- Publishing an MCP server (11 tools)
+- LM Studio / Ollama / OpenAI-compatible API connections
+- Setting up the flags for LAN sharing and Tailscale sharing (`--lan` / `--allow-tailscale` / `--allow-subnet`)
+- IP allowlist middleware
+
+---
+
+## History of main fixes
+
+### Security hardening
+
+- **Complete removal of user_id-only login**: The legacy path was deleted and username/password became mandatory.
+- **Making `/api/auth/users` admin-only**: The unauthenticated allowance in demo mode was abolished.
+- **Restricting the PII detection history to admin**: `/api/guardrails/pii-detections` was changed to admin only.
+- **Abolishing the chat popup route**: `/chat-popup` was changed to 410 Gone.
+
+### Bug fixes
+
+- **Strengthening path validation of `/api/sources`**: Prevents references to system paths.
+- **Validation of `llm_endpoint`**: Restricts changes that reference the internal network.
+- **Fixing the placement order of the system prompt**: Placed after retrieved_content (preventing overwriting by documents).
+- **Eliminating `INSERT OR REPLACE`**: Unified to `ON CONFLICT DO UPDATE` to prevent FK CASCADE from firing by mistake.
+- **Testability of `_publish_semaphore`**: Changed from module scope to dependency injection (carried over from Stage-3).
+
+### Quality improvements
+
+- Reduced pyright errors from 16 to 0
+- Protecting all contracts of the dependency constraints with import-linter
+- Expanded the pytest suite to 14 PHASEs / more than 405 assertions
+- Maintained 0 console errors
+
+---
+
+## Planned items toward Beta GA
+
+Beta GA is a milestone under consideration whose goal is "a state that can withstand simple shared use in addition to personal learning".
+
+### Authentication and authorization
+
+- Full introduction of JWT authentication (enforcing RBAC in all modes)
+- Issuing API keys per user
+
+### RAG quality
+
+- Reranker substance testing (quality verification of CrossEncoder, etc.)
+- Adjusting the chunking strategy (considering making Contextual Chunking the default)
+- Considering the introduction of structured answer templates
+
+### Stability
+
+- YAML persistence of the Embedding / Reranker settings (currently memory only)
+- Hardening the error recovery paths
+- Integrating DataSyncService with publish (currently a noop)
+
+### Integration expansion
+
+- Expanding the tools published by the MCP server
+- Expanding the Chunks viewer of KnowledgeCatalog (metadata search, citation tracking)
+
+### Backend diversification
+
+- Vector store support for Qdrant / LanceDB (currently a skeleton only)
+- Implementing MLX Embedding / Reranker (Apple Silicon optimization)
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# 変更履歴（Changelog）
 
 Cynovela の主要な変更内容を時系列で記録します。
 

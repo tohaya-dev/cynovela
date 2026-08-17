@@ -1,5 +1,72 @@
 # Changelog
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+## Phase 2 α-Stable (2026-05-16)
+
+### baseline
+- pytest: **758 passed / 1 failed (pre-existing) / 1132 skipped / 7 xfailed / 6 xpassed**
+- pre-commit run --all-files: all hooks exit 0 (ruff / ruff-format / pyright / import-linter)
+- regression zero (the 717 passed at the start was kept through all Stages)
+
+### Stage composition (10 new commits)
+- **Stage-2A restore + cleanup**: restored 7 files from the morning backup, unified the Part 1/1.5 fixtures
+- **Stage-2B**: 7 test files + 240 lines of Schemathesis (17 findings)
+- **Stage-2C**: 8 files left over from Stage-D + syrupy `test_snapshot.py` (24 cases)
+- **Stage-3-A**: 8 parallel bug fixes (2 authorization gaps + Stage-D #1/#2/#3/#4/#6/#8 + auth_failed audit)
+- **Stage-3-B**: ruff per-file-ignores (437 suppressed, 1 F821 was a real bug fix)
+- **Stage-3-C**: pyright 16 errors -> 0 (1 fix of the same bug family + 8 `# pyright: ignore`)
+- **Stage-3-D**: import-linter 2 contracts kept (protection of the foundational layer)
+- **Stage-3-E**: pre-commit all hooks exit 0 + 161 files of auto-format taken in
+- **Stage-4**: release preparation (make verify-live passed, phase-2-completion.md generated)
+
+### Fixed (Stage-3-A)
+- 2 authorization gaps: added `_require_admin` to DELETE/PATCH of `routers/workspaces.py`
+- Stage-D #1: removed the leftover `"editor"` at `rag.py:163`
+- Stage-D #2: removed the leftover `.doc` extension at `rag.py:288`
+- Stage-D #3: delegated `SUPPORTED_EXTENSIONS` of `server.py` to an import from `rag.py`
+- Stage-D #4: merged the `publish_jobs` table into `db.py SCHEMA`
+- Stage-D #6: added hypothesis warning suppression to `pyproject.toml filterwarnings`
+- Stage-D #8: adopted the unification of `JSONResponse → api_error` in `routers/agent.py`
+- F821: fixed the undefined `asyncio` at `routers/chat.py:484` with `_asyncio_mod.gather`
+- `auth_failed` audit: calls of `_audit_auth_failure` on 4 paths of `routers/auth.py`
+
+### Handover to Phase 3 (5 HIGH priority bugs, see reports/phase-2-completion.md)
+- Reversed DB -> Chroma order in `import_workspace`
+- `admin_cleanup_chromadb_orphans` TOCTOU race
+- WS separation: no physical boundary in ChromaDB
+- Missing boundary check for reusing a WS-A session in a WS-B chat
+- No detection of indirect prompt injection
+
+All of them can be detected by tests with XFAIL strict=False, and are detected automatically as XPASS after a fix.
+
+---
+
+## v11-beta (2026-05-10)
+
+### Added
+- MCP server with 11 tools (Ollama + LM Studio support)
+- Smart Ingestion: automatic file classification (14 categories)
+- Pagination for all list endpoints (workspaces, collections, sources, policies, audit logs)
+- Audit log improvements: ip_address, result, category fields; PII masking; failure logging
+- RAGChat workspace selector: search filter + recent workspace history
+- `/api/workspaces/selectable` lightweight endpoint
+
+### Fixed
+- MCP server: defensive response parsing for all 11 tools
+- Audit log: chat query PII was stored verbatim (now masked)
+- FastAPI version pinned to avoid unintended upgrades
+
+### Security
+- Audit logs now record authentication failures (401/403)
+- Chat query text is PII-masked before audit log storage
+
+---
+
+# 日本語
+
 ## Phase 2 α-Stable (2026-05-16)
 
 ### baseline

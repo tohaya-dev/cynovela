@@ -1,11 +1,173 @@
+# Cynovela
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built by an individual in order to
+> understand the concepts of AI infrastructure tools hands-on. It is not a commercial
+> product and not an official implementation.
+> The implementation is entirely original, and is made of an OSS stack:
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+Cynovela is a completely unofficial learning tool, created so that an individual can understand the concepts of AI infrastructure tools by working on them hands-on.
+
+---
+
+## 1. Project overview
+
+It is designed so that you can experience "what it is actually like to build one" for features such as the following, which the AI infrastructure tool it refers to provides.
+
+- Data governance (guardrails, PII detection, audit log)
+- Data ingest (automatic classification, metadata extraction, difference sync)
+- RAG (Retrieval-Augmented Generation) pipeline (hybrid search, Reranker, Multi-Query, CRAG, HyDE)
+- Role-based access control (RBAC)
+- MCP (Model Context Protocol) integration
+
+The implementation is entirely original and contains no source code of the referenced tool. It is built with OSS only.
+
+---
+
+## 2. Main features
+
+### 2-1. Data ingest (Smart Ingestion)
+
+- Automatic classification into 14 document categories (governance policy, incident report, technical guide, meeting minutes, audit report, and so on)
+- 3 classification engines (lightweight rule-based, local LLM, hybrid)
+- Automatic tracking of sources by hash difference sync
+
+### 2-2. Guardrails and PII detection
+
+- Detection of 8 PII (personal information) patterns (email, phone, credit card, My Number, IP address, and so on)
+- Exit masking by dual-tier storage (raw / masked)
+- Protection of the raw text by Fernet encryption
+- 3 layers of prompt injection countermeasures
+
+### 2-3. RAG pipeline
+
+- Hybrid merge of BM25 and vector search (RRF or weighted)
+- Vector embeddings by BAAI/bge-m3
+- Reranker (supports several, including CrossEncoder, FlashRank and Ollama)
+- Advanced search features including Multi-Query, CRAG, HyDE, MMR and Parent-Child chunking
+- Answer style per role (admin / reader)
+
+### 2-4. RBAC and auditing
+
+- 3 roles (admin / curator / viewer)
+- Recording of important operations into the audit_logs table
+- Tampering with the audit log via the API is prohibited
+
+### 2-5. External integration
+
+- LM Studio / Ollama / OpenAI-compatible API connection
+- MCP server (11 tools)
+- LAN sharing and Tailscale sharing
+
+---
+
+## 3. Technology stack
+
+| Layer | Technology |
+|---|---|
+| Web framework | FastAPI |
+| Persistence | SQLite |
+| Vector store | ChromaDB |
+| Embedding model | BAAI/bge-m3 (default), paraphrase-multilingual-MiniLM-L12-v2, paraphrase-MiniLM-L3-v2, TF-IDF |
+| Reranker | BAAI/bge-reranker-v2-m3, CrossEncoder, FlashRank, Ollama |
+| LLM | LM Studio, Ollama, OpenAI-compatible API, mock |
+| Encryption | cryptography (Fernet) |
+| PII detection | Regular expressions, GiNZA NER, Presidio |
+| Integration protocol | MCP (Model Context Protocol) |
+
+---
+
+## 4. Quick start
+
+### 4-1. Recommended environment
+
+- macOS (Apple Silicon recommended), Linux, Windows
+- Python 3.10 or later
+- A conda environment (recommended environment name: `cynovela`)
+
+### 4-2. Starting in demo mode
+
+```bash
+python server.py --demo
+```
+
+- `--demo`: starts using the demo database `store/db/demo.db` and the index `store/vector/demo/chroma`. Without it, the production `store/db/cynovela.db` and `store/vector/default/chroma` are used. Neither one disappears on restart.
+
+Open `http://127.0.0.1:8765` in a browser and the UI is shown.
+
+### 4-3. Starting in real LLM mode
+
+Start LM Studio, enable its OpenAI-compatible API, and then run the following.
+
+```bash
+python server.py --demo --lmstudio-url http://localhost:1234
+```
+
+### 4-4. Startup modes
+
+`--mode` accepts text / lite / lite-en (the switching is not wired up, so only the displayed name changes).
+
+| mode | Purpose | Required model |
+|---|---|---|
+| `text` | All text RAG features (default) | BAAI/bge-m3 |
+| `lite` | Switching is **not wired up** = actually BAAI/bge-m3 (behaves the same as text; only the displayed name changes) | — |
+| `lite-en` | Switching is **not wired up** = actually BAAI/bge-m3 (behaves the same as text; only the displayed name changes) | — |
+
+---
+
+## 5. Document list
+
+The following documents are placed under the `docs/` directory.
+
+| Document | Contents |
+|---|---|
+| `quickstart.md` | The shortest procedure for startup and initial setup |
+| `manual-complete.md` | A single manual covering all features |
+| `llm-connection.md` | Details of the LLM connection (LM Studio / Ollama / OpenAI-compatible) |
+| `mcp-guide.md` | MCP server integration and the list of exposed tools |
+| `lan-sharing.md` | Startup procedure for LAN sharing and Tailscale sharing |
+| `security-policy.md` | Known limitations and usage that is not recommended |
+| `changelog.md` | Release history |
+| `demo-general.html` | Interactive demo for a general audience (just open it in a browser) |
+| `demo-tech.html` | Interactive demo for engineers |
+
+---
+
+## 6. License
+
+The implementation code is written on the premise that it will be published as OSS. When you use it, respect the licenses of each dependency library (FastAPI, ChromaDB, BAAI/bge-m3, and so on).
+
+It contains none of the source code, trademarks, logos or official documentation of the AI infrastructure tool it refers to.
+
+---
+
+## 7. Disclaimer
+
+- This tool was created for an individual's learning and verification purposes.
+- Business use and production operation are not assumed.
+- It does not represent the official position of the referenced company or product.
+- The behavior of features, the API and the data structures may change without notice.
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# Cynovela
 
 Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かして理解するために作成した、完全非公式の学習用ツールです。
 

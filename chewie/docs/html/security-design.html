@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>セキュリティ設計 — Cynovela</title>
+  <title>Security Design / セキュリティ設計 — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,370 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Security Design</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About This Document</strong><br>
+      Cynovela is a completely unofficial learning tool, built by an individual to understand the concepts behind AI platform tools by hands-on work. It is not a commercial product nor an official implementation. Everything is originally implemented, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
+    </blockquote>
+    <p>Cynovela implements the <strong>guardrails (protection rules)</strong> and <strong>access control</strong> required when handling internal documents with RAG (retrieval-augmented generation), split into several layers. This document summarizes the design principles, the implementation status, and the known limitations.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">1. Three Principles of the Security Design</span>
+  </div>
+  <div class="slide-body">
+    <p>The security design of Cynovela stands on the following three principles.</p>
+    <ol>
+      <li><strong>Double-defense PII (personal information) masking</strong><br>At ingest time both raw and masked are stored, and at answer time an exit mask per role is applied as well. Even if one of the two stops working, the other one covers it.</li>
+      <li><strong>Encrypted originals (vault)</strong><br>The original body text is passed through Fernet encryption immediately before it is stored into SQLite and Chroma. The <code>enc:</code> prefix makes it idempotent and prevents double encryption.</li>
+      <li><strong>Three layers of prompt injection countermeasures</strong><br>Checks are made in three stages: input inspection → post-retrieval inspection → output inspection. On detection it is recorded in the audit log and blocked with HTTP 400.</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">2.1–2.2 Workspace Isolation</span>
+  </div>
+  <div class="slide-body">
+    <h3>2.1 Isolation layers per workspace</h3>
+    <table>
+      <thead><tr><th>Layer</th><th>Isolation method</th></tr></thead>
+      <tbody>
+        <tr><td>User assignment</td><td><code>workspace_users (workspace_id, user_id)</code></td></tr>
+        <tr><td>Guardrail policy</td><td><code>workspace_policies (workspace_id, policy_id)</code></td></tr>
+        <tr><td>Source binding</td><td><code>workspace_sources (workspace_id, source_id)</code></td></tr>
+        <tr><td>Collection</td><td>References <code>workspaces.id</code> by FK, deleted along with it via <code>ON DELETE CASCADE</code></td></tr>
+      </tbody>
+    </table>
+    <h3>2.2 Isolation in ChromaDB (vector search)</h3>
+    <p>At publish time, two kinds of vector collections, <code>{cid}__raw</code> and <code>{cid}__masked</code>, are created per collection. When searching from chat, the destination that is read is switched according to the role of the user.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">2.3 ACL Filter / 2.4 Known Limitations</span>
+  </div>
+  <div class="slide-body">
+    <p>The ACL filter works inside the search pipeline of <code>rag.py</code> (<code>rag_retrieve</code>).</p>
+    <pre><code># Vector 経路での ACL
+if user_role:
+    allowed_roles = metadata.get("allowed_roles")
+    if allowed_roles and user_role not in allowed_roles:
+        continue  # 除外</code></pre>
+    <p>On the BM25 path as well, the metadata is filled in first and then the ACL check is performed. The ACL filter is always enabled.</p>
+    <h3>2.4 Known limitations</h3>
+    <ul>
+      <li>ChromaDB is isolated by a logical boundary (the collection name), but a <strong>physical boundary (a separate directory, etc.) is not implemented</strong>. An improvement is planned toward Beta GA.</li>
+      <li>The cross-boundary check for session information of WS-A being reused in a chat of WS-B has a known gap, which is planned to be handled in Phase 3.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">3.1 Primary: Regular-Expression-Based PII Detection</span>
+  </div>
+  <div class="slide-body">
+    <p>Eight kinds of entities are detected (<code>guardrail.py</code>).</p>
+    <table>
+      <thead><tr><th>entity_type</th><th>Mask token</th><th>Pattern example</th></tr></thead>
+      <tbody>
+        <tr><td>URL</td><td><code>[MASKED:URL]</code></td><td><code>https?://...</code></td></tr>
+        <tr><td>EMAIL</td><td><code>[MASKED:EMAIL]</code></td><td><code>\b[\w.+-]+@[\w.-]+\.\w+\b</code></td></tr>
+        <tr><td>PHONE_JP</td><td><code>[MASKED:PHONE]</code></td><td>Mobile phone number</td></tr>
+        <tr><td>PHONE_LAND</td><td><code>[MASKED:PHONE]</code></td><td>Landline phone number</td></tr>
+        <tr><td>CREDIT</td><td><code>[MASKED:CREDIT]</code></td><td>Credit card number</td></tr>
+        <tr><td>MYNUMBER</td><td><code>[MASKED:MYNUM]</code></td><td>My Number (12 digits)</td></tr>
+        <tr><td>PASSPORT</td><td><code>[MASKED:PASSPORT]</code></td><td>Passport number</td></tr>
+        <tr><td>IPV4</td><td><code>[MASKED:IP]</code></td><td>IPv4 address</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">3.1 Secondary: Named Entity Recognition / 3.2 Detection Modes</span>
+  </div>
+  <div class="slide-body">
+    <h4>Secondary: named entity recognition + fallback (<code>utils/metadata/pii.py</code>)</h4>
+    <p>presidio (a personal information detection library) is used if available; if not, a regular-expression fallback is used. Both Japanese and English are supported.</p>
+    <ul>
+      <li>presidio family: <code>PERSON_JP</code>, <code>ORG_JP</code>, <code>LOC_JP</code>, <code>ADDRESS_JP</code>, <code>EMAIL_ADDRESS</code>, <code>PHONE_NUMBER</code>, <code>DATE_TIME</code>, and others</li>
+      <li>Fallback: <code>EMAIL</code>, <code>PHONE_JP</code>, <code>PHONE_INTL</code>, <code>IP_ADDRESS</code>, <code>MY_NUMBER</code>, <code>CREDIT_CARD</code>, <code>INTERNAL_URL</code></li>
+    </ul>
+    <h3>3.2 PII detection modes</h3>
+    <table>
+      <thead><tr><th>Value</th><th>Detection method</th><th>Speed</th></tr></thead>
+      <tbody>
+        <tr><td><code>lite</code></td><td>Regular expressions only</td><td>Lightweight and fast</td></tr>
+        <tr><td><code>standard</code> (default)</td><td>Regular expressions + GiNZA NER</td><td>Middle ground</td></tr>
+        <tr><td><code>quality</code></td><td>Regular expressions + GiNZA NER + detailed filtering</td><td>High accuracy, slow</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">3.3 Masking at Ingest / 3.4 Masking at Answer Time</span>
+  </div>
+  <div class="slide-body">
+    <h3>3.3 Masking at ingest time (Tier1)</h3>
+    <p>At publish time, two rows, raw and masked, are generated from each chunk and stored in parallel into both SQLite and Chroma.</p>
+    <pre><code>_meta_raw["tier"]    = "raw"
+_meta_masked["tier"] = "masked"
+all_docs_masked.append(_masked_chunk or "")</code></pre>
+    <h3>3.4 Masking at answer time (Tier2)</h3>
+    <pre><code>def tier_for_role(role: str) -&gt; str:
+    return "raw" if (role or "").strip() == "admin" else "masked"</code></pre>
+    <p>It is called on all four paths of <code>routers/chat.py</code>: the normal response, comparison A, comparison B, and SSE. For anyone other than admin, the exit mask is applied unconditionally.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">4. Fernet Encryption (vault)</span>
+  </div>
+  <div class="slide-body">
+    <h3>4.1 Design policy</h3>
+    <ul>
+      <li><strong>Target</strong>: the original body text (raw tier only). The masked tier is passed through</li>
+      <li><strong>Interface</strong>: through <code>enc_raw()</code> / <code>dec_raw()</code> of <code>vault_enc.py</code></li>
+      <li><strong>Idempotency</strong>: the <code>enc:</code> prefix is used as a marker to prevent double encryption</li>
+      <li><strong>Key</strong>: the Fernet key in the environment variable <code>CYNOVELA_SECRET_KEY</code> is used</li>
+    </ul>
+    <h3>4.2 Implementation locations</h3>
+    <pre><code>_fernet = Fernet(_KEY.encode() if isinstance(_KEY, str) else _KEY)</code></pre>
+    <pre><code>ENC_PREFIX = "enc:"
+
+def enc_raw(text):
+    """raw 本文を暗号化形式に揃える (冪等)"""
+
+def dec_raw(text):
+    """暗号化形式なら復号、それ以外はそのまま素通し (冪等)"""</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">4. Where Encryption Is Applied</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Location</th><th>Code</th></tr></thead>
+      <tbody>
+        <tr><td>SQLite <code>chunks</code></td><td><code>rag.py:1131</code></td></tr>
+        <tr><td>Insertion into Chroma</td><td><code>rag.py:1285</code></td></tr>
+        <tr><td>SQLite <code>parent_chunks</code></td><td><code>rag.py:1393</code></td></tr>
+      </tbody>
+    </table>
+    <p><code>tools/vault_enc_migrate.py</code> also provides a bulk encryption migration for existing data.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">5.1 Input Inspection (Prompt Injection)</span>
+  </div>
+  <div class="slide-body">
+    <p>Prompt injection wording contained in the query itself is detected with 14 patterns (both English and Japanese are supported).</p>
+    <pre><code>INJECTION_PATTERNS = [
+    r"ignore\s+(previous|all|prior)\s+instructions?",
+    r"forget\s+(everything|all|previous)",
+    r"you\s+are\s+now\s+",
+    r"new\s+instructions?:",
+    r"system\s*:\s*",
+    r"&lt;\s*system\s*&gt;",
+    r"\[\s*system\s+override\s*\]",
+    r"jailbreak",
+    r"pretend\s+you\s+are",
+    r"reveal\s+(all|your|the)\s+(documents?|data|instructions?|prompt)",
+    r"これまでの指示を(無視|忘れて)",
+    r"(全ての|すべての)(ドキュメント|文書|データ)を(教えて|表示)",
+]</code></pre>
+    <p>On detection, <code>PROMPT_INJECTION_BLOCKED</code> is recorded in the audit log and the request is blocked immediately with HTTP 400.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">5.2–5.3 Post-Retrieval Inspection / Output Inspection</span>
+  </div>
+  <div class="slide-body">
+    <h3>5.2 Post-retrieval inspection</h3>
+    <p>The same set of patterns is applied to the chunks in the search results as well, and poisoned chunks are excluded <strong>before</strong> the context is built.</p>
+    <pre><code>filtered_chunks, _pi_filtered_count = filter_poisoned_chunks(filtered_chunks)</code></pre>
+    <h3>5.3 Output inspection</h3>
+    <p>The response of the LLM is checked for exfiltration (information leakage) keywords.</p>
+    <pre><code>EXFILTRATION_PATTERNS = [
+    r"\bHACKED\b",
+    r"\bPWNED\b",
+    r"SECRET-ALPHA-TOKEN",
+    r"\[\s*SYSTEM\s+OVERRIDE\s*\]",
+]</code></pre>
+    <p>In addition, an extra <strong>LLM-judge-based</strong> decision is provided by <code>llm_judge_pi</code> in <code>utils/metadata/pii.py</code> (Stage R7 C-5).</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">5.4 Indirect Attacks / 6. Authentication and Authorization / 7. Audit Log</span>
+  </div>
+  <div class="slide-body">
+    <h3>5.4 Indirect attacks through documents (known limitation)</h3>
+    <p>Prompt injection wording mixed into ingested documents is guarded by one stage in the post-retrieval inspection, but a <strong>detection mechanism dedicated to indirect prompt injection</strong> is listed as one of the HIGH priority bugs to be added in Phase 3.</p>
+    <h3>6. Authentication and authorization</h3>
+    <ul>
+      <li>Roles: the three kinds <code>admin</code> / <code>curator</code> / <code>viewer</code> (fixed by a CHECK constraint in the DB)</li>
+      <li>Role check helpers: <code>_require_admin</code>, <code>_require_authenticated</code>, <code>_require_role</code>, <code>_require_admin_or_self</code></li>
+      <li>Calls to the role checks are spread over about 242 locations under the routers</li>
+      <li>One-click entry has been removed (username / password are required)</li>
+    </ul>
+    <h3>7. Audit log</h3>
+    <ul>
+      <li>Important operations are recorded with <code>_log_audit(conn, action, target, detail)</code></li>
+      <li><strong>Deletion and modification through the API are prohibited</strong> (tamper prevention)</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">8. Network Control / 9. Prompt Placement Order</span>
+  </div>
+  <div class="slide-body">
+    <h3>8.1 IP allowlist</h3>
+    <table>
+      <thead><tr><th>Startup flag</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>Default</td><td><code>127.0.0.1</code> / <code>localhost</code> only</td></tr>
+        <tr><td><code>--lan</code></td><td>Published on the LAN (<code>host=0.0.0.0</code>)</td></tr>
+        <tr><td><code>--allow-tailscale</code></td><td>Adds the Tailscale subnet (<code>100.64.0.0/10</code>)</td></tr>
+        <tr><td><code>--allow-subnet</code></td><td>Adds a custom subnet (can be specified more than once)</td></tr>
+      </tbody>
+    </table>
+    <p>Access from an IP that is not allowed returns <strong>HTTP 403 Forbidden</strong>.</p>
+    <h3>9. Placement order of the system prompt</h3>
+    <p>When the LLM prompt is composed, the design places <strong>the system prompt "after" retrieved_content</strong>. If it were placed in front, it could be overwritten by the body text of the ingested documents.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <span class="doc-name">Security Design</span>
+    <span class="slide-title">10. Known Limitations of Alpha GA</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Item</th><th>State</th></tr></thead>
+      <tbody>
+        <tr><td>Forced authentication</td><td>Resolved (2026-07-29). Only the JWT from <code>/api/auth/login</code> is accepted, and authentication is enforced even when started with <code>--demo</code></td></tr>
+        <tr><td>WS physical boundary</td><td>A physical boundary at the ChromaDB level is not implemented. Planned for Phase 3</td></tr>
+        <tr><td>WS-A → WS-B cross-boundary check</td><td>Has gaps. Planned for Phase 3</td></tr>
+        <tr><td>Indirect prompt injection detection</td><td>No dedicated mechanism. Planned to be added in Phase 3</td></tr>
+        <tr><td>Reversed DB → Chroma order in <code>import_workspace</code></td><td>Known bug. Planned to be fixed in Phase 3</td></tr>
+        <tr><td>Race condition in <code>admin_cleanup_chromadb_orphans</code></td><td>Known bug. Planned to be fixed in Phase 3</td></tr>
+        <tr><td>Persistence of the Embedding / Reranker settings</td><td>Kept in memory only. Returns to the defaults on restart</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px; color: var(--cyn-muted); font-size: 12px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning purposes / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-16">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">セキュリティ設計</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +582,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">1. セキュリティ設計 3 原則</span>
@@ -246,7 +601,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">2.1〜2.2 ワークスペース分離</span>
@@ -271,7 +626,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">2.3 ACL フィルター / 2.4 既知制限</span>
@@ -296,7 +651,7 @@ if user_role:
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">3.1 一次：正規表現ベース PII 検出</span>
@@ -323,7 +678,7 @@ if user_role:
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">3.1 二次：固有表現抽出 / 3.2 検出モード</span>
@@ -351,7 +706,7 @@ if user_role:
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">3.3 取込時マスキング / 3.4 回答時マスキング</span>
@@ -373,7 +728,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">4. Fernet 暗号化（vault）</span>
@@ -402,7 +757,7 @@ def dec_raw(text):
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">4. 暗号化適用箇所</span>
@@ -424,7 +779,7 @@ def dec_raw(text):
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">5.1 入力検査（プロンプトインジェクション）</span>
@@ -453,7 +808,7 @@ def dec_raw(text):
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-27">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">5.2〜5.3 retrieval 後検査 / 出力検査</span>
@@ -478,7 +833,7 @@ def dec_raw(text):
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-28">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">5.4 間接攻撃 / 6. 認証・認可 / 7. 監査ログ</span>
@@ -505,7 +860,7 @@ def dec_raw(text):
   </div>
 </div>
 
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-29">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">8. ネットワーク制御 / 9. プロンプト配置順</span>
@@ -531,7 +886,7 @@ def dec_raw(text):
   </div>
 </div>
 
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-30">
   <div class="slide-header">
     <span class="doc-name">セキュリティ設計</span>
     <span class="slide-title">10. Alpha GA 既知制限</span>
@@ -559,9 +914,9 @@ def dec_raw(text):
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 15</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 30</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

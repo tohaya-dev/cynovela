@@ -1,5 +1,286 @@
 # 運用ガイド
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool built by an individual to
+> understand the concepts of AI infrastructure tools by working on them by hand.
+> It is not a commercial product or an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+This document collects the procedures for starting and stopping, backup, logs, and user management needed to operate Cynovela day to day.
+
+---
+
+## 1. Normal Startup and Shutdown
+
+### Startup
+
+```bash
+conda activate cynovela
+python server.py --demo
+```
+
+For details of the options, see the deployment guide.
+
+### Shutdown
+
+Send `Ctrl + C` once in the terminal. The FastAPI / Uvicorn shutdown hook runs, and a stop request is propagated to any Publish job in progress (the SSE path).
+
+### Background Startup
+
+You can also keep it resident with `nohup`, or with a terminal multiplexer such as `tmux` / `screen`.
+
+```bash
+nohup python server.py --demo > ~/cynovela.out 2>&1 &
+```
+
+---
+
+## 2. Backing Up the Database and ChromaDB
+
+### Default Storage Locations
+
+Cynovela's data is stored under `~/.cynovela/`.
+
+| Use | Path | Environment variable for override |
+|------|------|------------|
+| SQLite DB (normal) | `~/.cynovela/db/cynovela.db` | `CYNOVELA_DB` |
+| SQLite DB (demo) | `~/.cynovela/db/demo.db` | `CYNOVELA_DB` |
+| ChromaDB (normal) | `~/.cynovela/vector/default/chroma` | `CYNOVELA_CHROMA` |
+| ChromaDB (demo) | `~/.cynovela/vector/demo/chroma` | `CYNOVELA_CHROMA` |
+| Backups | `~/.cynovela/backups` | `CYNOVELA_BACKUP_DIR` |
+| Models | `~/.cynovela/models` | (can be specified individually with `cynovela.yaml.models.*.path`) |
+| Logs | `~/.cynovela` | `CYNOVELA_LOG_DIR` |
+
+> The above are the storage locations of the host (conda) edition. The actual location for the host edition is `store/` under the folder where the package was extracted. In the container edition, the DB and vector data are stored in named volumes, and the ingest entry point bind-mounts the ingest sources passed at startup (multiple allowed) read-only at `/app/ingest/<inner name>`. The former default ingest folder `~/Cynovela` has been abolished.
+
+### Manual Backup
+
+With the server stopped, copy the directories above.
+
+```bash
+# サーバー停止後に実行
+TS=$(date +%Y%m%d-%H%M%S)
+mkdir -p ~/cynovela-backups/$TS
+cp -R ~/.cynovela/db ~/cynovela-backups/$TS/db
+cp -R ~/.cynovela/vector ~/cynovela-backups/$TS/vector
+```
+
+### Restore
+
+```bash
+# サーバー停止後に実行
+cp -R ~/cynovela-backups/20260526-093000/db ~/.cynovela/db
+cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector
+```
+
+### Points to Note
+
+- **Always back up and restore SQLite and ChromaDB together.** If you restore only one of them, the consistency between the `chunks` table and the vector IDs breaks.
+- Deleting a source / workspace / collection is implemented so that both SQLite and ChromaDB are cleaned up. Keep this principle of "both from the same snapshot" in backup operations as well.
+- Starting with `--demo` uses `db/demo.db` and `vector/demo/chroma`; starting without it, for production, uses `db/cynovela.db` and `vector/default/chroma`. Neither one is wiped on every startup — what you write stays as it is. Do not mix them up with production operation.
+
+---
+
+## 3. Log Files
+
+### Log Level
+
+Controlled by `logging.level` (or `server.log_level`) in `cynovela.yaml`. The default is `INFO`.
+
+```yaml
+logging:
+  level: INFO
+  request_id: true   # 全リクエストに X-Request-ID を付与
+```
+
+### Request ID
+
+When you enable `request_id: true`, an `X-Request-ID` header is added to all API responses. It can be used during troubleshooting to link requests on the client side with logs on the server side.
+
+### Preflight Log
+
+The preflight check at startup outputs logs such as the following.
+
+```
+[Cynovela] PII detection mode: standard (from cynovela.yaml)
+```
+
+---
+
+## 4. Exporting the Audit Log
+
+### What the Audit Log Is
+
+Cynovela records important operations in the `audit_logs` table in SQLite.
+
+Main recorded targets:
+
+- Creation and deletion of workspaces, collections, and sources
+- Execution and completion of Publish
+- Chat (questions and answers)
+- PII detection (`PII_DETECTED` / `pii_detected`)
+- Prompt injection detection (`PROMPT_INJECTION_BLOCKED`)
+- Authentication failures
+
+### Tamper Prevention
+
+`audit_logs` cannot be deleted or modified through the API. Keep this principle in your operating policy as well.
+
+### Viewing from the GUI
+
+After logging in with the `admin` role, you can view them with filters on the "監査ログ" (audit log) screen.
+
+### Via the API
+
+- `GET /api/guardrails/pii-detections` — aggregates PII detections from `audit_logs` (administrator required)
+- `GET /api/pii-detections` — aggregates from the `chunks` table (administrator required)
+- `GET /api/audit-logs` — retrieves the audit log (administrator required)
+
+### Extracting Directly from SQLite
+
+If you want to export to CSV or similar, SELECT directly from a SQLite client.
+
+```bash
+sqlite3 ~/.cynovela/db/cynovela.db \
+  "SELECT timestamp, action, target, detail FROM audit_logs ORDER BY timestamp DESC LIMIT 100;"
+```
+
+---
+
+## 5. User Management
+
+### Roles
+
+Cynovela has 3 kinds of roles.
+
+| Role | Permissions |
+|--------|------|
+| `admin` | All features (user management, system settings, viewing the PII detection history, and so on) |
+| `viewer` | Viewing only |
+
+> Names such as `curator` / `data-scientist` are accepted as backward-compatible values, but in the current implementation they are normalized to `viewer` and have no specific permissions. The roles held by the DB are the 2 values `admin` / `viewer`.
+
+### The Initial Administrator
+
+An administrator user is created at first startup. The user name and password can be overridden with environment variables.
+
+| Environment variable | Use | Default |
+|---------|------|------|
+| `CYNOVELA_ADMIN_USERNAME` | User name of the first administrator | `cynovela` |
+| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | Password of the first administrator | (If neither the env var nor `auth.admin_initial_password` in `cynovela.yaml` is set, a password change is forced at first login. No known fixed password is distributed. Set a value only if you want to fix it.) |
+
+### Login Information of the Shipped demo.db
+
+The `demo.db` distributed with `--demo` already has the following accounts loaded.
+
+| User name | Role | Password |
+|-----------|--------|-----------|
+| `cynovela` | admin | A change is forced at first login (no fixed password is distributed) |
+| `demo` | viewer | See `viewer_password` in the bundled credential file (`*.admin-password.txt`, received separately from the package tar). No fixed password is distributed |
+
+### Adding and Deleting Users, and Changing Passwords
+
+After logging in with the administrator role, you can do this from the "ユーザー管理" (user management) screen. Operation via the API is also possible, but the user management endpoints are protected by `_require_admin` or `_require_admin_or_self` (the person themselves or an administrator only).
+
+### Vault Access and Masking by Role
+
+- `admin` → searches the raw (original text) vault. No exit masking in the answer display.
+- `viewer` (`curator` and so on are normalized to viewer) → searches the masked vault. Exit masking is applied.
+
+> However, when an external (non-local) LLM is used, crag-egress-guard prevents the raw preview (context_preview) from being sent outside even for an administrator (CRAG is skipped). Note that it is not the case that "administrator = raw text is always passed to the external LLM."
+
+For details, see "admin / viewer の見え方の違い" in the hands-on guide (advanced edition).
+
+### Authentication
+
+API authentication is done with the HTTP `Authorization` header. The token is a JWT issued by `POST /api/auth/login`. The old `Bearer demo-token-{user_id}` form has been abolished and is not accepted.
+
+> **Note**: Production authentication with JWT is unimplemented as of alpha GA. For details, see "既知の制限" (known limitations).
+
+### IP Access Control
+
+By default the access source is not restricted (the allowlist works only when you pass `--allow-tailscale` / `--allow-subnet`). To close it to the inside of your own machine only, add `--local-only`.
+
+---
+
+## 6. Health Checks and Monitoring
+
+### Main Health Endpoints
+
+`/api/health` and other monitoring endpoints for administrators are provided (protected by `_require_admin`).
+
+### Publish History
+
+The Publish result of each collection is recorded in the `publish_history` table.
+
+Recorded items:
+
+- `workspace_id`
+- `timestamp`
+- `doc_count`
+- `chunk_count`
+- `pii_count`
+- `excluded_count`
+- `avg_chunk_chars`
+- `elapsed_seconds`
+
+They can be viewed from the "履歴タブ" (history tab) of the Workspace detail screen in the GUI.
+
+### Circuit Breaker
+
+When failures of LLM or external API calls exceed a certain number, the circuit breaker OPENs and calls are stopped temporarily. The behavior can be adjusted in the `circuit_breaker` section of `cynovela.yaml`.
+
+```yaml
+circuit_breaker:
+  enabled: true
+  failure_threshold: 3
+  recovery_timeout_seconds: 30
+```
+
+---
+
+## 7. Notifications (Email)
+
+Email notification via SMTP is supported (disabled by default).
+
+```yaml
+notifications:
+  smtp:
+    enabled: false
+    host: smtp.gmail.com
+    port: 587
+    username: ""
+    password: ""              # 環境変数 CYNOVELA_SMTP_PASSWORD 推奨
+    from_address: ""
+    to_addresses: []
+    notify_on:
+      - scan_completed
+      - scan_error
+      - circuit_breaker_opened
+```
+
+---
+
+## 8. Operational Notes
+
+- The `--demo` mode is for verification. The demo DB (`db/demo.db`) is not wiped on every startup — what you write keeps accumulating, so do not put production data in it.
+- The `--mock` mode that used to exist has been removed. If you specify it now, it stops with an error.
+- Take backup snapshots of "SQLite and ChromaDB at the same time." Restoring only one of them breaks consistency.
+- `audit_logs` needs tamper prevention. Avoid careless writes to the SQLite file itself.
+
+---
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。

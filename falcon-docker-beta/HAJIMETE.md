@@ -1,5 +1,201 @@
 # はじめての方へ — 開いてから最初の質問が返るまで
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+With this one sheet alone, you can get as far as your first question coming back.
+**The path that needs only the screen is written first.** The path that uses a terminal is collected at the end.
+
+---
+
+## 0. Things to know first (this is where most people get stuck)
+
+- **When you first log in as the administrator, you are always told "change your password".**
+- **Until you have finished changing it, all administrative operations (adding an ingest source,
+  ingesting documents, changing settings) are refused.** Change it first.
+- The viewer (demo) is not asked to change anything. However, a viewer cannot ingest.
+
+This package runs inside a container. It needs podman.
+
+---
+
+## 1. Start it
+
+### There are 2 ways to start it, and 2 kinds of content to start with
+
+**Start it by clicking (the easiest)**
+
+Double-click **`Cynovela-start.command`** inside the folder you extracted.
+To stop it, double-click **`Cynovela-stop.command`**.
+To add a folder to be read, double-click **`Cynovela-add-folder.command`**.
+
+**This procedure comes up with an empty database (production).** To try it with the bundled dummy documents, type `./launch.sh --demo` from a terminal.
+As soon as it opens, you can ask questions about the bundled documents. Both the administrator and the viewer can get in with the passwords in section 2 below.
+
+When you want to use it with only your own documents, type it from a terminal with **no arguments**. That one starts from **an empty database**
+(production). There is no viewer in an empty production instance (you log in as the administrator, ingest documents, and then use it).
+
+| Content to start with | What happens | How to bring it up |
+|---|---|---|
+| Demo | It comes up with the bundled dummy documents **already ingested** (you can ask questions right away) | `./launch.sh --demo` from a terminal |
+| Production | It comes up with an empty database. When there are 0 ingest sources, the dummy documents inside this package become the ingest source | Double-click `Cynovela-start.command`, or `./launch.sh` (no arguments) |
+
+**Start it from a terminal**
+
+Inside the folder you extracted, run the following single line. **When you use it from a terminal, this is the only entry point.**
+
+```bash
+./launch.sh --demo
+```
+
+This comes up with the bundled dummy documents already ingested.
+When you use your own documents, run `./launch.sh` with nothing added.
+
+If something needed to run it is missing, it says "足りないものがあるので起動しません"
+(something is missing, so it will not start) **before starting**.
+In that case, run the following.
+
+```bash
+./launch.sh --setup
+```
+
+You can print the list of what it can do at any time with this.
+
+```bash
+./launch.sh --help
+```
+
+---
+
+## 2. Open it and log in
+
+Open **http://localhost:8801** in a browser.
+
+| | |
+|---|---|
+| Administrator user name | `cynovela` |
+| Viewer user name | `demo` |
+
+The first passwords are written in **the "ログイン" (Login) section of the bundled `STARTUP.md`**.
+
+When you log in as the administrator, you are asked to change the password. **Be sure to change it here.**
+Until you have finished changing it, everything beyond this point is refused.
+
+---
+
+## 3. Add the folder to be read (the ingest source)
+
+The only thing this app can read is **the folders you added as ingest sources**.
+A place you have not added cannot be opened, not even by the administrator.
+
+When you have added nothing, **the dummy documents inside this package (`dummy-corpus`) are the ingest source from the start.**
+If you only want to try it as is, you may skip this section.
+
+### In this form, you cannot browse to a folder from inside the screen and add it
+
+Because this package runs inside a container, it cannot browse the folders of your machine from the screen.
+**Listing and "外す" (remove) can be done from the screen (Settings → 📁 取り込み元).** When you press "取り込み元を足す" (add an ingest source)
+on the screen, it shows the one line to type in a terminal, in a copyable form.
+
+Adding is done in one of the following two ways.
+
+- Double-click **`Cynovela-add-folder.command`** inside the package
+- Type it from a terminal:
+
+```bash
+./launch.sh --add
+```
+
+A folder chooser appears. What you choose stays in the backup.
+**What you added becomes readable only after you start it up again.** Until then, the status column of the list shows
+「起動し直すと読み込めます」 (it becomes readable after you restart).
+
+---
+
+## 4. Ingest documents
+
+1. Open **Data Sources** on the left, and press **「+ ソース追加」** (add a source) at the top right
+2. Enter a name, and choose a folder inside the ingest source with **「参照」** (browse)
+3. Choose where to add it (the workspace) and confirm
+4. In **Collections** on the left, create the unit to be ingested and publish it
+
+While it is ingesting, the progress appears on the screen. The stages proceed in this order.
+
+```
+読み込み中 → チャンク書き込み中 → マスキング処理中 → マスキング処理中(まとめ) → Embedding生成中 → 完了
+```
+
+**Ingestion continues even if you close the screen.** When you open it again, it comes back to the current stage and item number.
+With a large document the masking stage takes time, but as long as the count keeps moving, it is making progress.
+
+---
+
+## 5. Ask a question
+
+Open **RAG Chat** on the left, choose a workspace, and type your question.
+Below the answer, the documents it was based on (the citations) are lined up.
+
+---
+
+## 6. Stop it and bring it back up
+
+```bash
+bash stop.sh
+```
+
+**You may run `./launch.sh` again while it is still up.**
+It stops what is already up and then brings it back up. If it could not stop it,
+it prints what is up and how to stop it by hand on the screen, and stops there.
+
+---
+
+## 7. The path you take in a terminal (summary)
+
+These are the same as what `./launch.sh --help` prints.
+
+| What you type | What happens |
+|---|---|
+| `./launch.sh` | Starts in production (an empty database). If there are 0 ingest sources, it uses the bundled dummy documents |
+| `./launch.sh --demo` | Starts with the bundled dummy documents already ingested |
+| `./launch.sh --setup` | Installs what is needed to run it (it stops once it has installed them) |
+| `./launch.sh --check` | Does not start; only checks the conditions for running and writes them to a single file |
+| `./launch.sh --add` | Shows a folder chooser and adds an ingest source |
+| `./launch.sh --add-path <パス>` | Adds an ingest source by specifying the location |
+| `./launch.sh --list` | Lists the ingest sources you have added |
+| `./launch.sh --remove <名前>` | Removes an ingest source (the name is the one shown by `--list`) |
+| `./launch.sh --ingest <パス>` | Adds it and starts right away |
+| `./launch.sh --port <番号>` | Changes the port it opens on (default 8801) |
+| `./launch.sh --local-only` | Narrows what it opens on to your own machine only |
+| `./launch.sh --engine <値>` | Specifies the executable to use for the container (a name or an absolute path). The setting with the same meaning: `engine:` under `container:` in `cynovela.yaml` |
+| `./launch.sh --engine-command <値>` | Replaces the start command itself (empty by default). The setting with the same meaning: `engine_command:` under `container:` in `cynovela.yaml` |
+| `./launch.sh --sync-labels <トークン>` | Makes the display names of the ingest sources match the running instance |
+| `./launch.sh <モード>` | `text` / `lite` / `lite-en` (default `text`) |
+| `bash stop.sh` | Stops it |
+
+When you type an option it does not know, it does not die silently — it prints this list (the help).
+
+---
+
+## 8. When it does not work
+
+| What appears on the screen | What to do |
+|---|---|
+| 「取り込み元がまだ1件もありません」 (there is not a single ingest source yet) | Double-click `Cynovela-add-folder.command`, or add one from a terminal (section 3): `./launch.sh --add`. **Because this form runs in a container, you cannot browse to a folder from inside the screen and add it** (listing and "外す" can be done on the screen at Settings → 📁 取り込み元) |
+| 「初回パスワードの変更が必要です」 (the initial password must be changed) | Section 0. Change the password first |
+| 「ポート 8801 を別のものが使っています」 (port 8801 is used by something else) | Bring it up on another number: `./launch.sh --port <別の番号>` |
+| 「足りないものがあるので起動しません」 (something is missing, so it will not start) | Run `./launch.sh --setup` |
+| The progress looks stuck | If the count is moving, it is making progress. The masking stage takes time |
+
+---
+
+This guide is `HAJIMETE.md` inside the package.
+For more detail, see the bundled `README.md` and `STARTUP.md`.
+
+---
+
+# 日本語
+
 この1枚だけで、最初の質問が返るところまで行けます。
 **画面だけで済む道を先に書いています。** ターミナルを使う道は後ろにまとめました。
 

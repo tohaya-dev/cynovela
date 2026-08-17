@@ -1,3 +1,51 @@
+=== English ===
+
+Cynovela entry point — this one file is all the recipient has to type.
+This form runs in a container.
+
+● When you add nothing
+  ./launch.sh                     It starts by having you answer the questions with a number.
+                                  (what to have it read / which configuration to run with)
+
+● Deciding up front instead of answering with numbers
+  ./launch.sh --demo              Starts with the bundled dummy documents loaded.
+  ./launch.sh --add               Shows a folder chooser and adds the folder to be read.
+  ./launch.sh --list              Lists the folders you have added so far.
+  ./launch.sh --remove <名前>     Removes a folder you added (the name is the one shown by --list).
+                                  ※ You can also view and remove them on the screen, at 設定 → 取り込み元.
+                                  ※ Because this form runs in a container, what you added becomes
+                                    readable only after you type ./launch.sh again.
+
+● Install / check
+  ./launch.sh --setup             Prepares what can be prepared inside this package.
+  ./launch.sh --check             Does not start; only checks the conditions for running
+                                  and writes them to a single file.
+
+● Other
+  ./launch.sh --port <番号>       Changes the port it opens on (default 8801).
+                                  When you add nothing, it picks a free number by itself.
+  ./launch.sh --local-only        Narrows what it opens on to your own machine only.
+  ./launch.sh --engine <値>       Specifies the executable to use for the container (a name or an absolute path).
+                                  The setting with the same meaning: engine: under container: in cynovela.yaml
+  ./launch.sh --engine-command <値>
+                                  Replaces the start command itself (empty by default).
+                                  The setting with the same meaning: engine_command: under container: in cynovela.yaml
+  bash stop.sh                    Stops it (does not delete it).
+
+● Where it opens and how to log in
+  Where it opens : http://127.0.0.1:8801   (the number you gave, when you used --port)
+  How to log in  : administrator cynovela / viewer demo
+                   The first passwords are in the "ログイン" (Login) section of the bundled STARTUP.md.
+                   The administrator is asked to change the password on the first login.
+                   Until that is finished, administrative operations do not go through.
+
+This form has no python to choose (the python that runs the app is inside the container,
+and neither the host's python nor conda is used).
+
+Options for testing and development can be seen with ./launch.sh --help-all.
+
+=== 日本語 ===
+
 Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 この系統はコンテナで動きます。
 

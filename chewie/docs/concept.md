@@ -1,11 +1,107 @@
+# Cynovela のコンセプト
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool built by an individual to
+> understand the concepts of AI infrastructure tools by working on them by hand.
+> It is not a commercial product or an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+## The Problems Cynovela Solves
+
+Cynovela is a learning implementation built to assemble and understand, by hand, a pipeline that connects in-house documents to an LLM "safely, reproducibly, and while leaving records." Concretely, it faces the following three problems.
+
+**1. The LLM does not know knowledge specific to the organization**
+
+A general-purpose LLM has not learned an organization's internal rules, procedures, or meeting minutes. To answer questions such as "what do our rules say about this?" or "what policy was decided at last week's meeting?", you need a RAG (Retrieval-Augmented Generation) mechanism that searches the related documents each time and passes them to the LLM as context.
+
+**2. Confidential information cannot be sent to the cloud**
+
+In-house documents often contain personal information and trade secrets, and it is normal that they cannot be sent to an external API. From the standpoint of data sovereignty, audit requirements, and compliance, document text, embedding generation, and LLM inference all have to be completed locally.
+
+**3. You do not want to index documents that contain PII**
+
+If raw personal information remains in the search index, there is a risk of unintended leakage through answers. You need a two-stage design that masks at ingest time to put the search index into a safe state (A-2 Tier1), and additionally passes answers through masking at answer time (A-2 Tier2).
+
+## Design Principles
+
+Cynovela's design follows the principles below.
+
+**Local first**
+
+In the default configuration the FastAPI server binds to `0.0.0.0` and can be reached from other terminals on the same network (original specification). To close it to your own machine only, specify `--local-only` explicitly. The IP allowlist middleware (A-5 §4) works only when `--allow-tailscale` / `--allow-subnet` is passed; when not specified, everything passes through. Embedding (BGE-M3 and so on) runs locally, and the LLM connects to a local inference server with an OpenAI-compatible /v1 API (`http://localhost:1234` by default).
+
+**Two-stage PII protection**
+
+At Tier1 (ingest time), the `raw` and `masked` lines are stored physically separated. The `chunks` table in SQLite gets rows with the `__masked` suffix, and ChromaDB gets two Collections, `{cid}__raw` / `{cid}__masked` (A-2 §6). Tier2 (answer time) is `_mask_for_viewer(text, user)`, which runs at 4 places in the chat response path and forcibly applies masking for anyone other than `admin` (A-2 §7). An administrator sees raw text pass through in the answer display, but when an external (non-local) LLM is used, crag-egress-guard prevents even an administrator's raw preview (context_preview) from being sent outside (locality is judged before sending, and the CRAG preview is skipped for non-local destinations).
+
+**Provider abstraction**
+
+The LLM, Embedding, VectorStore, Reranker, and Classifier layers can each be switched through an abstract base class (A-5 §3, A-6 §1). The defaults are LM Studio + BGE-M3 + ChromaDB + NoReranker + a rule-based classifier, but by editing `cynovela.yaml` you can replace them with other providers. Some of them, such as MLX / Qdrant / LanceDB / GraphRAG, are skeletons only (`NotImplementedError`) and are planned for future implementation.
+
+**Audit logs are mandatory**
+
+Important operations (creation and deletion of Source / Workspace / Collection, Publish, Chat, PII detection, prompt injection blocking, authentication failure) always go through `_log_audit(conn, action, target, detail)` and are recorded in the `audit_logs` table. Deletion and modification via the API are prohibited (CLAUDE.md design constraint).
+
+**Three layers of prompt injection countermeasures**
+
+`routers/chat.py` has a three-stage defense built in: (1) input inspection (14 English and Japanese patterns), (2) exclusion of poison chunks after retrieval, and (3) output inspection (the 4 patterns `HACKED` / `PWNED` / `SECRET-ALPHA-TOKEN` / `[SYSTEM OVERRIDE]`) (A-2 §9). On detection it blocks with HTTP 400 and records `PROMPT_INJECTION_BLOCKED` in the audit log. The principle of placing the system prompt "after" retrieved_content (CLAUDE.md security) is also there to prevent overwrite attacks by documents.
+
+## Basis for the Independent Implementation
+
+Cynovela does not refer to the implementation of the AI infrastructure tools it was inspired by, and there is no compatibility in source code, API specification, or data model. All design decisions are the individual's own responsibility.
+
+**A configuration assembled from OSS only**:
+
+| Part | Role |
+|------|------|
+| FastAPI + uvicorn | HTTP API server |
+| SQLite | Metadata, audit logs, chunk text (foreign keys enabled, `INSERT OR REPLACE` prohibited) |
+| ChromaDB | Vector store (two lines of Collections, raw / masked) |
+| BGE-M3 | Multilingual embedding (default text mode) |
+| BM25Okapi + fugashi/MeCab | Lexical search and Japanese morphological analysis |
+| cryptography.fernet | Vault encryption (`enc:` prefix, idempotent) |
+| presidio + GiNZA | Secondary path for PII detection (NER family) |
+| Local LLM | OpenAI-compatible /v1 API (LM Studio and so on) |
+
+No commercial features, support, or SLA are provided. All implementation decisions and trade-offs are the individual's own.
+
+## What "Local First" Means
+
+In Cynovela, "local first" means the following concrete behavior.
+
+- **Data stays on the local disk**: SQLite and ChromaDB are created under `~/.cynovela/` by default (can be overridden with the `CYNOVELA_DB` / `CYNOVELA_CHROMA` environment variables, A-1 §5).
+- **Embedding runs on the local CPU/GPU**: Nominally you can choose from BGE-M3 (default text mode), MiniLM (lite / lite-en modes), and TF-IDF (minimal mode) (A-1 §2), but switching to `lite` / `lite-en` / `minimal` is **not wired up**, and in practice BGE-M3 is used whichever one you specify. A preflight check runs at first startup and asks for confirmation before fetching not-yet-downloaded models from HuggingFace (with `CYNOVELA_NONINTERACTIVE=1` it stops immediately without a prompt, A-1 §6).
+- **LLM inference goes through a local server**: `http://localhost:1234` (LM Studio) by default. With `--lmstudio-url` you can also connect to an OpenAI-compatible server on another machine, but explicit specification is required.
+- **External transmission requires explicit configuration**: switching `reranker.provider` to `cohere` or similar, setting `execution.llm_provider` to `openrouter` / `claude_api`, adding `--lan` / `--allow-tailscale` — none of these happen unless the user changes them intentionally.
+
+## Current Standing
+
+Cynovela is a learning-purpose verification implementation at the Alpha GA stage.
+
+- **The core flow (Source registration → Scan → Workspace → Collection → Publish → RAG Chat) works**: a smoke test completes in about 2 seconds.
+- **The test suite has 14 PHASEs / 405+ assertions**: it can be run all at once with `scripts/run_all_tests.sh`. It covers static analysis, extended APIs, GUI Playwright, security, consistency, CASCADE deletion, SSE error cases, chat error cases, scan error cases, embedding compatibility, DB migration, GUI recovery, and audit_log (CLAUDE.md).
+- **Unimplemented features**: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG are skeletons only (A-6 §1). The structured answer template is unimplemented, and the exclusion logic of `confidence_threshold` is only partially integrated (A-3 §6, §11). Authentication is enforced even when starting with `--demo` (the fixed token in the form `Bearer demo-token-<user_id>` was abolished on 2026-07-29).
+- **Commercial use is out of scope**: this is a personal implementation for learning purposes. It does not represent the official position of the AI infrastructure tools it was inspired by.
+
+---
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# Cynovela のコンセプト
 
 ## Cynovela が解く問題
 

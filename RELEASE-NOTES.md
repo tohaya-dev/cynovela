@@ -2,6 +2,40 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
+## 1.0.3 (2026-08-17)
+
+A documentation release. **Nothing in the program changes**, and nothing about
+your ingested material, settings or keys changes. If you are on 1.0.2, you only
+need this if you want the English documentation.
+
+### What changed
+
+**1. Every bundled document is now bilingual**
+
+Until 1.0.2, only the README was in English; everything else — the startup
+guide, the getting-started guide, the reference documents under `docs/`, the
+slide decks — was Japanese only. All of it now carries English as well, with
+**English first and Japanese after**, and a link at the top of each file that
+jumps to the Japanese half.
+
+**2. `HOW-TO-ASSEMBLE.md` is now in the repository**
+
+The guide for joining the split all-in-one packages used to exist only as a
+release attachment. It is now kept in the repository as well, in both
+languages, so you can read it before downloading anything.
+
+**3. The README now links to the first-time guide**
+
+`README.md` and `README.ja.md` link to `HAJIMETE.md` and to
+`HOW-TO-ASSEMBLE.md`, so the cover page leads to both.
+
+### What has not changed
+
+- The screens, the operations, and the API are unchanged
+- Ingested documents, settings, and keys work as they are
+- The masking mechanism and the permission mechanism are unchanged
+- The Japanese text of every document is unchanged; it only moved down the page
+
 ## 1.0.2 (2026-08-17)
 
 A fix to the startup path. **Nothing changes for material you have already
@@ -115,6 +149,39 @@ from the old folder into the new one before starting.
 ---
 
 # 日本語
+
+## 1.0.3 (2026-08-17)
+
+ドキュメントだけの版です。**プログラムは何も変わりません。** 取り込んだ資料・
+設定・鍵も変わりません。1.0.2 をお使いの方は、英語のドキュメントが要るとき
+だけ入れ替えてください。
+
+### 変えたこと
+
+**1. 同梱のドキュメントを全て日英併記にしました**
+
+1.0.2 までは英語があるのは README だけで、起動の手引きも、はじめての方への
+ガイドも、`docs/` の下の資料も、スライドも日本語だけでした。これらすべてに
+英語を足し、**英語が先・日本語が後ろ**に並べました。各ファイルの冒頭には
+日本語の節へ飛ぶリンクを置いてあります。
+
+**2. `HOW-TO-ASSEMBLE.md` をリポジトリに置きました**
+
+分割した全部入りをつなぐ手引きは、これまでリリースの添付ファイルとしてしか
+ありませんでした。リポジトリにも日英併記で置いたので、ダウンロードする前に
+読めます。
+
+**3. 表紙から、はじめての方へのガイドへ行けるようにしました**
+
+`README.md`・`README.ja.md` から `HAJIMETE.md` と `HOW-TO-ASSEMBLE.md` へ
+リンクを張りました。
+
+### 変えていないこと
+
+- 画面・操作・API は変わりません
+- 取り込んだ資料、設定、鍵はそのまま使えます
+- マスキングの仕組み、権限の仕組みは変わりません
+- 各ドキュメントの日本語の本文は書き換えていません。位置が後ろへ移っただけです
 
 ## 1.0.2 (2026-08-17)
 

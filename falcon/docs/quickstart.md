@@ -1,5 +1,199 @@
 # クイックスタート
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+This is the shortest procedure from starting Cynovela for the first time to sending your first RAG question. The target is version `1.0.2` (working directory `<the folder where the package was extracted>`).
+
+> For an even shorter startup note, see [STARTUP.md](../STARTUP.md).
+
+---
+
+## 1. Prerequisites
+
+| Item | Content |
+|---|---|
+| Python | conda environment `cynovela` (verified on the Python 3.12 line / environment.yml pins 3.12.13) |
+| Local LLM | LM Studio, or an OpenAI-compatible API |
+| Recommended RAM | 8GB or more (the required models are the same in every startup mode) |
+| Network | Needed for the model download on the first startup |
+
+---
+
+## 2. Setting up the conda environment
+
+```bash
+# conda 環境を作成（例: cynovela）
+conda create -n cynovela python=3.12 -y
+
+# 依存ライブラリをインストール
+conda run -n cynovela python -m pip install -r requirements.txt
+```
+
+Main dependencies: FastAPI / uvicorn / ChromaDB / sentence-transformers / spaCy + ja-ginza / torch / pypdf and others (see `requirements.txt`).
+
+---
+
+## 3. Note on SSL_CERT_FILE (important)
+
+In a conda environment, `SSL_CERT_FILE` may point at a wrong certificate path, and the HuggingFace model download at startup then fails. Please `unset` it and use the system default certificates.
+
+```bash
+unset SSL_CERT_FILE
+```
+
+The bundled `launch.sh` contains this `unset` inside it, so it is unnecessary when you use it. **Only when you run `conda run` manually**, run it yourself.
+
+---
+
+## 4. Startup
+
+### Method 1: the bundled launcher (recommended)
+
+```bash
+cd <配布物を展開したフォルダ>
+
+# launch.sh に渡した引数は、そのまま server.py へ届きます
+# （実装: launch.sh の `exec "$PY" server.py "${APP_ARGS[@]}"`。2026-08-02 実測）。
+# 引数なしは本番（空のデータベース）です。デモを見るなら --demo を明示します。
+./launch.sh --demo            # デモデータ + 実 LLM（既定は 0.0.0.0 で待ち受け。自分の機械の中だけに絞るなら --local-only）
+./launch.sh --demo --lan      # デモデータ + LAN 公開
+./launch.sh --check           # 起動せずに動く条件だけを調べる
+```
+
+To stop:
+
+```bash
+bash stop.sh
+```
+
+(Its content is `podman stop cynovela-all-in-one`. If you started it under a different name, use that name.)
+
+### Method 2: manual startup
+
+```bash
+cd <配布物を展開したフォルダ>
+unset SSL_CERT_FILE
+
+# デモデータ + 実 LLM（LM Studio を http://localhost:1234 で起動しておく）
+conda run -n cynovela python server.py --demo
+```
+
+To access it:
+
+```bash
+open http://127.0.0.1:8801
+```
+
+(The default number is 8801. When nothing is specified, a free number is chosen automatically, so use the number that was displayed at startup.)
+
+> ⚠️ **A real LLM is required**: to produce an answer to a question, an LLM such as LM Studio is required. The `--mock` option that used to exist (running without calling an LLM) has been removed, and specifying it now stops with an error.
+
+> **The container edition (podman)** is run with `./launch.sh` (for the details of the ingest folder, see the README). Note: the container procedure is bundled only with the container edition (the host direct-start edition has no `deploy/`).
+
+---
+
+## 5. Startup modes (`--mode`) and the required models
+
+| Mode | Required model | Approximate size |
+|---|---|---|
+| `text` (default) | BAAI/bge-m3 | About 2.3GB |
+| `lite` | Switching is **not wired up**, so it is actually BAAI/bge-m3 (behaves the same as text, only the displayed name changes) | — |
+| `lite-en` | Switching is **not wired up**, so it is actually BAAI/bge-m3 (behaves the same as text, only the displayed name changes) | — |
+
+If the model has not been obtained yet on the first startup, an interactive prompt of the Preflight check (download / switch to another mode / cancel) is displayed. In a non-interactive environment, setting `CYNOVELA_NONINTERACTIVE=1` makes it stop with exit code 2 when the model is not cached.
+
+```bash
+# 例: 表示名を変えて起動する（動作と必要モデルは text と同じ・切替は未配線）
+./launch.sh --demo --mode lite
+```
+
+---
+
+## 6. Log in with a demo account
+
+Open `http://127.0.0.1:8801` in a browser (if a different number was displayed at startup, use that number). With `--demo`, demo users are inserted automatically, but authentication is still enforced as usual (a username and a password have to be entered). The roles that the DB holds are the **2 values `admin` / `viewer`**.
+
+| Role | Permissions | Search target |
+|---|---|---|
+| `admin` | All features | The raw vault (no output mask) |
+| `viewer` | Mainly viewing | The masked vault (exit mask applied) |
+
+> Names such as `curator` / `data-scientist` are normalized internally to `viewer`.
+
+The actual login information of the shipped `demo.db`:
+
+| Username (default. It is not `admin`) | Role | Password |
+|---|---|---|
+| `cynovela` | admin | A change is forced at the first login (no fixed password is distributed) |
+| `demo` | viewer | See `viewer_password` in the bundled credentials file (`*.admin-password.txt`, received separately from the package tar). No fixed password is distributed |
+
+---
+
+## 7. Your first file ingest and Publish
+
+1. On a `--demo` startup, **only 1 workspace containing the bundled dummy material** is present (the 3 empty seed WSs were removed on 2026-07-30, and are stripped at startup. Measured on 2026-08-02: `/api/workspaces` right after a `--demo` startup contains only "デモワークスペース"). Create your own workspace from "create a new workspace".
+2. Specify a name and a RAG strategy in "create collection"
+3. Upload files
+4. Run "Publish" and get it into the `ready` state
+
+In Publish, text extraction → chunk splitting → PII detection/masking → Embedding generation (stored in ChromaDB) → BM25 index construction are performed. Progress is returned over SSE, and on completion the counts and the elapsed time are recorded into `publish_history`.
+
+---
+
+## 8. Your first question
+
+Ask a question from the RAG Chat screen against a collection in the `ready` state.
+
+```
+このドキュメントで扱われている主なトピックは何ですか？
+```
+
+In the answer, chunks are displayed as citations with citation numbers `[1][2]`. `admin` searches the raw body text and `viewer` searches the masked body text, and for `viewer` an exit mask is applied to the LLM output as well.
+
+---
+
+## 9. Checking the behavior (tests)
+
+> **`tests/` is not included in the package** (it is excluded when the package is built). With the package you received, `pytest` / `make test` cannot be run.
+> To check the behavior, use `conda run -n cynovela python scripts/test_comprehensive_e2e.py`.
+
+```bash
+# 開発ツリー（tests/ が在る側）での実行
+
+# 手動 pytest（軽量・最初の失敗で停止）
+cd <開発ツリーのフォルダ>
+unset SSL_CERT_FILE
+conda run -n cynovela python -m pytest -x -q
+```
+
+`make test` / `make test-quick` / `make verify-live` of the `Makefile` are also available. The `live` ones assume that the server is running at `http://127.0.0.1:8801` (the number displayed at startup).
+
+---
+
+## Next steps
+
+- [architecture.md](architecture.md) — understand the system composition
+- [handson-basic.md](handson-basic.md) — try the basic operations
+- [rag-pipeline.md](rag-pipeline.md) — understand the RAG pipeline
+
+---
+
+## Troubleshooting
+
+- **The model download or HTTPS fails with SSL** → run `unset SSL_CERT_FILE` before starting and testing (unnecessary when using the launcher).
+- **It cannot be opened from another device on the LAN** → it listens on `0.0.0.0` by default, so first check the port and the destination IP (if `--local-only` is given, it is limited to the local machine).
+- **The quality is not stable** → check the model and the settings on the LM Studio side.
+- **The admin password was forgotten** → it can be reissued with `conda run -n cynovela python server.py --reset-admin`.
+- **Port 8801 is in use** → check with `lsof -i :8801`. When nothing is specified, a free number is chosen automatically, so it can be started as-is. To stop it, use `bash stop.sh` (its content is `podman stop cynovela-all-in-one`. If you started it under a different name, use that name).
+
+For anything else, see [faq.md](faq.md).
+
+---
+
+# 日本語
+
 Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.0.2`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
 
 > さらに短い起動メモは [STARTUP.md](../STARTUP.md) を参照してください。

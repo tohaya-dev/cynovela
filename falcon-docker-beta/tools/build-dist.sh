@@ -648,6 +648,39 @@ def g(k):
 with open(out, "w", encoding="utf-8") as fh:
     fh.write(f"""# 同梱データの内訳（{name} / {flavor}）
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+This file is written automatically when the package is built. The numbers are
+counted at packaging time from what is actually inside this package. They are
+not written by hand.
+
+The bundled data comes from **only `dummy-corpus/` inside this package**. None
+of the builder's working material or indexes is included.
+
+| Item | Count |
+|---|---|
+| Documents (files) | {g('files')} |
+| Chunks | {g('chunks')} |
+| Parent chunks | {g('parent_chunks')} |
+| Workspaces | {g('workspaces')} |
+| Ingest sources | {g('sources')} |
+| Collections | {g('collections')} |
+| Places masked at ingest | {g('pii_count')} |
+
+Chunks are stored in two layers, before masking and after masking, and both are
+encrypted with the vault key. The index used for search (the vectors) is built
+from **the masked layer only**.
+
+All bundled material is an explanatory sample about a fictional company. Every
+person, organisation, address, phone number and email address in it is
+invented.
+
+---
+
+# 日本語
+
 この文書は配布物を作るときに自動で書き出しています。数字は、この配布物に実際に入っている
 ものをパッケージングの場で数えた値です。手で書いた値ではありません。
 

@@ -1,11 +1,188 @@
+# 回答モード（Answer Modes）
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool built by an individual to
+> understand the concepts of AI infrastructure tools by working on them by hand.
+> It is not a commercial product or an official implementation.
+> The implementation is entirely original, and is built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+Cynovela's RAG (Retrieval-Augmented Generation) answers change their behavior according to the combination of a **mode** and a **preset**, depending on the use case. This document organizes the modes that can be confirmed as of Alpha GA, together with their implementation evidence.
+
+---
+
+## 1. Strictness Modes (2 Kinds)
+
+Two system prompts are defined in `rag.py`. These are the switching axis that corresponds to the "strictness mode."
+
+### 1.1 DEFAULT_SYSTEM_PROMPT (Default / RAG Enabled)
+
+- Instructs the model to answer based on the ingested documents (context)
+- Recommends embedding the citation numbers `[1][2]`
+
+### 1.2 GENERAL_KNOWLEDGE_SYSTEM_PROMPT (General Knowledge Mode / RAG Disabled)
+
+The definition at `rag.py:204-213` (excerpt):
+
+```python
+GENERAL_KNOWLEDGE_SYSTEM_PROMPT = """あなたは優秀なアシスタントです。
+ユーザーの質問にあなたの一般知識のみを根拠として回答してください。
+
+【ルール】
+- このモードではコンテキストや社内資料は提供されません。
+- 知らないことは「分かりません」と素直に伝えること。事実を捏造しないこと。
+- 回答はMarkdown形式で返してよい（見出し・�条書き使用可）。
+- 質問の意図を理解し、簡潔で正確な説明を心がけること。
+```
+
+### 1.3 Switching
+
+- Default: `DEFAULT_SYSTEM_PROMPT` (RAG enabled, answers based on search results)
+- General knowledge mode: `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` (RAG disabled, answers from the LLM's general knowledge only)
+
+From MCP (an external tool), you can request a direct answer without RAG by calling the `rag_general` tool.
+
+---
+
+## 2. RAG Presets (5 in Total)
+
+Five built-in presets are defined in `routers/pipeline_config.py`.
+
+| ID | Name | Description | Chunking | RAG mode | Guardrail | Image processing |
+|---|---|---|---|---|---|---|
+| `tech_doc` | 📄 技術文書 | For manuals | tech_doc | standard | default | — |
+| `confidential` | 🔒 機密文書 | In-house documents containing PII | general | standard | mask | — |
+| `personal_memo` | 📝 個人メモ | Meeting minutes and memos | email_minutes | lite | log_only | — |
+| `multimedia` | 🖼️ マルチメディア | Mixed images and Office files | tech_doc | standard | default | caption |
+| `quickstart` | ⚡ クイックスタート | Fully automatic, for beginners | tech_doc | standard | default | — |
+
+### 2.1 Preset Structure
+
+```json
+{
+  "id": "tech_doc",
+  "name": "📄 技術文書",
+  "description": "...",
+  "config_json": "{\"chunking\": \"tech_doc\", \"rag_mode\": \"standard\", \"guardrail\": \"default\"}",
+  "is_builtin": 1
+}
+```
+
+### 2.2 The 3 Kinds of RAG Mode
+
+A preset's `rag_mode` has the following three kinds.
+
+| Mode | Outline |
+|---|---|
+| `lite` | Minimal RAG (one search, optional processing omitted) |
+| `standard` | Standard RAG (BM25 hybrid, Reranker is optional) |
+| `hq` | High-quality RAG (enables CRAG, Multi-Query, and HyDE) |
+
+---
+
+## 3. Structured Answer Template
+
+### 3.1 Current State: Unimplemented
+
+The search `grep -rn "structured.*answer\|answer.*template\|template.*answer" --include="*.py"` returns **0 hits**, and none of the following implementations could be confirmed.
+
+- No structured fields in the `ChunkHit` / `RetrievalResult` dataclasses
+- No instruction in the system prompt such as "return in JSON format" or "return with `<answer>XXX</answer>` tags"
+
+Therefore, as of Alpha GA, a **free-form answer is the standard**.
+
+### 3.2 The Citation Feature Is Implemented
+
+Separately from the structured answer template, the **citation feature** is implemented (`build_citations()` / `build_context_with_citations()` at `rag.py:238-288`). It embeds citation numbers in the form `[1][2]` in the answer, and returns the citation mapping downstream.
+
+- Setting: `config.rag.citation_enabled = true` (default)
+
+### 3.3 Planned for Beta GA
+
+Whether to introduce a structured answer template has not been decided.
+<!-- BACKLOG: the specification of the structured answer template (fixed JSON output, forced tags, and so on) is undecided -->
+
+---
+
+## 4. Adjusting the Confidence Threshold
+
+### 4.1 Setting Value (Default)
+
+```yaml
+# config.py の defaults
+rag:
+  confidence_threshold: 0.50
+```
+
+- Scale: cosine similarity (0 to 1)
+- BGE-M3's noise floor: 0.35 to 0.45 (roughly this score appears even for unrelated queries)
+- Typical range for real queries: 0.55 to 0.75
+- Judgment policy: 0.50 or below is treated as "low quality" and becomes a fallback candidate
+
+### 4.2 The Judgment Metric Is the Vector Cosine
+
+As a lesson from the past, **using the RRF score for the abstention judgment is wrong**. RRF is a sum of reciprocal ranks (max ≈ 0.033) and differs by orders of magnitude from cosine similarity (0 to 1). Always use the **vector cosine** as the judgment metric.
+
+### 4.3 Pipeline Integration Status
+
+`config.rag.confidence_threshold` is defined as a value, but within the search pipeline (`rag_retrieve`) it remains only **partially integrated** into explicit exclusion logic.
+
+- Handling of 0 search results → automatic switching to `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` is unimplemented
+- A separate processing flow when the top score < threshold is unimplemented
+<!-- BACKLOG: full integration of the abstention fallback based on confidence_threshold is unimplemented -->
+
+### 4.4 Policy for Adjustment
+
+You can change the threshold by editing `rag.confidence_threshold` in `cynovela.yaml`. Hard-coding is prohibited; change it only through the configuration file.
+
+---
+
+## 5. Related Advanced Features
+
+The advanced RAG features used in combination with the answer modes are as follows. For details, see `docs/spec-overview.md`.
+
+| Feature | Related setting | Use |
+|---|---|---|
+| MMR re-selection | `rag.mmr_enabled`, `mmr_lambda` | Balances relevance and diversity |
+| Parent-Child chunking | `rag.parent_child_enabled` | Search on the child, replace with the parent |
+| Multi-Query expansion | `rag.multi_query_enabled`, `multi_query_count` | Expands the query into several variants with the LLM |
+| CRAG (self-evaluating re-search) | `rag.crag_enabled`, `crag_max_loops` | The LLM evaluates the quality of the search results |
+| HyDE (hypothetical document embedding) | `rag.hyde_enabled` | Generates a hypothetical answer and searches with its embedding |
+| Adaptive RAG | `rag.adaptive_enabled`, `adaptive_threshold` | Switches automatically between basic / agentic by query complexity |
+| Reranker | `reranker.provider` | Disabled by default, can be switched to CrossEncoder and so on |
+
+---
+
+## 6. Answer Style by Role
+
+The role prefix in `rag.py` also switches the tone of the answer.
+
+| Role | Policy of the prefix |
+|---|---|
+| admin | Provides complete information including technical details, setting values, and internal structure |
+| reader | A focused, easy-to-understand explanation that avoids technical jargon |
+
+For details, see `docs/rbac.md`.
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# 回答モード（Answer Modes）
 
 Cynovela の RAG（検索拡張生成）回答は、用途に応じて **モード** と **プリセット** の組み合わせで挙動が変わります。本ドキュメントでは、Alpha GA 時点で確認できるモードを実装根拠とあわせて整理します。
 

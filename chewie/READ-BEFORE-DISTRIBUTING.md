@@ -2,6 +2,8 @@
 
 **日本語は下 → [日本語](#配布前にお読みくださいread-before-distributing)**
 
+## English
+
 This document is for whoever receives this package, and for whoever passes it
 on. Read it first.
 

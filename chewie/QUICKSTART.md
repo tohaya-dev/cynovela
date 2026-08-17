@@ -1,5 +1,140 @@
 # QUICKSTART — 5分でひととおり見る
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+QUICKSTART — a walk through the whole thing in 5 minutes.
+
+## 0. The easiest way to start — double-click a file
+
+When you extract the package, it contains three files: **`Cynovela-start.command`**,
+**`Cynovela-stop.command`** and **`Cynovela-add-folder.command`**. These three are the
+only ones you touch.
+
+- **Start**: double-click `Cynovela-start.command`. A terminal opens and the progress
+  scrolls past as text: checking the conditions for running -> preparing -> starting.
+  When it is ready, the browser opens automatically.
+- **Stop**: double-click `Cynovela-stop.command`. A terminal opens, it stops, and the
+  fact that it stopped is printed as text.
+- **Add a folder to be read**: double-click `Cynovela-add-folder.command`. A folder
+  chooser appears, and what you choose is written to the backup. A folder you added can
+  be selected right away from the screen of the Cynovela that is currently running.
+  Note: the first time you use it, press `Cynovela-start.command` once first. The Python
+  (the 3.12 series) that handles the backup is prepared during that first run. If you
+  try to add a folder without it, the installation procedure is printed and it stops
+  (it does not fall back to the old python3 that came with the Mac).
+
+> **The first time only, the way it opens may be different.**
+> This file is not signed, so opening it directly may be blocked by macOS.
+> In that case, **right-click the file (or control-click it) and choose "Open"**.
+> From the second time on, a normal double-click is enough.
+
+### About where python is prepared — conda is looked for first
+
+This form is installed directly on this Mac and runs there. To run it, a place to put
+python is required.
+
+- **If conda is available, conda is used first.** A new environment dedicated to this
+  package is created, and nothing is written to the shared environment.
+- **Only when conda is absent**, a dedicated folder (`.venv-cynovela`) is created inside
+  this package.
+- The preparation is done with `./launch.sh --setup`. Which one it will be is shown on
+  the screen. You are not asked.
+
+If you want to decide in advance, write `conda` / `venv` / `none` in `base.prefer` of
+`cynovela.yaml` (the default is `conda`).
+
+### If you want to change the settings
+
+All the settings are collected in `cynovela.yaml` in the same folder (if you do not
+rewrite it, it runs with the defaults). The ones used most often are as follows.
+
+```
+server:
+  port: 8765        ポート番号。ブラウザで開く番号です
+  host: 0.0.0.0     外部アクセス。同じネットワーク上の別の Macからも開けます
+                    127.0.0.1 にすると、この Mac の中からだけ開けます
+base:
+  prefer: conda     python を用意する場所。conda / venv / none
+paths:
+  data_dir: ./store データの保存先
+```
+
+In English: `server.port` is the port number, the number you open in the browser.
+`server.host` is external access — with `0.0.0.0` it can also be opened from another Mac
+on the same network; with `127.0.0.1` it can be opened only from inside this Mac.
+`base.prefer` is where python is prepared: `conda` / `venv` / `none`.
+`paths.data_dir` is where the data is stored.
+
+If you would rather start from the terminal, see "2. How to start it" below. Either way
+the same thing runs.
+
+## 1. What this is
+
+Cynovela is a tool for running, on a single machine at hand, a mechanism that
+"accumulates in-house documents and answers your questions with citations", so that you
+can see it for yourself. It exists for verifying the behaviour and for demonstrations,
+and it is not something to use in business as it is.
+
+## 2. How to start it
+
+To bring it up with the demo documents already loaded, start it **with --demo
+attached**.
+
+```bash
+./launch.sh --demo
+```
+
+With no arguments it comes up empty (for production use).
+
+## 3. Open it and log in
+
+Open the following address in your browser.
+
+- http://127.0.0.1:8765
+
+The administrator user name is **cynovela** and the viewer user name is **demo**. The
+initial passwords are written in **the "ログイン" (Login) section of the bundled
+`STARTUP.md`**. On the first login, the administrator is asked to change the password,
+so please change it to a new one.
+
+Note that by default it comes up in a state where it can also be opened from outside
+this machine (from another Mac on the same network). If you want to restrict it to your
+own machine only, add `--local-only` when starting it.
+
+## 4. Four steps to try
+
+1. **Look at the list of documents** — open "データカタログ (Data Catalog)" from the
+   menu on the left. You can see a list of the documents included for the demo (a
+   company profile, work rules and so on of a fictional company).
+2. **Ask a question** — open "RAG Chat" from the menu on the left and try asking
+   「情報システム担当の受付時間と連絡先を教えてください」 ("Please tell me the office
+   hours and contact details of the information systems staff"). Wait a little until the
+   answer is complete (the first question can take a dozen or so seconds). Check that,
+   together with the answer, the documents it was based on (the citations) are shown.
+3. **Sign in again as a viewer** — log out once, sign in again as the viewer with the
+   user name **demo**, and ask the same question. This time, check that the **phone
+   number, email address and the address of the inventory ledger server** in the answer
+   have been replaced by masked text such as `[MASKED:PHONE]`. The mechanism that
+   automatically hides information not to be shown to viewers is at work.
+4. **See that a record is kept** — sign in again as the administrator (cynovela) and
+   open "監査ログ (Audit Log)" from the menu on the left. Check that the questions you
+   just asked and your login operations remain there as records.
+
+## 5. Two things for when it does not work
+
+- **No answer comes back** — the part that composes the text of the answer is handled by
+  a separate piece of software (an external inference server, such as LM Studio). It
+  needs to be running at http://localhost:1234. You can check the connection target
+  under "LM Studio 接続設定" (LM Studio connection settings) in "Settings" on the screen.
+- **You want to put your own documents in** — the registration of ingest sources starts
+  from 0 entries. For how to register a folder, see **7-1 of GETTING-STARTED.md**.
+
+---
+
+# 日本語
+
 ## 0. いちばん簡単な始め方 — ファイルをダブルクリック
 
 配布物を展開すると、その中に **`Cynovela-start.command`**・**`Cynovela-stop.command`**・

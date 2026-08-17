@@ -1,11 +1,187 @@
+# MCP（Model Context Protocol）連携ガイド
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built by an individual in order to
+> understand the concepts of AI infrastructure tools hands-on. It is not a commercial
+> product and not an official implementation.
+> The implementation is entirely original, and is made of an OSS stack:
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+Cynovela can expose its own features to external LLM clients as an MCP server for MCP (Model Context Protocol, the AI tool integration protocol proposed by Anthropic). This document explains the concept of MCP, the MCP tools that Cynovela exposes, and the connection procedure.
+
+---
+
+## 1. What MCP is
+
+MCP is a standard protocol by which an AI assistant (the client) calls features (tools) of an external system.
+
+- **Client**: the side the user talks to, such as LM Studio or another supported LLM client
+- **Server**: the side that provides features (Cynovela is this side)
+- **Tool**: an operation the server exposes (search, registration, reference, and so on)
+
+With MCP, when a user says to an LLM client "search our internal documents", the LLM calls Cynovela's search tool and generates an answer based on the result.
+
+---
+
+## 2. MCP tools Cynovela exposes (11 in total)
+
+### 2-1. RAG search tools (4)
+
+#### `search_collection`
+- **Arguments (required)**: `query`, `workspace_id`, `collection_id`
+- **Arguments (optional)**: `preset`
+- **Description**: Performs a RAG search against a single Collection (a group of documents).
+
+#### `search_across_collections`
+- **Arguments (required)**: `query`, `workspace_id`, `collection_ids`
+- **Arguments (optional)**: `preset`
+- **Description**: Performs a RAG search across multiple Collections.
+
+#### `rag_with_role`
+- **Arguments (required)**: `query`, `workspace_id`, `collection_id`, `style_role`
+- **Arguments (optional)**: `preset`
+- **Description**: Performs a RAG search while switching the answer style by role (for administrators / for general users, and so on).
+
+#### `rag_general`
+- **Arguments (required)**: `query`, `workspace_id`
+- **Description**: Generates an answer using only the LLM's general knowledge, without using RAG. It is for general questions that do not depend on internal documents.
+
+### 2-2. Information retrieval tools (4)
+
+#### `list_workspaces`
+- **Arguments**: none
+- **Description**: Gets a list of all workspaces and their collections.
+
+#### `get_workspace_info`
+- **Arguments (required)**: `workspace_id`
+- **Description**: Returns detailed information about the specified workspace (name, guardrail policy, creation time, and so on).
+
+#### `get_collection_info`
+- **Arguments (required)**: `workspace_id`, `collection_id`
+- **Description**: Returns details of the collection (document count, status, access level).
+
+#### `get_audit_logs`
+- **Arguments (required)**: `workspace_id`
+- **Arguments (optional)**: `limit` (default 10, maximum 50)
+- **Description**: Gets the audit log (chat history, PII detection, errors).
+
+### 2-3. Administration tools (3)
+
+#### `list_sources`
+- **Arguments (required)**: `workspace_id`
+- **Description**: Returns a list of the data sources under the workspace (file path, status, file count).
+
+#### `publish_collection`
+- **Arguments (required)**: `collection_id`
+- **Description**: Publishes the specified collection into a state where it can be searched by RAG.
+
+#### `create_workspace`
+- **Arguments (required)**: `name`
+- **Arguments (optional)**: `description`
+- **Description**: Creates a new workspace.
+
+---
+
+## 3. Connecting from LM Studio
+
+LM Studio has MCP client features, and an MCP server can be registered in its configuration file.
+
+### 3-1. Connection flow
+
+```
+LM Studio（ユーザー対話）
+  ↓ MCP プロトコル（標準入出力経由）
+Cynovela MCP サーバー（mcp_server.py）
+  ↓ HTTP API
+Cynovela 本体（FastAPI サーバー）
+```
+
+### 3-2. Configuration example
+
+Register the following in LM Studio's MCP server configuration. For the actual key names, see the client's own documentation.
+
+```json
+{
+  "mcpServers": {
+    "cynovela": {
+      "command": "/path/to/python",
+      "args": [
+        "/Users/<ユーザー名>/Projects/cynovela/cynovela/mcp_server.py"
+      ],
+      "env": {
+        "CYNOVELA_BASE_URL": "http://127.0.0.1:8765",
+        "CYNOVELA_TOKEN": "<認証トークン>"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 4. Limitations specific to a conda environment
+
+Cynovela is built on the premise that it runs in a conda environment (`cynovela`). When the MCP server calls the main API, the path of the Python executable needs to be given explicitly.
+
+### 4-1. Specifying the Python path
+
+The environment variable `CYNOVELA_MCP_PYTHON` can specify the absolute path of the Python used to run the MCP script.
+
+```bash
+export CYNOVELA_MCP_PYTHON=~/miniforge3/envs/cynovela/bin/python
+```
+
+Without this setting, the conda environment is not activated in the child process started by a client such as LM Studio, and an ImportError of a dependency library may occur.
+
+---
+
+## 5. Notes on authentication
+
+### 5-1. Bearer token
+
+The MCP server authenticates to the main Cynovela API with the `Authorization: Bearer <token>` header. The token is passed through an environment variable on the client side.
+
+- Authentication is the JWT issued by `POST /api/auth/login`. The old `Bearer demo-token-<user_id>` form has been abolished and is not accepted.
+- For production operation, introducing JWT authentication is required (it is not implemented at present).
+
+### 5-2. Role permissions
+
+Calls made through MCP also pass the same role permission checks (admin / curator / viewer) as the main API. In particular, administration tools such as `create_workspace` and `publish_collection` may require admin permission.
+
+### 5-3. Audit log
+
+Operations made through MCP are also recorded in the same audit log (the `audit_logs` table) as the main body. You can check the history with `get_audit_logs`.
+
+---
+
+## 6. Troubleshooting
+
+| Symptom | What to check |
+|---|---|
+| The tools are not found | Whether the Cynovela main body (`server.py`) is already running at `http://127.0.0.1:8765` |
+| Authentication error | The value of the `CYNOVELA_TOKEN` environment variable, and whether the token is still valid |
+| ImportError appears | Whether the Python path of the conda environment is specified with `CYNOVELA_MCP_PYTHON` |
+| The result is empty | Whether the target Collection has reached the `ready` status |
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# MCP（Model Context Protocol）連携ガイド
 
 Cynovela は MCP（Model Context Protocol、Anthropic が提唱する AI ツール連携プロトコル）の MCP サーバーとして自身の機能を外部の LLM クライアントへ公開できます。本ドキュメントでは MCP の概念と Cynovela が公開している MCP ツール、接続手順を説明します。
 

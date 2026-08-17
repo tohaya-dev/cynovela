@@ -1,5 +1,322 @@
 # デプロイメントガイド
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool built by an individual to
+> understand the concepts of AI platform tools hands-on. It is not a commercial
+> product nor an official implementation.
+> The implementation is entirely original, built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+This document summarizes the steps for deploying Cynovela in a local environment.
+
+---
+
+## 1. Verified Environments
+
+Cynovela is a tool for personal verification, and the environments in which it has been verified are limited. Use the following as a reference.
+
+| Item | Verified content |
+|------|------------|
+| OS | macOS (Apple Silicon) |
+| Python runtime | conda (Miniforge) |
+| Local LLM | LM Studio (OpenAI-compatible `/v1` API) |
+| Embedding | BAAI/bge-m3, paraphrase-multilingual-MiniLM-L12-v2, paraphrase-MiniLM-L3-v2, TF-IDF |
+
+<!-- BACKLOG: the verification status on Windows / Linux / Docker environments is unverified because spec-raw does not describe it -->
+<!-- BACKLOG: details for GPU usage (CUDA version, memory guideline) are unverified because spec-raw does not describe them -->
+
+---
+
+## 2. Setting Up the conda Environment
+
+### Creating the environment
+
+```bash
+conda create -n cynovela python=3.12 -y
+conda activate cynovela
+```
+
+### Installing the dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Main dependencies:
+
+| Library | Purpose |
+|----------|------|
+| FastAPI | the API server itself |
+| Uvicorn | ASGI server |
+| SQLite (bundled with the standard library) | metadata, audit logs, chunk storage |
+| ChromaDB | vector search |
+| cryptography (Fernet) | encryption of the raw body text |
+| huggingface_hub | model download |
+| BM25Okapi | keyword search |
+| fugashi / MeCab | Japanese morphological analysis (BM25 tokenization) |
+
+---
+
+## 3. List of Startup Flags
+
+These are all the flags you can pass to `python server.py`.
+
+| Flag | Type | Default | Description |
+|--------|-----|------|------|
+| `--demo` | bool | False | Starts using the demo database `store/db/demo.db` and index `store/vector/demo/chroma`. Without it, the production `store/db/cynovela.db` and `store/vector/default/chroma` are used. Neither is erased on restart |
+| `--lmstudio-url` | str | `http://localhost:1234` | Base URL of LM Studio |
+| `--mode` | str | `text` | Startup mode (`full` / `text` / `lite` / `lite-en` / `minimal`) |
+| `--host` | str | `0.0.0.0` | Bind address (the default is all addresses; use `--local-only` to narrow it) |
+| `--lan` | bool | False | LAN exposure (explicitly sets host=0.0.0.0) |
+| `--port` | int | `8765` | Port number |
+| `--local-only` | bool | False | Restricts to the local machine only (listens on `host=127.0.0.1`) |
+| `--allow-tailscale` | bool | False | Allows access from the Tailscale network |
+| `--reset-admin` | bool | False | Resets the administrator password, displays it, and exits (add `--demo` when fixing the demo) |
+| `--ingest PATH` | str (can be given multiple times) | none | Folders allowed as ingest sources |
+| `--allow-subnet` | list | `[]` | Allowed subnets (can be given multiple times) |
+
+### Frequently used combinations
+
+```bash
+# 通常起動（LM Studio 必要）
+python server.py --demo
+
+# LAN 共有 + Tailscale
+python server.py --demo --lan --allow-tailscale
+
+# 表示名を変えて起動する例（動作は text と同じ・切替は未配線）
+python server.py --demo --mode lite
+```
+
+> **PII detection mode**: `--pii-mode` has been removed as a CLI argument. Specify it with the `pii_mode` key (`lite` / `standard` / `quality`) in `cynovela.yaml`.
+
+---
+
+## 4. `--mode` Selection Guide
+
+The startup mode changes the Embedding and Reranker configuration.
+
+### Model size comparison table
+
+| `--mode` | Embedding model | approx. size | Reranker | recommended environment |
+|--------|---------------|---------|---------|---------|
+| `text` (default) | BAAI/bge-m3 | about 2.3GB | selectable in the settings (`reranker.provider`) | no GPU required, general purpose |
+| `lite` | the switch is **not wired**, so it is actually BAAI/bge-m3 (behavior is the same as text; only the display name changes) | — | — | — |
+| `lite-en` | the switch is **not wired**, so it is actually BAAI/bge-m3 (behavior is the same as text; only the display name changes) | — | — | — |
+
+### How to choose
+
+- General Japanese RAG: `text`
+
+### Provider wiring precedence
+
+2. The `reranker.provider` setting in `cynovela.yaml` (`cross_encoder` / `flashrank` / `mlx` / `http` / `none`, etc.)
+3. The legacy `rag.reranker_enabled` + `reranker_url` are absorbed as the `http` path
+
+---
+
+## 5. Connecting to LM Studio / Ollama
+
+### LM Studio
+
+Cynovela's default LLM provider is LM Studio. It can also connect to any service that has a `/v1`-compatible API.
+
+```bash
+python server.py --demo --lmstudio-url http://localhost:1234
+```
+
+Example configuration in `cynovela.yaml`:
+
+```yaml
+llm:
+  provider: lmstudio
+  base_url: http://localhost:1234
+  api_key: ""
+  model: ""
+  max_concurrent: 3
+  timeout_seconds: 120
+```
+
+> **Important**: Do not pass `max_tokens` to the LM Studio API. It causes the thinking token budget to be exhausted on reasoning models.
+
+### Ollama / OpenRouter / vLLM
+
+Setting `llm.provider` to `openai_compat` lets you switch to an OpenAI-compatible endpoint other than LM Studio (vLLM, Ollama's `/v1`-compatible gateway, etc.).
+
+```yaml
+llm:
+  provider: openai_compat
+  base_url: http://localhost:11434/v1   # 例: Ollama
+  model: llama3
+```
+
+The Reranker is a separate line; setting `reranker.provider` to `ollama` lets you use Ollama as the Reranker.
+
+### Mock LLM
+
+The former `--mock` (an option that replaced LLM calls with a mock) has been removed. Specifying it now stops with an error.
+
+---
+
+## 6. First-Time Model Download Procedure
+
+### Preflight check
+
+Unless the mode is `--mode minimal`, the presence of the required models is checked at startup.
+
+Skip conditions:
+
+- `--mode minimal`
+- The list of required models for that mode is empty
+
+### Prompt when models are missing
+
+If models are missing, an interactive prompt is displayed.
+
+```
+[1] 今すぐダウンロードして起動する
+[2] 代替モードで起動する（例: text / lite / mock）
+[3+] キャンセル
+```
+
+| Choice | Behavior |
+|------|------|
+| `[1]` | Downloads from the HuggingFace Hub into `~/.cynovela/models/` |
+| `[2]` | Offers an alternative mode (in the order `full → text → lite → lite-en → mock`) |
+| `[3+]` | Cancels startup |
+
+### Aborting startup in a non-interactive environment
+
+When you do not want an interactive prompt, for example in CI, set the environment variable `CYNOVELA_NONINTERACTIVE=1`. It exits immediately when a model is absent.
+
+```bash
+CYNOVELA_NONINTERACTIVE=1 python server.py --mode text
+```
+
+### Storage location
+
+- Download destination: `~/.cynovela/models/`
+- Naming rule: the slash in the HuggingFace repository name is replaced with `__` (e.g. `BAAI__bge-m3`)
+
+### Overriding the model path
+
+If you want to place the models in a synced folder such as OneDrive, you can specify the path in the `models` section of `cynovela.yaml`.
+
+```yaml
+models:
+  embedding:
+    path: "/path/to/bge-m3"
+    name: "BAAI/bge-m3"
+  reranker:
+    path: ""
+    name: "BAAI/bge-reranker-v2-m3"
+```
+
+---
+
+## 7. Main Environment Variables
+
+We recommend passing secrets through environment variables rather than writing them directly in `cynovela.yaml`.
+
+### Data and paths
+
+| Environment variable | Purpose |
+|---------|------|
+| `CYNOVELA_DB` | SQLite DB path (the default is `~/.cynovela/db/...`) |
+| `CYNOVELA_CHROMA` | ChromaDB directory |
+| `CYNOVELA_BACKUP_DIR` | Backup directory |
+| `CYNOVELA_LOG_DIR` | Log directory |
+| `CYNOVELA_DATA_DIR` | Application data root |
+
+### LLM / Embedding / Reranker
+
+| Environment variable | Purpose |
+|---------|------|
+| `CYNOVELA_LLM_BASE_URL` | LLM base URL |
+| _(no environment variable)_ | The LLM API key is entered in the settings UI (kept for this session only, never saved) |
+| `CYNOVELA_LLM_MODEL` | LLM model name |
+| `CYNOVELA_LLM_PROVIDER` | LLM provider |
+| `CYNOVELA_LLM_MAX_CONCURRENT` | Upper limit of concurrent LLM calls |
+| `CYNOVELA_EMBEDDING_PROVIDER` | Embedding provider |
+| `CYNOVELA_EMBEDDING_MODEL` | Embedding model name |
+| `CYNOVELA_EMBEDDING_BASE_URL` | Embedding base URL |
+| `CYNOVELA_EMBEDDING_API_KEY` | Embedding API key |
+| `CYNOVELA_RERANKER_API_KEY` | Reranker API key |
+| `CYNOVELA_CLASSIFIER_API_KEY` | Classifier API key |
+
+### Operations
+
+| Environment variable | Purpose |
+|---------|------|
+| `CYNOVELA_NONINTERACTIVE` | `1` skips the preflight dialog and exits immediately |
+| `CYNOVELA_DISABLE_RATE_LIMIT` | Disables the rate limit |
+| `CYNOVELA_MAX_UPLOAD_BYTES` | Maximum file upload size (default 100MB) |
+| `CYNOVELA_MCP_PYTHON` | Python path used to run the MCP server |
+| `CYNOVELA_SECRET_KEY` | Fernet encryption key (recommended in production) |
+
+### Initialization
+
+| Environment variable | Purpose |
+|---------|------|
+| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | The admin password at first startup |
+| `CYNOVELA_ADMIN_USERNAME` | The admin user name at first startup (default: `cynovela`) |
+| `CYNOVELA_SMTP_PASSWORD` | SMTP password |
+
+---
+
+## 8. Overall Startup Flow Diagram
+
+```
+main() called
+  ↓
+parse CLI arguments with argparse
+  ↓
+preflight check (verify the required models exist)
+  ├─ models missing → user choice (download / alternative mode / cancel)
+  └─ abort startup if the return value is False
+  ↓
+get the LLM adapter
+  └─ otherwise → LM Studio, etc.
+  ↓
+build AppConfig (reflecting mode / demo / mock)
+  ↓
+load cynovela.yaml
+  ├─ override with CYNOVELA_* environment variables
+  └─ initialize CircuitBreaker / Semaphore
+  ↓
+wire providers (Embedding / Reranker)
+  ↓
+set the PII detection mode (yaml.pii_mode)
+  ↓
+initialize the DB (store/db/demo.db with --demo, store/db/cynovela.db without it)
+  ↓
+start FastAPI with Uvicorn
+```
+
+---
+
+## 9. Ports and Access Control
+
+| Default | Content |
+|------|------|
+| 8765 | Server port |
+| 0.0.0.0 | Bind address (narrowed to 127.0.0.1 with `--local-only`) |
+| Allowed IPs | No restriction by default (applied only when `--allow-subnet` / `--allow-tailscale` is given) |
+
+To allow access from a LAN or from Tailscale, use `--lan` / `--allow-tailscale` / `--allow-subnet` together (see the operations guide and the advanced hands-on).
+
+---
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。

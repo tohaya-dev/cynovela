@@ -1,5 +1,416 @@
 # このツールにできないこと（既知の制限）
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built so that one individual could
+> understand the concepts behind AI infrastructure tools by working through them by hand.
+> It is not a commercial product and not an official implementation.
+> The implementation is entirely original, built on an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+This document describes what Cynovela **cannot** do. Explanations of what it can do are in
+`README.md` and `QUICKSTART.md`. Only the things that will disappoint you if you expect them
+are written here.
+
+The version is `1.0.2` (`APP_VERSION` in `core/version.py` is the only source, and
+`GET /api/health` and `/docs` read it from there).
+
+---
+
+## 1. What masking cannot do
+
+**This is the most important section of this document.** Masking is a mechanism for hiding
+personal information, but the range it can hide has clear limits. **The fact that masking
+matched does not mean all personal information in a document has been removed.** Something
+that could not be hidden always remains.
+
+### 1.1 Rules can only catch the 13 types that have a fixed shape
+
+The types written in `PII_PATTERNS` of `guardrail.py` are only these 13.
+
+| Type | What it means |
+|------|-----------|
+| `URL` | An address starting with http / https |
+| `EMAIL` | An email address |
+| `PHONE_JP` | Mobile phone number (070 / 080 / 090) |
+| `PHONE_LAND` | Landline phone number |
+| `CREDIT` | Credit card number |
+| `MYNUMBER` | My Number (Japanese individual number) |
+| `PASSPORT` | Passport number (2 letters + 7 digits) |
+| `IPV4` | IPv4 address |
+| `PASSWORD` | A labelled value such as "パスワード: XX" |
+| `APIKEY` | API key / access token |
+| `PRIVATEKEY` | A private key block (`-----BEGIN ... PRIVATE KEY-----`) |
+| `SSN` | US Social Security Number (3-2-4 form) |
+| `IBAN` | International Bank Account Number |
+
+Nothing else is masked by the rules, not even once. For example employee numbers, customer
+numbers, contract numbers, bank account numbers (other than IBAN), vehicle numbers and
+insurance card numbers are out of scope.
+
+The rules match on "shape". If the shape is broken they do not match. Conversely, unrelated
+numbers that happen to match a shape are masked (a value of exactly 12 digits being masked as
+My Number is an example; this is intentional, as the result of prioritising the avoidance of
+leaks).
+
+### 1.2 Personal names and addresses depend on language analysis; with `lite` nothing is masked at all
+
+Personal names and addresses are not among the 13 types above. Their shape is not fixed, so
+the rules cannot catch them, and they are handled on the language analysis (NER) side.
+
+- The setting is `pii_mode` in `cynovela.yaml`. The default is `standard`.
+- Only when it is `standard` do `PERSON_JP` (personal name) and `ADDRESS_JP` (address) work.
+- **If you set `pii_mode` to `lite`, neither names nor addresses are masked at all.**
+  `lite` switches to a path that judges with regular expressions only, and the name and
+  address recognizers are never assembled in the first place (see `get_active_recognizers()`
+  and `detect_pii()` in `utils/metadata/pii.py`).
+
+Name detection only matches words registered as family or given names. Rare names, katakana
+transcriptions of foreign names, nicknames, and forms written together with a job title are
+missed. Addresses are also only looked at in the form that starts from a prefecture and in
+the postal code shape; forms such as "本社ビル 3 階" or "◯◯支店" are not treated as addresses.
+
+### 1.3 Organisation names and place names exist in name only, with nothing behind them
+
+`get_active_recognizers()` also returns `ORG_JP` (organisation name) and `LOC_JP` (place name).
+The names are returned, but **not a single recognizer that supplies them is registered**
+(across the whole tree, these two words appear only on that one line).
+
+In other words, **organisation names and place names are not masked.** Do not assume they are
+working just because their names appear in a list.
+
+### 1.4 Without a language model, even `standard` degrades to rules only
+
+Detecting names and addresses requires the spaCy / GiNZA language models. In an environment
+where these are not installed, detection degrades to regular expressions only, even with
+`pii_mode` left at `standard`.
+
+At startup `launch.sh` checks that they exist, and if they are missing it prints the following
+warning.
+
+```
+⚠️  spaCy モデル '...' が未導入です (standard PII が regex フォールバックします)。'pip install -r requirements.txt' を実行してください。
+```
+
+**While this warning is showing, neither names nor addresses are being masked.** Startup does
+not stop, so if you skim past the warning you will keep using the tool believing masking is in
+effect.
+
+### 1.5 Passwords and API keys are cut off by whitespace, Japanese text, or newlines
+
+The `PASSWORD` and `APIKEY` rules pick up the value part using only ASCII graphic characters
+(the relevant block in `guardrail.py` states explicitly that "値は ASCII 図形文字 `[!-~]` のみ
+（空白・CJK で必ず切れる）"). Because of this, the following cannot be caught.
+
+- Values with whitespace in the middle (`パスワード: abc def`) → cut off after `abc`
+- Values with Japanese text in the middle
+- Values spanning a newline (the whitespace between the label and the value is limited to tabs
+  and spaces, and does not span newlines)
+
+Also, anything without a separator (`:` `：` `=` `＝` or "は") between the label and the value
+is out of scope. This is by design, to avoid catching common phrases such as
+`password protection`, and the price of that is that space-separated forms like
+"パスワード　abcdefgh" cannot be caught.
+
+### 1.6 Whitespace can enter text extracted from a PDF, letting an email escape masking
+
+A PDF is composed not as a sequence of characters but as information about where to place
+characters. When text is extracted from it, whitespace that was not in the original appearance
+can end up in the middle of a word.
+
+The masking rules look at the sequence of characters, so a single inserted space is enough to
+stop a match. For an email address, this looks as follows.
+
+- `taro.yamada@example.co.jp` → masked
+- `taro.yamada @example.co.jp` → **not masked** (cut off before the `@`)
+- `taro.yamada@ example.co.jp` → **not masked** (cut off after the `@`)
+- `taro. yamada@example.co.jp` → only the `yamada@example.co.jp` part is masked, and
+  `taro.` remains
+
+The same thing can happen with other types such as phone numbers and card numbers.
+**When you ingest a PDF, check with your own eyes whether masking matched.**
+You can see the actual text from the chunk list after ingest.
+
+### 1.7 Whether an administrator can see the original text depends on the key and the destination
+
+When the role is `admin`, the design lets them see the original text before masking
+(`tier_for_role` in `rag.py`). However, in the following 3 cases even an administrator only
+gets masked content.
+
+1. **When the destination of the answering LLM points outside.**
+   `_effective_send_tier` in `routers/chat.py` drops to masked regardless of role when the
+   destination is neither inside the local machine, nor the container's host side, nor a
+   private address range. When the destination cannot be determined it also falls back to
+   masked.
+2. **When the vault (encrypted storage) key does not match.**
+   Original text is stored encrypted, and `_vault_substitute_raw` in `rag.py` decrypts it.
+   Lines that cannot be decrypted use the masked text as-is
+   (this is deliberate, so that ciphertext is never shown on screen).
+   If you replace the key after receiving a package, even an administrator can no longer read
+   the original text of documents ingested before that.
+3. **The question text itself.**
+   Masking of the question text is not divided by role. Even if an administrator writes an IP
+   address in the question, that IP is masked before it is passed to search and to the LLM.
+
+An earlier version of this document said "IPs are masked even for administrators (under
+investigation)", but the reason is the 3 items above. It is not a defect.
+
+---
+
+## 2. Document formats that cannot be read
+
+The only formats that can be ingested are those written in `SUPPORTED_EXTENSIONS` in `rag.py`.
+
+| Kind | Extensions |
+|------|--------|
+| Documents | `.txt` `.md` `.csv` `.pdf` `.docx` |
+| Spreadsheets / presentations | `.xlsx` `.xls` `.pptx` |
+| Web / mail | `.html` `.htm` `.eml` |
+| Archives | `.zip` |
+| Images | `.jpg` `.jpeg` `.png` `.heic` `.webp` `.gif` |
+
+Anything else is excluded from ingest. Here are the commonly brought-in formats that
+**cannot** be handled.
+
+- Old Office formats: `.doc` `.ppt` (only `.xls` can be handled), `.rtf`
+- OpenDocument family: `.odt` `.ods` `.odp`
+- Structured data: `.json` `.xml` `.yaml`
+- Mail: `.msg` (Outlook format; only `.eml` is supported)
+- E-books: `.epub`
+- Audio / video: `.mp3` `.wav` `.m4a` `.mp4` `.mov` and so on
+- Some images: `.tif` `.tiff` `.bmp` `.svg`
+- Some archives: `.7z` `.rar` `.tar` `.gz` (only `.zip` is supported)
+
+Other limitations:
+
+- **Zip nesting is only one level deep.** A zip inside a zip is not opened
+  (the extraction step in `rag.py` skips entries whose extension is `.zip`).
+- **By default images are not read for text.** The default behaviour is `filename_only`,
+  which puts only the file name into the index (`_extract_image_text` in `rag.py`).
+  Text inside an image is not read.
+  There are settings that generate a description (`caption` / `lm_studio`), but the bundled
+  `cynovela.yaml` has no `image:` entry, so the default stays in place.
+- If a PDF was produced as an image (merely scanned), not a single character can be extracted.
+  There is no OCR (optical character recognition) mechanism.
+- Encrypted PDFs and corrupted documents are skipped. They appear in the ingest result as
+  "読めない/空: N件".
+
+---
+
+## 3. Speaking to it by voice
+
+- The voice feature has been removed. This package has no speech-to-text.
+- The legacy path `/api/transcribe` is **no longer connected**.
+  `include_router` has been removed in `server.py` (it was a hole through which a
+  transcription would come back unmasked, so it was deliberately removed).
+
+---
+
+## 4. There is no endpoint for uploading documents
+
+The endpoint for pushing files in from the screen or the API has been **removed**
+(the top of `routers/sources.py` states that "アップロード保存先 `_uploads_root` と
+`/api/sources/upload` を撤去した。取り込みは取り込みフォルダ経由に一本化する").
+
+Documents are **placed in a predetermined ingest folder** and then selected on screen.
+There is no longer any place inside the application that makes a copy of a document.
+
+---
+
+## 5. Conditions under which sending to the outside is stopped
+
+These are less "things it cannot do" than "things deliberately stopped".
+When a determination cannot be made, it always falls to the stopping side. As a result,
+features can look like they are not working.
+
+- **CRAG pre-reading.** The step that has the LLM pre-read whether the search results are
+  sufficient for the question is not executed when the destination is not inside the local
+  machine, and **when the destination cannot be determined** (`rag.py`). When it is not
+  executed, it falls back to "adopt the search results as they are".
+  The screen shows `[CRAG] 非ローカル宛のため下読みをスキップします`.
+- **Conversation summarisation and extraction of hints from an answer.** Both use the same
+  determination, and for external destinations (including undeterminable ones) they send
+  nothing and return empty (`routers/chat.py`).
+- **Sending original text based on role.** If the destination is external, only masked content
+  is sent, even for an administrator (the `_effective_send_tier` described above).
+- **If masking fails, processing stops.** For both the question text and the answer, if the
+  masking step dies with an exception, a 503 is returned and processing is aborted.
+  Pre-masking content is never returned instead (`routers/chat.py`).
+- **The combination of unmasked ingest and external embedding is rejected.**
+  Collections created by an older version as "unmasked" cannot be published while external
+  embedding is enabled (`rag.py`).
+
+---
+
+## 6. Constraints when used concurrently
+
+- **Publish is limited to 2 at a time.** A third waits 5 seconds and, if no slot opens, is
+  returned as a failure (`server.py`; the screen shows
+  "他のPublishが多すぎます。少し待ってから再試行してください。").
+- **LLM concurrency is 3 by default** (`llm.max_concurrent` in `cynovela.yaml`;
+  `server.py` builds a semaphore from this value). A fourth waits until a previous call
+  finishes.
+- **Storage is a single SQLite file** (WAL mode). Where writes overlap, waiting occurs.
+  A usage pattern with dozens of people running ingest at the same time is not assumed.
+- The vector index (ChromaDB) is also a file on the same machine.
+  Do not rewrite the same index from multiple processes.
+
+---
+
+## 7. Constraints on replacing models
+
+Detailed steps are in `SETUP-ACCELERATOR.md`. Only the key points are written here.
+
+- **The embedding model must match down to the version (snapshot).**
+  The snapshot version of `BAAI/bge-m3` must be aligned.
+  **If the version differs the vector values change, they mix with the bundled index, and the
+  search ranking breaks.**
+  If the version differs, a warning appears at startup and at publish time. When a warning
+  appears, either align the version or rebuild the whole index.
+- **The lightweight package (does not include AI models; about 2.4 MB) does not bundle models.**
+  If you run the startup script without placing the models, the first startup asks whether to
+  fetch them from the internet.
+  If you decline, **it stops before starting**.
+- **`host.containers.internal` cannot be resolved outside a container.**
+  If you start directly on the host, rewrite it to `127.0.0.1`
+  (the container package rewrites this one word automatically.
+  If you write a different host name or IP it is not rewritten and is used exactly as written).
+- **The image endpoint of the external accelerator is unimplemented.** Calling it returns 501.
+- **Some values of `--mode` at startup do not actually switch anything.**
+  This is written directly in the description text of `--mode`.
+  `lite` and `lite-en` have no wiring to a lightweight model, and currently run on the same
+  `bge-m3` as the default `text`. `minimal` has no TF-IDF integration, so it too requires
+  `bge-m3` (in an environment without the models placed, ingest is not possible).
+  **Whichever mode you choose, the size of the required models does not change.**
+
+---
+
+## 8. Features that are only a skeleton with nothing inside
+
+These raise `NotImplementedError` when called, or are only abstract declarations.
+(Line numbers are not written, because they shift immediately. They are indicated by file name
+and class / method name.)
+
+| File | Class / method | State |
+|---------|----------------|------|
+| `providers/classifier.py` | `ClassifierProvider.classify` | Abstract (a slot for replacement) |
+| `providers/embedding.py` | `EmbeddingProvider.embed` / `.test_connection` | Abstract |
+| `providers/embedding.py` | `MLXEmbeddingProvider.embed` | Unimplemented (future) |
+| `providers/reranker.py` | `RerankerProvider.rerank` / `.test_connection` | Abstract |
+| `providers/reranker.py` | `MLXReranker.rerank` | Unimplemented (future) |
+| `providers/vector_store.py` | `VectorStoreProvider.add` / `.search` / `.delete_collection` / `.export` / `.import_data` / `.test_connection` | Abstract |
+| `providers/vector_store.py` | `QdrantVectorStore.add` / `.search` / `.delete_collection` / `.export` / `.import_data` | Unimplemented (skeleton only) |
+| `services/rag_strategies.py` | `GraphRAGStrategy.retrieve` / `.build_graph` / `.traverse_with_acl` | Unimplemented (future) |
+| `services/agent_runtime.py` | `AgentRuntime.run` / `.call_tool` / `.available_tools` | Abstract declarations only. There is not a single implementing class |
+
+In other words:
+
+- **You cannot switch the vector storage to Qdrant.** Only ChromaDB works.
+- **The MLX path for Apple Silicon is unusable.** Both embedding and reranking are
+  unimplemented.
+  (If you want to use the Apple Silicon GPU, it goes through the external accelerator.
+  See `SETUP-ACCELERATOR.md`.)
+- **Graph-based search (GraphRAG) is unusable.**
+- **You cannot have an agent do work.** Only the type declarations exist.
+
+---
+
+## 9. The Kubernetes set does not work as-is
+
+- **The container package does not include `deploy/k8s/20-deployment.yaml`.**
+  `tools/build-dist.sh`, which builds the package, drops this file right before making the
+  `tar`. With only the remaining 3 (namespace / pvc / service), not a single application
+  container comes up.
+- **The direct-host-startup package has no `deploy/` at all.**
+
+If you want to run on Kubernetes, you need to write the Deployment definition yourself.
+
+---
+
+## 10. Other limitations and notes
+
+### Startup forms and where data lives
+
+- With `--demo`, it starts with a demo database loaded with the bundled dummy documents
+  (`store/db/demo.db` and `store/vector/demo/chroma`).
+- With nothing added it is production, and starts with an **empty database**
+  (`store/db/cynovela.db` and `store/vector/default/chroma`).
+- **Neither is erased by a restart.** They are not initialised on every startup.
+  If you want to erase them, delete the files yourself.
+- The bundled index and database are built **only from the `dummy-corpus/` inside the package**
+  at the time the package is built. Not a single working document from the builder's side is
+  included.
+  What is actually included, and how many, is written out in `BUNDLED-DATA.md` in the package.
+
+### Cross-collection search
+
+The MCP tools include `search_across_collections` (search spanning multiple collections), but
+**the screen (GUI) has no entry point for cross-collection search.**
+From the screen you select one workspace and search it.
+
+### MCP
+
+- `mcp_server.py` provides 11 tools.
+- The MCP server is built to query Cynovela's REST API internally, with authentication.
+  In other words, **if the main body is not running, MCP does not work either.**
+- The Python executable that runs MCP can be specified with the environment variable
+  `CYNOVELA_MCP_PYTHON`. If not specified, the currently running Python is used as-is
+  (`routers/mcp.py`).
+
+### How answers are built
+
+- **Structured answers cannot be returned.** Answers are free-form (Markdown where needed).
+  Responses in JSON or with fixed tags are not provided.
+  Citation of sources (in the `[1][2]` form) is implemented.
+- **There is no automatic switching when confidence is low.**
+  `cynovela.yaml` has `confidence_threshold` (default `0.4`), but no behaviour that
+  automatically switches to a general-knowledge mode when it falls below is built in.
+- **Self-evaluation of an answer is a simple rule.** `evaluate_answer_quality()` in
+  `adaptive_rag.py` decides sufficiency from "the answer is empty", "under 60 characters with
+  few hits", and "contains a negative phrasing". It does not have an LLM evaluate it.
+
+### Removed features
+
+| Feature | State |
+|------|------|
+| `--mock` startup | Removed. It does not exist among the startup options. Startup without models is also impossible |
+| `/chat-popup` | Returns 410 Gone. Migrated to the full-screen chat |
+| Login with `user_id` only | Removed. `username` and `password` are required |
+| Unauthenticated access to `/api/auth/users` | Removed. Administrator authentication is always required |
+| The `--pii-mode` startup option | Abolished. Specify it with `pii_mode` in `cynovela.yaml` |
+| Legacy `/api/transcribe` | Removed. There is no voice feature |
+| `/api/sources/upload` | Removed. Unified on going through the ingest folder |
+
+### The pass (login token)
+
+The pass is a JWT issued by `POST /api/auth/login`. The signing key is
+**not included in the package**. The receiving side auto-generates it from cryptographic
+random numbers at first startup and saves it to `store/db/jwt/secret.key`
+(`_load_or_create_jwt_signing_key` in `config.py`). This key is always dropped when the package
+is built (because if it were shared, a pass issued elsewhere would be accepted).
+
+If saving the key fails, the key is valid only for that one run.
+In that case, restarting invalidates any issued passes (logging in again works).
+
+### Pitfalls
+
+- ChromaDB's `PersistentClient` does not error even when you pass it the wrong path.
+  It silently creates an empty database. **When a search returns 0 results,
+  first suspect whether the index location is correct.**
+- Do not pass `max_tokens` to the LM Studio API.
+  With a reasoning-type model, it will use up the tokens it needs for thinking.
+
+---
+Last updated: 2026-07-31 / version 1.0.2
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。

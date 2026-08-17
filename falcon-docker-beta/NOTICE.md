@@ -2,6 +2,8 @@
 
 **日本語は下 → [日本語](#使う前のご注意)**
 
+## English
+
 **1. This is for learning and experimentation.** It was not built to serve as a
 production system for real work. Availability, performance and long-term
 maintenance have not been considered.

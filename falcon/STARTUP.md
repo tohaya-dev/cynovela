@@ -1,5 +1,235 @@
 # Cynovela 起動・運用ガイド
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+Cynovela Startup and Operations Guide.
+
+If this is your first time, please start with QUICKSTART.md.
+
+## Everyday startup procedure
+
+This form runs on a single path inside a container. There is no path for running
+`python server.py` directly on the host (the only entry point is `./launch.sh`).
+
+There are two kinds of startup. **`--demo` is the demo** (the state with the bundled dummy documents loaded),
+and **no argument is production** (it starts from an empty database, and you ingest and use your own documents).
+Double-clicking `Cynovela-start.command` starts production (empty). The demo is started with `./launch.sh --demo`.
+
+```bash
+# Start the demo (with the bundled dummy documents)
+./launch.sh --demo
+
+# Start production (empty database)
+./launch.sh
+
+# Open it in a browser
+# http://localhost:8801  (this form opens on host-side 8801)
+```
+
+### First time only: a screen for choosing whether to download the AI model appears
+
+In forms that do not bundle the model (the lightweight package, or using this repository as it is), the AI model
+for reading documents (the embedding model bge-m3) is not yet present the first time. Only when it is missing,
+the following three choices appear in the middle of startup.
+
+1. **Download it now** — receives about 2.2 GB from the internet (download source: Hugging Face). A connection is required.
+2. **Connect a folder you already have** — connects a model folder you have on hand.
+3. **Stop** — place the model later, then start again.
+
+No communication begins until you choose one of them.
+(If you started from a double-click of `Cynovela-start.command`, the same content appears on a "Download / Cancel" screen.)
+
+## Startup options
+
+| Option | Description |
+|---|---|
+| `--mode text` | Text mode (standard) |
+| `--demo` | Start with the demo DB that has the dummy documents loaded (if not given, production = an empty database) |
+| `--reset-admin` | **It is not wired into the entry point of this line (`./launch.sh`).** This form runs on a single path inside a container, and the entry point does not accept this option (0 receivers in `./launch.sh`). Change the administrator password after you enter the screen. The initial password is in the "Login" section below |
+| `--local-only` | Restrict to inside your own machine only (the default listens on all addresses, `0.0.0.0`) |
+| `--port N` | Port number (default 8801. It can be changed with `server.port` in `cynovela.yaml`) |
+
+### List of startup forms (--mode) (measured in DD-CYN-0097, 2026-08-12)
+
+| Form | What changes |
+|---|---|
+| `--mode text` | Default. It runs with all features of text RAG |
+| `--mode lite` | Switching is not wired, so only the displayed name changes (behavior is the same as text) |
+| `--mode lite-en` | Switching is not wired, so only the displayed name changes (behavior is the same as text) |
+
+All of them can be specified in the form `./launch.sh --demo --mode <name> --port <number>` (measured).
+
+
+## Startup in a container (podman)
+
+Instead of starting directly on the host, you can start in a container (podman).
+
+```bash
+# Build and start (./launch.sh does build -> start -> initial setup hints)
+# With no argument it starts production (an empty database)
+./launch.sh
+
+# If you want to try it first, use the demo (with the dummy documents)
+./launch.sh --demo
+```
+
+- The published port is `HOSTPORT` (default 8801). By default it is also visible from other Macs on the same network (published to all addresses). To close it to the inside of your own Mac only, add `--local-only` (it is narrowed to 127.0.0.1 only).
+- The key of the safe is placed on the host side at `keys/secret.key`, and is passed to the container read-only (the first time, it is copied from the bundled `store/secret.key`. The bundled demo documents are encrypted with this key, so without the copy even the administrator cannot read the original text).
+- The model (store/models) is a read-only mount. **The lightweight package does not bundle the model, so place the model first by the procedure in `SETUP-ACCELERATOR.md`** (if you start without it, it stops before starting). Data is saved in a named volume of the container.
+
+### Passing multiple ingest sources
+
+You can pass any number of ingest sources (the root folders of documents) at startup.
+
+```bash
+# Specify several at startup (each one lines up in the list of the folder browsing screen)
+./launch.sh --ingest ~/Documents/契約 --ingest /path/to/資料
+
+# Only add, without starting (a restart is required for it to take effect)
+# * Add, list, and remove use python of the 3.12 line (if this is your first time,
+#   press Cynovela-start.command once first, and it is prepared inside the package)
+./launch.sh --add-path /path/to/新しい取り込み元
+
+# Add from the folder selection screen (macOS. A double-click of Cynovela-add-folder.command is the same)
+./launch.sh --add
+
+# List and delete (list and "remove" can also be done from Settings -> 📁 ingest sources on the screen)
+./launch.sh --list
+./launch.sh --remove <internal name>
+```
+
+- `--ingest` is **an argument of the container startup script**. The startup options of `server.py` in this form do not have `--ingest` (measured 2026-08-02: the argparse of `server.py` in the container edition does not have `--ingest`; it exists only in the host direct-start edition).
+- An addition takes effect **only after a restart**. Until then, the status column of the list says "it can be loaded after a restart". In this form you cannot add from the screen. If you press "add an ingest source" on the screen, the one line to type in a terminal is shown in a form you can copy.
+- Registered roots are kept in the backup file `store/ingest-roots.json`.
+- If you pass no root at all, it starts with the dummy documents inside this package (`dummy-corpus`) as the ingest source. When there is no root at all in the folder browsing of the screen, the guide "there is not even one ingest source yet" appears.
+- Paths outside the roots are refused with 403 (please add them as an ingest source first, then use them).
+- After logging in as the administrator, if you run `./launch.sh --sync-labels <Bearer token>`, the path display on the screen becomes the actual location on the Mac side.
+
+## Login (default user names and initial passwords)
+
+The default user names are **administrator `cynovela`** / **viewer `demo`** (not `admin`).
+The initial passwords are as follows.
+
+- Administrator: user name `cynovela` / password: `Cynovela1!`
+- Viewer: user name `demo` / password: `demo1234`
+
+The administrator is asked to change the password at the first login. After changing it, enter with the new value.
+The viewer can be used as it is. **After you receive it, change the administrator password first.**
+
+## How to create a viewer when you started with nothing loaded
+
+If you started with nothing loaded, at first only the administrator exists. You create the viewer yourself.
+Enter as the administrator, add a new user from user management, and choose viewer as the role.
+If you started with the trial documents, a viewer is prepared in advance.
+
+## LLM provider settings
+
+The bundled default is **LM Studio** (`llm.provider: lmstudio` /
+`llm.base_url: http://localhost:1234` in `cynovela.yaml`). Please use this default as it is at first.
+
+### When using LM Studio (default, recommended)
+
+1. Start LM Studio and **load a model for chat (for generation)**.
+2. Start the local server on the "Developer" tab of LM Studio (default port 1234).
+   When calling from the container form, **enable "Serve on Local Network"** on the LM Studio side.
+3. Open **Settings > LLM Provider** in the left menu of Cynovela, and set
+   - Provider: `LM Studio`
+   - Base URL:
+     - `http://localhost:1234` for a host direct start
+     - `http://host.containers.internal:1234` for the container form
+     (the screen is filled in with the default value for the form from the start)
+   - Model: **press "📋 fetch the model list" and choose an existing chat model from the list**
+4. Confirm success with "🔌 connection test", and save with "💾 apply the LLM settings together".
+
+**Please do not leave Model blank (`auto`).**
+When the model name is not specified, the **first** entry of the model list returned by LM Studio is used.
+If the first one is an embedding-only model (bge-m3 and so on), the generation request is refused, no answer comes back,
+and it becomes an error (HTTP 400). Choosing a **chat model** from the list resolves it.
+(Measured 2026-07-29: an answer was obtained just by changing the model name to an existing chat model.
+Whether or not `/v1` is added to the end of the Base URL does not affect the result.)
+
+- LM Studio does not refuse even if you specify the name of a model that is not loaded,
+  and it may answer with a different model that is already loaded. In the Model field, enter
+  an existing model name chosen from the list.
+- If you run several large models at the same time in LM Studio, the answers may break down or
+  become slow. It returns to normal automatically after a while.
+
+### When using Ollama (it is not the default)
+
+It also works with Ollama, but that is not the bundled default configuration. The procedure below is only for when you use it.
+
+```bash
+# Get the chat model you want to use (the model name is up to you. The following is one example)
+ollama pull qwen3:8b
+
+# When calling from the container form, make Ollama listen on all addresses
+OLLAMA_HOST=0.0.0.0 ollama serve
+```
+
+In Settings > LLM Provider, set Provider: `Ollama`; for Base URL,
+`http://localhost:11434` for a host direct start, or `http://host.containers.internal:11434`
+for the container form; and for Model, enter **the model name that appears in `ollama list`**
+as it is (as with LM Studio, always specify an existing chat model name).
+
+**Note**: When using LM Studio and Ollama at the same time, be careful about memory.
+When switching, it is recommended to unload the LM Studio model before switching.
+
+## Document ingest procedure
+
+1. "Add a source" on the **Sources** page
+   - Enter a local path (example: `/Users/username/Documents/`)
+   - Wait until the scan finishes
+
+2. "Create a collection" on the **Collections** page
+   - Choose a WS (workspace)
+   - Link the sources
+
+3. **Publish**
+   - Choose a collection and press "Publish"
+   - PDF mode: fast / quality / vision (OCR)
+   - Wait until it finishes (large PDFs take time)
+
+4. Start the RAG chat in **Chat**
+
+## Backup
+
+```bash
+# Backup of the DB and Chroma
+cp -r store/ ~/cynovela-backup-$(date +%Y%m%d)/
+```
+
+## Changing the port
+
+The port **is decided by the argument at startup**. Even if you rewrite `server.port` in `cynovela.yaml`,
+it is not reflected in the listening port (the setting is loaded, but it is not passed to the listener).
+
+```bash
+# Host direct start: specify it with --port (default 8765). When using the demo, add --demo as well
+python server.py --mode text --port 8900
+```
+
+```bash
+# Container form: the published port is specified with the environment variable HOSTPORT (default 8801)
+#   Inside the container it stays 8765. Only the published port on the host side changes.
+./launch.sh --port 8900
+```
+
+When it does not work: if the specified port is already in use, startup fails.
+Check the process that is using it with `lsof -i :8900`, and choose another port.
+
+## Checking the logs
+
+```bash
+# Server log (real time). When using the demo, add --demo as well
+python server.py --mode text 2>&1 | tee ~/cynovela.log
+```
+
+---
+
+# 日本語
+
 はじめて使う方は QUICKSTART.md からどうぞ。
 
 ## 日常の起動手順

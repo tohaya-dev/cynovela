@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ハンズオン（応用編） — Cynovela</title>
+  <title>Handson Advanced / ハンズオン（応用編） — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,335 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Hands-on (Advanced)</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">About this document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that an individual can understand the concepts of AI infrastructure tools by working with them hands-on. It is not a commercial product or an official implementation.
+      Everything is implemented from scratch, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+      It does not represent the official view of any company or product.
+    </blockquote>
+    <p>This hands-on covers workspace isolation, the difference in what each role sees, switching the startup mode, LAN sharing, and MCP (Model Context Protocol: the protocol for calling Cynovela from an external AI assistant) connection.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">1. Demo of workspace isolation</span>
+  </div>
+  <div class="slide-body">
+    <h3>Purpose</h3>
+    <p>A workspace is the boundary of an information domain. You experience the behavior that, even for the same user, the visible collections change when the workspace they belong to is different.</p>
+    <h3>Related schema</h3>
+    <ul>
+      <li><code>workspaces</code>: the workspace itself</li>
+      <li><code>workspace_users</code>: the membership relation between a workspace and a user</li>
+      <li><code>workspace_policies</code>: the link between a workspace and a guardrail policy</li>
+      <li><code>workspace_sources</code>: the link between a workspace and a data source</li>
+      <li><code>collections</code>: the collections under a workspace (related through <code>workspace_id</code>)</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">1. Demo seed and hands-on steps</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>Example combinations of policy and workspace</h3>
+    <p>When started with <code>--demo</code>, only 1 workspace containing the bundled dummy material is present (the 3 empty seed workspaces were removed on 2026-07-30). In the exercise, please create workspaces yourself. The 3 seeded policies can be assigned to the workspaces you create, for example as follows.</p>
+    <table>
+      <thead><tr><th>Policy to assign</th><th>Content</th><th>Example of the assumed domain</th></tr></thead>
+      <tbody>
+        <tr><td>pol-pii</td><td>mask PII, exclude Financial</td><td>Sales</td></tr>
+        <tr><td>pol-strict</td><td>Strong control of PII + Financial + HR</td><td>HR</td></tr>
+        <tr><td>pol-log</td><td>Log only for PII / Financial</td><td>Engineering</td></tr>
+      </tbody>
+    </table>
+    <h3>Hands-on steps</h3>
+    <ol>
+      <li>Create 2 workspaces and assign different policies (e.g. pol-pii for sales, pol-strict for HR), separate the member users and log in</li>
+      <li>Open the "collection list" and confirm that the visible collections differ</li>
+      <li>Specify the <code>collection_id</code> of one workspace and try to chat from the other, and confirm that the boundary works</li>
+    </ol>
+    <blockquote><strong>Note</strong>: within workspace isolation, the physical boundary at the ChromaDB level is still being strengthened.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">2. The difference between what admin and viewer see</span>
+  </div>
+  <div class="slide-body">
+    <h3>Purpose</h3>
+    <p>You check the behavior that combines role-based access control (RBAC) with Tier1/Tier2 masking.</p>
+    <h3>Summary of role permissions</h3>
+    <table>
+      <thead><tr><th>Role</th><th>Main permissions</th></tr></thead>
+      <tbody>
+        <tr><td><code>admin</code></td><td>All administrative functions. User management, viewing the PII detection history, searching the raw vault, no masking at the exit</td></tr>
+        <tr><td><code>viewer</code></td><td>Viewing only. RAG search and report viewing, searching the masked vault, masking at the exit</td></tr>
+      </tbody>
+    </table>
+    <blockquote>Names such as <code>curator</code> / <code>data-scientist</code> are normalized to <code>viewer</code> and have no permissions of their own (the effective role is one of the 2 values <code>admin</code> / <code>viewer</code>).</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">2. Decision logic and hands-on steps</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>Internal decision logic (outline)</h3>
+    <ul>
+      <li>The vault to search is decided by <code>tier_for_role(role)</code> (admin → raw / others → masked)</li>
+      <li>The LLM output has masking applied according to the role by <code>_mask_for_viewer()</code></li>
+      <li>Some endpoints (PII detection history, audit logs, user management, etc.) are guarded by <code>_require_admin</code>, so anyone other than admin cannot call them at all</li>
+    </ul>
+    <h3>Hands-on steps</h3>
+    <ol>
+      <li>Prepare a collection that has published a file containing PII</li>
+      <li>Log in as <code>admin</code> and ask RAG Chat "tell me the contact details" → the raw body is displayed</li>
+      <li>Ask the same question as <code>viewer</code> → it is replaced with something like <code>[MASKED:EMAIL]</code></li>
+      <li>Try to access the audit log screen as <code>viewer</code> → 403 Forbidden</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">3. Switching --mode</span>
+  </div>
+  <div class="slide-body">
+    <h3>Purpose</h3>
+    <p>You check the switching of the display name of the startup mode (<code>--mode</code>). Because the switching is not wired up, the behavior and the required model are the same as text for any value.</p>
+    <h3>List of modes</h3>
+    <table>
+      <thead><tr><th><code>--mode</code> value</th><th>Required model</th><th>Embedding implementation</th><th>Recommended environment</th></tr></thead>
+      <tbody>
+        <tr><td><code>text</code> (default)</td><td>BAAI/bge-m3</td><td>BGE-M3 (about 2.3GB)</td><td>General purpose, no GPU needed</td></tr>
+        <tr><td><code>lite</code></td><td>The switching is <strong>not wired up</strong>, so it is actually BAAI/bge-m3 (the behavior is the same as text, only the display name changes)</td><td>—</td><td>—</td></tr>
+        <tr><td><code>lite-en</code></td><td>The switching is <strong>not wired up</strong>, so it is actually BAAI/bge-m3 (the behavior is the same as text, only the display name changes)</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">3. Switching examples</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+<pre><code># 表示名: lite（動作は text と同じ・切替は未配線）
+python server.py --demo --mode lite
+
+# 表示名: lite-en（動作は text と同じ・切替は未配線）
+python server.py --demo --mode lite-en
+
+
+</code></pre>
+    <blockquote><strong>Note</strong>: the <code>--mock</code> option that used to exist (the option that fixed Embedding to TF-IDF and the Reranker to <code>NoReranker</code>) has been removed. Specifying it now stops with an error.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">4. Starting with LAN sharing</span>
+  </div>
+  <div class="slide-body">
+    <h3>Purpose</h3>
+    <p>You make the Cynovela running on your own PC reachable from another PC or a tablet on the same LAN.</p>
+    <h3>Default restrictions</h3>
+    <ul>
+      <li>Bind address: <code>127.0.0.1</code> (loopback only)</li>
+      <li>An IP allowlist middleware is in place, rejecting anything other than <code>127.0.0.1</code> / <code>localhost</code></li>
+    </ul>
+    <h3>Publishing to the LAN</h3>
+    <p>Adding the <code>--lan</code> flag makes the bind <code>0.0.0.0</code>.</p>
+<pre><code>python server.py --demo --lan</code></pre>
+    <p>To allow custom subnets, you can specify <code>--allow-subnet</code> multiple times.</p>
+<pre><code>python server.py --demo --lan --allow-subnet 192.168.1.0/24 --allow-subnet 10.0.0.0/8</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">4. Access through Tailscale</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <p>If Tailscale (a private mesh VPN) is installed on your machine, <code>--allow-tailscale</code> can automatically allow <code>100.64.0.0/10</code>.</p>
+<pre><code>python server.py --demo --allow-tailscale</code></pre>
+    <blockquote><strong>Note on the behavior</strong>: at startup the IP is detected with <code>tailscale ip -4</code> and added to the allowed subnets. If Tailscale is not installed, it is ignored.</blockquote>
+    <h3>Changing the port</h3>
+<pre><code>python server.py --demo --lan --port 9000</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">5. Checking the MCP connection</span>
+  </div>
+  <div class="slide-body">
+    <h3>Purpose</h3>
+    <p>MCP is the protocol for calling Cynovela's RAG search and workspace management tools from an external AI assistant. Cynovela bundles an MCP server implementation (<code>mcp_server.py</code>).</p>
+    <h3>Provided tools (11) — RAG search</h3>
+    <table>
+      <thead><tr><th>Category</th><th>Tool name</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>RAG search</td><td><code>search_collection</code></td><td>RAG search over a single collection</td></tr>
+        <tr><td>RAG search</td><td><code>search_across_collections</code></td><td>RAG search across multiple collections</td></tr>
+        <tr><td>RAG search</td><td><code>rag_with_role</code></td><td>RAG with an answer style per role</td></tr>
+        <tr><td>RAG search</td><td><code>rag_general</code></td><td>Asks the LLM directly without RAG (general knowledge answer)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">5. MCP tools — information and management</span>
+    <span class="continued">(2/3)</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Category</th><th>Tool name</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Information</td><td><code>list_workspaces</code></td><td>List of workspaces and collections</td></tr>
+        <tr><td>Information</td><td><code>get_workspace_info</code></td><td>Details of a workspace</td></tr>
+        <tr><td>Information</td><td><code>get_collection_info</code></td><td>Details of a collection</td></tr>
+        <tr><td>Information</td><td><code>get_audit_logs</code></td><td>Retrieves audit logs (up to 50 entries)</td></tr>
+        <tr><td>Management</td><td><code>list_sources</code></td><td>List of data sources</td></tr>
+        <tr><td>Management</td><td><code>publish_collection</code></td><td>Publishes a collection</td></tr>
+        <tr><td>Management</td><td><code>create_workspace</code></td><td>Creates a workspace</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">5. How to proceed with the connection check</span>
+    <span class="continued">(3/3)</span>
+  </div>
+  <div class="slide-body">
+    <ol>
+      <li>Start the Cynovela server (<code>python server.py --demo</code>)</li>
+      <li>Configure an MCP client (e.g. a compatible AI client) to start <code>mcp_server.py</code></li>
+      <li>Call <code>list_workspaces</code> and confirm that the demo seed workspace comes back</li>
+      <li>Pass <code>query</code> / <code>workspace_id</code> / <code>collection_id</code> to <code>search_collection</code> and run a RAG search</li>
+    </ol>
+    <blockquote><strong>Caution</strong>: internally the MCP server sends authenticated requests to Cynovela's REST API. The Python path used to run MCP can be specified with the environment variable <code>CYNOVELA_MCP_PYTHON</code>.</blockquote>
+    <blockquote><strong>Known limitation</strong>: running the MCP server assumes a conda environment.</blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <span class="doc-name">Hands-on (Advanced)</span>
+    <span class="slide-title">6. Elements you were able to experience</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Element</th><th>Content</th></tr></thead>
+      <tbody>
+        <tr><td>Workspace isolation</td><td>The correspondence between user membership and the visible range of collections</td></tr>
+        <tr><td>Behavior per role</td><td>The vault switch and exit masking for admin / viewer</td></tr>
+        <tr><td><code>--mode</code> switching</td><td>The configuration differences of text / lite / lite-en</td></tr>
+        <tr><td>LAN sharing</td><td><code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code></td></tr>
+        <tr><td>MCP integration</td><td>Operating Cynovela from an external assistant with 11 tools</td></tr>
+      </tbody>
+    </table>
+    <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-15">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">ハンズオン（応用編）</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -229,7 +549,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">1. ワークスペース分離のデモ</span>
@@ -252,7 +572,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">1. デモシードと体験手順</span>
@@ -283,7 +603,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">2. admin / viewer の見え方の違い</span>
@@ -307,7 +627,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">2. 判定ロジックと体験手順</span>
@@ -334,7 +654,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">3. --mode 切り替え</span>
@@ -358,7 +678,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">3. 切り替え例</span>
@@ -381,7 +701,7 @@ python server.py --demo --mode lite-en
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-23">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">4. LAN 共有起動</span>
@@ -406,7 +726,7 @@ python server.py --demo --mode lite-en
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-24">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">4. Tailscale 経由でのアクセス</span>
@@ -425,7 +745,7 @@ python server.py --demo --mode lite-en
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-25">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">5. MCP 接続確認</span>
@@ -450,7 +770,7 @@ python server.py --demo --mode lite-en
   </div>
 </div>
 
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-26">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">5. MCP ツール — 情報・管理</span>
@@ -476,7 +796,7 @@ python server.py --demo --mode lite-en
   </div>
 </div>
 
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-27">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">5. 接続確認の進め方</span>
@@ -498,7 +818,7 @@ python server.py --demo --mode lite-en
   </div>
 </div>
 
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-28">
   <div class="slide-header">
     <span class="doc-name">ハンズオン（応用編）</span>
     <span class="slide-title">6. 体験できた要素</span>
@@ -524,9 +844,9 @@ python server.py --demo --mode lite-en
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 14</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 28</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

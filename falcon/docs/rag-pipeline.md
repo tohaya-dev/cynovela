@@ -1,11 +1,196 @@
+# Cynovela RAG パイプライン
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built by an individual to understand
+> the concepts of AI infrastructure tools hands-on. It is not a commercial product or an official implementation.
+> The implementation is entirely original and consists of an OSS stack of
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+## 1. Hybrid search (vector + BM25)
+
+Cynovela's search runs both vector search (based on semantic similarity) and BM25 (a classic keyword frequency based search algorithm), and the default is "hybrid search", which merges the two sets of results. The implementation is in `rag_retrieve()` (an async function) at `rag.py:1994`.
+
+### 1.1 Vector search
+
+- **Model**: BGE-M3 (a multilingual embedding model) by default. Switching with `--mode lite` / `lite-en` / `minimal` is **not wired up**, and BAAI/bge-m3 is actually used for any of them (the nominal values are MiniLM-L12-v2 / MiniLM-L3-v2 / TF-IDF. Measured 2026-08-02: the startup log of server.py says "名目値 … は未配線").
+- **Store**: ChromaDB. For each Collection ID it is split into the 2 stores `{cid}__raw` and `{cid}__masked`, and which one is used is decided by the user role.
+- **Diversity**: MMR (Maximal Marginal Relevance: a reselection algorithm that balances relevance and diversity) is enabled with `mmr_enabled=true`, and it reselects with a weight of `mmr_lambda=0.7` from the generous set of candidates taken with `mmr_fetch_k=20` (`rag.py:1654-1701`).
+
+### 1.2 BM25 search
+
+- **Index**: `BM25Okapi` is held in memory with a `(workspace_id, tier)` key (`rag.py:101-107`). It is built with `build_bm25_index()` when Publish completes, and rebuilt from SQLite with `rebuild_bm25_from_db()` when necessary.
+- **Tokenization**: Japanese uses fugashi (a MeCab based morphological analyzer), English is split on spaces. This is consolidated in `utils.tokenizer.tokenize()`.
+- **Normalization**: Scores are normalized to [0, 1] before being passed to the hybrid merge.
+
+### 1.3 Hybrid merge method
+
+You choose from 2 ways with `config.rag.hybrid_method` (`rag.py:2143-2174`).
+
+| Method | Formula (conceptual) | Default setting values |
+|------|----------------|--------------|
+| `rrf` (default) | `score += 1.0 / (rrf_k + vector_rank) + 1.0 / (rrf_k + bm25_rank)` | `rrf_k=60` |
+| `weighted` | `hybrid_score = vector_score * 0.7 + bm25_score * 0.3` | `vector_weight=0.7` `bm25_weight=0.3` |
+
+RRF (Reciprocal Rank Fusion) is a method that adds up the reciprocals of the ranks. Because it does not need to add up scores of different scales directly (cosine similarity and the BM25 score), it is adopted as the default.
+
+---
+
+## 2. The role of the Reranker
+
+The Reranker re-evaluates the top N results returned by hybrid search as pairs of the query and the chunk body, and reorders them into a more accurate order. The implementation is at `rag.py:2284-2296`, and the classes in `providers/reranker.py` can be swapped.
+
+### 2.1 Available Rerankers
+
+| Provider | Class | Behavior |
+|----------|--------|------|
+| `none` (default) | `NoReranker` | Does nothing (pass-through) |
+| `cross_encoder` | `CrossEncoderReranker` | Re-evaluates with the CrossEncoder of sentence-transformers |
+| `flashrank` | `FlashRankReranker` | Re-evaluates lightly with the FlashRank library |
+| `ollama` | `OllamaReranker` | Re-evaluates via an Ollama server |
+| `mlx` | `MLXRerankerProvider` | Skeleton only (`NotImplementedError`) |
+| `http` | (legacy path) | Re-evaluates with any HTTP API |
+
+### 2.2 How to switch
+
+Set it with `reranker.provider` in `cynovela.yaml`.
+
+```yaml
+reranker:
+  provider: cross_encoder
+  model: BAAI/bge-reranker-v2-m3
+  base_url: ""
+  api_key: ""
+  top_n: 5
+```
+
+The way the reranker is chosen follows the `reranker` setting in `cynovela.yaml` (the forced specification by `--mock` that used to exist has been removed).
+
+### 2.3 Measurement
+
+The inference time of the Reranker (`rerank_latency_ms`) and the score of each chunk (`rerank_scores`) are recorded in `RetrievalResult`, and can be taken out with `get_last_retrieval_metrics()`.
+
+---
+
+## 3. The difference between the 3 kinds of score
+
+`ChunkHit` (an individual search result) and `RetrievalResult` (the whole search) have the following 3 kinds of score (`pipeline_types.py`).
+
+| Score name | Meaning | Scale | Purpose |
+|----------|------|----------|------|
+| `vector_score` | Vector similarity (cosine) | 0 to 1 | Semantic similarity based on the BGE-M3 embedding. Used for the confidence threshold decision |
+| `bm25_score` | The BM25 score normalized to [0, 1] | 0 to 1 | Strength of the keyword match |
+| `rerank_score` | The re-evaluation score given by the Reranker | Provider dependent (CrossEncoder is assumed to be 0 to 1) | Decides the final order of the top N. 0 means not applied |
+
+In addition, `hybrid_score` is calculated as a provisional score after the hybrid merge, and when the Reranker is not applied it decides the final order.
+
+**Design note**: By design, the decision for the low confidence fallback (Abstention: the behavior of withholding an answer because of insufficient grounds) uses `vector_score`, not the RRF score. The RRF score is a sum of reciprocals of ranks (max ≈ 0.033) and is of a different order of magnitude from cosine similarity (0 to 1), so confusing them breaks the threshold decision.
+
+---
+
+## 4. RAG presets
+
+`routers/pipeline_config.py:24-60` defines 5 built-in presets. They exist so that a combination of Smart Ingestion (the chunking strategy at ingest time + classification + guardrail) can be switched with one click.
+
+| ID | Display name | Chunking | RAG mode | Guardrail | Note |
+|----|--------|--------------|-----------|---------------|------|
+| `tech_doc` | Technical document | `tech_doc` | `standard` | `default` | Assumes manuals and the like |
+| `confidential` | Confidential document | `general` | `standard` | `mask` | For internal documents that contain PII |
+| `personal_memo` | Personal memo | `email_minutes` | `lite` | `log_only` | Minutes and memos |
+| `multimedia` | Multimedia | `tech_doc` | `standard` | `default` | Mixed images and Office files, image_mode=caption |
+| `quickstart` | Quickstart | `tech_doc` | `standard` | `default` | Fully automatic, for beginners |
+
+### 4.1 The 3 RAG modes
+
+The `rag_mode` key switches the behavior of the whole search pipeline.
+
+| Mode | Behavior |
+|--------|------|
+| `lite` | Minimal RAG. Options such as Multi-Query / HyDE / CRAG are omitted, and one search is enough |
+| `standard` (default) | BM25 hybrid + Reranker (when set). Assumes general business use |
+| `hq` | High quality mode. CRAG, Multi-Query and HyDE are turned on, spending time to gain accuracy |
+
+---
+
+## 5. Strictness mode (system prompt switching)
+
+`rag.py:175-213` defines 2 kinds of system prompt, and they are switched depending on whether search results were obtained or not.
+
+| Constant name | Purpose |
+|--------|------|
+| `DEFAULT_SYSTEM_PROMPT` (`SYSTEM_PROMPT`) | When RAG is enabled. Instructs the LLM to answer on the grounds of the search results (context) |
+| `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` | General knowledge mode. On the premise that no context is provided, instructs it to answer "I don't know" for what it does not know |
+
+In addition, a role specific preface is applied with `apply_role_prefix()` (`rag.py:215-231`).
+
+- **admin**: Provides complete information including technical details, setting values and internal structure
+- **reader**: A focused, easy to understand explanation that avoids technical jargon
+
+<!-- BACKLOG: 「STRICT モード」相当の独立したプロンプト切替や、ガードレール強度を段階的に変える厳格度ダイヤルは spec-raw で確認できなかったため、ここではシステムプロンプトの 2 種類切替を「厳格度モード」として扱う -->
+
+---
+
+## 6. Confidence threshold (confidence_threshold)
+
+This is the threshold used for the decision of the low confidence fallback (Abstention: the behavior of withholding an answer and returning "I don't know" when the grounds are insufficient).
+
+### 6.1 Setting value
+
+`config.py:131-135`:
+
+```python
+# 低信頼度フォールバック: hits の最大 vector_score で判定
+# BGE-M3 のノイズフロアは 0.35-0.45 (架空クエリでもこの程度の score が出る)
+# 実存クエリは 0.55-0.75 程度のため 0.50 を境界に設定
+"confidence_threshold": 0.50,
+```
+
+### 6.2 Grounds for the value
+
+- **BGE-M3 noise floor**: 0.35 to 0.45 (even an unrelated query produces roughly this score)
+- **Typical range of a real query**: 0.55 to 0.75
+- **Decision boundary**: 0.50. Below this it is judged as "insufficient grounds", and becomes a candidate for withholding the answer or switching to general knowledge mode
+
+### 6.3 Important note about the scale
+
+The decision metric must always be `vector_score` (cosine similarity, 0 to 1 scale). Because it is of a different order of magnitude from the RRF score (the sum of reciprocals of ranks, max ≈ 0.033), doing the threshold decision with the RRF score makes Abstention fire wildly on every query. Interpret the value of `config.rag.confidence_threshold` on the premise of the cosine scale.
+
+<!-- BACKLOG: confidence_threshold は config に定義済みだが、実際の Abstention 除外ロジックは検索パイプラインに部分統合のみ。全段への統合状況は spec-raw に「パイプラインに部分統合」とだけあり、どの分岐で実際にハジくかまでは確認できなかった -->
+
+---
+
+## 7. Advanced search options (Advanced RAG)
+
+The following options are implemented in `rag.py`, and are enabled in the `rag` section of `cynovela.yaml`.
+
+| Option | Setting key | Behavior | Default |
+|------------|----------|------|------|
+| Multi-Query RAG | `multi_query_enabled` / `multi_query_count` | Expands the query into N-1 rephrasings with the LLM, searches with each one → merges with RRF | on / 3 |
+| CRAG (Corrective RAG) | `crag_enabled` / `crag_max_loops` | The LLM evaluates the quality of the search results, and searches again if they are insufficient | on / 1 |
+| HyDE | `hyde_enabled` | Generates a hypothetical answer from the query and searches with its embedding | off |
+| Adaptive RAG | `adaptive_enabled` / `adaptive_threshold` / `agentic_max_loops` | Switches to an Agentic loop if the complexity score is at or above the threshold | on / 2.0 / 3 |
+| Parent-Child | `parent_child_enabled` / `child_chunk_size` / `parent_chunk_size` | Search hits on a small child chunk, and it is replaced with the large parent chunk when passed to the LLM | on / 256 / 1000 |
+
+The replacement logic of Parent-Child is an asymmetric design: `retrieval_detail.hits` contains the preview of the child, while the context inside the LLM prompt contains the long parent text. When you check the behavior, judge it by the number of characters of the context inside the LLM prompt (whether it exceeds 500 characters).
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# Cynovela RAG パイプライン
 
 ## 1. ハイブリッド検索（ベクター + BM25）
 

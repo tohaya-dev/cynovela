@@ -1,40 +1,74 @@
+# This file is bilingual: English comment first, 日本語 after.
+# scan-scope.txt — scan scope for the coined-term scan required by prohibition #61
 # scan-scope.txt — 禁則#61 の造語走査の対象範囲
 # DD-CYN-0123 / J-1・J-2・J-3 / 2026-08-17
 #
+# Tree actually measured: HEAD 80f23b5 (branch docs/dd-cyn-0122).
+#   Another run pushed e351a39 -> 80f23b5 while this work was running and the target
+#   files moved, so the line numbers, md5 values and hit counts below were all
+#   re-measured on 80f23b5.
+#   Regions are specified by regular expression rather than by line number, so they
+#   still follow the text when lines shift.
 # 実測した木: HEAD 80f23b5 (枝 docs/dd-cyn-0122)。
 #   走行中に別の走行が e351a39 → 80f23b5 を積んで対象ファイルが動いたため、
 #   下の行番号・md5・当たり件数はすべて 80f23b5 で採り直した値である。
 #   区間の指定は行番号ではなく正規表現なので、行がずれても追随する。
 #
+# Format (one directive per line, tokens separated by a TAB character, lines starting
+# with # are comments):
+#   include      <glob>
+#   skip-file    <glob>                          <why it is excluded>
+#   skip-region  <path>  <regex of start line>  <regex of end line>  <why it is excluded>
 # 形式 (1行1指示・トークン区切りはタブ文字・# 始まりはコメント):
 #   include      <glob>
 #   skip-file    <glob>                      <なぜ外すか>
 #   skip-region  <path>  <開始行の正規表現>  <終了行の正規表現>  <なぜ外すか>
 #
+# include is the only authority; only the places listed here are scanned.
+# skip-region enters a region every time the start line matches, and closes the region
+# at the next line that matches the end line (both ends are excluded). The same shape of
+# region may appear more than once in a single file.
 # include が唯一の権威。ここに挙げた場所だけを走査する。
 # skip-region は開始行にマッチするたびに区間へ入り、次に終了行にマッチした行で
 # 区間を閉じる (両端を含めて外す)。1ファイル内に同じ形の区間が複数あってよい。
 #
+# Target packages: the three packages falcon / chewie / falcon-docker-beta, plus the
+#   *.md files directly under the repository root.
+# Target file extensions: .md .txt .html .sh .py .command .js
+#   .js only under frontend/js/. The wording of one screen is split between html and js,
+#   so looking at only one of them lets a screen pass with inconsistent terminology
+#   (this actually happened in DD-CYN-0122).
+# Guiding idea for the target: only "text we wrote" and "wording that appears on the
+#   screen of the person who receives the package".
 # 対象の配布物: falcon / chewie / falcon-docker-beta の3つ + リポジトリ直下の *.md
 # 対象の拡張子: .md .txt .html .sh .py .command .js
 #   .js は frontend/js/ のみ。同じ画面の文言が html と js に分かれており、
 #   片方だけ見ると1つの画面で用語が割れたまま素通りするため (DD-CYN-0122 で実際に起きた)。
 # 対象の考え方: 「当機が書いた文章」と「受け取り手の画面に出る文言」だけ。
 #
+# hansolo/ is not put in scope, per decision §61 (publishing it on GitHub is absolutely
+# forbidden, so it is out of scope for the rewording of public documents). This is
+# guaranteed by never writing it in an include line at all.
 # hansolo/ は決定 §61 により走査対象に入れない (GitHub 公開絶対禁止のため
 # 公開文書の言い換え作業の対象外)。include に一切書かないことで担保する。
 #
+# The globs do not use the recursive symbol (**); each level is listed one at a time.
+# This keeps the shape of "list the places to look at", so that places that are not
+# listed (dummy-corpus/ demo_data/ store/ keys/ static/vendor/ and so on) cannot slip in
+# by mistake.
 # glob は再帰記号 (**) を使わず1階層ずつ挙げる。「見る場所を挙げる」形を保ち、
 # 挙げていない場所 (dummy-corpus/ demo_data/ store/ keys/ static/vendor/ 等) が
 # 手違いで入り込まないようにするため。
 
 
 # ============================================================
+# include — directly under the repository root
 # include — リポジトリ直下
 # ============================================================
 include	*.md
 
 # ============================================================
+# include — falcon (the same list applies to chewie and falcon-docker-beta below)
 # include — falcon
 # ============================================================
 include	falcon/*.md
@@ -66,6 +100,8 @@ include	falcon/utils/metadata/*.py
 
 # ============================================================
 # include — chewie
+#   chewie has no deploy/ directory, so no deploy globs are written here (this avoids a
+#   glob that matches zero files)
 #   chewie には deploy/ が無いので deploy 系の glob を書かない (0件回避)
 # ============================================================
 include	chewie/*.md
@@ -95,6 +131,7 @@ include	chewie/utils/metadata/*.py
 
 # ============================================================
 # include — falcon-docker-beta
+# (same set of globs as falcon)
 # ============================================================
 include	falcon-docker-beta/*.md
 include	falcon-docker-beta/*.txt
@@ -125,6 +162,7 @@ include	falcon-docker-beta/utils/metadata/*.py
 
 
 # ============================================================
+# skip-file — files that match an include glob but are excluded anyway (J-3)
 # skip-file — include の glob に入るが外すもの (J-3)
 # ============================================================
 skip-file	falcon/requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。当機の文章でも画面の文言でもない。
@@ -135,6 +173,9 @@ skip-file	chewie/scripts/test_comprehensive_e2e.py	試験の走行台本と試�
 skip-file	falcon-docker-beta/scripts/test_comprehensive_e2e.py	試験の走行台本と試験データ。受け取り手の目に触れず、言い換えると試験が落ちる。
 
 # ------------------------------------------------------------
+# The entries below are not listed in include, so at present they match zero files.
+# They are kept as a note that records "why we do not look at this", and they also work
+# as a guard for the day someone widens include.
 # 以下は include に挙げていないので現時点で0件に当たる。
 # 「なぜ見ないか」を残すための控えの札であり、include を広げた際の防壁も兼ねる。
 # ------------------------------------------------------------
@@ -148,9 +189,21 @@ skip-file	hansolo/*	決定 §61。GitHub 公開絶対禁止のため公開文書
 
 
 # ============================================================
+# skip-region — exclude only a part of a file
 # skip-region — ファイルの一部だけ外す
 # ============================================================
 
+# --- J-1: exclude only the body text of the fictional demo sample documents ---
+#   The decision (2026-08-17) was: "protect only the body text of the sample documents".
+#   Therefore demo-general.html is not excluded as a whole file. The explanatory text in
+#   the same file (step-desc / explain-panel / h3 headings) stays in scope.
+#   The regions are the two <div class="doc-content"> …</div> blocks (the original side
+#   and the side after masking).
+#   Measured: identical in all three packages (md5 11bb165cee6dbaceb9db24705d66bc8a);
+#         the regions are lines 829-838 and 842-851. The fictional personal information
+#         is contained inside them.
+#   demo-tech.html has no doc-content region (that is, it has no sample document body),
+#   so no region is written for it.
 # --- J-1: デモ用の架空のサンプル文書の本文だけを外す ---
 #   Tocchi の判断 (2026-08-17) = 「サンプル文書の本文のみ保護する」。
 #   ∴ demo-general.html はファイルごと外さない。同ファイル内の解説文
@@ -164,6 +217,17 @@ skip-region	falcon/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s
 skip-region	chewie/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
 skip-region	falcon-docker-beta/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
 
+# --- J-3: machine-generated list of third-party components ---
+#   Only the region holding the version-pinned dependency list (alphanumeric only) is
+#   excluded.
+#   The title, the introduction, the headings, the list of bundled models and the count
+#   line at the end are our own text, so they stay in scope.
+#   Measured (HEAD 80f23b5): falcon and falcon-docker-beta have two list regions
+#   (lines 10-178 and 182-229); chewie has one (lines 10-178). chewie has no MAS list,
+#   so a second entry is not written for it.
+#   The start/end words of the second entry also appear inside the first region
+#   (lines 14 and 167), but the first region is already excluded by the first entry, so
+#   they merely overlap and do no harm, and heading line 180 can stay in scope.
 # --- J-3: 機械で作った外部部品の一覧 ---
 #   外すのは版を留めた依存の並び (英数字のみ) の区間だけ。
 #   題・前置き・見出し・同梱モデルの並び・末尾の件数行は当機の文章なので対象に残す。
@@ -177,6 +241,8 @@ skip-region	chewie/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- 
 skip-region	falcon-docker-beta/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- yarl 1\.24\.5 — Apache-2\.0$	外から取り込んだ部品の一覧を機械で書き出したもの。固定値の並びで言い換えの対象にならない。
 skip-region	falcon-docker-beta/THIRD_PARTY_NOTICES.md	^- annotated-doc 0\.0\.5 — MIT$	^- uvicorn 0\.51\.0 — BSD-3-Clause$	同上 (MAS 環境の部品の並び)。
 
+# --- J-3: full text of third-party licenses (not one character may be changed) ---
+#   The Japanese introduction (lines 1-25) is our own text, so it stays in scope.
 # --- J-3: 他所の許諾文の全文 (一字一句変えてはならない) ---
 #   前置きの日本語 (1-25行) は当機の文章なので対象に残す。
 skip-region	falcon/LICENSES-MODELS.md	^## MIT License \(BAAI/bge-m3\)$	^SOFTWARE\.$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。

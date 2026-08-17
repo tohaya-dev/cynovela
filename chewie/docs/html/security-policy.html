@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>セキュリティ ポリシー — Cynovela</title>
+  <title>Security Policy / セキュリティ ポリシー — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,257 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Security Policy and Known Limitations</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About This Document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that one individual can understand the concepts of an AI platform tool by working on them hands-on. It is not a commercial product or an official implementation. Everything is implemented originally, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official view of any company or product in any way.
+    </blockquote>
+    <p>Cynovela is a learning tool and does not meet the security requirements of production operation. This document organizes the explicit disclaimers, the known limitations as of Alpha GA, and the usage that is not recommended.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">1. Disclaimers (4 Points)</span>
+  </div>
+  <div class="slide-body">
+    <h3>1-1. Learning purpose, unofficial implementation</h3>
+    <p>Cynovela is a learning tool for an individual to understand the concepts of an AI platform tool hands-on. It is not a commercial product, and it contains no source code or official implementation of anything it refers to.</p>
+    <h3>1-2. Absence of any official view</h3>
+    <p>The behavior, implementation, and documentation of Cynovela do not represent the official view of any company or product it refers to. The interpretation of specifications and the design decisions are based on one individual's understanding and may contain mistakes.</p>
+    <h3>1-3. Production operation is out of scope</h3>
+    <p>Business use and production operation are not assumed. No warranty of any kind is provided even if events such as data loss, information leakage, or service outage occur.</p>
+    <h3>1-4. Possibility of specification changes</h3>
+    <p>The behavior of features, the API signatures, the database schema, and the configuration keys may change without notice.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">2-1. Known Limitations — Authentication and Authorization</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li><strong>Authentication is JWT</strong>: issued by <code>POST /api/auth/login</code>, and required even in a <code>--demo</code> start. The old <code>Bearer demo-token-&lt;user_id&gt;</code> form was abolished on 2026-07-29.</li>
+      <li><strong>No API key management feature</strong>: issuing and revoking per-user API keys is not implemented.</li>
+    </ul>
+    <h3>2-2. Communication encryption</h3>
+    <ul>
+      <li><strong>HTTPS not supported</strong>: the application itself listens over HTTP only. TLS termination must be delegated to a reverse proxy (nginx, etc.).</li>
+      <li><strong>LLM communication is also plaintext</strong>: connections to LM Studio / Ollama are plaintext HTTP as well. Publishing outside the LAN is not recommended.</li>
+      <li><strong>The old <code>transcribe</code> audio path has been removed</strong>: the router was disabled to close the egress hole for raw PII, and <code>voice.py</code> takes its place.</li>
+    </ul>
+    <h3>2-3. Settings that are not persisted</h3>
+    <ul>
+      <li><strong>Embedding / Reranker settings</strong>: changes made at run time (through the UI) are not persisted to the YAML and revert to the defaults on restart.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">2-4. Known Limitations — Skeleton-only Features</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li><strong>Qdrant VectorStore</strong>: only the abstraction layer and a connection stub. <code>add</code> / <code>search</code> / <code>delete_collection</code> / <code>export</code> / <code>import_data</code> are not implemented.</li>
+      <li><strong>MLX Embedding</strong>: <code>NotImplementedError</code>. The Apple Silicon optimized version is future work.</li>
+      <li><strong>MLX Reranker</strong>: <code>NotImplementedError</code>. Future work.</li>
+      <li><strong>LanceDB backend</strong>: initialization only; the substance is not implemented.</li>
+      <li><strong>GraphRAG strategy</strong>: only the abstract class; <code>retrieve</code> / <code>build_graph</code> / <code>traverse_with_acl</code> are not implemented.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">2-5 to 2-7. Known Limitations — Others</span>
+  </div>
+  <div class="slide-body">
+    <h3>2-5. DataSyncService</h3>
+    <ul>
+      <li><strong>publish integration not merged</strong>: the hash-difference synchronization only writes logs, and the actual connection to rag.publish is a noop.</li>
+      <li><strong>No content_hash comparison</strong>: difference detection is currently per path only (addition / deletion). Detecting content changes is not supported.</li>
+    </ul>
+    <h3>2-6. RAG pipeline</h3>
+    <ul>
+      <li><strong>Structured answer template not implemented</strong>: free-form answers are the standard. Forcing an answer in JSON form or XML tag form is not supported.</li>
+      <li><strong>Low-confidence fallback partially implemented</strong>: confidence_threshold (0.50) is defined, but the processing that automatically switches to <code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> when there are 0 search results is not integrated.</li>
+    </ul>
+    <h3>2-7. UI</h3>
+    <ul>
+      <li><strong>Some elements of the i18n switch</strong>: some of the elements whose display is controlled by the language switch (Japanese / English) are fixed.</li>
+      <li><strong>Hiding before tab initialization</strong>: some UI elements are <code>display:none</code> until the JavaScript initialization.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">2-8. Areas Skipped in the Tests</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li><strong>Demo mode related</strong>: because bypassing authentication is by design in <code>--demo</code> mode, 4 authentication boundary tests are skipped.</li>
+      <li><strong>Sources API</strong>: because of the path registration form, 2 tests are skipped.</li>
+      <li><strong>Publish Semaphore</strong>: 1 xfail because injecting a mock at module scope is difficult. A lazy accessor is planned in Stage-3.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">3. Usage That Is Not Recommended</span>
+  </div>
+  <div class="slide-body">
+    <p>The following ways of use are either not blocked by design or are blocked incompletely, so please do not do them.</p>
+    <h3>3-1. Publishing directly to the Internet</h3>
+    <p>Opening a port directly to the Internet while bound to <code>0.0.0.0</code> with <code>--lan</code> is strictly prohibited. The reasons are as follows.</p>
+    <ul>
+      <li>HTTPS is not in place (plaintext communication)</li>
+      <li>JWT authentication is not implemented</li>
+      <li>RBAC enforcement is limited</li>
+      <li>The file upload restrictions are loose</li>
+    </ul>
+    <h3>3-2. Production operation with confidential documents</h3>
+    <ul>
+      <li>Fernet encryption of the raw text is in operation, but key management (<code>CYNOVELA_SECRET_KEY</code>) assumes personal operation</li>
+      <li>Tamper protection of audit_logs applies only through the API; direct DB access is out of scope of the protection</li>
+      <li>Mechanisms for backup and disaster recovery are not implemented</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">3. Usage That Is Not Recommended (Continued)</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <h3>3-3. LAN sharing with untrusted users</h3>
+    <p>When sharing over the LAN, the premise is that every user on the network is trusted. It is recommended to narrow the connection sources strictly with <code>--allow-subnet</code> and then use it only among trusted members.</p>
+    <h3>3-4. Editing the audit log directly in the DB</h3>
+    <p>Modifying or deleting the <code>audit_logs</code> table through the API is prohibited. Editing the DB directly (with the <code>sqlite3</code> command and so on) also leads to breaking consistency, so please avoid it.</p>
+    <h3>3-5. Forcing multiple simultaneous Publish runs</h3>
+    <p>Running multiple Publish operations on the same Collection at the same time is prevented with <code>collection_locks</code>, but forcibly releasing the DB lock and running them in parallel leads to breaking data consistency.</p>
+    <h3>3-6. Checking quality in mock mode</h3>
+    <p>Always run the RAG quality verification tests in an environment where a real LLM (LM Studio, etc.) is running. The <code>--mock</code> option that used to exist (which ran without calling an LLM) has been removed.</p>
+    <h3>3-7. Adding new <code>INSERT OR REPLACE</code> statements</h3>
+    <p><code>INSERT OR REPLACE</code> fires the SQLite FK CASCADE unintentionally, so it is prohibited in the codebase. To update an existing row, use <code>INSERT ... ON CONFLICT(id) DO UPDATE SET ...</code>.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">4. Recommended Operating Configurations</span>
+  </div>
+  <div class="slide-body">
+    <p>One of the following configurations is recommended.</p>
+    <h3>4-1. Fully local operation (the safest)</h3>
+<pre><code>python server.py --demo</code></pre>
+    <ul>
+      <li>Binds to <code>127.0.0.1</code> only</li>
+      <li>The LLM is a mock as well</li>
+      <li>For verification, demonstrations, and tutorials</li>
+    </ul>
+    <h3>4-2. Local LLM operation</h3>
+<pre><code>python server.py --demo --lmstudio-url http://localhost:1234</code></pre>
+    <ul>
+      <li>Start LM Studio or Ollama on the same machine</li>
+      <li>No network exposure</li>
+      <li>For personal learning and experimentation</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Security Policy</span>
+    <span class="slide-title">4-3. Operation over a Personal VPN, and 5. Vulnerability Reports</span>
+  </div>
+  <div class="slide-body">
+    <h3>4-3. Operation over a personal VPN</h3>
+<pre><code>python server.py --lan --allow-tailscale</code></pre>
+    <ul>
+      <li>Allows access only over Tailscale</li>
+      <li>Access only between trusted personal devices</li>
+      <li>For personal verification while away from home</li>
+    </ul>
+    <h3>5. Vulnerability reports</h3>
+    <p>Cynovela is a personal project and does not have a formal contact point for vulnerability reports. If you report a problem you find through GitHub Issues or a similar channel, a response will be considered to the extent possible.</p>
+    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-12">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">セキュリティ ポリシー・既知制限</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-13">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +469,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">1. 免責（4 点）</span>
@@ -248,7 +490,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-15">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">2-1. 既知制限 — 認証・認可</span>
@@ -275,7 +517,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">2-4. 既知制限 — 骨格のみの機能</span>
@@ -295,7 +537,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">2-5〜2-7. 既知制限 — その他</span>
@@ -323,7 +565,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">2-8. テストでスキップされている領域</span>
@@ -341,7 +583,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">3. 推奨しない使用方法</span>
@@ -369,7 +611,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">3. 推奨しない使用方法（続き）</span>
@@ -393,7 +635,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">4. 推奨運用構成</span>
@@ -421,7 +663,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">セキュリティ ポリシー</span>
     <span class="slide-title">4-3. 個人 VPN 経由運用・5. 脆弱性報告</span>
@@ -446,9 +688,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 11</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 22</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

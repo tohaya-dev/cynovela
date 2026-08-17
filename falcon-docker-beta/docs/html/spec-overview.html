@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>仕様概要 — Cynovela</title>
+  <title>Spec Overview / 仕様概要 — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,274 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Spec Overview</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">About this document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About this document</strong><br>
+      Cynovela is a completely unofficial learning tool, built so that an individual could understand the concepts of an AI platform tool by working with their own hands. It is not a commercial product and not an official implementation. The implementation is entirely original, and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
+    </blockquote>
+    <p>This document organizes the features confirmed as of Cynovela Alpha GA and the known limitations, so that they can be seen at a glance. For detailed specifications and the reasoning behind the design, see each individual document.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">1.1 RAG pipeline</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Feature</th><th>State</th><th>Overview</th></tr></thead>
+      <tbody>
+        <tr><td>Vector search</td><td>Implemented</td><td>1024-dimension embeddings by BGE-M3 are put into ChromaDB</td></tr>
+        <tr><td>BM25 search</td><td>Implemented</td><td>Tokenization based on morphological analysis (fugashi/MeCab for Japanese, space-separated for English)</td></tr>
+        <tr><td>Hybrid merge</td><td>Implemented</td><td>The default is RRF (reciprocal rank fusion); can also be switched to weighted (weighted average)</td></tr>
+        <tr><td>MMR re-selection</td><td>Implemented</td><td>Balances relevance and diversity</td></tr>
+        <tr><td>Parent-Child chunking</td><td>Implemented</td><td>Search with child chunks, replace with the parent chunk and pass it to the LLM</td></tr>
+        <tr><td>Multi-Query expansion</td><td>Implemented</td><td>The LLM expands the query into several variants and merges them with RRF</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">1.1 RAG pipeline</span>
+    <span class="continued">(2/2)</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Feature</th><th>State</th><th>Overview</th></tr></thead>
+      <tbody>
+        <tr><td>CRAG (self-evaluating re-search)</td><td>Implemented</td><td>The LLM evaluates the quality of the search results and searches again if needed</td></tr>
+        <tr><td>HyDE (hypothetical document embedding)</td><td>Implemented</td><td>Generates a hypothetical answer and searches with its embedding</td></tr>
+        <tr><td>Reranker</td><td>Implemented (replaceable)</td><td>The default is disabled (NoReranker); can be switched to CrossEncoder / FlashRank / Ollama / HTTP and others</td></tr>
+        <tr><td>Adaptive RAG</td><td>Implemented</td><td>Automatically switches between "basic" and "agentic" by query complexity</td></tr>
+        <tr><td>Citation embedding</td><td>Implemented</td><td>Embeds citation numbers in the <code>[1][2]</code> form into the answer</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">1.2 Guardrails / security</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Feature</th><th>State</th><th>Overview</th></tr></thead>
+      <tbody>
+        <tr><td>PII detection (first stage: regular expressions)</td><td>Implemented</td><td>The 8 types URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4</td></tr>
+        <tr><td>PII detection (second stage: named entity recognition)</td><td>Implemented</td><td>presidio + GiNZA fallback</td></tr>
+        <tr><td>Tier1 masking at ingest</td><td>Implemented</td><td>Generates both raw and masked at Publish</td></tr>
+        <tr><td>Tier2 masking at answer time</td><td>Implemented</td><td>Applies the exit mask per role</td></tr>
+        <tr><td>Fernet encryption</td><td>Implemented</td><td>Encrypts right before storing the original into SQLite / Chroma</td></tr>
+        <tr><td>Prompt injection countermeasures (3 layers)</td><td>Implemented</td><td>Input inspection → post-retrieval inspection → output inspection</td></tr>
+        <tr><td>Audit log</td><td>Implemented</td><td>Records authentication failures, PII detection, prompt injection blocking, and so on</td></tr>
+        <tr><td>Guardrail policy</td><td>Implemented</td><td>The 4 actions mask / exclude_from_rag / log_only / allow</td></tr>
+        <tr><td>RBAC (role-based authorization)</td><td>Implemented</td><td>The 3 roles admin / curator / viewer</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">1.3 Smart Ingestion (ingest and classification)</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Feature</th><th>State</th><th>Overview</th></tr></thead>
+      <tbody>
+        <tr><td>Automatic classification into 14 categories</td><td>Implemented</td><td>governance_policy / incident_report / technical_guide and others</td></tr>
+        <tr><td>Lightweight classifier</td><td>Implemented</td><td>Keyword matching on the file name and the first 500 characters</td></tr>
+        <tr><td>LLM classifier</td><td>Implemented</td><td>Zero-shot classification with Ollama (llama3 by default)</td></tr>
+        <tr><td>Hybrid classifier</td><td>Implemented</td><td>Lightweight first, falls back to the LLM when confidence is low</td></tr>
+        <tr><td>Workspace / Collection structure</td><td>Implemented</td><td>Workspace (unit of administration) and Collection (a group of files)</td></tr>
+        <tr><td>Collection state transitions</td><td>Implemented</td><td>draft → ingested → ready and so on</td></tr>
+        <tr><td>Automatic polling sync</td><td>Implemented (partly)</td><td>Difference detection over the set of paths (60 second interval by default). Automatic linkage to Publish is not integrated</td></tr>
+        <tr><td>Raw mode</td><td>Implemented</td><td>Stores <code>rag_mode='raw'</code> per collection</td></tr>
+        <tr><td>Contextual Chunking</td><td>Implemented (Phase 2)</td><td>Prepends a metadata summary to the beginning of a chunk</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">1.4 Surrounding features</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Feature</th><th>State</th><th>Overview</th></tr></thead>
+      <tbody>
+        <tr><td>MCP server</td><td>Implemented</td><td>Exposes 11 tools that can be called from outside</td></tr>
+        <tr><td>LM Studio integration</td><td>Implemented</td><td>Goes through the OpenAI-compatible <code>/v1</code> API</td></tr>
+        <tr><td>Circuit breaker</td><td>Implemented</td><td>Automatic cut-off and recovery when the LLM fails</td></tr>
+        <tr><td>Dashboard</td><td>Implemented</td><td>Visualizes pipeline health / statistics / polling state and others</td></tr>
+        <tr><td>Audit log viewing API</td><td>Implemented</td><td>Tampering via the API is prohibited (append only)</td></tr>
+        <tr><td>LAN / Tailscale exposure</td><td>Implemented</td><td><code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">2. Main categories of API endpoints</span>
+  </div>
+  <div class="slide-body">
+    <p>The router implementation is split into <strong>36 files</strong> (under <code>routers/</code>). The main categories are as follows.</p>
+    <table>
+      <thead><tr><th>Category</th><th>Router</th><th>Main role</th></tr></thead>
+      <tbody>
+        <tr><td>Authentication and users</td><td><code>auth.py</code>, <code>users.py</code>, <code>sessions.py</code></td><td>Login, user list, session management</td></tr>
+        <tr><td>Data management</td><td><code>sources.py</code>, <code>files.py</code>, <code>workspaces.py</code>, <code>collections.py</code></td><td>Ingest sources, files, storage units, collections</td></tr>
+        <tr><td>RAG / Chat</td><td><code>chat.py</code>, <code>agent.py</code>, <code>mcp.py</code></td><td>Chat responses, agent, MCP</td></tr>
+        <tr><td>Metadata</td><td><code>catalog.py</code>, <code>pipeline_config.py</code></td><td>Catalog, presets</td></tr>
+        <tr><td>Guardrails</td><td><code>guardrails.py</code>, <code>policies.py</code>, <code>compliance.py</code></td><td>PII detection, policies, compliance</td></tr>
+        <tr><td>Monitoring and operations</td><td><code>dashboard.py</code>, <code>health.py</code>, <code>stats.py</code>, <code>alerts.py</code>, <code>audit_logs.py</code>, <code>jobs.py</code></td><td>Monitoring, health, statistics, alerts, auditing</td></tr>
+        <tr><td>LLM / models</td><td><code>llm.py</code>, <code>lmstudio.py</code>, <code>models.py</code>, <code>mode.py</code></td><td>LLM connection, model management</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">3.1 Features that stay an abstract base or a skeleton</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Feature</th><th>State</th></tr></thead>
+      <tbody>
+        <tr><td>Qdrant vector store</td><td>Skeleton only (returns <code>NotImplementedError</code>)</td></tr>
+        <tr><td>MLX Embedding</td><td>Skeleton only</td></tr>
+        <tr><td>MLX Reranker</td><td>Skeleton only</td></tr>
+        <tr><td>LanceDB backend</td><td>Skeleton only</td></tr>
+        <tr><td>GraphRAG strategy</td><td>Planned for future implementation</td></tr>
+      </tbody>
+    </table>
+    <h3>3.2 Removed features</h3>
+    <table>
+      <thead><tr><th>Feature</th><th>How it was removed</th></tr></thead>
+      <tbody>
+        <tr><td>The <code>/chat-popup</code> route</td><td>Returns 410 Gone following the removal of the side panel</td></tr>
+        <tr><td>Login with user_id alone</td><td>Changed to require username / password</td></tr>
+        <tr><td>Unauthenticated demo access to <code>/api/auth/users</code></td><td>Changed to always require admin authentication</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">3.3 Limitations by design</span>
+  </div>
+  <div class="slide-body">
+    <ul>
+      <li>The confidence threshold (confidence_threshold = 0.50) is defined as a configuration value, but its exclusion logic in the search pipeline is only <strong>partly integrated</strong>.</li>
+      <li>Automatic polling sync works up to difference detection, but automatic linkage to Publish is <strong>not integrated</strong> (planned to be connected in a later phase).</li>
+      <li>Hash difference sync works <strong>per path</strong>. Comparison by <code>content_hash</code> is not implemented yet.</li>
+      <li>Authentication is enforced in all startup forms (it is not skipped even with <code>--demo</code>). The fixed token that used to be accepted with <code>--demo</code> startup was abolished on 2026-07-29.</li>
+    </ul>
+    <h3>3.4 Structured answer templates</h3>
+    <ul>
+      <li>A feature that fixes the LLM's answer into a <strong>structured format</strong> such as JSON or an <code>&lt;answer&gt;</code> tag is not implemented. A free-form answer is the standard.</li>
+    </ul>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <span class="doc-name">Spec Overview</span>
+    <span class="slide-title">4. Items planned toward Beta GA</span>
+  </div>
+  <div class="slide-body">
+    <p>The priority topics toward Beta GA, as read from the CHANGELOG, are as follows.</p>
+    <table>
+      <thead><tr><th>Item</th><th>Overview</th></tr></thead>
+      <tbody>
+        <tr><td>Fixing HIGH priority bugs</td><td>The reversed DB → Chroma order in <code>import_workspace</code>, the race condition in <code>admin_cleanup_chromadb_orphans</code>, the physical boundary of WS isolation, the WS-A → WS-B cross-boundary check, and others</td></tr>
+        <tr><td>Indirect prompt injection detection</td><td>A detection mechanism aimed at attacks that come through ingested documents</td></tr>
+        <tr><td>Implementation of Qdrant / MLX / LanceDB</td><td>Advance the currently skeleton-only implementations into real implementations</td></tr>
+        <tr><td>Reranker testing with a real model</td><td>Improving RAG quality with CrossEncoder and others</td></tr>
+        <tr><td>Persisting Embedding / Reranker settings to YAML</td><td>They are currently held in memory, so they return to the defaults on restart</td></tr>
+        <tr><td>Introducing JWT authentication</td><td>Resolved (2026-07-29). RBAC is enforced in all modes</td></tr>
+        <tr><td>KnowledgeCatalog extension</td><td>Metadata search in the Chunks viewer, citation tracking</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px; color: var(--cyn-muted); font-size: 12px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial / for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-12">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">仕様概要（Spec Overview）</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-13">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -227,7 +486,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">1.1 RAG パイプライン</span>
@@ -251,7 +510,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-15">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">1.1 RAG パイプライン</span>
@@ -275,7 +534,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-16">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">1.2 ガードレール / セキュリティ</span>
@@ -302,7 +561,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-17">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">1.3 Smart Ingestion（取り込み・分類）</span>
@@ -329,7 +588,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-18">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">1.4 周辺機能</span>
@@ -353,7 +612,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-19">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">2. API エンドポイントの主要カテゴリ</span>
@@ -379,7 +638,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-20">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">3.1 抽象基底のみ・骨格に留まる機能</span>
@@ -411,7 +670,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-21">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">3.3 設計上の制限</span>
@@ -434,7 +693,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-22">
   <div class="slide-header">
     <span class="doc-name">仕様概要</span>
     <span class="slide-title">4. Beta GA に向けて予定している事項</span>
@@ -463,9 +722,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 11</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 22</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

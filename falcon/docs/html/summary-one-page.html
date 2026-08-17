@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>概要（1ページ版） — Cynovela</title>
+  <title>Summary One Page / 概要（1ページ版） — Cynovela</title>
   <style>
 /* Cynovela Slide Base CSS — generated 2026-05-26 */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
@@ -201,15 +201,130 @@ a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
+<!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
+  <div class="cover-brand">📊 Cynovela</div>
+  <div class="cover-title">Cynovela Overview (One Page)</div>
+  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+</div>
+
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <span class="doc-name">Overview (One Page)</span>
+    <span class="slide-title">About This Document</span>
+  </div>
+  <div class="slide-body">
+    <blockquote>
+      <strong>About This Document</strong><br>
+      Cynovela is a completely unofficial learning tool built by an individual to understand the concepts of AI platform tools by hands-on work. It is not a commercial product or an official implementation. The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product in any way.
+    </blockquote>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <span class="doc-name">Overview (One Page)</span>
+    <span class="slide-title">Core Message</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela is a learning-purpose verification implementation that runs an entire RAG (Retrieval-Augmented Generation) pipeline over internal documents in a fully local environment.</p>
+    <p>The whole flow — document ingest, PII (personal information) detection, vector search, and answer generation by a local LLM — was built using OSS components only.</p>
+    <p>Its purpose is to understand, by running it hands-on, the problems that the referenced AI platform tools are trying to solve.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <span class="doc-name">Overview (One Page)</span>
+    <span class="slide-title">Problems It Solves</span>
+  </div>
+  <div class="slide-body">
+    <ol>
+      <li><strong>Internal documents never reach the LLM's context</strong><br>A general-purpose LLM does not know internal terminology, regulations, or operating procedures. Having a person copy and paste a summary by hand for every question is not realistic.</li>
+      <li><strong>Documents cannot be sent to the cloud</strong><br>Sending internal documents that contain confidential information to an external API creates constraints in terms of data sovereignty, audit requirements, and compliance. A RAG system that runs fully locally is required.</li>
+      <li><strong>You do not want to put documents containing PII into the search index as-is</strong><br>If personal names, email addresses, phone numbers and the like are indexed without masking, there is a risk they leak through answers. A two-stage design is required: masking at ingest time (Tier1) and masking at answer time (Tier2).</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <span class="doc-name">Overview (One Page)</span>
+    <span class="slide-title">How It Works (3 Steps)</span>
+  </div>
+  <div class="slide-body">
+    <ol>
+      <li><strong>Register a Source → Scan</strong><br>When you register a local directory as a Source, the target files are detected recursively and registered in the <code>files</code> table. Because a deterministic file_id derived from the path is used even when re-scanning, the impact on existing Collections is minimized.</li>
+      <li><strong>Workspace → Collection → Publish</strong><br>Under a Workspace (the unit for managing permissions and policies) you create a Collection (a set of files plus a chunking strategy); at Publish time the documents are split into chunks, embedded, and loaded into ChromaDB. At the same time PII is detected and both the <code>tier="raw"</code> and <code>tier="masked"</code> variants are generated.</li>
+      <li><strong>RAG Chat</strong><br>For a user's question, relevant chunks are retrieved by a hybrid of BM25 and vector search (RRF: Reciprocal Rank Fusion by default) and passed to the local LLM as context to generate an answer. Citation numbers, a low-confidence fallback, prompt injection countermeasures, and masking at output time are built in.</li>
+    </ol>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <span class="doc-name">Overview (One Page)</span>
+    <span class="slide-title">List of OSS Components</span>
+  </div>
+  <div class="slide-body">
+    <table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>FastAPI</strong></td><td>The HTTP API server itself (started with uvicorn)</td></tr>
+        <tr><td><strong>SQLite</strong></td><td>Persistence of metadata, audit logs, and chunk text (foreign keys enabled)</td></tr>
+        <tr><td><strong>ChromaDB</strong></td><td>Vector store (creates two Collections, raw / masked)</td></tr>
+        <tr><td><strong>BGE-M3</strong></td><td>Multilingual embedding model (the default text mode)</td></tr>
+        <tr><td><strong>Local LLM</strong></td><td>To avoid the external transmission assumed by the referenced AI platform tools, a local inference server with an OpenAI-compatible /v1 API is used</td></tr>
+      </tbody>
+    </table>
+    <p>As supporting components, BM25Okapi (keyword search), fugashi/MeCab (Japanese morphological analysis), cryptography.fernet (vault encryption), and presidio + GiNZA (a secondary path for PII detection) are used.</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <span class="doc-name">Overview (One Page)</span>
+    <span class="slide-title">Disclaimer</span>
+  </div>
+  <div class="slide-body">
+    <p>Cynovela is a personal implementation for learning purposes; commercial use and production use are not assumed. It does not represent the official position of the referenced AI platform tools, and it contains no company or product names. All implementation decisions and design trade-offs are those of an individual.</p>
+    <p style="margin-top:24px; color:var(--cyn-muted); font-size:14px;">Last updated: 2026-05-26 / Alpha GA edition</p>
+  </div>
+  <div class="slide-footer">
+    <span class="brand">Cyno<span class="accent">vela</span></span>
+    <span>Unofficial, for personal learning / Alpha GA</span>
+  </div>
+</div>
+
+<div class="slide cover" id="slide-8">
   <div class="cover-brand">📊 Cynovela</div>
   <div class="cover-title">Cynovela 概要（1ページ版）</div>
   <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
 </div>
 
-<div class="slide" id="slide-2">
+<div class="slide" id="slide-9">
   <div class="slide-header">
     <span class="doc-name">概要（1ページ版）</span>
     <span class="slide-title">このドキュメントについて</span>
@@ -226,7 +341,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-3">
+<div class="slide" id="slide-10">
   <div class="slide-header">
     <span class="doc-name">概要（1ページ版）</span>
     <span class="slide-title">核心メッセージ</span>
@@ -242,7 +357,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-11">
   <div class="slide-header">
     <span class="doc-name">概要（1ページ版）</span>
     <span class="slide-title">解決する問題</span>
@@ -260,7 +375,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-12">
   <div class="slide-header">
     <span class="doc-name">概要（1ページ版）</span>
     <span class="slide-title">動き方（3ステップ）</span>
@@ -278,7 +393,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-13">
   <div class="slide-header">
     <span class="doc-name">概要（1ページ版）</span>
     <span class="slide-title">OSS 部品一覧</span>
@@ -302,7 +417,7 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">概要（1ページ版）</span>
     <span class="slide-title">免責</span>
@@ -319,9 +434,9 @@ a:hover { text-decoration: underline; }
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / 7</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+  <span id="slide-counter">1 / 14</span>
+  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

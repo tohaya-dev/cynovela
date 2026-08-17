@@ -1,5 +1,8 @@
 # Security Policy / セキュリティについて
 
+**This file is bilingual: each point is given in English first, then in Japanese.**
+**この文書は日英併記です。各項目を英語・日本語の順で書いています。**
+
 Please do not open a public issue for security problems.
 Use GitHub's private vulnerability reporting (Security > Report a vulnerability)
 on this repository, with steps to reproduce and the version you used.

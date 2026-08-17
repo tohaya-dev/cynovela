@@ -1,11 +1,160 @@
+# 仕様概要（Spec Overview）
+
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+> **About this document**
+> Cynovela is a completely unofficial learning tool, built by an individual in order to
+> understand the concepts of AI infrastructure tools hands-on. It is not a commercial
+> product and not an official implementation.
+> The implementation is entirely original, and is made of an OSS stack:
+> FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
+> It does not represent the official position of any company or product.
+
+This document organizes the features confirmed as of Cynovela Alpha GA and the known limitations, so that they can be seen at a glance. For detailed specifications and the reasoning behind the design, see each individual document.
+
+---
+
+## 1. List of confirmed implemented features
+
+### 1.1 RAG (Retrieval-Augmented Generation) pipeline
+
+| Feature | State | Overview |
+|---|---|---|
+| Vector search | Implemented | 1024-dimension embeddings by BGE-M3 are put into ChromaDB |
+| BM25 search | Implemented | Tokenization based on morphological analysis (fugashi/MeCab for Japanese, space-separated for English) |
+| Hybrid merge | Implemented | The default is RRF (reciprocal rank fusion); can also be switched to weighted (weighted average) |
+| MMR re-selection | Implemented | Balances relevance and diversity |
+| Parent-Child chunking | Implemented | Search with child chunks, replace with the parent chunk and pass it to the LLM |
+| Multi-Query expansion | Implemented | The LLM expands the query into several variants and merges them with RRF |
+| CRAG (self-evaluating re-search) | Implemented | The LLM evaluates the quality of the search results and searches again if needed |
+| HyDE (hypothetical document embedding) | Implemented | Generates a hypothetical answer and searches with its embedding |
+| Reranker | Implemented (replaceable) | The default is disabled (NoReranker); can be switched to CrossEncoder / FlashRank / Ollama / HTTP and others |
+| Adaptive RAG | Implemented | Automatically switches between "basic" and "agentic" by query complexity |
+| Citation embedding | Implemented | Embeds citation numbers in the `[1][2]` form into the answer |
+
+### 1.2 Guardrails / security
+
+| Feature | State | Overview |
+|---|---|---|
+| PII detection (first stage: regular expressions) | Implemented | The 8 types URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4 |
+| PII detection (second stage: named entity recognition) | Implemented | presidio + GiNZA fallback |
+| Tier1 masking at ingest | Implemented | Generates both raw and masked at publish |
+| Tier2 masking at answer time | Implemented | Applies the exit mask per role |
+| Fernet encryption | Implemented | Encrypts right before storing the original into SQLite / Chroma |
+| Prompt injection countermeasures (3 layers) | Implemented | Input inspection → post-retrieval inspection → output inspection |
+| Audit log | Implemented | Records authentication failures, PII detection, prompt injection blocking, and so on |
+| Guardrail policy | Implemented | The 4 actions mask / exclude_from_rag / log_only / allow |
+| RBAC (role-based authorization) | Implemented | The 3 roles admin / curator / viewer |
+
+### 1.3 Smart Ingestion (ingest and classification)
+
+| Feature | State | Overview |
+|---|---|---|
+| Automatic classification into 14 categories | Implemented | governance_policy / incident_report / technical_guide and others |
+| Lightweight classifier | Implemented | Keyword matching on the file name and the first 500 characters |
+| LLM classifier | Implemented | Zero-shot classification with Ollama (llama3 by default) |
+| Hybrid classifier | Implemented | Lightweight first, falls back to the LLM when confidence is low |
+| Workspace / Collection structure | Implemented | Workspace (unit of administration) and Collection (a group of files) |
+| Collection state transitions | Implemented | draft → ingested → ready and so on |
+| Automatic polling sync | Implemented (partly) | Difference detection over the set of paths (60 second interval by default). Automatic linkage to Publish is not integrated |
+| Raw mode | Implemented | Stores `rag_mode='raw'` per collection |
+| Contextual Chunking | Implemented (Phase 2) | Prepends a metadata summary to the beginning of a chunk |
+
+### 1.4 Surrounding features
+
+| Feature | State | Overview |
+|---|---|---|
+| MCP server | Implemented | Exposes 11 tools that can be called from outside |
+| LM Studio integration | Implemented | Goes through the OpenAI-compatible `/v1` API |
+| Circuit breaker | Implemented | Automatic cut-off and recovery when the LLM fails |
+| Dashboard | Implemented | Visualizes pipeline health / statistics / polling state and others |
+| Audit log viewing API | Implemented | Tampering via the API is prohibited (append only) |
+| LAN / Tailscale exposure | Implemented | `--lan` / `--allow-tailscale` / `--allow-subnet` |
+
+---
+
+## 2. Main categories of API endpoints
+
+The router implementation is split into **36 files** (under `routers/`). The main categories are as follows.
+
+| Category | Router | Main role |
+|---|---|---|
+| Authentication and users | `auth.py`, `users.py`, `sessions.py` | Login, user list, session management |
+| Data management | `sources.py`, `files.py`, `workspaces.py`, `collections.py` | Ingest sources, files, storage units, collections |
+| RAG / Chat | `chat.py`, `agent.py`, `mcp.py` | Chat responses, agent, MCP |
+| Metadata | `catalog.py`, `pipeline_config.py` | Catalog, presets |
+| Guardrails | `guardrails.py`, `policies.py`, `compliance.py` | PII detection, policies, compliance |
+| Monitoring and operations | `dashboard.py`, `health.py`, `stats.py`, `alerts.py`, `audit_logs.py`, `jobs.py` | Monitoring, health, statistics, alerts, auditing |
+| LLM / models | `llm.py`, `lmstudio.py`, `models.py`, `mode.py` | LLM connection, model management |
+| Others | `archived.py`, `cost.py`, `demo.py`, `features.py`, `feedback.py`, `messages.py`, `pages.py`, `reports.py`, `settings.py`, `admin.py` | Archive, cost, demo, feature toggles, feedback, and so on |
+
+For details, see `docs/api-reference.md`.
+
+---
+
+## 3. Known limitations (as of Alpha GA)
+
+### 3.1 Features that are only an abstract base or whose implementation stays a skeleton
+
+| Feature | State |
+|---|---|
+| Qdrant vector store | Skeleton only (returns `NotImplementedError`) |
+| MLX Embedding | Skeleton only |
+| MLX Reranker | Skeleton only |
+| LanceDB backend | Skeleton only |
+| GraphRAG strategy | Planned for future implementation |
+
+### 3.2 Removed features
+
+| Feature | How it was removed |
+|---|---|
+| The `/chat-popup` route | Returns 410 Gone following the removal of the side panel |
+| Login with user_id alone | Changed to require username / password |
+| Unauthenticated demo access to `/api/auth/users` | Changed to always require admin authentication |
+
+### 3.3 Limitations by design
+
+- The confidence threshold (confidence_threshold = 0.50) is defined as a configuration value, but its exclusion logic in the search pipeline is only **partly integrated**.
+- Automatic polling sync works up to difference detection, but automatic linkage to Publish is **not integrated** (planned to be connected in a later phase).
+- Hash difference sync works **per path**. Comparison by `content_hash` is not implemented yet.
+- Authentication is enforced in all startup forms (it is not skipped even with `--demo`). The fixed token that used to be accepted with `--demo` startup was abolished on 2026-07-29.
+
+### 3.4 Structured answer templates
+
+- A feature that fixes the LLM's answer into a **structured format** such as JSON or an `<answer>` tag is not implemented. A free-form answer is the standard.
+
+---
+
+## 4. Items planned toward Beta GA
+
+The priority topics toward Beta GA, as read from the CHANGELOG, are as follows.
+
+| Item | Overview |
+|---|---|
+| Fixing HIGH priority bugs | The reversed DB → Chroma order in `import_workspace`, the race condition in `admin_cleanup_chromadb_orphans`, the physical boundary of WS isolation, the WS-A → WS-B cross-boundary check, and others |
+| Indirect prompt injection detection | A detection mechanism aimed at attacks that come through ingested documents |
+| Implementation of Qdrant / MLX / LanceDB | Advance the currently skeleton-only implementations into real implementations |
+| Reranker testing with a real model | Improving RAG quality with CrossEncoder and others |
+| Persisting Embedding / Reranker settings to YAML | They are currently held in memory, so they return to the defaults on restart |
+| Introducing JWT authentication | Enforcing RBAC in all modes |
+| KnowledgeCatalog extension | Metadata search in the Chunks viewer, citation tracking |
+
+---
+
+Last updated: 2026-05-26 / Alpha GA edition
+
+---
+
+# 日本語
+
 > **このドキュメントについて**
 > Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
-
-# 仕様概要（Spec Overview）
 
 このドキュメントは、Cynovela Alpha GA 時点で確認済みの機能と既知制限を一望できるように整理したものです。詳細な仕様や設計の根拠は各個別ドキュメントを参照してください。
 
