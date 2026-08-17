@@ -1,3 +1,40 @@
+# Read Before Distributing
+
+**日本語は下 → [日本語](#配布前にお読みくださいread-before-distributing)**
+
+This document is for whoever receives this package, and for whoever passes it
+on. Read it first.
+
+A package comes in one of two forms: the **container build** and the
+**application build**. The `track:` line of the bundled `VERSION` tells you
+which one you have. Where the two differ, this document says so.
+
+1. **What this package is for.** It is for verification and demonstration —
+   checking that it works, evaluating it, showing it. It is not meant to be run
+   in production as it stands.
+2. **There are two ways to start it.** With no arguments it starts in
+   production mode (an empty database, into which you ingest your own
+   material); with **`--demo`** it starts with the bundled sample material
+   already loaded. If this is your first time, try `--demo` first. The two keep
+   their databases and indexes in separate locations, so nothing from the demo
+   mixes into production.
+3. **All bundled material is fictional.** The seven files under `dummy-corpus/`
+   describe a fictional company. Every person, organisation, address, phone
+   number and email address in them is invented and bears no relation to anyone
+   real.
+4. **The initial passwords are fixed values, written in the bundled
+   `STARTUP.md`.** Nothing is delivered separately. **The administrator is
+   required to change the password at first sign-in** — tell the recipient to
+   do that first.
+5. **In production mode, no ingest source is registered.** You must register one
+   before your own material can be read. See `GETTING-STARTED.md`. With
+   `--demo`, one source is already registered.
+6. **Note the default listen address.** The server listens on **all addresses
+   (0.0.0.0)** by default, so it is visible from other machines on the same
+   network. Pass **`--local-only`** to confine it to your own machine.
+
+---
+
 # 配布前にお読みください（READ BEFORE DISTRIBUTING）
 
 この文書は、本配布物を受け取った方・配布する方に最初に読んでいただく案内です。

@@ -1,5 +1,14 @@
 # 同梱モデルのライセンス表記 (Third-Party Model Licenses)
 
+**English follows, then 日本語.**
+
+Whether the models are bundled depends on which package you have. The all-in-one
+package bundles the models below under `store/models/`; the lightweight package
+does not. The table is both the licence notice for the models bundled in the
+all-in-one package, and reference information for recipients of the lightweight
+package who fetch the models themselves and place them under `store/models/`.
+Copyright in each model belongs to its provider.
+
 本配布物の `store/models/` には以下の埋め込み・リランキング用モデルを同梱している。
 各モデルの著作権は提供元に帰属し、それぞれ下記のライセンスで再配布される。
 

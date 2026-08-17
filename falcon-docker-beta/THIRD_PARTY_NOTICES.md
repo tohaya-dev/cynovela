@@ -1,8 +1,11 @@
 # Third-Party Notices
 
+A list of the third-party components included in this package, generated
+mechanically from the actual environment.
+
 この配布物に含まれる第三者の部品の一覧です。実環境から機械で作成しています。
 
-## コンテナイメージ内の Python 部品
+## Python packages in the container image / コンテナイメージ内の Python 部品
 
 - accelerate 1.14.0 — Apache
 - aiohappyeyeballs 2.7.1 — PSF-2.0

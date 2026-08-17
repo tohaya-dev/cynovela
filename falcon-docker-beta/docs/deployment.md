@@ -72,6 +72,7 @@ pip install -r requirements.txt
 | `--local-only` | bool | False | 自マシン内だけに絞る（`host=127.0.0.1` で待ち受け） |
 | `--allow-tailscale` | bool | False | Tailscale ネットワークからのアクセス許可 |
 | `--reset-admin` | bool | False | 管理者パスワードをリセットして表示し終了（デモを直すときは `--demo` を併記） |
+| `--ingest PATH` | str（複数指定可） | なし | 取り込み元として許可するフォルダ |
 | `--allow-subnet` | list | `[]` | 許可するサブネット（複数指定可） |
 
 ### よく使う組み合わせ
