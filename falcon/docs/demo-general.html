@@ -817,10 +817,10 @@
 
 <!-- Step 3: PII マスキング -->
 <section class="step" id="step-3">
-  <h2><span class="step-number">3</span>個人情報を伏字にする</h2>
-  <p class="step-desc">ファイルの中身を取り込む前に、Cynovela は個人情報（PII）を自動検出して伏字に置き換えます。左が原文、右が伏字後です。</p>
+  <h2><span class="step-number">3</span>個人情報をマスキングにする</h2>
+  <p class="step-desc">ファイルの中身を取り込む前に、Cynovela は個人情報（PII）を自動検出してマスキングに置き換えます。左が原文、右がマスキング後です。</p>
   <div class="explain-panel">
-    <strong>なぜ必要か:</strong> 業務文書には電話番号やメール、マイナンバーなどの個人情報がしばしば混ざります。これらを LLM の学習材料や検索結果にそのまま出すと、情報漏洩のリスクがあります。Cynovela は <strong>取り込み時</strong>と<strong>回答時</strong>の二段階で伏字化します。
+    <strong>なぜ必要か:</strong> 業務文書には電話番号やメール、マイナンバーなどの個人情報がしばしば混ざります。これらを LLM の学習材料や検索結果にそのまま出すと、情報漏洩のリスクがあります。Cynovela は <strong>取り込み時</strong>と<strong>回答時</strong>の二段階でマスキングします。
   </div>
   <div class="content-block">
     <div class="compare-grid">
@@ -838,7 +838,7 @@
         </div>
       </div>
       <div class="compare-col masked">
-        <h3>伏字後（一般ユーザーが参照）</h3>
+        <h3>マスキング後（一般ユーザーが参照）</h3>
         <div class="doc-content">
           【商談議事録】<br>
           日時: 2026年5月15日<br>
@@ -876,7 +876,7 @@
 <!-- Step 4: ベクター化 -->
 <section class="step" id="step-4">
   <h2><span class="step-number">4</span>ベクター化（数値の地図に変換）</h2>
-  <p class="step-desc">伏字化したテキストは「意味の似たもの同士が近くに集まる数値の地図」に変換されます。</p>
+  <p class="step-desc">マスキングしたテキストは「意味の似たもの同士が近くに集まる数値の地図」に変換されます。</p>
   <div class="explain-panel">
     <strong>なぜ必要か:</strong> 検索は単語の完全一致だけでは限界があります。ベクター化（埋め込み）すると、「価格について」という質問で「料金体系」を扱った文書も拾えるようになります。Cynovela は BAAI/bge-m3 という OSS の埋め込みモデルを使います。
   </div>
@@ -1026,7 +1026,7 @@
       <div class="summary-card">
         <div class="icon-big">🔒</div>
         <h4>守る</h4>
-        <p>PII を取り込み時と回答時の二段階で伏字化。raw 本文は暗号化保管。</p>
+        <p>PII を取り込み時と回答時の二段階でマスキング。raw 本文は暗号化保管。</p>
       </div>
       <div class="summary-card">
         <div class="icon-big">🔍</div>

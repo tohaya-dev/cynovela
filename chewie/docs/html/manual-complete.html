@@ -847,7 +847,7 @@ failed → draft</code></pre>
     <h4>Tier2（回答時マスキング）</h4>
     <p><code>_mask_for_viewer</code> が chat 経路 4 箇所（通常 / compare A / compare B / SSE）で LLM 出力に適用される。admin 以外は強制マスク。</p>
     <h4>Fernet 暗号化</h4>
-    <p><code>vault_enc.py</code> の <code>enc_raw</code> / <code>dec_raw</code> 窓口（<code>enc:</code> プレフィックス、冪等）。raw tier のみ暗号化、masked tier は素通し。</p>
+    <p><code>vault_enc.py</code> の <code>enc_raw</code> / <code>dec_raw</code> インターフェース（<code>enc:</code> プレフィックス、冪等）。raw tier のみ暗号化、masked tier は素通し。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>

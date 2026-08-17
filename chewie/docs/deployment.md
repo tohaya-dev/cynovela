@@ -63,7 +63,7 @@ pip install -r requirements.txt
 
 | フラグ | 型 | 既定値 | 説明 |
 |--------|-----|------|------|
-| `--demo` | bool | False | デモのデータベース `store/db/demo.db` と索引 `store/vector/demo/chroma` を使って起動。付けなければ本番の `store/db/cynovela.db` と `store/vector/default/chroma`。どちらも再起動では消えません |
+| `--demo` | bool | False | デモのデータベース `store/db/demo.db` とインデックス `store/vector/demo/chroma` を使って起動。付けなければ本番の `store/db/cynovela.db` と `store/vector/default/chroma`。どちらも再起動では消えません |
 | `--lmstudio-url` | str | `http://localhost:1234` | LM Studio のベース URL |
 | `--mode` | str | `text` | 起動モード（`full` / `text` / `lite` / `lite-en` / `minimal`） |
 | `--host` | str | `0.0.0.0` | バインドアドレス（既定は全アドレス。絞るのは `--local-only`） |

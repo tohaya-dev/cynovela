@@ -11,7 +11,7 @@
 - **止める**: `Cynovela-stop.command` をダブルクリックします。ターミナルが開いて止まり、
   止まったことが文字で出ます。
 - **読み込むフォルダを足す**: `Cynovela-add-folder.command` をダブルクリックします。フォルダを
-  選ぶ画面が出て、選ぶと控えに書かれます。足したフォルダが読めるようになるのは、
+  選ぶ画面が出て、選ぶとバックアップに書かれます。足したフォルダが読めるようになるのは、
   `Cynovela-start.command` で起動し直したあとです。
 
 > **初回だけ、開き方が変わることがあります。**
@@ -25,7 +25,7 @@
 そのため、**Podman が必要です。** 入っていない場合は、先に入れてください。
 
 1. <https://podman.io/> から Podman Desktop を受け取って入れます。
-2. Podman Desktop を開き、案内に従って一度起動します
+2. Podman Desktop を開き、画面の指示に従って一度起動します
    （ターミナルから使う場合は `podman machine init` のあと `podman machine start`）。
 3. そのあとで `Cynovela-start.command` をダブルクリックします。
 

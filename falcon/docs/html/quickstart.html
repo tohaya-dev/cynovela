@@ -219,7 +219,7 @@ a:hover { text-decoration: underline; }
       <strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
     </blockquote>
-    <p>このドキュメントでは、Cynovela を初めて起動し、最初の RAG（Retrieval-Augmented Generation：検索拡張生成）質問を投げるまでの最短手順をご案内します。</p>
+    <p>このドキュメントでは、Cynovela を初めて起動し、最初の RAG（Retrieval-Augmented Generation：検索拡張生成）質問を投げるまでの最短手順を示します。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -395,7 +395,7 @@ pip install -r requirements.txt</code></pre>
   </div>
   <div class="slide-body">
     <p>「ワークスペース（Workspace）」は、ユーザー・ポリシー・コレクションをまとめる管理単位です。<code>--demo</code> 起動では、同梱のダミー資料が入ったワークスペースが 1 件だけ入っています（空のシード WS 3 件は 2026-07-30 に撤去済みで、起動時に取り除かれます）。ガードレールポリシー 3 件はシードされるので、作成したワークスペースに割り当てて使います。</p>
-    <p>新規ワークスペースを作る場合は、GUI の「ワークスペース管理」画面から作成できます。後述の「ハンズオン（基礎編）」で詳しい手順をご案内します。</p>
+    <p>新規ワークスペースを作る場合は、GUI の「ワークスペース管理」画面から作成できます。後述の「ハンズオン（基礎編）」で詳しい手順を示します。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -460,7 +460,7 @@ pip install -r requirements.txt</code></pre>
     <p>ロールによる違いも体験できます。</p>
     <ul>
       <li><code>admin</code> ログイン時: 生本文（raw）保管庫を検索。出力にもマスクは入りません。</li>
-      <li><code>viewer</code> ログイン時: マスク済み本文（masked）保管庫を検索。LLM 出力にも出口マスクが適用され、PII（Personally Identifiable Information：個人情報）は伏字に置換されます（<code>curator</code> / <code>data-scientist</code> 等は <code>viewer</code> に正規化）。</li>
+      <li><code>viewer</code> ログイン時: マスク済み本文（masked）保管庫を検索。LLM 出力にも出口マスクが適用され、PII（Personally Identifiable Information：個人情報）はマスキングに置換されます（<code>curator</code> / <code>data-scientist</code> 等は <code>viewer</code> に正規化）。</li>
     </ul>
   </div>
   <div class="slide-footer">

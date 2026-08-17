@@ -37,7 +37,7 @@
 |  |  chunker.py        : Contextual Chunking                        |  |
 |  |  adaptive_rag.py   : 複雑度判定 / Agentic ループ                   |  |
 |  |  services/data_sync.py : ハッシュ差分同期                          |  |
-|  |  vault_enc.py      : Fernet 暗号化窓口 (enc:)                     |  |
+|  |  vault_enc.py      : Fernet 暗号化インターフェース (enc:)                     |  |
 |  +-----------------------------------------------------------------+  |
 |                                                                       |
 |  +-----------------------------------------------------------------+  |
@@ -81,7 +81,7 @@
 
 ### 2.4 サービス・ドメイン層
 
-RAG パイプライン本体は `rag.py`（44 関数）に集約され、PII マスキングは `guardrail.py`、文脈付きチャンキングは `chunker.py`、複雑度判定と Agentic ループは `adaptive_rag.py` が担います。Fernet 暗号化は `vault_enc.py` が薄い窓口を提供し、raw tier の本文だけを暗号化します。
+RAG パイプライン本体は `rag.py`（44 関数）に集約され、PII マスキングは `guardrail.py`、文脈付きチャンキングは `chunker.py`、複雑度判定と Agentic ループは `adaptive_rag.py` が担います。Fernet 暗号化は `vault_enc.py` が薄いラッパーを提供し、raw tier の本文だけを暗号化します。
 
 ### 2.5 Provider 抽象（providers/）
 

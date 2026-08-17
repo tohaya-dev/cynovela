@@ -23,7 +23,7 @@ spec-raw に根拠が見つからないため断定を保留し、後日コー�
 - **deployment.md** (行25): Windows / Linux / Docker 環境での動作確認状況は spec-raw に記載がないため未確認 
 - **deployment.md** (行26): GPU 利用時の詳細（CUDA バージョン、メモリ目安）は spec-raw に記載がないため未確認 
 - **known-limitations.md** (行81): MCP が conda 限定である技術的な理由は spec-raw に明示されていないため未確認 
-- **known-limitations.md** (行121): spec-raw には IP 伏字の挙動と admin tier の関係について明示的な記述がなく、原因は調査中。詳細条件・回避策は未確認 
+- **known-limitations.md** (行121): spec-raw には IP マスキングの挙動と admin tier の関係について明示的な記述がなく、原因は調査中。詳細条件・回避策は未確認 
 - **known-limitations.md** (行129): GUI 上での横断検索 UI / API の有無は spec-raw に記載がないため未確認 
 - **metadata-engine.md** (行208): content_hash 比較ベースの差分同期は仕様未確定 
 - **rag-pipeline.md** (行129): 「STRICT モード」相当の独立したプロンプト切替や、ガードレール強度を段階的に変える厳格度ダイヤルは spec-raw で確認できなかったため、ここではシステムプロンプトの 2 種類切替を「厳格度モード」として扱う 
@@ -65,7 +65,7 @@ spec-raw に根拠が見つからないため断定を保留し、後日コー�
 - docs/guardrails.md:55:<!-- BACKLOG: Legal / Healthcare / Sales / Technical / Marketing の 5 カテゴリは旧 classifier.py に定義はあるが、現行のガードレールシードでは使われていない。GA 時点でこれらを有効化するのか・分類エンジンとの接続をどうするかは spec-raw に確認情報なし -->
 - docs/faq.md:14:<!-- BACKLOG: 参照元ツールの具体的機能との対照表は spec-raw に根拠なし。書かない。 -->
 - docs/faq.md:37:<!-- BACKLOG: extract_text の対応拡張子一覧は spec-raw に列挙がない。確認後追記。 -->
-- docs/known-limitations.md:121:<!-- BACKLOG: spec-raw には IP 伏字の挙動と admin tier の関係について明示的な記述がなく、原因は調査中。詳細条件・回避策は未確認 -->
+- docs/known-limitations.md:121:<!-- BACKLOG: spec-raw には IP マスキングの挙動と admin tier の関係について明示的な記述がなく、原因は調査中。詳細条件・回避策は未確認 -->
 - docs/known-limitations.md:129:<!-- BACKLOG: GUI 上での横断検索 UI / API の有無は spec-raw に記載がないため未確認 -->
 - docs/metadata-engine.md:208:<!-- BACKLOG: content_hash 比較ベースの差分同期は仕様未確定 -->
 - docs/security-design.md:128:<!-- BACKLOG: docs/guardrails.md の存在は B-3 フェーズで生成予定 -->

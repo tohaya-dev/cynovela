@@ -251,7 +251,7 @@ a:hover { text-decoration: underline; }
 |  chunker.py        : Contextual Chunking                          |
 |  adaptive_rag.py   : 複雑度判定 / Agentic ループ                   |
 |  services/data_sync.py : ハッシュ差分同期                          |
-|  vault_enc.py      : Fernet 暗号化窓口 (enc:)                     |
+|  vault_enc.py      : Fernet 暗号化インターフェース (enc:)                     |
 
 |  Provider 抽象 (providers/)                                        |
 |  llm_adapter.py  (LMStudioAdapter / MockAdapter)                  |
@@ -317,7 +317,7 @@ a:hover { text-decoration: underline; }
     <h3>2.3 ルーター層（routers/）</h3>
     <p>36 個のルーターが API エンドポイントを担います。ロール検査は <code>_require_admin</code> <code>_require_authenticated</code> <code>_require_role</code> <code>_require_admin_or_self</code> の 4 ヘルパーに集約され、合計 242 箇所で利用されています。</p>
     <h3>2.4 サービス・ドメイン層</h3>
-    <p>RAG パイプライン本体は <code>rag.py</code>（44 関数）に集約され、PII マスキングは <code>guardrail.py</code>、文脈付きチャンキングは <code>chunker.py</code>、複雑度判定と Agentic ループは <code>adaptive_rag.py</code> が担います。Fernet 暗号化は <code>vault_enc.py</code> が薄い窓口を提供し、raw tier の本文だけを暗号化します。</p>
+    <p>RAG パイプライン本体は <code>rag.py</code>（44 関数）に集約され、PII マスキングは <code>guardrail.py</code>、文脈付きチャンキングは <code>chunker.py</code>、複雑度判定と Agentic ループは <code>adaptive_rag.py</code> が担います。Fernet 暗号化は <code>vault_enc.py</code> が薄いラッパーを提供し、raw tier の本文だけを暗号化します。</p>
     <h3>2.5 Provider 抽象（providers/）</h3>
     <p>LLM・埋め込み・Reranker・分類器・ベクターストアを差し替え可能な抽象として持ちます。実装が完了しているもの（LM Studio / BGE-M3 / Chroma / NoReranker / CrossEncoder / FlashRank / Ollama Reranker / RuleBased Classifier）と、骨格のみで <code>NotImplementedError</code> を返すもの（MLX Embedding / MLX Reranker / Qdrant VectorStore / GraphRAG Strategy）が混在しています。</p>
     <h3>2.6 ストレージ層</h3>

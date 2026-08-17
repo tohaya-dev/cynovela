@@ -92,7 +92,7 @@ Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かし�
 python server.py --demo
 ```
 
-- `--demo`: デモのデータベース `store/db/demo.db` と索引 `store/vector/demo/chroma` を使って起動します。付けなければ本番の `store/db/cynovela.db` と `store/vector/default/chroma` です。どちらも再起動では消えません。
+- `--demo`: デモのデータベース `store/db/demo.db` とインデックス `store/vector/demo/chroma` を使って起動します。付けなければ本番の `store/db/cynovela.db` と `store/vector/default/chroma` です。どちらも再起動では消えません。
 
 ブラウザで `http://127.0.0.1:8765` を開くと UI が表示されます。
 

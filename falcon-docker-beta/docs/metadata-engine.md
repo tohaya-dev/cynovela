@@ -210,13 +210,13 @@ deleted_paths = existing_paths - discovered_paths
 
 ---
 
-## 6. 伏字なし取り込み（raw_only）と旧 raw モード
+## 6. マスキングなし取り込み（raw_only）と旧 raw モード
 
 名前が似ていますが、以下の 2 つは **別機構** です。混同しないでください。
 
-### 6.1 廃止済み: `raw_only`（伏字なしで取り込む＝Raw モード）
+### 6.1 廃止済み: `raw_only`（マスキングなしで取り込む＝Raw モード）
 
-**この機能は 2026-07-24 に廃止しました。** いまコレクション作成時に `raw_only` を指定すると HTTP 400「raw_only (伏字なし取り込み) は廃止されました」で拒否されます（2026-08-02 実測: `routers/collections.py`）。索引は伏字済みの一組だけを持ちます。
+**この機能は 2026-07-24 に廃止しました。** いまコレクション作成時に `raw_only` を指定すると HTTP 400「raw_only (マスキングなし取り込み) は廃止されました」で拒否されます（2026-08-02 実測: `routers/collections.py`）。インデックスはマスキング済みの一組だけを持ちます。
 
 - 列 `collections.raw_only` は過去データ保全のため残っていますが、新規作成では常に既定値 0 です。
 - 過去に `raw_only = 1` で作られたコレクションは masked 層（`{cid}__masked`）を持ちません。
@@ -227,7 +227,7 @@ ALTER TABLE collections ADD COLUMN raw_only INTEGER NOT NULL DEFAULT 0;
 
 ### 6.2 旧仕様（参考）: `raw_mode` / `rag_mode='raw'`
 
-> 以下は **旧概念**（黄色枠・Guardrail 非適用として説明されていた rag モード）です。現行の伏字なし取り込みは上記 6.1 の `raw_only` 列で行います。旧 `raw_mode` は `collections.rag_mode` 列に `'raw'` を保存するだけの別機構で、masked 層の生成有無を制御するものではありません。
+> 以下は **旧概念**（黄色枠・Guardrail 非適用として説明されていた rag モード）です。現行のマスキングなし取り込みは上記 6.1 の `raw_only` 列で行います。旧 `raw_mode` は `collections.rag_mode` 列に `'raw'` を保存するだけの別機構で、masked 層の生成有無を制御するものではありません。
 
 ```sql
 ALTER TABLE collections ADD COLUMN rag_mode TEXT;   -- 旧: raw_mode の保存先

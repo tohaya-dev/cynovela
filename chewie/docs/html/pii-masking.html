@@ -222,7 +222,7 @@ a:hover { text-decoration: underline; }
       <li>DB ファイルを物理的に持ち去られる経路 → raw 側は Fernet で暗号化済み</li>
     </ul>
     <p>これを実現するため、Cynovela は<strong>取込時マスキング（Tier1）</strong>と<strong>回答時マスキング（Tier2）</strong>の二重防御を採用しています。</p>
-    <p><strong>廃止（2026-07-24）</strong>: かつての例外「伏字なし取り込み（<code>collections.raw_only</code>）」は廃止されました。取り込みは常に伏字を経由し、ベクターは伏字済みの一組のみです。過去データの列は保全のため残っています（詳細は metadata-engine §6）。</p>
+    <p><strong>廃止（2026-07-24）</strong>: かつての例外「マスキングなし取り込み（<code>collections.raw_only</code>）」は廃止されました。取り込みは常にマスキングを経由し、ベクターはマスキング済みの一組のみです。過去データの列は保全のため残っています（詳細は metadata-engine §6）。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -349,7 +349,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
     <h3>4.2 実装</h3>
     <ul>
       <li><strong>鍵管理</strong>: <code>config.py:62</code> で <code>Fernet(_KEY)</code> を初期化。<code>CYNOVELA_SECRET_KEY</code> 環境変数で鍵を渡します。本番運用では明示的にこの環境変数を設定することが推奨されています。</li>
-      <li><strong>窓口</strong>: <code>vault_enc.py</code> の <code>enc_raw(text)</code> / <code>dec_raw(text)</code> が薄いラッパーを提供します。</li>
+      <li><strong>インターフェース</strong>: <code>vault_enc.py</code> の <code>enc_raw(text)</code> / <code>dec_raw(text)</code> が薄いラッパーを提供します。</li>
     </ul>
 <pre><code>ENC_PREFIX = "enc:"
 

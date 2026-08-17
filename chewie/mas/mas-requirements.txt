@@ -1,4 +1,4 @@
-# Mac Accelerator Service (外の口) をホスト側で動かすための部品。
+# Mac Accelerator Service (外部の推論サーバ) をホスト側で動かすための部品。
 #
 # なぜ requirements.txt と別にするか:
 #   requirements.txt は本体アプリ用で 39 件在り、その中には spaCy のモデルを

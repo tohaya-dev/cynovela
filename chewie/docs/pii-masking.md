@@ -19,7 +19,7 @@ PII（Personally Identifiable Information：個人情報・社外秘情報）対
 
 これを実現するため、Cynovela は取込時マスキング（Tier1）と回答時マスキング（Tier2）の二重防御を採用しています。
 
-> **廃止済み: 伏字なし取り込み（`collections.raw_only = 1`）** — 伏字を迂回する取り込み（Raw モード）は 2026-07-24 に廃止しました。いま指定すると HTTP 400 で拒否されます（2026-08-02 実測）。過去に作られた `raw_only = 1` のコレクションだけが masked 層を持たない状態で残り得ます（詳細は metadata-engine.md §6）。
+> **廃止済み: マスキングなし取り込み（`collections.raw_only = 1`）** — マスキングを迂回する取り込み（Raw モード）は 2026-07-24 に廃止しました。いま指定すると HTTP 400 で拒否されます（2026-08-02 実測）。過去に作られた `raw_only = 1` のコレクションだけが masked 層を持たない状態で残り得ます（詳細は metadata-engine.md §6）。
 
 ---
 
@@ -132,7 +132,7 @@ raw tier の本文を SQLite と ChromaDB に保存する直前に Fernet（対�
 ### 4.2 実装
 
 - **鍵管理**: `config.py:62` で `Fernet(_KEY)` を初期化。`CYNOVELA_SECRET_KEY` 環境変数で鍵を渡します。本番運用では明示的にこの環境変数を設定することが推奨されています。
-- **窓口**: `vault_enc.py` の `enc_raw(text)` / `dec_raw(text)` が薄いラッパーを提供します。
+- **インターフェース**: `vault_enc.py` の `enc_raw(text)` / `dec_raw(text)` が薄いラッパーを提供します。
 
 ```python
 ENC_PREFIX = "enc:"

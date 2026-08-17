@@ -134,8 +134,8 @@ def tier_for_role(role: str) -> str:
 ### 4.1 設計方針
 
 - **対象**: 原本本文（raw tier のみ）。masked tier は素通し（二重防御不要、検索パフォーマンス確保のため）
-- **窓口**: `vault_enc.py` の `enc_raw()` / `dec_raw()` を介す
-- **冪等性**: `enc:` プレフィックスを目印にして二重暗号化を防ぐ
+- **インターフェース**: `vault_enc.py` の `enc_raw()` / `dec_raw()` を介す
+- **冪等性**: `enc:` プレフィックスをマーカーにして二重暗号化を防ぐ
 - **鍵**: 環境変数 `CYNOVELA_SECRET_KEY` の Fernet 鍵を使用
 
 ### 4.2 実装箇所
@@ -146,7 +146,7 @@ def tier_for_role(role: str) -> str:
 _fernet = Fernet(_KEY.encode() if isinstance(_KEY, str) else _KEY)
 ```
 
-`vault_enc.py` の窓口関数:
+`vault_enc.py` のインターフェース関数:
 
 ```python
 ENC_PREFIX = "enc:"

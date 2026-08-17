@@ -332,9 +332,9 @@ a:hover { text-decoration: underline; }
     <span class="slide-title">4. ロール別の回答の違い（PII の見え方）</span>
   </div>
   <div class="slide-body">
-    <p>Cynovela は、二段構えの PII マスキング（個人情報の伏字化）でロールに応じた回答内容を切り替えます。</p>
+    <p>Cynovela は、二段構えの PII マスキング（個人情報のマスキング）でロールに応じた回答内容を切り替えます。</p>
     <h3>4.1 取込時マスキング（Tier1）</h3>
-    <p>Publish（公開）の段階で、原本本文 (raw) と伏字化本文 (masked) を <strong>両方</strong> 保存します。</p>
+    <p>Publish（公開）の段階で、原本本文 (raw) とマスキング本文 (masked) を <strong>両方</strong> 保存します。</p>
     <ul>
       <li>SQLite <code>chunks</code> テーブルには <code>tier='raw'</code> と <code>tier='masked'</code> の 2 行が並びます。</li>
       <li>ChromaDB（ベクター検索）側にも <code>{cid}__raw</code> と <code>{cid}__masked</code> の 2 コレクションを並列に作ります。</li>
@@ -357,7 +357,7 @@ a:hover { text-decoration: underline; }
     return "raw" if (role or "").strip() == "admin" else "masked"</code></pre>
     <ul>
       <li><strong>admin</strong> → <code>raw</code> 側のコレクションを参照し、回答表示では出口マスクも素通し（原本がそのまま表示されます）</li>
-      <li><strong>viewer / 未指定（curator 等は viewer に正規化）</strong> → <code>masked</code> 側のコレクションを参照し、出口マスクも適用（伏字化されたまま表示されます）</li>
+      <li><strong>viewer / 未指定（curator 等は viewer に正規化）</strong> → <code>masked</code> 側のコレクションを参照し、出口マスクも適用（マスキングされたまま表示されます）</li>
     </ul>
     <blockquote>ただし外部（非ローカル）LLM を使う場合は、crag-egress-guard により admin でも raw の下読み（context_preview）が外部へ送出されません（CRAG スキップ）。上記の admin 素通しは「ローカル LLM での回答表示」を前提とした記述であり、「admin＝常に生本文が外部 LLM へ渡る」わけではありません。</blockquote>
     <p><code>routers/chat.py</code> の通常応答 / 比較 A / 比較 B / SSE（イベントストリーム）の 4 経路すべてで出口マスクが呼ばれます。</p>

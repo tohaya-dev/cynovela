@@ -506,12 +506,12 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <div class="slide" id="slide-14">
   <div class="slide-header">
     <span class="doc-name">メタデータエンジン</span>
-    <span class="slide-title">6. 廃止済み: 伏字なし取り込みと旧 raw モード</span>
+    <span class="slide-title">6. 廃止済み: マスキングなし取り込みと旧 raw モード</span>
   </div>
   <div class="slide-body">
-    <p><strong>6.1 廃止（2026-07-24）: <code>raw_only</code>（伏字なしで取り込む）</strong></p>
+    <p><strong>6.1 廃止（2026-07-24）: <code>raw_only</code>（マスキングなしで取り込む）</strong></p>
     <ul>
-      <li>本機能は廃止されました。取り込みは常に伏字を経由し、ベクターは伏字済みの一組のみが作られます。画面の選択肢と API の受け口は撤去済みです。</li>
+      <li>本機能は廃止されました。取り込みは常にマスキングを経由し、ベクターはマスキング済みの一組のみが作られます。画面の選択肢と API の受け口は撤去済みです。</li>
       <li>過去データ保全のため <code>collections.raw_only</code> 列と既存行は残っています（新規に 1 が書かれることはありません）。外部埋め込み有効時のフェイルクローズ（レガシー行向け）は守りとして維持されています。</li>
     </ul>
     <pre><code>ALTER TABLE collections ADD COLUMN raw_only INTEGER NOT NULL DEFAULT 0;  -- 列は保全のため残置</code></pre>

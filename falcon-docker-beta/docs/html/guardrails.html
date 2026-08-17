@@ -220,7 +220,7 @@ a:hover { text-decoration: underline; }
       <li><strong>クエリ受付フェーズ</strong>: ユーザのクエリにプロンプトインジェクションの兆候があれば即座に 400 で遮断します。</li>
       <li><strong>回答生成フェーズ</strong>: LLM の応答テキストから機密情報持ち出し文言を検査し、検出時には記録します。</li>
     </ol>
-    <p><strong>廃止（2026-07-24）</strong>: かつて存在した「伏字なしで取り込む（Raw モード・<code>collections.raw_only</code>）」は廃止されました。取り込みは常に伏字を経由し、検索は常に伏字済みの層を引きます。過去データの列は保全のため残っています。</p>
+    <p><strong>廃止（2026-07-24）</strong>: かつて存在した「マスキングなしで取り込む（Raw モード・<code>collections.raw_only</code>）」は廃止されました。取り込みは常にマスキングを経由し、検索は常にマスキング済みの層を引きます。過去データの列は保全のため残っています。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
