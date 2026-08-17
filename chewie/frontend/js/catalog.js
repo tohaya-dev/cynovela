@@ -1,4 +1,4 @@
-// catalog.js - Cynovela v13
+// catalog.js
 
 async function renderDataCatalog() {
   const summaryEl = document.getElementById('catalog-summary');

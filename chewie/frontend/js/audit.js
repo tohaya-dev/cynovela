@@ -1,4 +1,4 @@
-// audit.js - Cynovela v13
+// audit.js
 
 function _toastViewLogs(linkEl) {
   try { linkEl.closest('.toast')?.remove(); } catch (_) {}
@@ -104,7 +104,7 @@ async function loadAuditLogsEnhanced() {
       _allAuditLogs = Array.isArray(res) ? res : [];
     }
   } catch (e) {
-    // DD-CYN-0089 §6-B: 読めなかったときに黙って空にすると、画面は「該当ログなし」と
+    // §6-B: 読めなかったときに黙って空にすると、画面は「該当ログなし」と
     //   出す。記録が無いのか読めなかったのかを受け取り手が区別できない。
     _allAuditLogs = [];
     State._auditLoadError = (e && e.message) || '';
@@ -135,7 +135,7 @@ function renderAuditTable() {
   // BETA-pagination: サーバーサイドフィルタ済みなのでそのまま使う
   const filtered = _allAuditLogs;
   if (!filtered.length) {
-    // DD-CYN-0089 §6-B: 読めなかったときは「該当ログなし」ではなく、読めなかったことを出す。
+    // §6-B: 読めなかったときは「該当ログなし」ではなく、読めなかったことを出す。
     if (State._auditLoadError) {
       tbody.innerHTML = `<tr><td colspan="5" style="padding:14px;text-align:center;color:#b91c1c;">${escapeHtml(lj(`Could not read the audit log: ${State._auditLoadError}`,`監査ログを読めませんでした: ${State._auditLoadError}`))}</td></tr>`;
       return;

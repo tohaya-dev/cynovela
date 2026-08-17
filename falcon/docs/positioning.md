@@ -83,7 +83,6 @@ By "trying the same thing on a small scale", you can confirm as first-hand infor
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -167,4 +166,3 @@ Cynovela は、参照元の AI 基盤ツール（社外で提供されている�
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

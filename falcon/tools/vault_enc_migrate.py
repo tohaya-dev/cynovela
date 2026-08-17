@@ -26,7 +26,7 @@ import chromadb  # noqa: E402
 
 DB_PATH = os.environ.get(
     "CYNOVELA_DB",
-    os.path.expanduser("~/.cynovela-alphaga/demo/v13-demo.db"),
+    os.path.expanduser("~/.cynovela-alphaga/demo/-demo.db"),
 )
 CHROMA_PATH = os.environ.get(
     "CYNOVELA_CHROMA",

@@ -2,7 +2,7 @@
 # ============================================================
 #  コンテナ (コンテナ) を組み立てて起動する「部品」。
 #
-#  entry-unify-20260802 (DD-CYN-0020 S-1):
+#  entry-unify-20260802 (S-1):
 #    これは受け取り手が直接叩くものではありません。入口は ../../launch.sh の1本です。
 #    この部品は launch.sh からだけ呼ばれます (launch.sh が --from-entry を渡す)。
 #    取り込み元の管理引数 (--add / --add-path / --list / --remove) は launch.sh へ移しました。
@@ -24,7 +24,7 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 
 # 入口を1本にするための門。直接叩かれたときは、何もせず入口を示す。
-# DD-CYN-0053: 印は環境変数ではなく指定 (--from-entry) で受ける。
+# 印は環境変数ではなく指定 (--from-entry) で受ける。
 FROM_ENTRY=0
 for _a in "$@"; do [ "$_a" = "--from-entry" ] && FROM_ENTRY=1; done
 if [ "$FROM_ENTRY" != "1" ]; then
@@ -36,7 +36,7 @@ if [ "$FROM_ENTRY" != "1" ]; then
   echo "  ./launch.sh --help       そのほかの使い方" >&2
   exit 2
 fi
-# DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
+# 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 #   コンテナの名前は入口 (launch.sh) と同じ1つの値であり、途中で読み替えない。
 CONF_REPO="$REPO"
 . "$REPO/tools/conf.sh"
@@ -45,7 +45,7 @@ NAME="$(conf_get_or container name "$CONF_DEFAULT_CNAME")"
 HOSTPORT="$(conf_get_num server port 8801)"
 # データ用 named volume の接頭辞 (既定 cyn = 従来名 cyn-db/cyn-vec/cyn-bk)。
 VOLPREFIX="$(conf_get_or container volume_prefix "$CONF_DEFAULT_VOLPREFIX")"
-# DD-CYN-0074 Q-1: モデルの保存先。入口 (tools/launch-body.sh) と同じ1行を読む。
+# Q-1: モデルの保存先。入口 (tools/launch-body.sh) と同じ1行を読む。
 #   空なら従来どおり、この配布物の中の store/models を使う。
 MODEL_ROOT="$(conf_get paths models_dir)"
 if [ -z "$MODEL_ROOT" ]; then
@@ -59,7 +59,7 @@ ROOTS_HELPER="$REPO/scripts/ingest_roots.py"
 _roots() { python3 "$ROOTS_HELPER" --file "$ROOTS_FILE" "$@"; }
 
 # バックアップの roots 配列を PUT /api/settings 用の {"ingest.roots": "<JSON文字列>"} に整形する
-# portable-roots-20260808 (DD-CYN-0066 F-2): 生の JSON を直に読むと、配布物のルートディレクトリからの
+# portable-roots-20260808 (F-2): 生の JSON を直に読むと、配布物のルートディレクトリからの
 #   相対の書き方 ("@app/…") がそのまま画面の表示写像へ流れる。∴ バックアップを読む側は
 #   scripts/ingest_roots.py に一本化し、解いたホスト側の絶対パスだけを送る。
 _roots_payload() {
@@ -168,7 +168,7 @@ echo "[run] mode=$MODE port=$HOSTPORT"
 if podman container exists "$NAME" 2>/dev/null; then
   _owner="$(podman inspect "$NAME" --format '{{index .Config.Labels "org.cynovela.artifact"}}' 2>/dev/null || true)"
   if [ "$_owner" = "cynovela-container" ]; then
-    # DD-CYN-0053: 同じ名前のコンテナが在るときは消さない。
+    # 同じ名前のコンテナが在るときは消さない。
     #   以前はここで podman rm -f して作り直していた。持ち主が同じでも、消せばそのコンテナに
     #   付いていたものは戻せない。止まっているだけなら、そのまま起こす (掛け直しはこの道)。
     _st="$(podman inspect "$NAME" --format '{{.State.Running}}' 2>/dev/null || echo false)"
@@ -236,7 +236,7 @@ print(''.join(sorted(
   fi
 fi
 # LAN-RESTORE 20260724: 既定=全アドレス向け公開。
-# DD-CYN-0053: 外部アクセスは cynovela.yaml の server.host で決まる。
+# 外部アクセスは cynovela.yaml の server.host で決まる。
 #   0.0.0.0 (既定) = 同じネットワークの他の端末からも開ける
 #   127.0.0.1      = この Mac の中からだけ開ける
 #   --local-only の指定は、設定より強く効く (その場だけ絞る指定として残す)。
@@ -275,7 +275,7 @@ echo "[run] publish=$PUBLISH args=${APP_ARGS[*]}"
 # multi-ingest-roots-20260728: 取り込み元マウントの決め方。
 #   tmpfs を /app/ingest に重ね (イメージ焼き込みの ingest/ を隠す)、
 #      バックアップの各 root を /app/ingest/<中の名前> へ :ro で子マウント。ルート0件なら tmpfs のみ (空)。
-# DD-CYN-0032 B3/B4:
+# B3/B4:
 #   B3 = ルートが1件も無いときは、この配布物の中のダミー資料 (dummy-corpus) をルートにする (決定 9-3)。
 #        場所は起動のたびに $REPO から解き直す。バックアップへ展開先の絶対の場所を焼き付けない。
 #   B4 = 画面からルートを足せるようにするため、バックアップそのものをコンテナへ読み書きで渡す。
@@ -318,7 +318,7 @@ if true; then
   fi
 fi
 
-# DD-CYN-0086: この Mac が使っている時間帯を、そのままコンテナへ渡す。
+# この Mac が使っている時間帯を、そのままコンテナへ渡す。
 #   なぜ要るか: コンテナは自分の中に「いま何時か」を持つ。何も渡さなければ世界標準時になる。
 #   画面に出る時刻には2種類あり、ブラウザが直して出すものは機材の時間になるが、
 #   コンテナが自分の時計で文字にしたもの (ワークスペースの名前に焼き付く時刻など) は

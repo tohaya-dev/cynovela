@@ -2,7 +2,7 @@
 # Cynovela 停止スクリプト
 # 記録PID(server.py が書く <保存先>/server.pid)のみ停止する。
 # PID 記録が無ければ何もしない。固定ポート/lsof/pkill による無差別 kill は行わない。
-# DD-CYN-0053: 保存先は cynovela.yaml の paths.data_dir から決まる。環境変数では受け取らない。
+# 保存先は cynovela.yaml の paths.data_dir から決まる。環境変数では受け取らない。
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"

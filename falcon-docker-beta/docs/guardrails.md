@@ -235,7 +235,6 @@ Add a regular expression to the `INJECTION_PATTERNS` / `EXFILTRATION_PATTERNS` l
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -471,4 +470,3 @@ EXFILTRATION_PATTERNS = [
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

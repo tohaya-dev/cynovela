@@ -170,7 +170,6 @@ Even for verification and learning use, one of the following is recommended.
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -322,4 +321,3 @@ LAN 内の任意のユーザーからファイルアップロードを受け付�
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

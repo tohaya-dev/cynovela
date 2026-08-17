@@ -10,14 +10,14 @@ eval/results/
 .claude/scheduled_tasks.lock
 
 # === auto-commit 除外ルール (2026-05-12追加) ===
-v11-mock/
+-mock/
 cynovela-mock/
-v11-chromadb/
+-chromadb/
 .claude/worktrees/
 test_data/
 
-# v13: 配布パッケージ用ディレクトリ・ランタイム成果物（git管理外）
-# release/v1.0.0-alpha: root の models/ db/ のみ除外 (store/db/ は別、negation 有効化のため)
+# : 配布パッケージ用ディレクトリ・ランタイム成果物（git管理外）
+# root の models/ db/ のみ除外 (store/db/ は別、negation 有効化のため)
 /models/
 /db/
 .coverage
@@ -69,5 +69,5 @@ data/cynovela.db
 tools/dist-check-values.local
 tools/dist-initial-credentials.local
 
-# DD-CYN-0037: アイコンから起動する形は梱包のときに組み立てる (原稿は tools/launcher-app/)
+# アイコンから起動する形は梱包のときに組み立てる (原稿は tools/launcher-app/)
 Cynovela をはじめる.app/

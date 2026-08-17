@@ -311,7 +311,6 @@ start FastAPI with Uvicorn
 To allow access from a LAN or from Tailscale, use `--lan` / `--allow-tailscale` / `--allow-subnet` together (see the operations guide and the advanced hands-on).
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -623,4 +622,3 @@ Uvicorn で FastAPI 起動
 LAN や Tailscale からのアクセスを許可するには、`--lan` / `--allow-tailscale` / `--allow-subnet` を併用します（操作ガイド・ハンズオン応用編を参照）。
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

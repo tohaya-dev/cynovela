@@ -1,4 +1,4 @@
-// sources.js - Cynovela v13
+// sources.js
 
 function showAddSourceModal() {
   // intake-togo-v2-20260705: 二段階フロー（1/2 フォルダ選択 → 2/2 追加先選択）。

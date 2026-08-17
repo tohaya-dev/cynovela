@@ -52,7 +52,7 @@ The bundled `launch.sh` contains this `unset` inside it, so it is unnecessary wh
 ### Method 1: the bundled launcher (recommended)
 
 ```bash
-cd <配布物を展開したフォルダ>
+cd<配布物を展開したフォルダ>
 
 # launch.sh に渡した引数は、そのまま server.py へ届きます
 # （実装: launch.sh の `exec "$PY" server.py "${APP_ARGS[@]}"`。2026-08-02 実測）。
@@ -73,7 +73,7 @@ bash stop.sh
 ### Method 2: manual startup
 
 ```bash
-cd <配布物を展開したフォルダ>
+cd<配布物を展開したフォルダ>
 unset SSL_CERT_FILE
 
 # デモデータ + 実 LLM（LM Studio を http://localhost:1234 で起動しておく）
@@ -163,7 +163,7 @@ In the answer, chunks are displayed as citations with citation numbers `[1][2]`.
 # 開発ツリー（tests/ が在る側）での実行
 
 # 手動 pytest（軽量・最初の失敗で停止）
-cd <開発ツリーのフォルダ>
+cd<開発ツリーのフォルダ>
 unset SSL_CERT_FILE
 conda run -n cynovela python -m pytest -x -q
 ```
@@ -242,7 +242,7 @@ unset SSL_CERT_FILE
 ### 方法 1: 同梱ランチャー（推奨）
 
 ```bash
-cd <配布物を展開したフォルダ>
+cd<配布物を展開したフォルダ>
 
 # launch.sh に渡した引数は、そのまま server.py へ届きます
 # （実装: launch.sh の `exec "$PY" server.py "${APP_ARGS[@]}"`。2026-08-02 実測）。
@@ -263,7 +263,7 @@ bash stop.sh
 ### 方法 2: 手動起動
 
 ```bash
-cd <配布物を展開したフォルダ>
+cd<配布物を展開したフォルダ>
 unset SSL_CERT_FILE
 
 # デモデータ + 実 LLM（LM Studio を http://localhost:1234 で起動しておく）
@@ -353,7 +353,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 # 開発ツリー（tests/ が在る側）での実行
 
 # 手動 pytest（軽量・最初の失敗で停止）
-cd <開発ツリーのフォルダ>
+cd<開発ツリーのフォルダ>
 unset SSL_CERT_FILE
 conda run -n cynovela python -m pytest -x -q
 ```

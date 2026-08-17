@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cynovela 設定の読み取り (DD-CYN-0053)
+# Cynovela 設定の読み取り ()
 #   設定の保存先は cynovela.yaml 1本だけとする。環境変数では受け取らない。
 #   起動の道すじ (Cynovela-start.command → launcher-core.sh → launch.sh → run-container.sh) の
 #   どの段からも、この1本を読む。
@@ -12,7 +12,7 @@
 #   外の部品を要らないよう awk だけで読む。値の前後の引用符と、行末の注釈は落とす。
 CONF_FILE="${CONF_REPO:-.}/cynovela.yaml"
 
-# DD-CYN-0074 Q-2: コンテナ・名札・保存領域の「無いときの値」は、この1本にだけ書く。
+# Q-2: コンテナ・名札・保存領域の「無いときの値」は、この1本にだけ書く。
 #   起動の道すじの各段は、この値を conf_get_or の第3引数へ渡す。∴ 名前の綴りが
 #   スクリプトへ散らばらない。cynovela.yaml に値が在れば必ずそちらが勝つ。
 #   ここは cynovela.yaml が欠けた・空だったときの受け皿にすぎない。
@@ -75,17 +75,17 @@ conf_set() {  # conf_set <上の名前> <下の名前> <値>   その行だけ�
     mv "$tmp" "$CONF_FILE"
 }
 
-_conf_py_meets() {  # DD-CYN-0117 R-1: $1=python の場所 → 動作要件 (3.12 以上) を満たすなら 0
+_conf_py_meets() {  # R-1: $1=python の場所 → 動作要件 (3.12 以上) を満たすなら 0
     # 名前で当てず、その python 自身に版を答えさせる。名前が python でも中身が 3.12 なら通る。
     [ -n "${1:-}" ] && [ -x "$1" ] || return 1
     "$1" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1
 }
 
-conf_pick_py() {  # DD-CYN-0107 F-c / DD-CYN-0117 R-1
+conf_pick_py() {  # F-c / R-1
     #   $1=ディレクトリツリーのルート、$2 以降=呼ぶ側が既に解いた python (任意・この順で先に見る)
     #   → 動作要件 (3.12 以上) を満たす python の絶対パスを出す。
     #
-    # DD-CYN-0117 R-1: 版は名前で当てず、必ずその python に答えさせる。
+    # R-1: 版は名前で当てず、必ずその python に答えさせる。
     #   旧: 名前が python3.12 / python3.13 のものと、この形態の自前環境だけを見ていた。
     #       ∴ 配布物専用の conda 環境 'cynovela-dist' の python は、中身が 3.12.13 でも
     #       名前が python なので候補から外れ、同じ書き出しの中で

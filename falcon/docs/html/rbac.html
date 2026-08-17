@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RBAC / RBAC（ロールベースアクセス制御） — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RBAC / RBAC（ロールベースアクセス制御） — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -198,475 +198,473 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">RBAC (Role-Based Access Control)</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">RBAC (Role-Based Access Control)</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">About This Document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About This Document</strong><br>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">About This Document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About This Document</strong><br>
       Cynovela is a completely unofficial learning tool built by an individual to understand the concepts of AI platform tools by hands-on work. It is not a commercial product or an official implementation. The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product in any way.
-    </blockquote>
-    <p>Cynovela manages the permissions of API requests on a <strong>role basis</strong>. What each user can do is decided by a role, and the implementation calls a role check helper at the beginning of each API endpoint.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</blockquote>
+<p>Cynovela manages the permissions of API requests on a<strong>role basis</strong>. What each user can do is decided by a role, and the implementation calls a role check helper at the beginning of each API endpoint.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">1. Role Definitions (3 Roles)</span>
-  </div>
-  <div class="slide-body">
-    <p>The following CHECK constraint is applied on the database side, so only these 3 roles can be registered.</p>
-    <pre><code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code></pre>
-    <table>
-      <thead><tr><th>Role</th><th>Assumed user</th><th>Main permissions</th></tr></thead>
-      <tbody>
-        <tr><td><strong>admin</strong></td><td>System administrator</td><td>All API endpoints. User management, changing system settings, viewing audit logs, viewing the original PII (personal information)</td></tr>
-        <tr><td><strong>viewer</strong></td><td>General user</td><td>Read operations such as RAG (Retrieval-Augmented Generation) queries and viewing reports</td></tr>
-      </tbody>
-    </table>
-    <blockquote>The DB CHECK constraint allows <code>role IN ('admin', 'curator', 'viewer')</code> for backward compatibility, but in the current implementation <code>curator</code> (and <code>data-scientist</code> and so on) is normalized to <code>viewer</code> and has no permissions of its own. The effective roles are the 2 values <code>admin</code> / <code>viewer</code>.</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">1. Role Definitions (3 Roles)</span>
+</div>
+<div class="slide-body">
+<p>The following CHECK constraint is applied on the database side, so only these 3 roles can be registered.</p>
+<pre><code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code></pre>
+<table>
+<thead><tr><th>Role</th><th>Assumed user</th><th>Main permissions</th></tr></thead>
+<tbody>
+<tr><td><strong>admin</strong></td><td>System administrator</td><td>All API endpoints. User management, changing system settings, viewing audit logs, viewing the original PII (personal information)</td></tr>
+<tr><td><strong>viewer</strong></td><td>General user</td><td>Read operations such as RAG (Retrieval-Augmented Generation) queries and viewing reports</td></tr>
+</tbody>
+</table>
+<blockquote>The DB CHECK constraint allows<code>role IN ('admin', 'curator', 'viewer')</code> for backward compatibility, but in the current implementation<code>curator</code> (and<code>data-scientist</code> and so on) is normalized to<code>viewer</code> and has no permissions of its own. The effective roles are the 2 values<code>admin</code> /<code>viewer</code>.</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">2. Role Check Helpers</span>
-  </div>
-  <div class="slide-body">
-    <p><code>core/auth.py</code> provides 4 role check functions, and each endpoint in the router layer calls them to perform authorization (permission checking).</p>
-    <table>
-      <thead><tr><th>Function name</th><th>What it checks</th><th>Behavior on failure</th></tr></thead>
-      <tbody>
-        <tr><td><code>_require_admin()</code></td><td>Whether the role is admin</td><td>Raises an exception (insufficient permission)</td></tr>
-        <tr><td><code>_require_authenticated()</code></td><td>Whether authenticated (role does not matter)</td><td>Raises an exception</td></tr>
-        <tr><td><code>_require_role(roles)</code></td><td>Whether it matches any of the specified roles</td><td>Raises an exception</td></tr>
-        <tr><td><code>_require_admin_or_self()</code></td><td>Whether admin, or the owner of the given user_id</td><td>Raises an exception</td></tr>
-      </tbody>
-    </table>
-    <p>Calls to role checks are spread across <strong>about 242 places</strong> under the routers.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">2. Role Check Helpers</span>
+</div>
+<div class="slide-body">
+<p><code>core/auth.py</code> provides 4 role check functions, and each endpoint in the router layer calls them to perform authorization (permission checking).</p>
+<table>
+<thead><tr><th>Function name</th><th>What it checks</th><th>Behavior on failure</th></tr></thead>
+<tbody>
+<tr><td><code>_require_admin()</code></td><td>Whether the role is admin</td><td>Raises an exception (insufficient permission)</td></tr>
+<tr><td><code>_require_authenticated()</code></td><td>Whether authenticated (role does not matter)</td><td>Raises an exception</td></tr>
+<tr><td><code>_require_role(roles)</code></td><td>Whether it matches any of the specified roles</td><td>Raises an exception</td></tr>
+<tr><td><code>_require_admin_or_self()</code></td><td>Whether admin, or the owner of the given user_id</td><td>Raises an exception</td></tr>
+</tbody>
+</table>
+<p>Calls to role checks are spread across<strong>about 242 places</strong> under the routers.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">3. Main Endpoints by Role (admin only)</span>
-  </div>
-  <div class="slide-body">
-    <p>An excerpt of the routers to which <code>_require_admin</code> is applied is as follows. <strong>13 routers</strong> contain admin-only endpoints.</p>
-    <table>
-      <thead><tr><th>Router</th><th>Admin-only targets</th><th>Role</th></tr></thead>
-      <tbody>
-        <tr><td><code>routers/alerts.py</code></td><td>Alert operations</td><td>Management of notifications</td></tr>
-        <tr><td><code>routers/auth.py</code></td><td>User creation, deletion, and listing</td><td>Account management</td></tr>
-        <tr><td><code>routers/files.py</code></td><td>File deletion, bulk operations, changing limits</td><td>Upload management</td></tr>
-        <tr><td><code>routers/catalog.py</code></td><td>Catalog editing operations</td><td>Data catalog management</td></tr>
-        <tr><td><code>routers/archived.py</code></td><td>Archive lookup and restore</td><td>Organizing retained items</td></tr>
-        <tr><td><code>routers/models.py</code></td><td>Model settings</td><td>LLM / embedding model selection</td></tr>
-        <tr><td><code>routers/compliance.py</code></td><td>Compliance operations</td><td>Audit and policy related</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">3. Main Endpoints by Role (admin only)</span>
+</div>
+<div class="slide-body">
+<p>An excerpt of the routers to which<code>_require_admin</code> is applied is as follows.<strong>13 routers</strong> contain admin-only endpoints.</p>
+<table>
+<thead><tr><th>Router</th><th>Admin-only targets</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td><code>routers/alerts.py</code></td><td>Alert operations</td><td>Management of notifications</td></tr>
+<tr><td><code>routers/auth.py</code></td><td>User creation, deletion, and listing</td><td>Account management</td></tr>
+<tr><td><code>routers/files.py</code></td><td>File deletion, bulk operations, changing limits</td><td>Upload management</td></tr>
+<tr><td><code>routers/catalog.py</code></td><td>Catalog editing operations</td><td>Data catalog management</td></tr>
+<tr><td><code>routers/archived.py</code></td><td>Archive lookup and restore</td><td>Organizing retained items</td></tr>
+<tr><td><code>routers/models.py</code></td><td>Model settings</td><td>LLM / embedding model selection</td></tr>
+<tr><td><code>routers/compliance.py</code></td><td>Compliance operations</td><td>Audit and policy related</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">3. Admin-Only Endpoints</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>Router</th><th>Admin-only targets</th><th>Role</th></tr></thead>
-      <tbody>
-        <tr><td><code>routers/health.py</code></td><td>Some health checks</td><td>Reading internal state</td></tr>
-        <tr><td><code>routers/sessions.py</code></td><td>Session management</td><td>Management of chat history</td></tr>
-        <tr><td><code>routers/llm.py</code></td><td>LLM connection settings</td><td>Switching providers</td></tr>
-        <tr><td><code>routers/feedback.py</code></td><td>Retrieving and editing feedback</td><td>Looking up 👍👎 aggregates</td></tr>
-        <tr><td><code>routers/guardrails.py</code></td><td>PII detection history, editing prohibited topics</td><td>Management of protection rules</td></tr>
-        <tr><td><code>routers/policies.py</code></td><td>Editing guardrail policies</td><td>Policy matrix</td></tr>
-      </tbody>
-    </table>
-    <p>In addition, <code>/api/guardrails/pii-detections</code>, which returns the PII detection history, is fixed as <strong>admin only</strong> (an implementation that calls <code>_require_admin(request)</code> at the beginning in <code>routers/guardrails.py</code>).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">3. Admin-Only Endpoints</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>Router</th><th>Admin-only targets</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td><code>routers/health.py</code></td><td>Some health checks</td><td>Reading internal state</td></tr>
+<tr><td><code>routers/sessions.py</code></td><td>Session management</td><td>Management of chat history</td></tr>
+<tr><td><code>routers/llm.py</code></td><td>LLM connection settings</td><td>Switching providers</td></tr>
+<tr><td><code>routers/feedback.py</code></td><td>Retrieving and editing feedback</td><td>Looking up 👍👎 aggregates</td></tr>
+<tr><td><code>routers/guardrails.py</code></td><td>PII detection history, editing prohibited topics</td><td>Management of protection rules</td></tr>
+<tr><td><code>routers/policies.py</code></td><td>Editing guardrail policies</td><td>Policy matrix</td></tr>
+</tbody>
+</table>
+<p>In addition,<code>/api/guardrails/pii-detections</code>, which returns the PII detection history, is fixed as<strong>admin only</strong> (an implementation that calls<code>_require_admin(request)</code> at the beginning in<code>routers/guardrails.py</code>).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">4. Differences in Answers by Role (How PII Appears)</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela switches the content of answers according to the role by means of two-stage PII masking (masking of personal information).</p>
-    <h3>4.1 Masking at Ingest Time (Tier1)</h3>
-    <p>At the Publish stage, <strong>both</strong> the original text (raw) and the masked text (masked) are stored.</p>
-    <ul>
-      <li>In the SQLite <code>chunks</code> table, 2 rows, <code>tier='raw'</code> and <code>tier='masked'</code>, sit side by side.</li>
-      <li>On the ChromaDB (vector search) side as well, 2 collections, <code>{cid}__raw</code> and <code>{cid}__masked</code>, are created in parallel.</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">4. Differences in Answers by Role (How PII Appears)</span>
+</div>
+<div class="slide-body">
+<p>Cynovela switches the content of answers according to the role by means of two-stage PII masking (masking of personal information).</p>
+<h3>4.1 Masking at Ingest Time (Tier1)</h3>
+<p>At the Publish stage,<strong>both</strong> the original text (raw) and the masked text (masked) are stored.</p>
+<ul>
+<li>In the SQLite<code>chunks</code> table, 2 rows,<code>tier='raw'</code> and<code>tier='masked'</code>, sit side by side.</li>
+<li>On the ChromaDB (vector search) side as well, 2 collections,<code>{cid}__raw</code> and<code>{cid}__masked</code>, are created in parallel.</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">4.2 Masking at Answer Time (Tier2)</span>
-  </div>
-  <div class="slide-body">
-    <p>At the exit of the chat response (applied to the LLM generation result), the text for display is masked again according to the user's role. The decision logic is as follows.</p>
-    <pre><code>def tier_for_role(role: str) -&gt; str:
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">4.2 Masking at Answer Time (Tier2)</span>
+</div>
+<div class="slide-body">
+<p>At the exit of the chat response (applied to the LLM generation result), the text for display is masked again according to the user's role. The decision logic is as follows.</p>
+<pre><code>def tier_for_role(role: str) -&gt; str:
     return "raw" if (role or "").strip() == "admin" else "masked"</code></pre>
-    <ul>
-      <li><strong>admin</strong> → refers to the <code>raw</code> side collection, and the exit mask is passed through in the answer display as well (the original text is displayed as-is)</li>
-      <li><strong>viewer / unspecified (curator and so on are normalized to viewer)</strong> → refers to the <code>masked</code> side collection, and the exit mask is applied as well (the text is displayed still masked)</li>
-    </ul>
-    <blockquote>However, when an external (non-local) LLM is used, crag-egress-guard prevents the raw pre-read (context_preview) from being sent externally even for admin (CRAG is skipped). The admin pass-through described above assumes "answer display with a local LLM"; it does not mean that "admin = the raw text is always passed to an external LLM".</blockquote>
-    <p>The exit mask is called on all 4 paths in <code>routers/chat.py</code>: the normal response, comparison A, comparison B, and SSE (event stream).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<ul>
+<li><strong>admin</strong> → refers to the<code>raw</code> side collection, and the exit mask is passed through in the answer display as well (the original text is displayed as-is)</li>
+<li><strong>viewer / unspecified (curator and so on are normalized to viewer)</strong> → refers to the<code>masked</code> side collection, and the exit mask is applied as well (the text is displayed still masked)</li>
+</ul>
+<blockquote>However, when an external (non-local) LLM is used, crag-egress-guard prevents the raw pre-read (context_preview) from being sent externally even for admin (CRAG is skipped). The admin pass-through described above assumes "answer display with a local LLM"; it does not mean that "admin = the raw text is always passed to an external LLM".</blockquote>
+<p>The exit mask is called on all 4 paths in<code>routers/chat.py</code>: the normal response, comparison A, comparison B, and SSE (event stream).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">4.3 Differences in Answer Style by Role</span>
-  </div>
-  <div class="slide-body">
-    <p>The role prefix in <code>rag.py</code> also switches the tone of the answer.</p>
-    <table>
-      <thead><tr><th>Role</th><th>Policy of the prefix</th></tr></thead>
-      <tbody>
-        <tr><td>admin</td><td>Provide complete information including technical details, configuration values, and internal structure</td></tr>
-        <tr><td>reader</td><td>An easy-to-understand explanation focused on the key points, avoiding technical jargon</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">4.3 Differences in Answer Style by Role</span>
+</div>
+<div class="slide-body">
+<p>The role prefix in<code>rag.py</code> also switches the tone of the answer.</p>
+<table>
+<thead><tr><th>Role</th><th>Policy of the prefix</th></tr></thead>
+<tbody>
+<tr><td>admin</td><td>Provide complete information including technical details, configuration values, and internal structure</td></tr>
+<tr><td>reader</td><td>An easy-to-understand explanation focused on the key points, avoiding technical jargon</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">5. Workspace-Level Access Control</span>
-  </div>
-  <div class="slide-body">
-    <p>For workspaces (Workspace, the unit in which data is kept), an intermediate table <code>workspace_users (workspace_id, user_id)</code> exists for assigning users. This makes it possible to limit which workspaces a user can access.</p>
-    <p>In addition, collections (Collection, the unit of a set of files) carry the following metadata.</p>
-    <table>
-      <thead><tr><th>Column</th><th>Purpose</th></tr></thead>
-      <tbody>
-        <tr><td><code>access_level</code></td><td>The 3 levels <code>public</code> / <code>internal</code> / <code>confidential</code></td></tr>
-        <tr><td><code>allowed_roles_json</code></td><td>The list of roles allowed per collection (JSON)</td></tr>
-        <tr><td><code>acl_roles</code></td><td>The set of roles corresponding to an ACL (access control list)</td></tr>
-      </tbody>
-    </table>
-    <p>An <strong>ACL filter</strong> operates inside the search pipeline (<code>rag_retrieve</code> in <code>rag.py</code>), and if the user's role is not included in <code>allowed_roles</code>, the item is excluded from the search results. The ACL filter is always enabled.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">5. Workspace-Level Access Control</span>
+</div>
+<div class="slide-body">
+<p>For workspaces (Workspace, the unit in which data is kept), an intermediate table<code>workspace_users (workspace_id, user_id)</code> exists for assigning users. This makes it possible to limit which workspaces a user can access.</p>
+<p>In addition, collections (Collection, the unit of a set of files) carry the following metadata.</p>
+<table>
+<thead><tr><th>Column</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>access_level</code></td><td>The 3 levels<code>public</code> /<code>internal</code> /<code>confidential</code></td></tr>
+<tr><td><code>allowed_roles_json</code></td><td>The list of roles allowed per collection (JSON)</td></tr>
+<tr><td><code>acl_roles</code></td><td>The set of roles corresponding to an ACL (access control list)</td></tr>
+</tbody>
+</table>
+<p>An<strong>ACL filter</strong> operates inside the search pipeline (<code>rag_retrieve</code> in<code>rag.py</code>), and if the user's role is not included in<code>allowed_roles</code>, the item is excluded from the search results. The ACL filter is always enabled.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">6. Limitations as of Alpha GA</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>Authentication is only the JWT (JSON Web Token) issued by <code>/api/auth/login</code>. The simple token in the form <code>Bearer demo-token-{user_id}</code> was abolished on 2026-07-29 and is rejected with 401 even when started with <code>--demo</code>.</li>
-      <li>Because the implementation of role checks is <strong>spread across about 242 places</strong>, consolidating it (for example, unifying it on a FastAPI Depends basis) is a candidate for future cleanup.</li>
-      <li>One-click entry (unauthenticated login from a user card) has been completely removed. Entering <code>username</code> and <code>password</code> is now mandatory.</li>
-    </ul>
-    <p style="margin-top:18px; color: var(--cyn-muted); font-size: 12px;">Last updated: 2026-05-26 / Alpha GA edition</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">6. Limitations as of</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>Authentication is only the JWT (JSON Web Token) issued by<code>/api/auth/login</code>. The simple token in the form<code>Bearer demo-token-{user_id}</code> was abolished on 2026-07-29 and is rejected with 401 even when started with<code>--demo</code>.</li>
+<li>Because the implementation of role checks is<strong>spread across about 242 places</strong>, consolidating it (for example, unifying it on a FastAPI Depends basis) is a candidate for future cleanup.</li>
+<li>One-click entry (unauthenticated login from a user card) has been completely removed. Entering<code>username</code> and<code>password</code> is now mandatory.</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide cover" id="slide-12">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">RBAC（ロールベースアクセス制御）</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">RBAC（ロールベースアクセス制御）</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-13">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-    <p>Cynovela は、API リクエストの権限管理を <strong>ロール（役割）ベース</strong> で行います。利用者ごとに「何ができるか」をロールで決め、各 API エンドポイントの先頭でロール検査ヘルパーを呼ぶ実装方式を取っています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+<p>Cynovela は、API リクエストの権限管理を<strong>ロール（役割）ベース</strong> で行います。利用者ごとに「何ができるか」をロールで決め、各 API エンドポイントの先頭でロール検査ヘルパーを呼ぶ実装方式を取っています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">1. ロール定義（3 ロール）</span>
-  </div>
-  <div class="slide-body">
-    <p>データベース側で次の CHECK 制約が掛かっており、登録できるロールはこの 3 種類のみです。</p>
-    <pre><code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code></pre>
-    <table>
-      <thead><tr><th>ロール</th><th>想定する利用者像</th><th>主な権限</th></tr></thead>
-      <tbody>
-        <tr><td><strong>admin</strong></td><td>システム管理者</td><td>API 全エンドポイント。ユーザー管理、システム設定変更、監査ログ閲覧、PII（個人情報）原本の閲覧</td></tr>
-        <tr><td><strong>viewer</strong></td><td>一般利用者</td><td>RAG（検索拡張生成）の問い合わせ、レポート閲覧などの読み取り操作</td></tr>
-      </tbody>
-    </table>
-    <blockquote>DB の CHECK 制約は後方互換のため <code>role IN ('admin', 'curator', 'viewer')</code> を許容しますが、現行実装では <code>curator</code>（および <code>data-scientist</code> 等）は <code>viewer</code> に正規化され、固有の権限はありません。実効ロールは <code>admin</code> / <code>viewer</code> の 2 値です。</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">1. ロール定義（3 ロール）</span>
+</div>
+<div class="slide-body">
+<p>データベース側で次の CHECK 制約が掛かっており、登録できるロールはこの 3 種類のみです。</p>
+<pre><code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code></pre>
+<table>
+<thead><tr><th>ロール</th><th>想定する利用者像</th><th>主な権限</th></tr></thead>
+<tbody>
+<tr><td><strong>admin</strong></td><td>システム管理者</td><td>API 全エンドポイント。ユーザー管理、システム設定変更、監査ログ閲覧、PII（個人情報）原本の閲覧</td></tr>
+<tr><td><strong>viewer</strong></td><td>一般利用者</td><td>RAG（検索拡張生成）の問い合わせ、レポート閲覧などの読み取り操作</td></tr>
+</tbody>
+</table>
+<blockquote>DB の CHECK 制約は後方互換のため<code>role IN ('admin', 'curator', 'viewer')</code> を許容しますが、現行実装では<code>curator</code>（および<code>data-scientist</code> 等）は<code>viewer</code> に正規化され、固有の権限はありません。実効ロールは<code>admin</code> /<code>viewer</code> の 2 値です。</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">2. ロール検査ヘルパー</span>
-  </div>
-  <div class="slide-body">
-    <p><code>core/auth.py</code> に 4 種類のロール検査関数を用意しており、ルーター層の各エンドポイントでこれらを呼び出して認可（権限チェック）を行います。</p>
-    <table>
-      <thead><tr><th>関数名</th><th>検査内容</th><th>不合格時の挙動</th></tr></thead>
-      <tbody>
-        <tr><td><code>_require_admin()</code></td><td>role が admin か</td><td>例外送出（権限不足）</td></tr>
-        <tr><td><code>_require_authenticated()</code></td><td>認証済みか（ロール不問）</td><td>例外送出</td></tr>
-        <tr><td><code>_require_role(roles)</code></td><td>指定ロールのいずれかに合致するか</td><td>例外送出</td></tr>
-        <tr><td><code>_require_admin_or_self()</code></td><td>admin か、または当該 user_id 本人か</td><td>例外送出</td></tr>
-      </tbody>
-    </table>
-    <p>ロール検査の呼び出しはルーター配下に <strong>約 242 箇所</strong> 分散しています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">2. ロール検査ヘルパー</span>
+</div>
+<div class="slide-body">
+<p><code>core/auth.py</code> に 4 種類のロール検査関数を用意しており、ルーター層の各エンドポイントでこれらを呼び出して認可（権限チェック）を行います。</p>
+<table>
+<thead><tr><th>関数名</th><th>検査内容</th><th>不合格時の挙動</th></tr></thead>
+<tbody>
+<tr><td><code>_require_admin()</code></td><td>role が admin か</td><td>例外送出（権限不足）</td></tr>
+<tr><td><code>_require_authenticated()</code></td><td>認証済みか（ロール不問）</td><td>例外送出</td></tr>
+<tr><td><code>_require_role(roles)</code></td><td>指定ロールのいずれかに合致するか</td><td>例外送出</td></tr>
+<tr><td><code>_require_admin_or_self()</code></td><td>admin か、または当該 user_id 本人か</td><td>例外送出</td></tr>
+</tbody>
+</table>
+<p>ロール検査の呼び出しはルーター配下に<strong>約 242 箇所</strong> 分散しています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-16">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">3. ロール別 主要エンドポイント（admin 限定）</span>
-  </div>
-  <div class="slide-body">
-    <p><code>_require_admin</code> が掛けられているルーターを抜粋すると、次のとおりです。<strong>13 個のルーター</strong> に admin 限定のエンドポイントが含まれています。</p>
-    <table>
-      <thead><tr><th>ルーター</th><th>admin 限定の対象</th><th>役割</th></tr></thead>
-      <tbody>
-        <tr><td><code>routers/alerts.py</code></td><td>アラート操作</td><td>通知系の管理</td></tr>
-        <tr><td><code>routers/auth.py</code></td><td>ユーザー作成・削除・一覧</td><td>アカウント管理</td></tr>
-        <tr><td><code>routers/files.py</code></td><td>ファイル削除・一括操作・上限変更</td><td>アップロード管理</td></tr>
-        <tr><td><code>routers/catalog.py</code></td><td>カタログ編集系</td><td>データカタログ管理</td></tr>
-        <tr><td><code>routers/archived.py</code></td><td>アーカイブ照会・復元</td><td>保管対象の整理</td></tr>
-        <tr><td><code>routers/models.py</code></td><td>モデル設定</td><td>LLM / Embedding モデル選択</td></tr>
-        <tr><td><code>routers/compliance.py</code></td><td>コンプライアンス操作</td><td>監査・ポリシー周辺</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">3. ロール別 主要エンドポイント（admin 限定）</span>
+</div>
+<div class="slide-body">
+<p><code>_require_admin</code> が掛けられているルーターを抜粋すると、次のとおりです。<strong>13 個のルーター</strong> に admin 限定のエンドポイントが含まれています。</p>
+<table>
+<thead><tr><th>ルーター</th><th>admin 限定の対象</th><th>役割</th></tr></thead>
+<tbody>
+<tr><td><code>routers/alerts.py</code></td><td>アラート操作</td><td>通知系の管理</td></tr>
+<tr><td><code>routers/auth.py</code></td><td>ユーザー作成・削除・一覧</td><td>アカウント管理</td></tr>
+<tr><td><code>routers/files.py</code></td><td>ファイル削除・一括操作・上限変更</td><td>アップロード管理</td></tr>
+<tr><td><code>routers/catalog.py</code></td><td>カタログ編集系</td><td>データカタログ管理</td></tr>
+<tr><td><code>routers/archived.py</code></td><td>アーカイブ照会・復元</td><td>保管対象の整理</td></tr>
+<tr><td><code>routers/models.py</code></td><td>モデル設定</td><td>LLM / Embedding モデル選択</td></tr>
+<tr><td><code>routers/compliance.py</code></td><td>コンプライアンス操作</td><td>監査・ポリシー周辺</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">3. admin 限定エンドポイント</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>ルーター</th><th>admin 限定の対象</th><th>役割</th></tr></thead>
-      <tbody>
-        <tr><td><code>routers/health.py</code></td><td>一部の健全性確認</td><td>内部状態の参照</td></tr>
-        <tr><td><code>routers/sessions.py</code></td><td>セッション管理</td><td>チャット履歴の管理</td></tr>
-        <tr><td><code>routers/llm.py</code></td><td>LLM 接続設定</td><td>プロバイダー切替</td></tr>
-        <tr><td><code>routers/feedback.py</code></td><td>フィードバック取得・編集</td><td>👍👎 集計の照会</td></tr>
-        <tr><td><code>routers/guardrails.py</code></td><td>PII 検出履歴・禁止トピック編集</td><td>保護ルールの管理</td></tr>
-        <tr><td><code>routers/policies.py</code></td><td>ガードレールポリシー編集</td><td>ポリシーマトリクス</td></tr>
-      </tbody>
-    </table>
-    <p>加えて、PII 検出履歴を返す <code>/api/guardrails/pii-detections</code> は <strong>admin 限定</strong> に固定されています（<code>routers/guardrails.py</code> の <code>_require_admin(request)</code> を冒頭で呼ぶ実装）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">3. admin 限定エンドポイント</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>ルーター</th><th>admin 限定の対象</th><th>役割</th></tr></thead>
+<tbody>
+<tr><td><code>routers/health.py</code></td><td>一部の健全性確認</td><td>内部状態の参照</td></tr>
+<tr><td><code>routers/sessions.py</code></td><td>セッション管理</td><td>チャット履歴の管理</td></tr>
+<tr><td><code>routers/llm.py</code></td><td>LLM 接続設定</td><td>プロバイダー切替</td></tr>
+<tr><td><code>routers/feedback.py</code></td><td>フィードバック取得・編集</td><td>👍👎 集計の照会</td></tr>
+<tr><td><code>routers/guardrails.py</code></td><td>PII 検出履歴・禁止トピック編集</td><td>保護ルールの管理</td></tr>
+<tr><td><code>routers/policies.py</code></td><td>ガードレールポリシー編集</td><td>ポリシーマトリクス</td></tr>
+</tbody>
+</table>
+<p>加えて、PII 検出履歴を返す<code>/api/guardrails/pii-detections</code> は<strong>admin 限定</strong> に固定されています（<code>routers/guardrails.py</code> の<code>_require_admin(request)</code> を冒頭で呼ぶ実装）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">4. ロール別の回答の違い（PII の見え方）</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は、二段構えの PII マスキング（個人情報のマスキング）でロールに応じた回答内容を切り替えます。</p>
-    <h3>4.1 取込時マスキング（Tier1）</h3>
-    <p>Publish（公開）の段階で、原本本文 (raw) とマスキング本文 (masked) を <strong>両方</strong> 保存します。</p>
-    <ul>
-      <li>SQLite <code>chunks</code> テーブルには <code>tier='raw'</code> と <code>tier='masked'</code> の 2 行が並びます。</li>
-      <li>ChromaDB（ベクター検索）側にも <code>{cid}__raw</code> と <code>{cid}__masked</code> の 2 コレクションを並列に作ります。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">4. ロール別の回答の違い（PII の見え方）</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は、二段構えの PII マスキング（個人情報のマスキング）でロールに応じた回答内容を切り替えます。</p>
+<h3>4.1 取込時マスキング（Tier1）</h3>
+<p>Publish（公開）の段階で、原本本文 (raw) とマスキング本文 (masked) を<strong>両方</strong> 保存します。</p>
+<ul>
+<li>SQLite<code>chunks</code> テーブルには<code>tier='raw'</code> と<code>tier='masked'</code> の 2 行が並びます。</li>
+<li>ChromaDB（ベクター検索）側にも<code>{cid}__raw</code> と<code>{cid}__masked</code> の 2 コレクションを並列に作ります。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">4.2 回答時マスキング（Tier2）</span>
-  </div>
-  <div class="slide-body">
-    <p>チャット応答の出口（LLM 生成結果に対して）で、利用者のロールに応じて表示用テキストを再マスクします。判定ロジックは次のとおりです。</p>
-    <pre><code>def tier_for_role(role: str) -&gt; str:
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">4.2 回答時マスキング（Tier2）</span>
+</div>
+<div class="slide-body">
+<p>チャット応答の出口（LLM 生成結果に対して）で、利用者のロールに応じて表示用テキストを再マスクします。判定ロジックは次のとおりです。</p>
+<pre><code>def tier_for_role(role: str) -&gt; str:
     return "raw" if (role or "").strip() == "admin" else "masked"</code></pre>
-    <ul>
-      <li><strong>admin</strong> → <code>raw</code> 側のコレクションを参照し、回答表示では出口マスクも素通し（原本がそのまま表示されます）</li>
-      <li><strong>viewer / 未指定（curator 等は viewer に正規化）</strong> → <code>masked</code> 側のコレクションを参照し、出口マスクも適用（マスキングされたまま表示されます）</li>
-    </ul>
-    <blockquote>ただし外部（非ローカル）LLM を使う場合は、crag-egress-guard により admin でも raw の下読み（context_preview）が外部へ送出されません（CRAG スキップ）。上記の admin 素通しは「ローカル LLM での回答表示」を前提とした記述であり、「admin＝常に生本文が外部 LLM へ渡る」わけではありません。</blockquote>
-    <p><code>routers/chat.py</code> の通常応答 / 比較 A / 比較 B / SSE（イベントストリーム）の 4 経路すべてで出口マスクが呼ばれます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<ul>
+<li><strong>admin</strong> →<code>raw</code> 側のコレクションを参照し、回答表示では出口マスクも素通し（原本がそのまま表示されます）</li>
+<li><strong>viewer / 未指定（curator 等は viewer に正規化）</strong> →<code>masked</code> 側のコレクションを参照し、出口マスクも適用（マスキングされたまま表示されます）</li>
+</ul>
+<blockquote>ただし外部（非ローカル）LLM を使う場合は、crag-egress-guard により admin でも raw の下読み（context_preview）が外部へ送出されません（CRAG スキップ）。上記の admin 素通しは「ローカル LLM での回答表示」を前提とした記述であり、「admin＝常に生本文が外部 LLM へ渡る」わけではありません。</blockquote>
+<p><code>routers/chat.py</code> の通常応答 / 比較 A / 比較 B / SSE（イベントストリーム）の 4 経路すべてで出口マスクが呼ばれます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">4.3 ロール別 回答スタイルの違い</span>
-  </div>
-  <div class="slide-body">
-    <p><code>rag.py</code> のロール接頭辞で、回答のトーンも切り替えます。</p>
-    <table>
-      <thead><tr><th>ロール</th><th>接頭辞の方針</th></tr></thead>
-      <tbody>
-        <tr><td>admin</td><td>技術的な詳細・設定値・内部構造を含む完全な情報を提供</td></tr>
-        <tr><td>reader</td><td>要点を絞ったわかりやすい説明、専門用語は避ける</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">4.3 ロール別 回答スタイルの違い</span>
+</div>
+<div class="slide-body">
+<p><code>rag.py</code> のロール接頭辞で、回答のトーンも切り替えます。</p>
+<table>
+<thead><tr><th>ロール</th><th>接頭辞の方針</th></tr></thead>
+<tbody>
+<tr><td>admin</td><td>技術的な詳細・設定値・内部構造を含む完全な情報を提供</td></tr>
+<tr><td>reader</td><td>要点を絞ったわかりやすい説明、専門用語は避ける</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">5. ワークスペース単位のアクセス制御</span>
-  </div>
-  <div class="slide-body">
-    <p>ワークスペース（Workspace、データの保管単位）には、利用者を割り当てるための中間テーブル <code>workspace_users (workspace_id, user_id)</code> が存在します。これにより、利用者がアクセスできるワークスペースを限定できます。</p>
-    <p>加えて、コレクション（Collection、ファイル群の単位）には次のメタデータが付きます。</p>
-    <table>
-      <thead><tr><th>カラム</th><th>用途</th></tr></thead>
-      <tbody>
-        <tr><td><code>access_level</code></td><td><code>public</code> / <code>internal</code> / <code>confidential</code> の 3 段階</td></tr>
-        <tr><td><code>allowed_roles_json</code></td><td>コレクション単位で許可するロールの一覧（JSON）</td></tr>
-        <tr><td><code>acl_roles</code></td><td>ACL（アクセス制御リスト）相当のロール集合</td></tr>
-      </tbody>
-    </table>
-    <p>検索パイプライン（<code>rag.py</code> の <code>rag_retrieve</code>）の中で <strong>ACL フィルター</strong> が動作し、利用者のロールが <code>allowed_roles</code> に含まれない場合は検索結果から除外されます。ACL フィルターは常時有効です。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">5. ワークスペース単位のアクセス制御</span>
+</div>
+<div class="slide-body">
+<p>ワークスペース（Workspace、データの保管単位）には、利用者を割り当てるための中間テーブル<code>workspace_users (workspace_id, user_id)</code> が存在します。これにより、利用者がアクセスできるワークスペースを限定できます。</p>
+<p>加えて、コレクション（Collection、ファイル群の単位）には次のメタデータが付きます。</p>
+<table>
+<thead><tr><th>カラム</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>access_level</code></td><td><code>public</code> /<code>internal</code> /<code>confidential</code> の 3 段階</td></tr>
+<tr><td><code>allowed_roles_json</code></td><td>コレクション単位で許可するロールの一覧（JSON）</td></tr>
+<tr><td><code>acl_roles</code></td><td>ACL（アクセス制御リスト）相当のロール集合</td></tr>
+</tbody>
+</table>
+<p>検索パイプライン（<code>rag.py</code> の<code>rag_retrieve</code>）の中で<strong>ACL フィルター</strong> が動作し、利用者のロールが<code>allowed_roles</code> に含まれない場合は検索結果から除外されます。ACL フィルターは常時有効です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">RBAC</span>
-    <span class="slide-title">6. Alpha GA 時点の制限</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>認証は <code>/api/auth/login</code> が発行する JWT（JSON Web Token）のみです。<code>Bearer demo-token-{user_id}</code> 形式の簡易トークンは 2026-07-29 に廃止し、<code>--demo</code> 起動でも 401 で拒否します。</li>
-      <li>ロール検査の実装は <strong>約 242 箇所に分散</strong> しているため、共通化（例: FastAPI Depends ベースへの統合）は今後の整理候補です。</li>
-      <li>ワンクリック入室（ユーザーカードからの未認証ログイン）は完全撤去済みです。<code>username</code> と <code>password</code> の入力が必須となっています。</li>
-    </ul>
-    <p style="margin-top:18px; color: var(--cyn-muted); font-size: 12px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">RBAC</span>
+<span class="slide-title">6. 制限</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>認証は<code>/api/auth/login</code> が発行する JWT（JSON Web Token）のみです。<code>Bearer demo-token-{user_id}</code> 形式の簡易トークンは 2026-07-29 に廃止し、<code>--demo</code> 起動でも 401 で拒否します。</li>
+<li>ロール検査の実装は<strong>約 242 箇所に分散</strong> しているため、共通化（例: FastAPI Depends ベースへの統合）は今後の整理候補です。</li>
+<li>ワンクリック入室（ユーザーカードからの未認証ログイン）は完全撤去済みです。<code>username</code> と<code>password</code> の入力が必須となっています。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 22</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 22</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

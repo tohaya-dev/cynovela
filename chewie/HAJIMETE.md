@@ -196,16 +196,16 @@ This is the same as what `./launch.sh --help` prints.
 | `./launch.sh --setup` | Installs what is needed to run it (it stops once installed) |
 | `./launch.sh --check` | Does not start; only checks the conditions for running and writes them to a single file |
 | `./launch.sh --add` | Shows a folder chooser and adds an ingest source |
-| `./launch.sh --add-path <path>` | Adds an ingest source by specifying a location |
+| `./launch.sh --add-path<path>` | Adds an ingest source by specifying a location |
 | `./launch.sh --list` | Lists the ingest sources that have been added |
-| `./launch.sh --remove <name>` | Removes an ingest source (the name is the one shown by `--list`) |
-| `./launch.sh --ingest <path>` | Adds it and starts up straight away |
+| `./launch.sh --remove<name>` | Removes an ingest source (the name is the one shown by `--list`) |
+| `./launch.sh --ingest<path>` | Adds it and starts up straight away |
 | `./launch.sh --base conda` | Creates a new dedicated conda environment |
 | `./launch.sh --base venv` | Creates it inside this package only |
 | `./launch.sh --base none` | Creates nothing |
-| `./launch.sh --env-name <name>` | Changes the name of the conda environment (default `cynovela-dist`) |
+| `./launch.sh --env-name<name>` | Changes the name of the conda environment (default `cynovela-dist`) |
 | `./launch.sh --verbose` | Prints the raw output during installation as it is |
-| `./launch.sh --port <number>` | Changes the port number it opens on (default 8765) |
+| `./launch.sh --port<number>` | Changes the port number it opens on (default 8765) |
 | `./launch.sh --local-only` | Restricts listening to this machine only |
 | `bash stop.sh` | Stops it |
 
@@ -220,7 +220,7 @@ is printed.
 |---|---|
 | "取り込み元がまだ1件もありません" (There is not a single ingest source yet) | Press **"取り込み元を足す" (Add an ingest source)** on the screen (section 3). A button leading there appears below this message |
 | "初回パスワードの変更が必要です" (The initial password must be changed) | Section 0. Change the password first |
-| "ポート 8765 を別のものが使っています" (Port 8765 is used by something else) | Bring it up on a different port: `./launch.sh --port <another number>` |
+| "ポート 8765 を別のものが使っています" (Port 8765 is used by something else) | Bring it up on a different port: `./launch.sh --port<another number>` |
 | "足りないものがあるので起動しません" (Something is missing, so it will not start) | Run `./launch.sh --setup` |
 | The progress looks stuck | If the count is moving, it is making progress. The masking stage takes time |
 
@@ -398,16 +398,16 @@ bash stop.sh
 | `./launch.sh --setup` | 動かすのに要るものを入れる（入れたら止まる） |
 | `./launch.sh --check` | 起動せず、動く条件だけを調べて1本のファイルへ書く |
 | `./launch.sh --add` | フォルダを選ぶ画面を出して取り込み元を足す |
-| `./launch.sh --add-path <パス>` | 場所を指定して取り込み元を足す |
+| `./launch.sh --add-path<パス>` | 場所を指定して取り込み元を足す |
 | `./launch.sh --list` | 足してある取り込み元を一覧で出す |
-| `./launch.sh --remove <名前>` | 取り込み元を外す（名前は `--list` に出るもの） |
-| `./launch.sh --ingest <パス>` | 足して、そのまま起動する |
+| `./launch.sh --remove<名前>` | 取り込み元を外す（名前は `--list` に出るもの） |
+| `./launch.sh --ingest<パス>` | 足して、そのまま起動する |
 | `./launch.sh --base conda` | 専用の conda 環境を新しく作る |
 | `./launch.sh --base venv` | この配布物の中だけに作る |
 | `./launch.sh --base none` | 何も作らない |
-| `./launch.sh --env-name <名前>` | conda 環境の名前を変える（既定 `cynovela-dist`） |
+| `./launch.sh --env-name<名前>` | conda 環境の名前を変える（既定 `cynovela-dist`） |
 | `./launch.sh --verbose` | 入れている間の素の出力をそのまま出す |
-| `./launch.sh --port <番号>` | 開く番号を変える（既定 8765） |
+| `./launch.sh --port<番号>` | 開く番号を変える（既定 8765） |
 | `./launch.sh --local-only` | 待ち受けを自分のマシンの中だけに絞ります |
 | `bash stop.sh` | 止める |
 
@@ -421,7 +421,7 @@ bash stop.sh
 |---|---|
 | 「取り込み元がまだ1件もありません」 | 画面の **「取り込み元を足す」** を押す（3節）。このメッセージの下にその道へ行くボタンが出ます |
 | 「初回パスワードの変更が必要です」 | 0節。先にパスワードを変える |
-| 「ポート 8765 を別のものが使っています」 | 別の番号で上げる: `./launch.sh --port <別の番号>` |
+| 「ポート 8765 を別のものが使っています」 | 別の番号で上げる: `./launch.sh --port<別の番号>` |
 | 「足りないものがあるので起動しません」 | `./launch.sh --setup` を実行する |
 | 進み具合が止まって見える | 件数が動いていれば進んでいます。マスキングの段は時間がかかります |
 

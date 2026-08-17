@@ -2,7 +2,7 @@
 
 PII マスキング再実装の基盤となる「保管庫の階層分離」のためのスキーマ拡張。
 
-設計判断（pageId 36694ef8-ac04-811c-9194-ce7d73a85098 「設計の正本」準拠）:
+設計判断（「設計の正本」準拠）:
 - 生本文 → tier='raw' 行（管理者保管庫 / Chroma {cid}__raw / BM25 raw インデックス）
 - マスク済本文 → tier='masked' 行（一般保管庫 / Chroma {cid}__masked / BM25 masked インデックス）
 

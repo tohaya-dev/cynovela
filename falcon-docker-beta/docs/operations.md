@@ -275,7 +275,6 @@ notifications:
 - `audit_logs` needs tamper prevention. Avoid careless writes to the SQLite file itself.
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -551,4 +550,3 @@ notifications:
 - `audit_logs` は改ざん防止が必要です。SQLite ファイルそのものへの不用意な書き込みは避けてください。
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

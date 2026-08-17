@@ -11,7 +11,7 @@ This form runs in a container.
   ./launch.sh --demo              Starts with the bundled dummy documents loaded.
   ./launch.sh --add               Shows a folder chooser and adds the folder to be read.
   ./launch.sh --list              Lists the folders you have added so far.
-  ./launch.sh --remove <名前>     Removes a folder you added (the name is the one shown by --list).
+  ./launch.sh --remove<名前>     Removes a folder you added (the name is the one shown by --list).
                                   ※ You can also view and remove them on the screen, at 設定 → 取り込み元.
                                   ※ Because this form runs in a container, what you added becomes
                                     readable only after you type ./launch.sh again.
@@ -22,12 +22,12 @@ This form runs in a container.
                                   and writes them to a single file.
 
 ● Other
-  ./launch.sh --port <番号>       Changes the port it opens on (default 8801).
+  ./launch.sh --port<番号>       Changes the port it opens on (default 8801).
                                   When you add nothing, it picks a free number by itself.
   ./launch.sh --local-only        Narrows what it opens on to your own machine only.
-  ./launch.sh --engine <値>       Specifies the executable to use for the container (a name or an absolute path).
+  ./launch.sh --engine<値>       Specifies the executable to use for the container (a name or an absolute path).
                                   The setting with the same meaning: engine: under container: in cynovela.yaml
-  ./launch.sh --engine-command <値>
+  ./launch.sh --engine-command<値>
                                   Replaces the start command itself (empty by default).
                                   The setting with the same meaning: engine_command: under container: in cynovela.yaml
   bash stop.sh                    Stops it (does not delete it).
@@ -57,7 +57,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
   ./launch.sh --demo              同梱のダミー資料が載った状態で起動します。
   ./launch.sh --add               読み込むフォルダを選ぶ画面を出して足します。
   ./launch.sh --list              いま足してあるフォルダを一覧で出します。
-  ./launch.sh --remove <名前>     足したフォルダを外します (名前は --list に出るもの)。
+  ./launch.sh --remove<名前>     足したフォルダを外します (名前は --list に出るもの)。
                                   ※ 画面でも 設定 → 取り込み元 から見る・外せます。
                                   ※ この系統はコンテナで動くため、足したものが読めるように
                                     なるのは、もう一度 ./launch.sh を叩いたあとです。
@@ -67,12 +67,12 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
   ./launch.sh --check             起動せず、動く条件だけを調べて1本のファイルへ書きます。
 
 ● そのほか
-  ./launch.sh --port <番号>       開く番号を変えます (既定 8801)。
+  ./launch.sh --port<番号>       開く番号を変えます (既定 8801)。
                                   何も付けないときは、空いている番号を自分で選びます。
   ./launch.sh --local-only        開く先を自分のマシンの中だけに絞ります。
-  ./launch.sh --engine <値>       コンテナに使う実行ファイルを指定します (名前または絶対パス)。
+  ./launch.sh --engine<値>       コンテナに使う実行ファイルを指定します (名前または絶対パス)。
                                   同じ意味の設定: cynovela.yaml の container: の engine:
-  ./launch.sh --engine-command <値>
+  ./launch.sh --engine-command<値>
                                   起動に使うコマンドそのものを差し替えます (既定は空)。
                                   同じ意味の設定: cynovela.yaml の container: の engine_command:
   bash stop.sh                    止めます (消しません)。

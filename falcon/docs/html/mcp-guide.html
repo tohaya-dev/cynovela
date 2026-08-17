@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCP Guide / MCP 連携ガイド — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Guide / MCP 連携ガイド — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -198,196 +198,196 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">MCP (Model Context Protocol) Integration Guide</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">MCP (Model Context Protocol) Integration Guide</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning purposes</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">About This Document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About This Document</strong><br>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">About This Document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About This Document</strong><br>
       Cynovela is a completely unofficial learning tool, built by an individual to understand the concepts behind AI platform tools by hands-on work. It is not a commercial product nor an official implementation. Everything is originally implemented, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
-    </blockquote>
-    <p>Cynovela can expose its own functions to external LLM clients as an MCP server of MCP (Model Context Protocol, an AI tool integration protocol proposed by the referenced AI tool). This document explains the concept of MCP, the MCP tools that Cynovela exposes, and the connection procedure.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</blockquote>
+<p>Cynovela can expose its own functions to external LLM clients as an MCP server of MCP (Model Context Protocol, an AI tool integration protocol proposed by the referenced AI tool). This document explains the concept of MCP, the MCP tools that Cynovela exposes, and the connection procedure.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">1. What MCP Is</span>
-  </div>
-  <div class="slide-body">
-    <p>MCP is a standard protocol by which an AI assistant (a client) calls the functions (tools) of an external system.</p>
-    <ul>
-      <li><strong>Client</strong>: the side the user talks to, such as LM Studio or a supported LLM client</li>
-      <li><strong>Server</strong>: the side that provides the functions (this is where Cynovela belongs)</li>
-      <li><strong>Tool</strong>: an operation exposed by the server (search, registration, reference, and so on)</li>
-    </ul>
-    <p>With MCP, when the user says to an LLM client "search our internal documents", the LLM calls the search tool of Cynovela and generates an answer based on the results; that is the integration that is established.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">1. What MCP Is</span>
+</div>
+<div class="slide-body">
+<p>MCP is a standard protocol by which an AI assistant (a client) calls the functions (tools) of an external system.</p>
+<ul>
+<li><strong>Client</strong>: the side the user talks to, such as LM Studio or a supported LLM client</li>
+<li><strong>Server</strong>: the side that provides the functions (this is where Cynovela belongs)</li>
+<li><strong>Tool</strong>: an operation exposed by the server (search, registration, reference, and so on)</li>
+</ul>
+<p>With MCP, when the user says to an LLM client "search our internal documents", the LLM calls the search tool of Cynovela and generates an answer based on the results; that is the integration that is established.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">2. Exposed Tools — RAG Search Family (4 items)</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>search_collection</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>query</code>, <code>workspace_id</code>, <code>collection_id</code></li>
-      <li><strong>Arguments (optional)</strong>: <code>preset</code></li>
-      <li><strong>Description</strong>: performs a RAG search against a single collection (a group of documents).</li>
-    </ul>
-    <h4><code>search_across_collections</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>query</code>, <code>workspace_id</code>, <code>collection_ids</code></li>
-      <li><strong>Arguments (optional)</strong>: <code>preset</code></li>
-      <li><strong>Description</strong>: performs a RAG search across multiple collections.</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">2. Exposed Tools — RAG Search Family (4 items)</span>
+</div>
+<div class="slide-body">
+<h4><code>search_collection</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>query</code>,<code>workspace_id</code>,<code>collection_id</code></li>
+<li><strong>Arguments (optional)</strong>:<code>preset</code></li>
+<li><strong>Description</strong>: performs a RAG search against a single collection (a group of documents).</li>
+</ul>
+<h4><code>search_across_collections</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>query</code>,<code>workspace_id</code>,<code>collection_ids</code></li>
+<li><strong>Arguments (optional)</strong>:<code>preset</code></li>
+<li><strong>Description</strong>: performs a RAG search across multiple collections.</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">2. Exposed Tools — RAG Search Family (continued)</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>rag_with_role</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>query</code>, <code>workspace_id</code>, <code>collection_id</code>, <code>style_role</code></li>
-      <li><strong>Arguments (optional)</strong>: <code>preset</code></li>
-      <li><strong>Description</strong>: performs a RAG search while switching the answer style per role (for administrators, for general users, and so on).</li>
-    </ul>
-    <h4><code>rag_general</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>query</code>, <code>workspace_id</code></li>
-      <li><strong>Description</strong>: generates an answer using only the general knowledge of the LLM, without using RAG. It is for general questions that do not depend on internal documents.</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">2. Exposed Tools — RAG Search Family (continued)</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4><code>rag_with_role</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>query</code>,<code>workspace_id</code>,<code>collection_id</code>,<code>style_role</code></li>
+<li><strong>Arguments (optional)</strong>:<code>preset</code></li>
+<li><strong>Description</strong>: performs a RAG search while switching the answer style per role (for administrators, for general users, and so on).</li>
+</ul>
+<h4><code>rag_general</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>query</code>,<code>workspace_id</code></li>
+<li><strong>Description</strong>: generates an answer using only the general knowledge of the LLM, without using RAG. It is for general questions that do not depend on internal documents.</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">2. Exposed Tools — Information Retrieval Family (4 items)</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>list_workspaces</code></h4>
-    <ul>
-      <li><strong>Arguments</strong>: none</li>
-      <li><strong>Description</strong>: obtains the list of all workspaces and their collections.</li>
-    </ul>
-    <h4><code>get_workspace_info</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>workspace_id</code></li>
-      <li><strong>Description</strong>: returns the detailed information of the specified workspace (name, guardrail policy, creation timestamp, and so on).</li>
-    </ul>
-    <h4><code>get_collection_info</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>workspace_id</code>, <code>collection_id</code></li>
-      <li><strong>Description</strong>: returns the details of a collection (number of documents, status, access level).</li>
-    </ul>
-    <h4><code>get_audit_logs</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>workspace_id</code></li>
-      <li><strong>Arguments (optional)</strong>: <code>limit</code> (default 10, maximum 50)</li>
-      <li><strong>Description</strong>: obtains the audit log (chat history, PII detections, errors).</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">2. Exposed Tools — Information Retrieval Family (4 items)</span>
+</div>
+<div class="slide-body">
+<h4><code>list_workspaces</code></h4>
+<ul>
+<li><strong>Arguments</strong>: none</li>
+<li><strong>Description</strong>: obtains the list of all workspaces and their collections.</li>
+</ul>
+<h4><code>get_workspace_info</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>workspace_id</code></li>
+<li><strong>Description</strong>: returns the detailed information of the specified workspace (name, guardrail policy, creation timestamp, and so on).</li>
+</ul>
+<h4><code>get_collection_info</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>workspace_id</code>,<code>collection_id</code></li>
+<li><strong>Description</strong>: returns the details of a collection (number of documents, status, access level).</li>
+</ul>
+<h4><code>get_audit_logs</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>workspace_id</code></li>
+<li><strong>Arguments (optional)</strong>:<code>limit</code> (default 10, maximum 50)</li>
+<li><strong>Description</strong>: obtains the audit log (chat history, PII detections, errors).</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">2. Exposed Tools — Administration Family (3 items)</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>list_sources</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>workspace_id</code></li>
-      <li><strong>Description</strong>: returns the list of data sources under the workspace (file path, status, number of files).</li>
-    </ul>
-    <h4><code>publish_collection</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>collection_id</code></li>
-      <li><strong>Description</strong>: publishes the specified collection into a state where it can be searched by RAG.</li>
-    </ul>
-    <h4><code>create_workspace</code></h4>
-    <ul>
-      <li><strong>Arguments (required)</strong>: <code>name</code></li>
-      <li><strong>Arguments (optional)</strong>: <code>description</code></li>
-      <li><strong>Description</strong>: creates a new workspace.</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">2. Exposed Tools — Administration Family (3 items)</span>
+</div>
+<div class="slide-body">
+<h4><code>list_sources</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>workspace_id</code></li>
+<li><strong>Description</strong>: returns the list of data sources under the workspace (file path, status, number of files).</li>
+</ul>
+<h4><code>publish_collection</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>collection_id</code></li>
+<li><strong>Description</strong>: publishes the specified collection into a state where it can be searched by RAG.</li>
+</ul>
+<h4><code>create_workspace</code></h4>
+<ul>
+<li><strong>Arguments (required)</strong>:<code>name</code></li>
+<li><strong>Arguments (optional)</strong>:<code>description</code></li>
+<li><strong>Description</strong>: creates a new workspace.</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">3. Connecting from LM Studio</span>
-  </div>
-  <div class="slide-body">
-    <p>LM Studio has an MCP client function, and MCP servers can be registered in its configuration file.</p>
-    <h3>3-1. Connection flow</h3>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">3. Connecting from LM Studio</span>
+</div>
+<div class="slide-body">
+<p>LM Studio has an MCP client function, and MCP servers can be registered in its configuration file.</p>
+<h3>3-1. Connection flow</h3>
 <pre><code>LM Studio（ユーザー対話）
   ↓ MCP プロトコル（標準入出力経由）
 Cynovela MCP サーバー（mcp_server.py）
   ↓ HTTP API
 Cynovela 本体（FastAPI サーバー）</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">3-2. Configuration Example</span>
-  </div>
-  <div class="slide-body">
-    <p>Register the following in the MCP server settings of LM Studio. For the actual key names, refer to the documentation of the client.</p>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">3-2. Configuration Example</span>
+</div>
+<div class="slide-body">
+<p>Register the following in the MCP server settings of LM Studio. For the actual key names, refer to the documentation of the client.</p>
 <pre><code>{
   "mcpServers": {
     "cynovela": {
@@ -402,261 +402,260 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
     }
   }
 }</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">4. Limitations Specific to the conda Environment</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela is built on the premise that it runs in a conda environment (<code>cynovela</code>). When calling the API of the main body from the MCP server, the path of the Python executable must be stated explicitly.</p>
-    <h3>4-1. Specifying the Python path</h3>
-    <p>The absolute path of the Python used to run the MCP script can be specified with the environment variable <code>CYNOVELA_MCP_PYTHON</code>.</p>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">4. Limitations Specific to the conda Environment</span>
+</div>
+<div class="slide-body">
+<p>Cynovela is built on the premise that it runs in a conda environment (<code>cynovela</code>). When calling the API of the main body from the MCP server, the path of the Python executable must be stated explicitly.</p>
+<h3>4-1. Specifying the Python path</h3>
+<p>The absolute path of the Python used to run the MCP script can be specified with the environment variable<code>CYNOVELA_MCP_PYTHON</code>.</p>
 <pre><code>export CYNOVELA_MCP_PYTHON=~/miniforge3/envs/cynovela/bin/python</code></pre>
-    <p>Without this specification, the conda environment is not activated in the child process started by a client such as LM Studio, and an ImportError of a dependency library may occur.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<p>Without this specification, the conda environment is not activated in the child process started by a client such as LM Studio, and an ImportError of a dependency library may occur.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">5. Notes on Authentication</span>
-  </div>
-  <div class="slide-body">
-    <h3>5-1. Bearer token</h3>
-    <p>The MCP server authenticates to the API of the Cynovela main body with the <code>Authorization: Bearer &lt;token&gt;</code> header. The token is passed by an environment variable on the client side.</p>
-    <ul>
-      <li>Authentication uses the JWT issued by <code>POST /api/auth/login</code>. The old <code>Bearer demo-token-&lt;user_id&gt;</code> form has been removed and is not accepted.</li>
-      <li>For production operation, the introduction of JWT authentication is required (not implemented at this point).</li>
-    </ul>
-    <h3>5-2. Role permissions</h3>
-    <p>Calls through MCP also pass the same role (admin / curator / viewer) permission checks as the API of the main body. In particular, administration tools such as <code>create_workspace</code> and <code>publish_collection</code> may require admin permission.</p>
-    <h3>5-3. Audit log</h3>
-    <p>Operations through MCP are also recorded in the same audit log (the <code>audit_logs</code> table) as the main body. The history can be confirmed with <code>get_audit_logs</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">5. Notes on Authentication</span>
+</div>
+<div class="slide-body">
+<h3>5-1. Bearer token</h3>
+<p>The MCP server authenticates to the API of the Cynovela main body with the<code>Authorization: Bearer &lt;token&gt;</code> header. The token is passed by an environment variable on the client side.</p>
+<ul>
+<li>Authentication uses the JWT issued by<code>POST /api/auth/login</code>. The old<code>Bearer demo-token-&lt;user_id&gt;</code> form has been removed and is not accepted.</li>
+<li>For production operation, the introduction of JWT authentication is required (not implemented at this point).</li>
+</ul>
+<h3>5-2. Role permissions</h3>
+<p>Calls through MCP also pass the same role (admin / curator / viewer) permission checks as the API of the main body. In particular, administration tools such as<code>create_workspace</code> and<code>publish_collection</code> may require admin permission.</p>
+<h3>5-3. Audit log</h3>
+<p>Operations through MCP are also recorded in the same audit log (the<code>audit_logs</code> table) as the main body. The history can be confirmed with<code>get_audit_logs</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-12">
-  <div class="slide-header">
-    <span class="doc-name">MCP Integration Guide</span>
-    <span class="slide-title">6. Troubleshooting</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>Symptom</th><th>What to check</th></tr></thead>
-      <tbody>
-        <tr><td>The tools are not found</td><td>Whether the Cynovela main body (<code>server.py</code>) has been started at <code>http://127.0.0.1:8765</code></td></tr>
-        <tr><td>Authentication error</td><td>The value of the <code>CYNOVELA_TOKEN</code> environment variable, and the validity of the token</td></tr>
-        <tr><td>An ImportError appears</td><td>Whether the Python path of the conda environment has been specified with <code>CYNOVELA_MCP_PYTHON</code></td></tr>
-        <tr><td>The result is empty</td><td>Whether the target collection has reached the <code>ready</code> status</td></tr>
-      </tbody>
-    </table>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP Integration Guide</span>
+<span class="slide-title">6. Troubleshooting</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>Symptom</th><th>What to check</th></tr></thead>
+<tbody>
+<tr><td>The tools are not found</td><td>Whether the Cynovela main body (<code>server.py</code>) has been started at<code>http://127.0.0.1:8765</code></td></tr>
+<tr><td>Authentication error</td><td>The value of the<code>CYNOVELA_TOKEN</code> environment variable, and the validity of the token</td></tr>
+<tr><td>An ImportError appears</td><td>Whether the Python path of the conda environment has been specified with<code>CYNOVELA_MCP_PYTHON</code></td></tr>
+<tr><td>The result is empty</td><td>Whether the target collection has reached the<code>ready</code> status</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide cover" id="slide-13">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">MCP（Model Context Protocol）連携ガイド</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">MCP（Model Context Protocol）連携ガイド</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-    <p>Cynovela は MCP（Model Context Protocol、参照元のAIツールが提唱する AI ツール連携プロトコル）の MCP サーバーとして自身の機能を外部の LLM クライアントへ公開できます。本ドキュメントでは MCP の概念と Cynovela が公開している MCP ツール、接続手順を説明します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+<p>Cynovela は MCP（Model Context Protocol、参照元のAIツールが提唱する AI ツール連携プロトコル）の MCP サーバーとして自身の機能を外部の LLM クライアントへ公開できます。本ドキュメントでは MCP の概念と Cynovela が公開している MCP ツール、接続手順を説明します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">1. MCP とは</span>
-  </div>
-  <div class="slide-body">
-    <p>MCP は、AI アシスタント（クライアント）が外部システムの機能（ツール）を呼び出すための標準プロトコルです。</p>
-    <ul>
-      <li><strong>クライアント</strong>: LM Studio や対応する LLM クライアントなど、ユーザーが対話する側</li>
-      <li><strong>サーバー</strong>: 機能を提供する側（Cynovela がここに該当）</li>
-      <li><strong>ツール</strong>: サーバーが公開する操作（検索、登録、参照など）</li>
-    </ul>
-    <p>MCP を使うと、ユーザーが LLM クライアントに「うちの社内文書を検索して」と話しかけたときに、LLM が Cynovela の検索ツールを呼び出し、結果を踏まえて回答を生成する、という連携が成立します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">1. MCP とは</span>
+</div>
+<div class="slide-body">
+<p>MCP は、AI アシスタント（クライアント）が外部システムの機能（ツール）を呼び出すための標準プロトコルです。</p>
+<ul>
+<li><strong>クライアント</strong>: LM Studio や対応する LLM クライアントなど、ユーザーが対話する側</li>
+<li><strong>サーバー</strong>: 機能を提供する側（Cynovela がここに該当）</li>
+<li><strong>ツール</strong>: サーバーが公開する操作（検索、登録、参照など）</li>
+</ul>
+<p>MCP を使うと、ユーザーが LLM クライアントに「うちの社内文書を検索して」と話しかけたときに、LLM が Cynovela の検索ツールを呼び出し、結果を踏まえて回答を生成する、という連携が成立します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-16">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">2. 公開ツール — RAG 検索系（4 件）</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>search_collection</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>query</code>, <code>workspace_id</code>, <code>collection_id</code></li>
-      <li><strong>引数（任意）</strong>: <code>preset</code></li>
-      <li><strong>説明</strong>: 単一の Collection（コレクション、文書群）に対して RAG 検索を行います。</li>
-    </ul>
-    <h4><code>search_across_collections</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>query</code>, <code>workspace_id</code>, <code>collection_ids</code></li>
-      <li><strong>引数（任意）</strong>: <code>preset</code></li>
-      <li><strong>説明</strong>: 複数の Collection を横断して RAG 検索を行います。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">2. 公開ツール — RAG 検索系（4 件）</span>
+</div>
+<div class="slide-body">
+<h4><code>search_collection</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>query</code>,<code>workspace_id</code>,<code>collection_id</code></li>
+<li><strong>引数（任意）</strong>:<code>preset</code></li>
+<li><strong>説明</strong>: 単一の Collection（コレクション、文書群）に対して RAG 検索を行います。</li>
+</ul>
+<h4><code>search_across_collections</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>query</code>,<code>workspace_id</code>,<code>collection_ids</code></li>
+<li><strong>引数（任意）</strong>:<code>preset</code></li>
+<li><strong>説明</strong>: 複数の Collection を横断して RAG 検索を行います。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">2. 公開ツール — RAG 検索系（続き）</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>rag_with_role</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>query</code>, <code>workspace_id</code>, <code>collection_id</code>, <code>style_role</code></li>
-      <li><strong>引数（任意）</strong>: <code>preset</code></li>
-      <li><strong>説明</strong>: ロール別の回答スタイル（管理者向け / 一般ユーザー向けなど）を切り替えて RAG 検索します。</li>
-    </ul>
-    <h4><code>rag_general</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>query</code>, <code>workspace_id</code></li>
-      <li><strong>説明</strong>: RAG を使わず、LLM の一般知識のみで回答を生成します。社内文書に依存しない一般的な質問用です。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">2. 公開ツール — RAG 検索系（続き）</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4><code>rag_with_role</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>query</code>,<code>workspace_id</code>,<code>collection_id</code>,<code>style_role</code></li>
+<li><strong>引数（任意）</strong>:<code>preset</code></li>
+<li><strong>説明</strong>: ロール別の回答スタイル（管理者向け / 一般ユーザー向けなど）を切り替えて RAG 検索します。</li>
+</ul>
+<h4><code>rag_general</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>query</code>,<code>workspace_id</code></li>
+<li><strong>説明</strong>: RAG を使わず、LLM の一般知識のみで回答を生成します。社内文書に依存しない一般的な質問用です。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">2. 公開ツール — 情報取得系（4 件）</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>list_workspaces</code></h4>
-    <ul>
-      <li><strong>引数</strong>: なし</li>
-      <li><strong>説明</strong>: 全ワークスペースとそのコレクション一覧を取得します。</li>
-    </ul>
-    <h4><code>get_workspace_info</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>workspace_id</code></li>
-      <li><strong>説明</strong>: 指定ワークスペースの詳細情報（名前、ガードレールポリシー、作成日時など）を返します。</li>
-    </ul>
-    <h4><code>get_collection_info</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>workspace_id</code>, <code>collection_id</code></li>
-      <li><strong>説明</strong>: コレクションの詳細（ドキュメント数、ステータス、アクセスレベル）を返します。</li>
-    </ul>
-    <h4><code>get_audit_logs</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>workspace_id</code></li>
-      <li><strong>引数（任意）</strong>: <code>limit</code>（既定 10、上限 50）</li>
-      <li><strong>説明</strong>: 監査ログ（チャット履歴、PII 検出、エラー）を取得します。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">2. 公開ツール — 情報取得系（4 件）</span>
+</div>
+<div class="slide-body">
+<h4><code>list_workspaces</code></h4>
+<ul>
+<li><strong>引数</strong>: なし</li>
+<li><strong>説明</strong>: 全ワークスペースとそのコレクション一覧を取得します。</li>
+</ul>
+<h4><code>get_workspace_info</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>workspace_id</code></li>
+<li><strong>説明</strong>: 指定ワークスペースの詳細情報（名前、ガードレールポリシー、作成日時など）を返します。</li>
+</ul>
+<h4><code>get_collection_info</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>workspace_id</code>,<code>collection_id</code></li>
+<li><strong>説明</strong>: コレクションの詳細（ドキュメント数、ステータス、アクセスレベル）を返します。</li>
+</ul>
+<h4><code>get_audit_logs</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>workspace_id</code></li>
+<li><strong>引数（任意）</strong>:<code>limit</code>（既定 10、上限 50）</li>
+<li><strong>説明</strong>: 監査ログ（チャット履歴、PII 検出、エラー）を取得します。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">2. 公開ツール — 管理系（3 件）</span>
-  </div>
-  <div class="slide-body">
-    <h4><code>list_sources</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>workspace_id</code></li>
-      <li><strong>説明</strong>: ワークスペース配下のデータソース一覧（ファイルパス、ステータス、ファイル数）を返します。</li>
-    </ul>
-    <h4><code>publish_collection</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>collection_id</code></li>
-      <li><strong>説明</strong>: 指定コレクションを RAG 検索可能な状態に公開します。</li>
-    </ul>
-    <h4><code>create_workspace</code></h4>
-    <ul>
-      <li><strong>引数（必須）</strong>: <code>name</code></li>
-      <li><strong>引数（任意）</strong>: <code>description</code></li>
-      <li><strong>説明</strong>: 新規ワークスペースを作成します。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">2. 公開ツール — 管理系（3 件）</span>
+</div>
+<div class="slide-body">
+<h4><code>list_sources</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>workspace_id</code></li>
+<li><strong>説明</strong>: ワークスペース配下のデータソース一覧（ファイルパス、ステータス、ファイル数）を返します。</li>
+</ul>
+<h4><code>publish_collection</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>collection_id</code></li>
+<li><strong>説明</strong>: 指定コレクションを RAG 検索可能な状態に公開します。</li>
+</ul>
+<h4><code>create_workspace</code></h4>
+<ul>
+<li><strong>引数（必須）</strong>:<code>name</code></li>
+<li><strong>引数（任意）</strong>:<code>description</code></li>
+<li><strong>説明</strong>: 新規ワークスペースを作成します。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">3. LM Studio からの接続</span>
-  </div>
-  <div class="slide-body">
-    <p>LM Studio は MCP クライアント機能を備えており、設定ファイルで MCP サーバーを登録できます。</p>
-    <h3>3-1. 接続フロー</h3>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">3. LM Studio からの接続</span>
+</div>
+<div class="slide-body">
+<p>LM Studio は MCP クライアント機能を備えており、設定ファイルで MCP サーバーを登録できます。</p>
+<h3>3-1. 接続フロー</h3>
 <pre><code>LM Studio（ユーザー対話）
   ↓ MCP プロトコル（標準入出力経由）
 Cynovela MCP サーバー（mcp_server.py）
   ↓ HTTP API
 Cynovela 本体（FastAPI サーバー）</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">3-2. 設定例</span>
-  </div>
-  <div class="slide-body">
-    <p>LM Studio の MCP サーバー設定に以下を登録します。実際のキー名はクライアント側のドキュメントを参照してください。</p>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">3-2. 設定例</span>
+</div>
+<div class="slide-body">
+<p>LM Studio の MCP サーバー設定に以下を登録します。実際のキー名はクライアント側のドキュメントを参照してください。</p>
 <pre><code>{
   "mcpServers": {
     "cynovela": {
@@ -671,82 +670,81 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
     }
   }
 }</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">4. conda 環境固有の制限</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は conda 環境（<code>cynovela</code>）で動作する前提で構築されています。MCP サーバーから本体 API を呼び出す際は、Python 実行ファイルパスを明示する必要があります。</p>
-    <h3>4-1. Python パスの指定</h3>
-    <p>環境変数 <code>CYNOVELA_MCP_PYTHON</code> で MCP スクリプト実行用 Python の絶対パスを指定できます。</p>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">4. conda 環境固有の制限</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は conda 環境（<code>cynovela</code>）で動作する前提で構築されています。MCP サーバーから本体 API を呼び出す際は、Python 実行ファイルパスを明示する必要があります。</p>
+<h3>4-1. Python パスの指定</h3>
+<p>環境変数<code>CYNOVELA_MCP_PYTHON</code> で MCP スクリプト実行用 Python の絶対パスを指定できます。</p>
 <pre><code>export CYNOVELA_MCP_PYTHON=~/miniforge3/envs/cynovela/bin/python</code></pre>
-    <p>この指定がない場合、LM Studio などのクライアントが起動した子プロセスでは conda 環境がアクティブにならず、依存ライブラリの ImportError が発生する可能性があります。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p>この指定がない場合、LM Studio などのクライアントが起動した子プロセスでは conda 環境がアクティブにならず、依存ライブラリの ImportError が発生する可能性があります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-23">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">5. 認証の注意</span>
-  </div>
-  <div class="slide-body">
-    <h3>5-1. ベアラートークン</h3>
-    <p>MCP サーバーは Cynovela 本体 API に対して <code>Authorization: Bearer &lt;token&gt;</code> ヘッダーで認証します。トークンはクライアント側の環境変数で渡します。</p>
-    <ul>
-      <li>認証は <code>POST /api/auth/login</code> が発行する JWT です。旧 <code>Bearer demo-token-&lt;user_id&gt;</code> 形式は廃止済みで受理しません。</li>
-      <li>本番運用では JWT 認証導入が必要です（現時点では未実装）。</li>
-    </ul>
-    <h3>5-2. ロール権限</h3>
-    <p>MCP 経由の呼び出しも本体 API と同じロール（admin / curator / viewer）の権限チェックを通過します。特に <code>create_workspace</code> や <code>publish_collection</code> などの管理系ツールは admin 権限を要する場合があります。</p>
-    <h3>5-3. 監査ログ</h3>
-    <p>MCP 経由の操作も本体と同じ監査ログ（<code>audit_logs</code> テーブル）に記録されます。<code>get_audit_logs</code> で履歴を確認できます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">5. 認証の注意</span>
+</div>
+<div class="slide-body">
+<h3>5-1. ベアラートークン</h3>
+<p>MCP サーバーは Cynovela 本体 API に対して<code>Authorization: Bearer &lt;token&gt;</code> ヘッダーで認証します。トークンはクライアント側の環境変数で渡します。</p>
+<ul>
+<li>認証は<code>POST /api/auth/login</code> が発行する JWT です。旧<code>Bearer demo-token-&lt;user_id&gt;</code> 形式は廃止済みで受理しません。</li>
+<li>本番運用では JWT 認証導入が必要です（現時点では未実装）。</li>
+</ul>
+<h3>5-2. ロール権限</h3>
+<p>MCP 経由の呼び出しも本体 API と同じロール（admin / curator / viewer）の権限チェックを通過します。特に<code>create_workspace</code> や<code>publish_collection</code> などの管理系ツールは admin 権限を要する場合があります。</p>
+<h3>5-3. 監査ログ</h3>
+<p>MCP 経由の操作も本体と同じ監査ログ（<code>audit_logs</code> テーブル）に記録されます。<code>get_audit_logs</code> で履歴を確認できます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-24">
-  <div class="slide-header">
-    <span class="doc-name">MCP 連携ガイド</span>
-    <span class="slide-title">6. トラブルシューティング</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>症状</th><th>確認ポイント</th></tr></thead>
-      <tbody>
-        <tr><td>ツールが見つからない</td><td>Cynovela 本体（<code>server.py</code>）が <code>http://127.0.0.1:8765</code> で起動済みか</td></tr>
-        <tr><td>認証エラー</td><td><code>CYNOVELA_TOKEN</code> 環境変数の値、トークンの有効性</td></tr>
-        <tr><td>ImportError が出る</td><td><code>CYNOVELA_MCP_PYTHON</code> で conda 環境の Python パスを指定済みか</td></tr>
-        <tr><td>結果が空</td><td>対象 Collection が <code>ready</code> ステータスに到達済みか</td></tr>
-      </tbody>
-    </table>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">MCP 連携ガイド</span>
+<span class="slide-title">6. トラブルシューティング</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>症状</th><th>確認ポイント</th></tr></thead>
+<tbody>
+<tr><td>ツールが見つからない</td><td>Cynovela 本体（<code>server.py</code>）が<code>http://127.0.0.1:8765</code> で起動済みか</td></tr>
+<tr><td>認証エラー</td><td><code>CYNOVELA_TOKEN</code> 環境変数の値、トークンの有効性</td></tr>
+<tr><td>ImportError が出る</td><td><code>CYNOVELA_MCP_PYTHON</code> で conda 環境の Python パスを指定済みか</td></tr>
+<tr><td>結果が空</td><td>対象 Collection が<code>ready</code> ステータスに到達済みか</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 24</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 24</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

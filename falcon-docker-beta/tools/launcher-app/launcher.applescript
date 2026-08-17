@@ -1,4 +1,4 @@
--- Cynovela をはじめる (DD-CYN-0044 §5-2 / たたき台 v15)
+-- Cynovela をはじめる (§5-2 / たたき台 v15)
 -- アイコンから開く起動の画面。選ぶのはこの画面、待つ処理は tools/launcher-app/launcher-core.sh が背景で持つ。
 -- ∴ この画面が出ている間も、起動を待っている間も、他のアプリを操作できる (§5-2-1 の 2)。
 
@@ -119,7 +119,7 @@ on askSettings(repo)
 	set ddOpt to ""
 	set ddLabel to "既定の場所"
 	-- この形態 (コンテナ) はデータをコンテナの名前付きボリュームに置くため、
-	-- 保存先の指定の受け口が無い。§0-2 の範囲内では作れないため、この段は置かない (DD-CYN-0044 §4-J)。
+	-- 保存先の指定の受け口が無い。§0-2 の範囲内では作れないため、この段は置かない (§4-J)。
 
 	set brOpt to ""
 	set r5 to display dialog ("詳しい設定 — 起動後の動作" & return & return & "起動後にブラウザを自動で開くかどうかです。") buttons {"キャンセル", "開かない", "ブラウザを自動で開く（既定）"} default button "ブラウザを自動で開く（既定）" with title "Cynovela" with icon note
@@ -316,7 +316,7 @@ on run
 		return
 	end try
 
-	-- コンテナの土台 (Podman / Docker) の確認 (DD-CYN-0048)
+	-- コンテナの土台 (Podman / Docker) の確認 ()
 	--   探索と橋渡しは launcher-core.sh (engine) が持つ。画面は結果を出すだけ。
 	--   アイコンからの起動は PATH が素の値のため、端末と同じ探し方では見つからない。
 	repeat

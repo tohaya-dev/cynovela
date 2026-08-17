@@ -1,4 +1,4 @@
-// pipeline.js - Cynovela v13
+// pipeline.js
 
 function statusTag(status) {
   const labelJa = { idle:'待機', scanning:'スキャン中', completed:'完了', failed:'失敗', draft:'Draft', publishing:'Publishing', ready:'Ready' };
@@ -449,7 +449,7 @@ async function _doPublishWithChunking(id) {
   startPublishStream(id);
 }
 
-// DD-CYN-0032 B6: 追うのをやめる条件。
+// B6: 追うのをやめる条件。
 //   _STALL_NOTICE_MS を過ぎたら「遅れています」と1度だけ知らせるが、追うのはやめない。
 //   _STALL_GIVEUP_MS を過ぎて初めてやめる。やめるときは、その旨と追い直し方を画面に出す。
 //   従来は 90 秒動かないだけで黙って追うのをやめていた (追記200 の実測。取り込みそのものは
@@ -465,7 +465,7 @@ async function _pollPublishJob(colId, jobId) {
     const _p0 = _publishPolls[colId];
     if (_p0) _p0.fetchFails = 0;
   } catch (e) {
-    // DD-CYN-0032 B6: 問い合わせが続けて失敗したときも、黙って追い続けない。
+    // B6: 問い合わせが続けて失敗したときも、黙って追い続けない。
     //   1度だけ知らせて、そのまま追い続ける (取り込みは画面と無関係に進むため)。
     const _pf = _publishPolls[colId];
     if (_pf) {
@@ -563,7 +563,7 @@ async function _pollPublishJob(colId, jobId) {
         collection_id: job.collection_id,
         pii_count: summary.pii_count || 0,
         excluded_count: summary.excluded_count || 0,
-        // DD-CYN-0091 C: 飛ばしたファイルの一覧 (ファイル名+理由) を完了表示へ渡す
+        // C: 飛ばしたファイルの一覧 (ファイル名+理由) を完了表示へ渡す
         skipped_details: summary.skipped_details || [],
         file_count: summary.file_count || 0,
         pii_labels: summary.pii_labels || null,
@@ -668,7 +668,7 @@ function updatePublishFlowFromEvent(colId, data) {
   if (!data || !data.stage) return;
   const total = data.total || 1;
   const current = data.current || 0;
-  // DD-CYN-0032 B6: 分母を実数に合わせる。
+  // B6: 分母を実数に合わせる。
   //   分子は段によって単位が変わる (塊に切る段=ファイル数 / ベクター化の段=塊数)。
   //   ここは唯一の歯止めの無い書き込み口だったため、段が移ったあとも前の段の値が残り、
   //   隣に別の単位の値が並んで [177/39] のように壊れて見えることがあった。

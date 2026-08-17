@@ -158,7 +158,7 @@ mechanically from the actual environment.
 - threadpoolctl 3.6.0 — BSD-3-Clause
 - tldextract 5.3.2 — BSD-3-Clause
 - tokenizers 0.22.2 — Apache Software License
-- torch 2.13.0 — Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause 
+- torch 2.13.0 — Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause
 - tqdm 4.70.0 — MPL-2.0 AND MIT
 - transformers 5.15.0 — Apache 2.0 License
 - typer 0.27.1 — MIT

@@ -52,7 +52,7 @@ No communication begins until you choose one of them.
 | `--local-only` | Restrict to inside your own machine only (the default listens on all addresses, `0.0.0.0`) |
 | `--port N` | Port number (default 8765) |
 
-### List of startup forms (--mode) (measured in DD-CYN-0097, 2026-08-12)
+### List of startup forms (--mode) (measured in , 2026-08-12)
 
 | Form | What changes |
 |---|---|
@@ -60,7 +60,7 @@ No communication begins until you choose one of them.
 | `--mode lite` | Switching is not wired, so only the displayed name changes (behavior is the same as text) |
 | `--mode lite-en` | Switching is not wired, so only the displayed name changes (behavior is the same as text) |
 
-All of them can be specified in the form `./launch.sh --demo --mode <name> --port <number>` (measured).
+All of them can be specified in the form `./launch.sh --demo --mode<name> --port<number>` (measured).
 
 
 ### Passing multiple ingest sources
@@ -81,7 +81,7 @@ You can pass any number of ingest sources (the root folders of documents) at sta
 
 # List and delete (add, view, and remove can also be done from Settings -> 📁 ingest sources on the screen)
 ./launch.sh --list
-./launch.sh --remove <internal name>
+./launch.sh --remove<internal name>
 ```
 
 - In this form, **adding and removing from the screen take effect as they are. A restart is not required** (the backup is re-read every time it is referenced).
@@ -250,7 +250,7 @@ python server.py --mode text --demo
 | `--local-only` | 自分のマシンの中だけに絞る（既定は全アドレス `0.0.0.0` で待ち受け） |
 | `--port N` | ポート番号（既定 8765） |
 
-### 起動の形（--mode）の一覧（DD-CYN-0097 実測・2026-08-12）
+### 起動の形（--mode）の一覧（実測・2026-08-12）
 
 | 形 | 何が変わるか |
 |---|---|
@@ -258,7 +258,7 @@ python server.py --mode text --demo
 | `--mode lite` | 切替は未配線のため、表示名が変わるだけです（動作は text と同じ） |
 | `--mode lite-en` | 切替は未配線のため、表示名が変わるだけです（動作は text と同じ） |
 
-いずれも `./launch.sh --demo --mode <名前> --port <番号>` の形で指定できます（実測済み）。
+いずれも `./launch.sh --demo --mode<名前> --port<番号>` の形で指定できます（実測済み）。
 
 
 ### 取り込み元を複数渡す
@@ -279,7 +279,7 @@ python server.py --mode text --demo
 
 # 一覧・削除（足す・見る・外すは画面の Settings → 📁 取り込み元 からもできます）
 ./launch.sh --list
-./launch.sh --remove <中の名前>
+./launch.sh --remove<中の名前>
 ```
 
 - この形態では、**画面から足す・外すがそのまま効きます。起動し直しは要りません**（バックアップは参照のたびに読み直されます）。

@@ -16,7 +16,7 @@ import httpx
 
 # masking-rework-overnight-v5 §段1c: Chroma collection 階層 (raw / masked) 命名
 # 生本文は __raw collection、マスク済本文は __masked collection に格納する。
-# 設計判断 (pageId 36694ef8-ac04-811c-9194-ce7d73a85098 「設計の正本」):
+# 設計判断 (「設計の正本」):
 # 表示時のロール書き分けに頼らず、保管庫を構造的に分離して権限階層を扱う。
 TIER_RAW = "raw"
 TIER_MASKED = "masked"
@@ -285,7 +285,7 @@ class QdrantVectorStore(VectorStoreProvider):
 
     def __init__(self, url: str = "http://localhost:6333", api_key: str = ""):
         self.url = (url or "http://localhost:6333").rstrip("/")
-        self.api_key = api_key or ""  # DD-CYN-0067 G-2: 鍵は設定/画面からのみ (env 読みを撤去)
+        self.api_key = api_key or ""  # G-2: 鍵は設定/画面からのみ (env 読みを撤去)
 
     def _headers(self) -> dict:
         h = {"Content-Type": "application/json"}

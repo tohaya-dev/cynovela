@@ -51,7 +51,6 @@ As supporting parts, BM25Okapi (keyword search), fugashi/MeCab (Japanese morphol
 Cynovela is a personal implementation for learning purposes; commercial use and production use are not assumed. It does not represent the official position of the referenced AI infrastructure tools, and it contains no company or product names. All implementation decisions and design trade-offs are the individual's own.
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -103,4 +102,3 @@ Cynovela は、社内ドキュメントを対象とした RAG（Retrieval-Augmen
 Cynovela は学習目的の個人実装であり、商用利用・本番利用は想定していません。参照元の AI 基盤ツールの公式見解を代表せず、会社・製品名も含みません。実装の判断・設計上のトレードオフはすべて個人によるものです。
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

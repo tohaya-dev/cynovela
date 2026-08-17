@@ -275,7 +275,6 @@ The old `utils/pii_detector.py` was deleted, and the implementation was consolid
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -551,4 +550,3 @@ PII 検出は次の 2 系統で集計されます。
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

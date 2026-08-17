@@ -179,7 +179,6 @@ The replacement logic of Parent-Child is an asymmetric design: `retrieval_detail
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -360,4 +359,3 @@ Parent-Child の差し替えロジックは、`retrieval_detail.hits` には chi
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

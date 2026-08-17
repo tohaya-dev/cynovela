@@ -15,7 +15,7 @@
 This document describes what Cynovela **cannot** do. An explanation of what it can do is
 in `README.md` and `QUICKSTART.md`. Here we only write the things that will not meet your expectations.
 
-The version is `1.0.0-alpha` (`APP_VERSION` in `core/version.py` is the only source of this
+The version is `` (`APP_VERSION` in `core/version.py` is the only source of this
 value, and `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -399,7 +399,6 @@ issued become invalid after a restart (logging in again works).
   With a thinking-type model, it uses up the tokens needed for thinking.
 
 ---
-Last updated: 2026-07-31 / version 1.0.0-alpha
 
 ---
 
@@ -415,7 +414,7 @@ Last updated: 2026-07-31 / version 1.0.0-alpha
 この文書は、Cynovela に **できないこと** を書いたものです。できることの説明は
 `README.md` と `QUICKSTART.md` にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.0.0-alpha` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
@@ -782,4 +781,3 @@ MCP のツールには `search_across_collections`（複数のコレクション
   思考する型のモデルで、考えるためのトークンを使い切ってしまいます。
 
 ---
-最終更新: 2026-07-31 / 版 1.0.0-alpha

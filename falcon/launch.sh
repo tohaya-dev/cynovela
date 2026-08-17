@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-#  Cynovela 入口の包み (DD-CYN-0069 M-5・追記274 274-2/274-3・決定 29-3)
+#  Cynovela 入口の包み (M-5・追記274 274-2/274-3・決定 29-3)
 #
 #  受け取り手がターミナルから叩く入口はこの1本です。起動の本体は
 #  tools/launch-body.sh にそのまま在り、この包みは確かめて・伝えて・
@@ -13,7 +13,7 @@
 #    ./launch.sh --pro      細かい指定の一覧を出します (起動の種類は増えません)
 #  止め方: bash stop.sh
 #
-#  この包みがすること (順・DD-CYN-0070):
+#  この包みがすること (順・):
 #    1. いま動いている Cynovela を全数調べて表示し、止める / 起こし直す /
 #       つなぐ / やめる を選ばせる (N-6)
 #    2. Podman・Docker・自分で指定 を同列に並べて選ばせる (N-1・決定 30-1〜30-3)。
@@ -66,7 +66,7 @@ for _a in "$@"; do
     esac
 done
 
-# ── 0. いま動いている Cynovela を全数調べて表示する (DD-CYN-0070 N-6) ──
+# ── 0. いま動いている Cynovela を全数調べて表示する (N-6) ──
 #   調べる先はコンテナ (動いているものと止まっているものの両方)。この配布物が
 #   作ったものだけに絞らない (Cynovela のマーカー org.cynovela.artifact で見る)。
 #   受け取り手が選ぶまで、止めない・起こさない・作らない。
@@ -235,7 +235,7 @@ running_menu() {
     done
 }
 
-# ── 1. Podman・Docker・自分で指定 を同列に並べて選ばせる (DD-CYN-0070 N-1) ──
+# ── 1. Podman・Docker・自分で指定 を同列に並べて選ばせる (N-1) ──
 #   決定 30-1: Podman は必須ではない。決定 30-2: 見つけたものへ黙って進む形を禁じる。
 #   決定 30-3: どちらを見つけたときも、もう一方と「自分で指定する」を選べる。
 #   自動で探すのは Podman と Docker の2つだけ (決定 19-3)。
@@ -246,7 +246,7 @@ CONF_REPO="$WRAP_DIR"
 CNAME="$(conf_get_or container name "$CONF_DEFAULT_CNAME")"
 VOLPREFIX="$(conf_get_or container volume_prefix "$CONF_DEFAULT_VOLPREFIX")"
 
-# ── 0-A. 埋め込みを動かす外部の推論サーバ (MAS) を用意するフェーズ (DD-CYN-0083) ──
+# ── 0-A. 埋め込みを動かす外部の推論サーバ (MAS) を用意するフェーズ () ──
 #   本体を置き換えず、ここへ被せる形で読み込む (決定 29-3)。
 #   3択 (Podman / Docker / 自分で指定) より前に mas_phase_ask を呼ぶ。
 #   理由: 外部の推論サーバが立たないままコンテナを起こすと、埋め込みはコンテナの中の CPU へ
@@ -352,7 +352,7 @@ apply_engine_choice() {
     esac || { echo "設定 (cynovela.yaml) を書けませんでした。"; exit 1; }
 }
 
-# ── 2. 進める前の確認 (DD-CYN-0070 N-3) ─────────────────────────
+# ── 2. 進める前の確認 (N-3) ─────────────────────────
 #   選んだ直後に、これから何が起きるかを1画面で出し、Y/N/C で選ばせる。
 #   Y=進める / N=選び直す (N-1 の画面へ戻る) / C と EOF=何もせずに終わる。
 #   N・C・EOF では何も書かない・何も作らない (設定への書き込みも Y の後だけ)。
@@ -408,7 +408,7 @@ confirm_launch() {
 running_menu
 if [ "$ACTION" = "restart" ]; then
     if _confirm_simple "$RESTART_ENG" "ありません（起こし直すもの: ${RESTART_NAME}。作り直しません。資料と設定はそのまま使えます）" "組み立ては行いません"; then
-        # 起こし直す道でも、コンテナより先に外部の推論サーバを用意する (DD-CYN-0083)。
+        # 起こし直す道でも、コンテナより先に外部の推論サーバを用意する ()。
         # 新しく起こす道だけに置くと、この道が外部の推論サーバを素通りしてしまう。
         mas_phase_ask
         if ! mas_phase_apply; then
@@ -438,7 +438,7 @@ if [ "$ACTION" = "restart" ]; then
     ACTION="new"
 fi
 
-# 外部の推論サーバ (MAS) を用意するフェーズ。3択より前に置く (DD-CYN-0083)。
+# 外部の推論サーバ (MAS) を用意するフェーズ。3択より前に置く ()。
 # ここでは調べて選ばせるだけで、まだ何も作らない。
 mas_phase_ask
 
@@ -493,7 +493,7 @@ while [ "$i" -lt 900 ]; do
     sleep 2
     [ -z "$PORT" ] && PORT="$(_port_from_log || true)"
     if [ -n "$PORT" ] && curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/api/health" 2>/dev/null; then
-        # DD-CYN-0070 N-7: 止め方と消し方を、起動が終わったここで必ず画面へ出す。
+        # N-7: 止め方と消し方を、起動が終わったここで必ず画面へ出す。
         case "$ENGINE_SEL" in
             podman) _stopcmd="podman stop $CNAME" ;;
             docker) _stopcmd="docker stop $CNAME" ;;

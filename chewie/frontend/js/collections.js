@@ -1,4 +1,4 @@
-// collections.js - Cynovela v13
+// collections.js
 
 function onWsActionCatalog(wsId) {
   // SPAなのでハッシュではなく既存の navigate() を使い、Collections ページに遷移する

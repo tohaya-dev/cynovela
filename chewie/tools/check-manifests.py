@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""DD-CYN-0117 R-3: 2つのマニフェスト (environment.yml / requirements.txt) を突き合わせる。
+"""R-3: 2つのマニフェスト (environment.yml / requirements.txt) を突き合わせる。
 
 なぜ要るか:
     公式の作り方は2段である。

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Handson Basic / ハンズオン（基礎編） — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handson Basic / ハンズオン（基礎編） — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -198,846 +198,844 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Hands-on (Basics)</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Hands-on (Basics)</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning purposes</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">About this document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About this document</strong><br>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">About this document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About this document</strong><br>
       Cynovela is a completely unofficial learning tool built so that an individual can understand the concepts of an AI platform tool by working through them hands-on. It is not a commercial product or an official implementation.
       The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
       It does not represent the official position of any company or product in any way.
-    </blockquote>
-    <p>In this hands-on you will go through five steps, from creating a workspace to RAG (Retrieval-Augmented Generation) queries, checking the audit log, and trying out the guardrails.</p>
-    <p>It is assumed that Cynovela is already running, following the quickstart.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+</blockquote>
+<p>In this hands-on you will go through five steps, from creating a workspace to RAG (Retrieval-Augmented Generation) queries, checking the audit log, and trying out the guardrails.</p>
+<p>It is assumed that Cynovela is already running, following the quickstart.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 1: Create a workspace</span>
-  </div>
-  <div class="slide-body">
-    <h3>Why it is needed</h3>
-    <p>A workspace is the management unit that groups users, guardrail policies, and collections (sets of files). By separating them per business area or information sensitivity, the access control and guardrails applied later become easier to manage.</p>
-    <h3>Steps</h3>
-    <p>Open the "Workspace management" screen in the GUI and press the "Create new" button.</p>
-    <table>
-      <thead><tr><th>Item</th><th>Content</th></tr></thead>
-      <tbody>
-        <tr><td>Name</td><td>Workspace name (unique)</td></tr>
-        <tr><td>Guardrail policy</td><td>Select one policy to apply</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 1: Create a workspace</span>
+</div>
+<div class="slide-body">
+<h3>Why it is needed</h3>
+<p>A workspace is the management unit that groups users, guardrail policies, and collections (sets of files). By separating them per business area or information sensitivity, the access control and guardrails applied later become easier to manage.</p>
+<h3>Steps</h3>
+<p>Open the "Workspace management" screen in the GUI and press the "Create new" button.</p>
+<table>
+<thead><tr><th>Item</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td>Name</td><td>Workspace name (unique)</td></tr>
+<tr><td>Guardrail policy</td><td>Select one policy to apply</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 1: Default guardrail policies</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p>In demo mode, the following three guardrail policies are provided in advance.</p>
-    <table>
-      <thead><tr><th>Policy ID</th><th>Name</th><th>Content</th></tr></thead>
-      <tbody>
-        <tr><td><code>pol-pii</code></td><td>PII protection policy</td><td><code>mask</code> for PII, <code>exclude_from_rag</code> for Financial</td></tr>
-        <tr><td><code>pol-strict</code></td><td>Strict management policy</td><td><code>mask</code> for PII, <code>exclude_from_rag</code> for Financial and HR</td></tr>
-        <tr><td><code>pol-log</code></td><td>Log-only policy</td><td><code>log_only</code> for PII and Financial (record only, no masking)</td></tr>
-      </tbody>
-    </table>
-    <p>There are four guardrail actions (<code>mask</code> / <code>exclude_from_rag</code> / <code>log_only</code> / <code>allow</code>).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 1: Default guardrail policies</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p>In demo mode, the following three guardrail policies are provided in advance.</p>
+<table>
+<thead><tr><th>Policy ID</th><th>Name</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td><code>pol-pii</code></td><td>PII protection policy</td><td><code>mask</code> for PII,<code>exclude_from_rag</code> for Financial</td></tr>
+<tr><td><code>pol-strict</code></td><td>Strict management policy</td><td><code>mask</code> for PII,<code>exclude_from_rag</code> for Financial and HR</td></tr>
+<tr><td><code>pol-log</code></td><td>Log-only policy</td><td><code>log_only</code> for PII and Financial (record only, no masking)</td></tr>
+</tbody>
+</table>
+<p>There are four guardrail actions (<code>mask</code> /<code>exclude_from_rag</code> /<code>log_only</code> /<code>allow</code>).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 2: File ingest and automatic classification</span>
-  </div>
-  <div class="slide-body">
-    <h3>Why it is needed</h3>
-    <p>Cynovela automatically classifies each ingested document with a metadata mechanism called "Smart Ingestion". This is so that later RAG search and reports can show how many documents of which type exist.</p>
-    <h3>Choosing the classification engine</h3>
-    <table>
-      <thead><tr><th>Engine</th><th>Mechanism</th><th>Characteristics</th></tr></thead>
-      <tbody>
-        <tr><td>Lightweight</td><td>Keyword match on the file name and the first 500 characters</td><td>Very low CPU, stateless, fast</td></tr>
-        <tr><td>LLM</td><td>Zero-shot classification with a local LLM (Ollama)</td><td>Strong on context, requires the LLM to be running</td></tr>
-        <tr><td>Hybrid</td><td>Falls back to the LLM when the Lightweight confidence is below the threshold (0.65)</td><td>The default combination</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 2: File ingest and automatic classification</span>
+</div>
+<div class="slide-body">
+<h3>Why it is needed</h3>
+<p>Cynovela automatically classifies each ingested document with a metadata mechanism called "Smart Ingestion". This is so that later RAG search and reports can show how many documents of which type exist.</p>
+<h3>Choosing the classification engine</h3>
+<table>
+<thead><tr><th>Engine</th><th>Mechanism</th><th>Characteristics</th></tr></thead>
+<tbody>
+<tr><td>Lightweight</td><td>Keyword match on the file name and the first 500 characters</td><td>Very low CPU, stateless, fast</td></tr>
+<tr><td>LLM</td><td>Zero-shot classification with a local LLM (Ollama)</td><td>Strong on context, requires the LLM to be running</td></tr>
+<tr><td>Hybrid</td><td>Falls back to the LLM when the Lightweight confidence is below the threshold (0.65)</td><td>The default combination</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 2: Classification categories (14 types)</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>Category ID</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td>governance_policy</td><td>Governance and policy documents</td></tr>
-        <tr><td>incident_report</td><td>Incident reports</td></tr>
-        <tr><td>technical_guide</td><td>Technical guides and manuals</td></tr>
-        <tr><td>case_study</td><td>Case studies</td></tr>
-        <tr><td>meeting_minutes</td><td>Meeting minutes</td></tr>
-        <tr><td>audit_report</td><td>Audit and assessment reports</td></tr>
-        <tr><td>poc_report</td><td>POC evaluation reports</td></tr>
-        <tr><td>faq</td><td>FAQ / frequently asked questions</td></tr>
-        <tr><td>whitepaper</td><td>Whitepapers</td></tr>
-        <tr><td>checklist</td><td>Checklists</td></tr>
-        <tr><td>proposal_rfp</td><td>Proposals and RFPs</td></tr>
-        <tr><td>newsletter</td><td>Newsletters and technical information</td></tr>
-        <tr><td>reference</td><td>References and glossaries</td></tr>
-        <tr><td>other</td><td>Other</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 2: Classification categories (14 types)</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>Category ID</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>governance_policy</td><td>Governance and policy documents</td></tr>
+<tr><td>incident_report</td><td>Incident reports</td></tr>
+<tr><td>technical_guide</td><td>Technical guides and manuals</td></tr>
+<tr><td>case_study</td><td>Case studies</td></tr>
+<tr><td>meeting_minutes</td><td>Meeting minutes</td></tr>
+<tr><td>audit_report</td><td>Audit and assessment reports</td></tr>
+<tr><td>poc_report</td><td>POC evaluation reports</td></tr>
+<tr><td>faq</td><td>FAQ / frequently asked questions</td></tr>
+<tr><td>whitepaper</td><td>Whitepapers</td></tr>
+<tr><td>checklist</td><td>Checklists</td></tr>
+<tr><td>proposal_rfp</td><td>Proposals and RFPs</td></tr>
+<tr><td>newsletter</td><td>Newsletters and technical information</td></tr>
+<tr><td>reference</td><td>References and glossaries</td></tr>
+<tr><td>other</td><td>Other</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 2: Procedure</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>Steps</h3>
-    <ol>
-      <li>Select a workspace and run "Create collection"</li>
-      <li>Upload files (PDF / DOCX / TXT / images, etc.)</li>
-      <li>Start the ingest with the "Publish" button</li>
-    </ol>
-    <p>After Publish, a category and a confidence value are assigned to each file, and you can check them in the GUI.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 2: Procedure</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<h3>Steps</h3>
+<ol>
+<li>Select a workspace and run "Create collection"</li>
+<li>Upload files (PDF / DOCX / TXT / images, etc.)</li>
+<li>Start the ingest with the "Publish" button</li>
+</ol>
+<p>After Publish, a category and a confidence value are assigned to each file, and you can check them in the GUI.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 3: Structure of hybrid search</span>
-  </div>
-  <div class="slide-body">
-    <h3>Why it is needed</h3>
-    <p>RAG here is a "hybrid search" that combines vector search (semantic similarity) with BM25 search (keyword match). Once you can read the scores, judging and tuning answer quality becomes easier.</p>
-    <table>
-      <thead><tr><th>Search type</th><th>Mechanism</th><th>Default weight</th></tr></thead>
-      <tbody>
-        <tr><td>Vector search</td><td>Computes cosine similarity with an embedding (default: BGE-M3)</td><td>70% (when weighted)</td></tr>
-        <tr><td>BM25 search</td><td>Keyword match based on morphological analysis</td><td>30% (when weighted)</td></tr>
-      </tbody>
-    </table>
-    <ul>
-      <li><code>weighted</code>: weighted sum of the scores (vector × 0.7 + bm25 × 0.3)</li>
-      <li><code>rrf</code> (Reciprocal Rank Fusion, default): sum of the reciprocal ranks (smoothed with k=60)</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 3: Structure of hybrid search</span>
+</div>
+<div class="slide-body">
+<h3>Why it is needed</h3>
+<p>RAG here is a "hybrid search" that combines vector search (semantic similarity) with BM25 search (keyword match). Once you can read the scores, judging and tuning answer quality becomes easier.</p>
+<table>
+<thead><tr><th>Search type</th><th>Mechanism</th><th>Default weight</th></tr></thead>
+<tbody>
+<tr><td>Vector search</td><td>Computes cosine similarity with an embedding (default: BGE-M3)</td><td>70% (when weighted)</td></tr>
+<tr><td>BM25 search</td><td>Keyword match based on morphological analysis</td><td>30% (when weighted)</td></tr>
+</tbody>
+</table>
+<ul>
+<li><code>weighted</code>: weighted sum of the scores (vector × 0.7 + bm25 × 0.3)</li>
+<li><code>rrf</code> (Reciprocal Rank Fusion, default): sum of the reciprocal ranks (smoothed with k=60)</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 3: Score guidelines and the Reranker</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>Score guidelines (vector cosine similarity)</h3>
-    <p>For BGE-M3, the embedding model used by the AI platform tool this refers to, the rough guidelines are as follows.</p>
-    <table>
-      <thead><tr><th>Score range</th><th>Interpretation</th></tr></thead>
-      <tbody>
-        <tr><td>0.35 to 0.45</td><td>Noise floor. Appears even for unrelated queries</td></tr>
-        <tr><td>0.50</td><td>Default value of the confidence threshold (<code>confidence_threshold</code>)</td></tr>
-        <tr><td>0.55 to 0.75</td><td>Typical hit range for real queries</td></tr>
-        <tr><td>0.75 and above</td><td>Extremely relevant</td></tr>
-      </tbody>
-    </table>
-    <h3>Reranker</h3>
-    <p>The Reranker is a mechanism that "re-evaluates the top N search results with a more precise model and reorders them". The default is <code>NoReranker</code> (not applied), but it can be switched to <code>cross_encoder</code> / <code>flashrank</code> and others in the settings.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 3: Score guidelines and the Reranker</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<h3>Score guidelines (vector cosine similarity)</h3>
+<p>For BGE-M3, the embedding model used by the AI platform tool this refers to, the rough guidelines are as follows.</p>
+<table>
+<thead><tr><th>Score range</th><th>Interpretation</th></tr></thead>
+<tbody>
+<tr><td>0.35 to 0.45</td><td>Noise floor. Appears even for unrelated queries</td></tr>
+<tr><td>0.50</td><td>Default value of the confidence threshold (<code>confidence_threshold</code>)</td></tr>
+<tr><td>0.55 to 0.75</td><td>Typical hit range for real queries</td></tr>
+<tr><td>0.75 and above</td><td>Extremely relevant</td></tr>
+</tbody>
+</table>
+<h3>Reranker</h3>
+<p>The Reranker is a mechanism that "re-evaluates the top N search results with a more precise model and reorders them". The default is<code>NoReranker</code> (not applied), but it can be switched to<code>cross_encoder</code> /<code>flashrank</code> and others in the settings.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 3: Advanced RAG and procedure</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>Advanced RAG features (those enabled by default)</h3>
-    <table>
-      <thead><tr><th>Feature</th><th>Role</th></tr></thead>
-      <tbody>
-        <tr><td>MMR (Maximal Marginal Relevance)</td><td>Balances relevance and diversity. Controlled by <code>mmr_lambda</code></td></tr>
-        <tr><td>Parent-Child chunking</td><td>Searches with the small child chunks, and replaces the text with the parent chunk for the answer</td></tr>
-        <tr><td>Multi-Query</td><td>Expands the query into N-1 similar queries with the LLM and merges them with RRF</td></tr>
-        <tr><td>CRAG (Corrective RAG)</td><td>The LLM evaluates whether the search results are sufficient and searches again if needed</td></tr>
-        <tr><td>HyDE (OFF by default)</td><td>Generates a hypothetical answer first and searches with its embedding</td></tr>
-        <tr><td>Adaptive RAG</td><td>Switches between basic and agentic depending on the complexity of the query</td></tr>
-      </tbody>
-    </table>
-    <h3>Steps</h3>
-    <ol>
-      <li>Enter a query on the RAG Chat screen</li>
-      <li>An answer and citation numbers <code>[1][2]</code> are returned</li>
-      <li>If you switch the detail display mode to <code>developer</code>, you can see the vector / BM25 / hybrid / Reranker scores</li>
-    </ol>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 3: Advanced RAG and procedure</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<h3>Advanced RAG features (those enabled by default)</h3>
+<table>
+<thead><tr><th>Feature</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>MMR (Maximal Marginal Relevance)</td><td>Balances relevance and diversity. Controlled by<code>mmr_lambda</code></td></tr>
+<tr><td>Parent-Child chunking</td><td>Searches with the small child chunks, and replaces the text with the parent chunk for the answer</td></tr>
+<tr><td>Multi-Query</td><td>Expands the query into N-1 similar queries with the LLM and merges them with RRF</td></tr>
+<tr><td>CRAG (Corrective RAG)</td><td>The LLM evaluates whether the search results are sufficient and searches again if needed</td></tr>
+<tr><td>HyDE (OFF by default)</td><td>Generates a hypothetical answer first and searches with its embedding</td></tr>
+<tr><td>Adaptive RAG</td><td>Switches between basic and agentic depending on the complexity of the query</td></tr>
+</tbody>
+</table>
+<h3>Steps</h3>
+<ol>
+<li>Enter a query on the RAG Chat screen</li>
+<li>An answer and citation numbers<code>[1][2]</code> are returned</li>
+<li>If you switch the detail display mode to<code>developer</code>, you can see the vector / BM25 / hybrid / Reranker scores</li>
+</ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 4: Check the audit log</span>
-  </div>
-  <div class="slide-body">
-    <h3>Why it is needed</h3>
-    <p>Cynovela records every important operation in the "audit_logs" table. It is a mechanism that lets you verify afterwards who did what and when, and how many pieces of PII (personal information) were detected.</p>
-    <h3>Main recorded targets</h3>
-    <ul>
-      <li>Creation and deletion of workspaces, collections, and sources</li>
-      <li>Execution and completion of Publish</li>
-      <li>Chat (questions and answers)</li>
-      <li>PII detection (<code>PII_DETECTED</code> / <code>pii_detected</code>)</li>
-      <li>Prompt injection detection (<code>PROMPT_INJECTION_BLOCKED</code>)</li>
-      <li>Authentication failures</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 4: Check the audit log</span>
+</div>
+<div class="slide-body">
+<h3>Why it is needed</h3>
+<p>Cynovela records every important operation in the "audit_logs" table. It is a mechanism that lets you verify afterwards who did what and when, and how many pieces of PII (personal information) were detected.</p>
+<h3>Main recorded targets</h3>
+<ul>
+<li>Creation and deletion of workspaces, collections, and sources</li>
+<li>Execution and completion of Publish</li>
+<li>Chat (questions and answers)</li>
+<li>PII detection (<code>PII_DETECTED</code> /<code>pii_detected</code>)</li>
+<li>Prompt injection detection (<code>PROMPT_INJECTION_BLOCKED</code>)</li>
+<li>Authentication failures</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-12">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 4: Procedure, API, and tamper prevention</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>Steps</h3>
-    <p>View it from the "Audit log" screen in the GUI (admin only). The following filters are available.</p>
-    <ul>
-      <li>Action type</li>
-      <li>Target (workspace ID / collection ID)</li>
-      <li>Date and time range</li>
-    </ul>
-    <h3>Via the API</h3>
-    <ul>
-      <li><code>GET /api/guardrails/pii-detections</code> — aggregates PII detections from <code>audit_logs</code> (admin required)</li>
-      <li><code>GET /api/pii-detections</code> — aggregates per document from the <code>chunks</code> table (admin required)</li>
-    </ul>
-    <blockquote><strong>Important</strong>: <code>audit_logs</code> cannot be deleted or modified via the API (tamper prevention).</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 4: Procedure, API, and tamper prevention</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>Steps</h3>
+<p>View it from the "Audit log" screen in the GUI (admin only). The following filters are available.</p>
+<ul>
+<li>Action type</li>
+<li>Target (workspace ID / collection ID)</li>
+<li>Date and time range</li>
+</ul>
+<h3>Via the API</h3>
+<ul>
+<li><code>GET /api/guardrails/pii-detections</code> — aggregates PII detections from<code>audit_logs</code> (admin required)</li>
+<li><code>GET /api/pii-detections</code> — aggregates per document from the<code>chunks</code> table (admin required)</li>
+</ul>
+<blockquote><strong>Important</strong>:<code>audit_logs</code> cannot be deleted or modified via the API (tamper prevention).</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-13">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 5: Try out the guardrails</span>
-  </div>
-  <div class="slide-body">
-    <h3>Why it is needed</h3>
-    <p>The guardrails work in two stages, "detection then action", and prevent leaks of PII and sensitive information. They operate as a double defense of Tier1 (masking at ingest time) and Tier2 (masking at answer time).</p>
-    <h3>Tier1: masking at ingest time</h3>
-    <p>At the time of Publish, two variants, "raw (the original text)" and "masked", are generated from each chunk, and both are stored in two ChromaDB collections (<code>{cid}__raw</code> / <code>{cid}__masked</code>) and in the SQLite <code>chunks</code> table.</p>
-    <h3>Tier2: masking at answer time</h3>
-    <table>
-      <thead><tr><th>Role</th><th>Store searched</th><th>Output masking</th></tr></thead>
-      <tbody>
-        <tr><td><code>admin</code></td><td>raw (the original text)</td><td>None</td></tr>
-        <tr><td><code>curator</code> / <code>viewer</code></td><td>masked</td><td>Yes</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 5: Try out the guardrails</span>
+</div>
+<div class="slide-body">
+<h3>Why it is needed</h3>
+<p>The guardrails work in two stages, "detection then action", and prevent leaks of PII and sensitive information. They operate as a double defense of Tier1 (masking at ingest time) and Tier2 (masking at answer time).</p>
+<h3>Tier1: masking at ingest time</h3>
+<p>At the time of Publish, two variants, "raw (the original text)" and "masked", are generated from each chunk, and both are stored in two ChromaDB collections (<code>{cid}__raw</code> /<code>{cid}__masked</code>) and in the SQLite<code>chunks</code> table.</p>
+<h3>Tier2: masking at answer time</h3>
+<table>
+<thead><tr><th>Role</th><th>Store searched</th><th>Output masking</th></tr></thead>
+<tbody>
+<tr><td><code>admin</code></td><td>raw (the original text)</td><td>None</td></tr>
+<tr><td><code>curator</code> /<code>viewer</code></td><td>masked</td><td>Yes</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 5: PII detection targets</span>
-    <span class="continued">(2/4)</span>
-  </div>
-  <div class="slide-body">
-    <p>The types handled by the regular-expression based (primary) detection are as follows.</p>
-    <table>
-      <thead><tr><th>Type</th><th>Mask token</th><th>Example</th></tr></thead>
-      <tbody>
-        <tr><td>URL</td><td><code>[MASKED:URL]</code></td><td><code>https://example.com/...</code></td></tr>
-        <tr><td>EMAIL</td><td><code>[MASKED:EMAIL]</code></td><td><code>taro@example.co.jp</code></td></tr>
-        <tr><td>PHONE_JP</td><td><code>[MASKED:PHONE]</code></td><td><code>090-1234-5678</code></td></tr>
-        <tr><td>PHONE_LAND</td><td><code>[MASKED:PHONE]</code></td><td><code>03-1234-5678</code></td></tr>
-        <tr><td>CREDIT</td><td><code>[MASKED:CREDIT]</code></td><td>Card number format</td></tr>
-        <tr><td>MYNUMBER</td><td><code>[MASKED:MYNUM]</code></td><td>My Number format</td></tr>
-        <tr><td>PASSPORT</td><td><code>[MASKED:PASSPORT]</code></td><td>Passport number format</td></tr>
-        <tr><td>IPV4</td><td><code>[MASKED:IP]</code></td><td>IPv4 address</td></tr>
-      </tbody>
-    </table>
-    <p>In addition, the secondary system (presidio + GiNZA NER) detects named entities such as <code>ADDRESS_JP</code> / <code>PERSON_JP</code> / <code>ORG_JP</code> / <code>LOC_JP</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 5: PII detection targets</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+<p>The types handled by the regular-expression based (primary) detection are as follows.</p>
+<table>
+<thead><tr><th>Type</th><th>Mask token</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>URL</td><td><code>[MASKED:URL]</code></td><td><code>https://example.com/...</code></td></tr>
+<tr><td>EMAIL</td><td><code>[MASKED:EMAIL]</code></td><td><code>taro@example.co.jp</code></td></tr>
+<tr><td>PHONE_JP</td><td><code>[MASKED:PHONE]</code></td><td><code>090-1234-5678</code></td></tr>
+<tr><td>PHONE_LAND</td><td><code>[MASKED:PHONE]</code></td><td><code>03-1234-5678</code></td></tr>
+<tr><td>CREDIT</td><td><code>[MASKED:CREDIT]</code></td><td>Card number format</td></tr>
+<tr><td>MYNUMBER</td><td><code>[MASKED:MYNUM]</code></td><td>My Number format</td></tr>
+<tr><td>PASSPORT</td><td><code>[MASKED:PASSPORT]</code></td><td>Passport number format</td></tr>
+<tr><td>IPV4</td><td><code>[MASKED:IP]</code></td><td>IPv4 address</td></tr>
+</tbody>
+</table>
+<p>In addition, the secondary system (presidio + GiNZA NER) detects named entities such as<code>ADDRESS_JP</code> /<code>PERSON_JP</code> /<code>ORG_JP</code> /<code>LOC_JP</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 5: Detection modes</span>
-    <span class="continued">(3/4)</span>
-  </div>
-  <div class="slide-body">
-    <p>You can switch between three levels with the <code>pii_mode</code> key in <code>cynovela.yaml</code> (the default is <code>standard</code>).</p>
-    <table>
-      <thead><tr><th>Mode</th><th>Method</th><th>Characteristics</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>Regular expressions only</td><td>Lightweight and fast</td></tr>
-        <tr><td><code>standard</code></td><td>Regular expressions + GiNZA NER</td><td>Balanced, recommended</td></tr>
-        <tr><td><code>quality</code></td><td>Regular expressions + GiNZA NER + detailed filters</td><td>High accuracy, slow</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 5: Detection modes</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+<p>You can switch between three levels with the<code>pii_mode</code> key in<code>cynovela.yaml</code> (the default is<code>standard</code>).</p>
+<table>
+<thead><tr><th>Mode</th><th>Method</th><th>Characteristics</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>Regular expressions only</td><td>Lightweight and fast</td></tr>
+<tr><td><code>standard</code></td><td>Regular expressions + GiNZA NER</td><td>Balanced, recommended</td></tr>
+<tr><td><code>quality</code></td><td>Regular expressions + GiNZA NER + detailed filters</td><td>High accuracy, slow</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-16">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">Step 5: Walkthrough and encryption</span>
-    <span class="continued">(4/4)</span>
-  </div>
-  <div class="slide-body">
-    <h3>Walkthrough</h3>
-    <ol>
-      <li>Publish a text file containing PII (for example: "The contact is taro@example.com, the phone is 090-1234-5678")</li>
-      <li>Ask "tell me the contact" in RAG Chat with the <code>viewer</code> role → <code>[MASKED:EMAIL]</code> and <code>[MASKED:PHONE]</code> appear in the output</li>
-      <li>Ask the same question with the <code>admin</code> role → the raw email address and phone number appear</li>
-      <li>Check <code>pii_detected</code> in the audit log</li>
-    </ol>
-    <h3>Encryption</h3>
-    <p>The text in the raw store is encrypted with Fernet (symmetric-key encryption) before being stored. The encryption key is specified with the <code>CYNOVELA_SECRET_KEY</code> environment variable (recommended for production).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">Step 5: Walkthrough and encryption</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+<h3>Walkthrough</h3>
+<ol>
+<li>Publish a text file containing PII (for example: "The contact is taro@example.com, the phone is 090-1234-5678")</li>
+<li>Ask "tell me the contact" in RAG Chat with the<code>viewer</code> role →<code>[MASKED:EMAIL]</code> and<code>[MASKED:PHONE]</code> appear in the output</li>
+<li>Ask the same question with the<code>admin</code> role → the raw email address and phone number appear</li>
+<li>Check<code>pii_detected</code> in the audit log</li>
+</ol>
+<h3>Encryption</h3>
+<p>The text in the raw store is encrypted with Fernet (symmetric-key encryption) before being stored. The encryption key is specified with the<code>CYNOVELA_SECRET_KEY</code> environment variable (recommended for production).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">Hands-on (Basics)</span>
-    <span class="slide-title">What you have tried so far</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>Element</th><th>Content</th></tr></thead>
-      <tbody>
-        <tr><td>Workspace management</td><td>Name + guardrail policy</td></tr>
-        <tr><td>Smart Ingestion</td><td>Automatic classification into 14 categories + 3 classification engines</td></tr>
-        <tr><td>Hybrid search</td><td>Vector + BM25 merged with RRF or weighted</td></tr>
-        <tr><td>Audit log</td><td>Complete tracking of important operations and PII detection</td></tr>
-        <tr><td>Guardrails</td><td>Tier1 masking at ingest time + Tier2 masking at answer time + Fernet encryption</td></tr>
-      </tbody>
-    </table>
-    <p>The next step is "Hands-on (Advanced)", which moves on to workspace separation, MCP (Model Context Protocol) integration, and more.</p>
-    <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">Last updated: 2026-05-26 / Alpha GA edition</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Hands-on (Basics)</span>
+<span class="slide-title">What you have tried so far</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>Element</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td>Workspace management</td><td>Name + guardrail policy</td></tr>
+<tr><td>Smart Ingestion</td><td>Automatic classification into 14 categories + 3 classification engines</td></tr>
+<tr><td>Hybrid search</td><td>Vector + BM25 merged with RRF or weighted</td></tr>
+<tr><td>Audit log</td><td>Complete tracking of important operations and PII detection</td></tr>
+<tr><td>Guardrails</td><td>Tier1 masking at ingest time + Tier2 masking at answer time + Fernet encryption</td></tr>
+</tbody>
+</table>
+<p>The next step is "Hands-on (Advanced)", which moves on to workspace separation, MCP (Model Context Protocol) integration, and more.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning purposes</span>
+</div>
 </div>
 
 
 <div class="slide cover" id="slide-18">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">ハンズオン（基礎編）</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">ハンズオン（基礎編）</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。
       実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。
       会社・製品の公式見解を一切代表しません。
-    </blockquote>
-    <p>このハンズオンでは、ワークスペースの作成から RAG（Retrieval-Augmented Generation：検索拡張生成）クエリ、監査ログ確認、ガードレール体験までを 5 ステップで進めます。</p>
-    <p>前提として、クイックスタートに沿って Cynovela が起動済みであることを想定します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+<p>このハンズオンでは、ワークスペースの作成から RAG（Retrieval-Augmented Generation：検索拡張生成）クエリ、監査ログ確認、ガードレール体験までを 5 ステップで進めます。</p>
+<p>前提として、クイックスタートに沿って Cynovela が起動済みであることを想定します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 1: ワークスペースを作成する</span>
-  </div>
-  <div class="slide-body">
-    <h3>なぜ必要か</h3>
-    <p>ワークスペース（Workspace）は、ユーザー・ガードレールポリシー・コレクション（ファイル群）をまとめる管理単位です。業務領域や情報感度ごとに分けることで、後段のアクセス制御とガードレールを適用しやすくなります。</p>
-    <h3>操作</h3>
-    <p>GUI で「ワークスペース管理」画面を開き、「新規作成」ボタンを押します。</p>
-    <table>
-      <thead><tr><th>項目</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td>名前</td><td>ワークスペース名（一意）</td></tr>
-        <tr><td>ガードレールポリシー</td><td>適用するポリシーを 1 件選択</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 1: ワークスペースを作成する</span>
+</div>
+<div class="slide-body">
+<h3>なぜ必要か</h3>
+<p>ワークスペース（Workspace）は、ユーザー・ガードレールポリシー・コレクション（ファイル群）をまとめる管理単位です。業務領域や情報感度ごとに分けることで、後段のアクセス制御とガードレールを適用しやすくなります。</p>
+<h3>操作</h3>
+<p>GUI で「ワークスペース管理」画面を開き、「新規作成」ボタンを押します。</p>
+<table>
+<thead><tr><th>項目</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>名前</td><td>ワークスペース名（一意）</td></tr>
+<tr><td>ガードレールポリシー</td><td>適用するポリシーを 1 件選択</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 1: 既定のガードレールポリシー</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p>デモモードでは以下の 3 種類のガードレールポリシーがあらかじめ用意されています。</p>
-    <table>
-      <thead><tr><th>ポリシー ID</th><th>名前</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td><code>pol-pii</code></td><td>PII保護ポリシー</td><td>PII を <code>mask</code>、Financial を <code>exclude_from_rag</code></td></tr>
-        <tr><td><code>pol-strict</code></td><td>厳格管理ポリシー</td><td>PII を <code>mask</code>、Financial と HR を <code>exclude_from_rag</code></td></tr>
-        <tr><td><code>pol-log</code></td><td>ログのみポリシー</td><td>PII と Financial を <code>log_only</code>（マスクせず記録のみ）</td></tr>
-      </tbody>
-    </table>
-    <p>ガードレールのアクションは 4 種類です（<code>mask</code> / <code>exclude_from_rag</code> / <code>log_only</code> / <code>allow</code>）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 1: 既定のガードレールポリシー</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p>デモモードでは以下の 3 種類のガードレールポリシーがあらかじめ用意されています。</p>
+<table>
+<thead><tr><th>ポリシー ID</th><th>名前</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><code>pol-pii</code></td><td>PII保護ポリシー</td><td>PII を<code>mask</code>、Financial を<code>exclude_from_rag</code></td></tr>
+<tr><td><code>pol-strict</code></td><td>厳格管理ポリシー</td><td>PII を<code>mask</code>、Financial と HR を<code>exclude_from_rag</code></td></tr>
+<tr><td><code>pol-log</code></td><td>ログのみポリシー</td><td>PII と Financial を<code>log_only</code>（マスクせず記録のみ）</td></tr>
+</tbody>
+</table>
+<p>ガードレールのアクションは 4 種類です（<code>mask</code> /<code>exclude_from_rag</code> /<code>log_only</code> /<code>allow</code>）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 2: ファイル取り込みと自動分類</span>
-  </div>
-  <div class="slide-body">
-    <h3>なぜ必要か</h3>
-    <p>Cynovela は取り込んだ各ドキュメントを「Smart Ingestion」というメタデータ付与の仕組みで自動分類します。後段の RAG 検索やレポートで「どの種別の文書が何件あるか」を把握できるようにするためです。</p>
-    <h3>分類エンジンの選択</h3>
-    <table>
-      <thead><tr><th>エンジン</th><th>仕組み</th><th>特徴</th></tr></thead>
-      <tbody>
-        <tr><td>Lightweight</td><td>ファイル名・先頭 500 文字のキーワードマッチ</td><td>CPU 極小・ステートレス・高速</td></tr>
-        <tr><td>LLM</td><td>ローカル LLM（Ollama）でゼロショット分類</td><td>文脈に強い・要 LLM 起動</td></tr>
-        <tr><td>Hybrid</td><td>Lightweight の信頼度が閾値（0.65）未満なら LLM フォールバック</td><td>既定の組み合わせ</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 2: ファイル取り込みと自動分類</span>
+</div>
+<div class="slide-body">
+<h3>なぜ必要か</h3>
+<p>Cynovela は取り込んだ各ドキュメントを「Smart Ingestion」というメタデータ付与の仕組みで自動分類します。後段の RAG 検索やレポートで「どの種別の文書が何件あるか」を把握できるようにするためです。</p>
+<h3>分類エンジンの選択</h3>
+<table>
+<thead><tr><th>エンジン</th><th>仕組み</th><th>特徴</th></tr></thead>
+<tbody>
+<tr><td>Lightweight</td><td>ファイル名・先頭 500 文字のキーワードマッチ</td><td>CPU 極小・ステートレス・高速</td></tr>
+<tr><td>LLM</td><td>ローカル LLM（Ollama）でゼロショット分類</td><td>文脈に強い・要 LLM 起動</td></tr>
+<tr><td>Hybrid</td><td>Lightweight の信頼度が閾値（0.65）未満なら LLM フォールバック</td><td>既定の組み合わせ</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-23">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 2: 分類カテゴリ（14 種）</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>カテゴリ ID</th><th>説明</th></tr></thead>
-      <tbody>
-        <tr><td>governance_policy</td><td>ガバナンス・ポリシー文書</td></tr>
-        <tr><td>incident_report</td><td>インシデントレポート</td></tr>
-        <tr><td>technical_guide</td><td>技術ガイド・マニュアル</td></tr>
-        <tr><td>case_study</td><td>導入事例</td></tr>
-        <tr><td>meeting_minutes</td><td>会議議事録</td></tr>
-        <tr><td>audit_report</td><td>監査・評価報告書</td></tr>
-        <tr><td>poc_report</td><td>POC 評価報告書</td></tr>
-        <tr><td>faq</td><td>FAQ・よくある質問</td></tr>
-        <tr><td>whitepaper</td><td>ホワイトペーパー</td></tr>
-        <tr><td>checklist</td><td>チェックリスト</td></tr>
-        <tr><td>proposal_rfp</td><td>提案書・RFP</td></tr>
-        <tr><td>newsletter</td><td>ニュースレター・技術情報</td></tr>
-        <tr><td>reference</td><td>リファレンス・用語集</td></tr>
-        <tr><td>other</td><td>その他</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 2: 分類カテゴリ（14 種）</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>カテゴリ ID</th><th>説明</th></tr></thead>
+<tbody>
+<tr><td>governance_policy</td><td>ガバナンス・ポリシー文書</td></tr>
+<tr><td>incident_report</td><td>インシデントレポート</td></tr>
+<tr><td>technical_guide</td><td>技術ガイド・マニュアル</td></tr>
+<tr><td>case_study</td><td>導入事例</td></tr>
+<tr><td>meeting_minutes</td><td>会議議事録</td></tr>
+<tr><td>audit_report</td><td>監査・評価報告書</td></tr>
+<tr><td>poc_report</td><td>POC 評価報告書</td></tr>
+<tr><td>faq</td><td>FAQ・よくある質問</td></tr>
+<tr><td>whitepaper</td><td>ホワイトペーパー</td></tr>
+<tr><td>checklist</td><td>チェックリスト</td></tr>
+<tr><td>proposal_rfp</td><td>提案書・RFP</td></tr>
+<tr><td>newsletter</td><td>ニュースレター・技術情報</td></tr>
+<tr><td>reference</td><td>リファレンス・用語集</td></tr>
+<tr><td>other</td><td>その他</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-24">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 2: 操作手順</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>操作</h3>
-    <ol>
-      <li>ワークスペースを選び、「コレクション作成」を実行</li>
-      <li>ファイル（PDF / DOCX / TXT / 画像など）をアップロード</li>
-      <li>「Publish（公開）」ボタンで取り込みを開始</li>
-    </ol>
-    <p>Publish 後、各ファイルにカテゴリと信頼度（confidence）が付与され、GUI 上で確認できます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 2: 操作手順</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<h3>操作</h3>
+<ol>
+<li>ワークスペースを選び、「コレクション作成」を実行</li>
+<li>ファイル（PDF / DOCX / TXT / 画像など）をアップロード</li>
+<li>「Publish（公開）」ボタンで取り込みを開始</li>
+</ol>
+<p>Publish 後、各ファイルにカテゴリと信頼度（confidence）が付与され、GUI 上で確認できます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-25">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 3: ハイブリッド検索の構成</span>
-  </div>
-  <div class="slide-body">
-    <h3>なぜ必要か</h3>
-    <p>RAG はベクター検索（意味的類似度）と BM25 検索（キーワード一致）を組み合わせた「ハイブリッド検索」です。スコアを読めるようになると、回答品質の判断と調整がしやすくなります。</p>
-    <table>
-      <thead><tr><th>検索系統</th><th>仕組み</th><th>既定の重み</th></tr></thead>
-      <tbody>
-        <tr><td>ベクター検索</td><td>Embedding（既定: BGE-M3）でコサイン類似度を計算</td><td>70%（weighted 時）</td></tr>
-        <tr><td>BM25 検索</td><td>形態素解析ベースのキーワード一致</td><td>30%（weighted 時）</td></tr>
-      </tbody>
-    </table>
-    <ul>
-      <li><code>weighted</code>: スコアを重み付き加算（vector × 0.7 + bm25 × 0.3）</li>
-      <li><code>rrf</code>（Reciprocal Rank Fusion、既定）: 順位の逆数を加算（k=60 で平滑化）</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 3: ハイブリッド検索の構成</span>
+</div>
+<div class="slide-body">
+<h3>なぜ必要か</h3>
+<p>RAG はベクター検索（意味的類似度）と BM25 検索（キーワード一致）を組み合わせた「ハイブリッド検索」です。スコアを読めるようになると、回答品質の判断と調整がしやすくなります。</p>
+<table>
+<thead><tr><th>検索系統</th><th>仕組み</th><th>既定の重み</th></tr></thead>
+<tbody>
+<tr><td>ベクター検索</td><td>Embedding（既定: BGE-M3）でコサイン類似度を計算</td><td>70%（weighted 時）</td></tr>
+<tr><td>BM25 検索</td><td>形態素解析ベースのキーワード一致</td><td>30%（weighted 時）</td></tr>
+</tbody>
+</table>
+<ul>
+<li><code>weighted</code>: スコアを重み付き加算（vector × 0.7 + bm25 × 0.3）</li>
+<li><code>rrf</code>（Reciprocal Rank Fusion、既定）: 順位の逆数を加算（k=60 で平滑化）</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-26">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 3: スコアの目安と Reranker</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>スコアの目安（ベクター・コサイン類似度）</h3>
-    <p>参照元の AI 基盤ツールで使われている Embedding モデル BGE-M3 の場合、おおまかな目安は次のとおりです。</p>
-    <table>
-      <thead><tr><th>スコア帯</th><th>解釈</th></tr></thead>
-      <tbody>
-        <tr><td>0.35 ～ 0.45</td><td>ノイズフロア。無関係なクエリでも出現します</td></tr>
-        <tr><td>0.50</td><td>信頼度しきい値（<code>confidence_threshold</code>）の既定値</td></tr>
-        <tr><td>0.55 ～ 0.75</td><td>実存クエリの典型的なヒット範囲</td></tr>
-        <tr><td>0.75 以上</td><td>きわめて関連性が高い</td></tr>
-      </tbody>
-    </table>
-    <h3>Reranker（再順位付け）</h3>
-    <p>Reranker は「上位 N 件の検索結果を、より精緻なモデルで再評価して並べ替える」機構です。既定は <code>NoReranker</code>（適用なし）ですが、設定で <code>cross_encoder</code> / <code>flashrank</code> などに切替可能です。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 3: スコアの目安と Reranker</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<h3>スコアの目安（ベクター・コサイン類似度）</h3>
+<p>参照元の AI 基盤ツールで使われている Embedding モデル BGE-M3 の場合、おおまかな目安は次のとおりです。</p>
+<table>
+<thead><tr><th>スコア帯</th><th>解釈</th></tr></thead>
+<tbody>
+<tr><td>0.35 ～ 0.45</td><td>ノイズフロア。無関係なクエリでも出現します</td></tr>
+<tr><td>0.50</td><td>信頼度しきい値（<code>confidence_threshold</code>）の既定値</td></tr>
+<tr><td>0.55 ～ 0.75</td><td>実存クエリの典型的なヒット範囲</td></tr>
+<tr><td>0.75 以上</td><td>きわめて関連性が高い</td></tr>
+</tbody>
+</table>
+<h3>Reranker（再順位付け）</h3>
+<p>Reranker は「上位 N 件の検索結果を、より精緻なモデルで再評価して並べ替える」機構です。既定は<code>NoReranker</code>（適用なし）ですが、設定で<code>cross_encoder</code> /<code>flashrank</code> などに切替可能です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-27">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 3: Advanced RAG と操作</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>Advanced RAG 機能（既定で有効化されているもの）</h3>
-    <table>
-      <thead><tr><th>機能</th><th>役割</th></tr></thead>
-      <tbody>
-        <tr><td>MMR（Maximal Marginal Relevance）</td><td>関連性と多様性のバランス調整。<code>mmr_lambda</code> で制御</td></tr>
-        <tr><td>Parent-Child チャンキング</td><td>検索は小さい子チャンクで、回答用には親チャンクのテキストに差し替え</td></tr>
-        <tr><td>Multi-Query</td><td>LLM で類似クエリに N-1 件展開し、RRF で統合</td></tr>
-        <tr><td>CRAG（Corrective RAG）</td><td>検索結果が十分かを LLM が評価し、必要なら再検索</td></tr>
-        <tr><td>HyDE（既定 OFF）</td><td>仮想回答を先に生成し、その埋め込みで検索</td></tr>
-        <tr><td>Adaptive RAG</td><td>クエリの複雑度に応じて basic / agentic を切り替え</td></tr>
-      </tbody>
-    </table>
-    <h3>操作</h3>
-    <ol>
-      <li>RAG Chat 画面でクエリを入力</li>
-      <li>回答と引用番号 <code>[1][2]</code> が返る</li>
-      <li>詳細表示モードを <code>developer</code> に切り替えると、ベクター / BM25 / ハイブリッド / Reranker スコアが見えます</li>
-    </ol>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 3: Advanced RAG と操作</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<h3>Advanced RAG 機能（既定で有効化されているもの）</h3>
+<table>
+<thead><tr><th>機能</th><th>役割</th></tr></thead>
+<tbody>
+<tr><td>MMR（Maximal Marginal Relevance）</td><td>関連性と多様性のバランス調整。<code>mmr_lambda</code> で制御</td></tr>
+<tr><td>Parent-Child チャンキング</td><td>検索は小さい子チャンクで、回答用には親チャンクのテキストに差し替え</td></tr>
+<tr><td>Multi-Query</td><td>LLM で類似クエリに N-1 件展開し、RRF で統合</td></tr>
+<tr><td>CRAG（Corrective RAG）</td><td>検索結果が十分かを LLM が評価し、必要なら再検索</td></tr>
+<tr><td>HyDE（既定 OFF）</td><td>仮想回答を先に生成し、その埋め込みで検索</td></tr>
+<tr><td>Adaptive RAG</td><td>クエリの複雑度に応じて basic / agentic を切り替え</td></tr>
+</tbody>
+</table>
+<h3>操作</h3>
+<ol>
+<li>RAG Chat 画面でクエリを入力</li>
+<li>回答と引用番号<code>[1][2]</code> が返る</li>
+<li>詳細表示モードを<code>developer</code> に切り替えると、ベクター / BM25 / ハイブリッド / Reranker スコアが見えます</li>
+</ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-28">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 4: 監査ログを確認する</span>
-  </div>
-  <div class="slide-body">
-    <h3>なぜ必要か</h3>
-    <p>Cynovela は重要操作をすべて「audit_logs」テーブルに記録します。誰がいつ何をしたか、PII（個人情報）が何件検出されたかを後から検証できる仕組みです。</p>
-    <h3>主な記録対象</h3>
-    <ul>
-      <li>ワークスペース・コレクション・ソースの作成と削除</li>
-      <li>Publish の実行と完了</li>
-      <li>チャット（質問・回答）</li>
-      <li>PII 検出（<code>PII_DETECTED</code> / <code>pii_detected</code>）</li>
-      <li>プロンプトインジェクション検出（<code>PROMPT_INJECTION_BLOCKED</code>）</li>
-      <li>認証失敗</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 4: 監査ログを確認する</span>
+</div>
+<div class="slide-body">
+<h3>なぜ必要か</h3>
+<p>Cynovela は重要操作をすべて「audit_logs」テーブルに記録します。誰がいつ何をしたか、PII（個人情報）が何件検出されたかを後から検証できる仕組みです。</p>
+<h3>主な記録対象</h3>
+<ul>
+<li>ワークスペース・コレクション・ソースの作成と削除</li>
+<li>Publish の実行と完了</li>
+<li>チャット（質問・回答）</li>
+<li>PII 検出（<code>PII_DETECTED</code> /<code>pii_detected</code>）</li>
+<li>プロンプトインジェクション検出（<code>PROMPT_INJECTION_BLOCKED</code>）</li>
+<li>認証失敗</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-29">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 4: 操作と API・改ざん防止</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>操作</h3>
-    <p>GUI の「監査ログ」画面（admin 専用）から閲覧します。フィルタは以下が利用できます。</p>
-    <ul>
-      <li>アクション種別</li>
-      <li>対象（ワークスペース ID / コレクション ID）</li>
-      <li>日時範囲</li>
-    </ul>
-    <h3>API 経由</h3>
-    <ul>
-      <li><code>GET /api/guardrails/pii-detections</code> — <code>audit_logs</code> から PII 検出を集計（admin 必須）</li>
-      <li><code>GET /api/pii-detections</code> — <code>chunks</code> テーブルからドキュメント単位で集計（admin 必須）</li>
-    </ul>
-    <blockquote><strong>重要</strong>: <code>audit_logs</code> は API 経由での削除・変更ができません（改ざん防止）。</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 4: 操作と API・改ざん防止</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>操作</h3>
+<p>GUI の「監査ログ」画面（admin 専用）から閲覧します。フィルタは以下が利用できます。</p>
+<ul>
+<li>アクション種別</li>
+<li>対象（ワークスペース ID / コレクション ID）</li>
+<li>日時範囲</li>
+</ul>
+<h3>API 経由</h3>
+<ul>
+<li><code>GET /api/guardrails/pii-detections</code> —<code>audit_logs</code> から PII 検出を集計（admin 必須）</li>
+<li><code>GET /api/pii-detections</code> —<code>chunks</code> テーブルからドキュメント単位で集計（admin 必須）</li>
+</ul>
+<blockquote><strong>重要</strong>:<code>audit_logs</code> は API 経由での削除・変更ができません（改ざん防止）。</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-30">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 5: ガードレールを体験する</span>
-  </div>
-  <div class="slide-body">
-    <h3>なぜ必要か</h3>
-    <p>ガードレールは「検出 → アクション」の二段構えで、PII やセンシティブ情報の流出を防ぎます。Tier1（取込時マスキング）と Tier2（回答時マスキング）の二重防御で動作します。</p>
-    <h3>Tier1: 取込時マスキング</h3>
-    <p>Publish のタイミングで、各チャンクから「raw（生本文）」と「masked（マスク済み）」の 2 系統を生成し、ChromaDB の 2 つのコレクション（<code>{cid}__raw</code> / <code>{cid}__masked</code>）と SQLite の <code>chunks</code> テーブルに両方保存します。</p>
-    <h3>Tier2: 回答時マスキング</h3>
-    <table>
-      <thead><tr><th>ロール</th><th>検索対象保管庫</th><th>出口マスク</th></tr></thead>
-      <tbody>
-        <tr><td><code>admin</code></td><td>raw（生本文）</td><td>なし</td></tr>
-        <tr><td><code>curator</code> / <code>viewer</code></td><td>masked（マスク済み）</td><td>あり</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 5: ガードレールを体験する</span>
+</div>
+<div class="slide-body">
+<h3>なぜ必要か</h3>
+<p>ガードレールは「検出 → アクション」の二段構えで、PII やセンシティブ情報の流出を防ぎます。Tier1（取込時マスキング）と Tier2（回答時マスキング）の二重防御で動作します。</p>
+<h3>Tier1: 取込時マスキング</h3>
+<p>Publish のタイミングで、各チャンクから「raw（生本文）」と「masked（マスク済み）」の 2 系統を生成し、ChromaDB の 2 つのコレクション（<code>{cid}__raw</code> /<code>{cid}__masked</code>）と SQLite の<code>chunks</code> テーブルに両方保存します。</p>
+<h3>Tier2: 回答時マスキング</h3>
+<table>
+<thead><tr><th>ロール</th><th>検索対象保管庫</th><th>出口マスク</th></tr></thead>
+<tbody>
+<tr><td><code>admin</code></td><td>raw（生本文）</td><td>なし</td></tr>
+<tr><td><code>curator</code> /<code>viewer</code></td><td>masked（マスク済み）</td><td>あり</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-31">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 5: PII 検出対象</span>
-    <span class="continued">(2/4)</span>
-  </div>
-  <div class="slide-body">
-    <p>正規表現ベース（一次検出）で扱う種別は以下です。</p>
-    <table>
-      <thead><tr><th>種別</th><th>マスクトークン</th><th>例</th></tr></thead>
-      <tbody>
-        <tr><td>URL</td><td><code>[MASKED:URL]</code></td><td><code>https://example.com/...</code></td></tr>
-        <tr><td>EMAIL</td><td><code>[MASKED:EMAIL]</code></td><td><code>taro@example.co.jp</code></td></tr>
-        <tr><td>PHONE_JP</td><td><code>[MASKED:PHONE]</code></td><td><code>090-1234-5678</code></td></tr>
-        <tr><td>PHONE_LAND</td><td><code>[MASKED:PHONE]</code></td><td><code>03-1234-5678</code></td></tr>
-        <tr><td>CREDIT</td><td><code>[MASKED:CREDIT]</code></td><td>カード番号形式</td></tr>
-        <tr><td>MYNUMBER</td><td><code>[MASKED:MYNUM]</code></td><td>マイナンバー形式</td></tr>
-        <tr><td>PASSPORT</td><td><code>[MASKED:PASSPORT]</code></td><td>パスポート番号形式</td></tr>
-        <tr><td>IPV4</td><td><code>[MASKED:IP]</code></td><td>IPv4 アドレス</td></tr>
-      </tbody>
-    </table>
-    <p>これに加え、二次系（presidio + GiNZA NER）が <code>ADDRESS_JP</code> / <code>PERSON_JP</code> / <code>ORG_JP</code> / <code>LOC_JP</code> などの固有表現を検出します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 5: PII 検出対象</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+<p>正規表現ベース（一次検出）で扱う種別は以下です。</p>
+<table>
+<thead><tr><th>種別</th><th>マスクトークン</th><th>例</th></tr></thead>
+<tbody>
+<tr><td>URL</td><td><code>[MASKED:URL]</code></td><td><code>https://example.com/...</code></td></tr>
+<tr><td>EMAIL</td><td><code>[MASKED:EMAIL]</code></td><td><code>taro@example.co.jp</code></td></tr>
+<tr><td>PHONE_JP</td><td><code>[MASKED:PHONE]</code></td><td><code>090-1234-5678</code></td></tr>
+<tr><td>PHONE_LAND</td><td><code>[MASKED:PHONE]</code></td><td><code>03-1234-5678</code></td></tr>
+<tr><td>CREDIT</td><td><code>[MASKED:CREDIT]</code></td><td>カード番号形式</td></tr>
+<tr><td>MYNUMBER</td><td><code>[MASKED:MYNUM]</code></td><td>マイナンバー形式</td></tr>
+<tr><td>PASSPORT</td><td><code>[MASKED:PASSPORT]</code></td><td>パスポート番号形式</td></tr>
+<tr><td>IPV4</td><td><code>[MASKED:IP]</code></td><td>IPv4 アドレス</td></tr>
+</tbody>
+</table>
+<p>これに加え、二次系（presidio + GiNZA NER）が<code>ADDRESS_JP</code> /<code>PERSON_JP</code> /<code>ORG_JP</code> /<code>LOC_JP</code> などの固有表現を検出します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-32">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 5: 検出モード</span>
-    <span class="continued">(3/4)</span>
-  </div>
-  <div class="slide-body">
-    <p><code>cynovela.yaml</code> の <code>pii_mode</code> キーで 3 段階を切り替えられます（既定は <code>standard</code>）。</p>
-    <table>
-      <thead><tr><th>モード</th><th>方式</th><th>特徴</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>正規表現のみ</td><td>軽量・高速</td></tr>
-        <tr><td><code>standard</code></td><td>正規表現 + GiNZA NER</td><td>中庸・推奨</td></tr>
-        <tr><td><code>quality</code></td><td>正規表現 + GiNZA NER + 詳細フィルタ</td><td>高精度・低速</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 5: 検出モード</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+<p><code>cynovela.yaml</code> の<code>pii_mode</code> キーで 3 段階を切り替えられます（既定は<code>standard</code>）。</p>
+<table>
+<thead><tr><th>モード</th><th>方式</th><th>特徴</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>正規表現のみ</td><td>軽量・高速</td></tr>
+<tr><td><code>standard</code></td><td>正規表現 + GiNZA NER</td><td>中庸・推奨</td></tr>
+<tr><td><code>quality</code></td><td>正規表現 + GiNZA NER + 詳細フィルタ</td><td>高精度・低速</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-33">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ステップ 5: 体験手順と暗号化</span>
-    <span class="continued">(4/4)</span>
-  </div>
-  <div class="slide-body">
-    <h3>体験手順</h3>
-    <ol>
-      <li>PII を含むテキストファイル（例: 「連絡先は taro@example.com、電話は 090-1234-5678」）を Publish</li>
-      <li><code>viewer</code> ロールで RAG Chat に「連絡先を教えて」と質問 → 出力に <code>[MASKED:EMAIL]</code> と <code>[MASKED:PHONE]</code> が現れる</li>
-      <li><code>admin</code> ロールで同じ質問 → 生のメールと電話番号が出る</li>
-      <li>監査ログで <code>pii_detected</code> を確認</li>
-    </ol>
-    <h3>暗号化</h3>
-    <p>raw 側保管庫の本文は Fernet（対称鍵暗号）で暗号化されて保存されます。暗号化鍵は <code>CYNOVELA_SECRET_KEY</code> 環境変数で指定します（本番推奨）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ステップ 5: 体験手順と暗号化</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+<h3>体験手順</h3>
+<ol>
+<li>PII を含むテキストファイル（例: 「連絡先は taro@example.com、電話は 090-1234-5678」）を Publish</li>
+<li><code>viewer</code> ロールで RAG Chat に「連絡先を教えて」と質問 → 出力に<code>[MASKED:EMAIL]</code> と<code>[MASKED:PHONE]</code> が現れる</li>
+<li><code>admin</code> ロールで同じ質問 → 生のメールと電話番号が出る</li>
+<li>監査ログで<code>pii_detected</code> を確認</li>
+</ol>
+<h3>暗号化</h3>
+<p>raw 側保管庫の本文は Fernet（対称鍵暗号）で暗号化されて保存されます。暗号化鍵は<code>CYNOVELA_SECRET_KEY</code> 環境変数で指定します（本番推奨）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-34">
-  <div class="slide-header">
-    <span class="doc-name">ハンズオン（基礎編）</span>
-    <span class="slide-title">ここまでで体験できた要素</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>要素</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td>ワークスペース管理</td><td>名前 + ガードレールポリシー</td></tr>
-        <tr><td>Smart Ingestion</td><td>14 カテゴリ自動分類 + 3 種の分類エンジン</td></tr>
-        <tr><td>ハイブリッド検索</td><td>Vector + BM25 を RRF or weighted で統合</td></tr>
-        <tr><td>監査ログ</td><td>重要操作と PII 検出の完全な追跡</td></tr>
-        <tr><td>ガードレール</td><td>Tier1 取込時マスキング + Tier2 回答時マスキング + Fernet 暗号化</td></tr>
-      </tbody>
-    </table>
-    <p>次のステップは「ハンズオン（応用編）」で、ワークスペース分離・MCP（Model Context Protocol）連携などに進みます。</p>
-    <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">ハンズオン（基礎編）</span>
+<span class="slide-title">ここまでで体験できた要素</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>要素</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>ワークスペース管理</td><td>名前 + ガードレールポリシー</td></tr>
+<tr><td>Smart Ingestion</td><td>14 カテゴリ自動分類 + 3 種の分類エンジン</td></tr>
+<tr><td>ハイブリッド検索</td><td>Vector + BM25 を RRF or weighted で統合</td></tr>
+<tr><td>監査ログ</td><td>重要操作と PII 検出の完全な追跡</td></tr>
+<tr><td>ガードレール</td><td>Tier1 取込時マスキング + Tier2 回答時マスキング + Fernet 暗号化</td></tr>
+</tbody>
+</table>
+<p>次のステップは「ハンズオン（応用編）」で、ワークスペース分離・MCP（Model Context Protocol）連携などに進みます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 34</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 34</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

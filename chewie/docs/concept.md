@@ -82,7 +82,7 @@ In Cynovela, "local first" means the following concrete behavior.
 
 ## Current Standing
 
-Cynovela is a learning-purpose verification implementation at the Alpha GA stage.
+Cynovela is a learning-purpose verification implementation at the  stage.
 
 - **The core flow (Source registration → Scan → Workspace → Collection → Publish → RAG Chat) works**: a smoke test completes in about 2 seconds.
 - **The test suite has 14 PHASEs / 405+ assertions**: it can be run all at once with `scripts/run_all_tests.sh`. It covers static analysis, extended APIs, GUI Playwright, security, consistency, CASCADE deletion, SSE error cases, chat error cases, scan error cases, embedding compatibility, DB migration, GUI recovery, and audit_log (CLAUDE.md).
@@ -90,7 +90,6 @@ Cynovela is a learning-purpose verification implementation at the Alpha GA stage
 - **Commercial use is out of scope**: this is a personal implementation for learning purposes. It does not represent the official position of the AI infrastructure tools it was inspired by.
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -173,7 +172,7 @@ Cynovela は参照元の AI 基盤ツールの実装を参照しておらず、�
 
 ## 現在の位置づけ
 
-Cynovela は Alpha GA 段階の学習用検証実装です。
+Cynovela は  段階の学習用検証実装です。
 
 - **コア フロー（Source 登録 → Scan → Workspace → Collection → Publish → RAG Chat）は動作**: スモークテストで 2 秒程度で完了します。
 - **テスト スイートは 14 PHASE / 405+ アサーション**: `scripts/run_all_tests.sh` で一括実行可能。静的解析・拡張 API・GUI Playwright・セキュリティ・整合性・CASCADE 削除・SSE 異常系・チャット異常系・スキャン異常系・Embedding 互換・DB マイグレーション・GUI 回復・audit_log を網羅（CLAUDE.md）。
@@ -181,4 +180,3 @@ Cynovela は Alpha GA 段階の学習用検証実装です。
 - **商用利用は想定外**: 学習目的の個人実装です。参照元の AI 基盤ツールの公式見解を代表しません。
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

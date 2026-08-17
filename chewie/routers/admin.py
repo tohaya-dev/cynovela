@@ -347,7 +347,7 @@ def admin_storage_info(request: Request):
             error_msgs.append(f"size:{_e}")
             return 0.0
 
-    # release/v1.0.0-alpha: CYNOVELA_DB / CYNOVELA_CHROMA env 経由でデータディレクトリを解決
+    # CYNOVELA_DB / CYNOVELA_CHROMA env 経由でデータディレクトリを解決
     _db_path     = Path(os.environ.get("CYNOVELA_DB",     ""))
     _chroma_path = Path(os.environ.get("CYNOVELA_CHROMA", ""))
     _data_root   = Path(os.environ.get("CYNOVELA_DATA_DIR", str(_db_path.parent.parent) if str(_db_path) else ""))
@@ -466,7 +466,7 @@ def admin_cleanup_chromadb_orphans(request: Request):
 def admin_vacuum(request: Request):
     """PHASE X-5-3: SQLite VACUUM を実行してファイル最適化する。"""
     _require_admin(request)
-    # release/v1.0.0-alpha: CYNOVELA_DB env 経由で DB ファイルを解決
+    # CYNOVELA_DB env 経由で DB ファイルを解決
     db_path = Path(os.environ.get("CYNOVELA_DB", ""))
     if not db_path.is_file():
         raise HTTPException(404, "DB が見つかりません")
@@ -492,7 +492,7 @@ def admin_export_full(request: Request):
     import server as _server
 
     _require_admin(request)
-    # release/v1.0.0-alpha: CYNOVELA_DB / CYNOVELA_CHROMA env 経由で解決
+    # CYNOVELA_DB / CYNOVELA_CHROMA env 経由で解決
     yaml_path = Path(_server.__file__).resolve().parent / "cynovela.yaml"
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     out_path = Path(tempfile.gettempdir()) / f"cynovela-export-{ts}.tar.gz"

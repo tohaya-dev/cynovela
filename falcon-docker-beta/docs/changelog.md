@@ -16,9 +16,9 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
-## Alpha GA (2026-05-26)
+##  ()
 
-Alpha GA is the milestone of "a state in which the core flows work end to end as a personal learning tool". Through Stage 0 to Stage 6, the main features — guardrails, PII detection, RAG, and MCP integration — reached a working state.
+ is the milestone of "a state in which the core flows work end to end as a personal learning tool". Through Stage 0 to Stage 6, the main features — guardrails, PII detection, RAG, and MCP integration — reached a working state.
 
 ### Stage 0: Startup Foundation
 
@@ -134,7 +134,6 @@ Beta GA is a milestone under consideration, whose goal is "a state that can with
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -151,9 +150,9 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ---
 
-## Alpha GA（2026-05-26）
+## （）
 
-Alpha GA は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。
+ は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。
 
 ### Stage 0: 起動基盤
 
@@ -269,4 +268,3 @@ Beta GA は「個人学習に加えて簡易な共同利用にも耐えうる状
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

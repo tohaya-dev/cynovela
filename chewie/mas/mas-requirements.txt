@@ -1,6 +1,6 @@
 # === English ===
 # Parts for running the Mac Accelerator Service (the external inference server) on the host side.
-#
+
 # Why it is kept separate from requirements.txt:
 #   requirements.txt is for the application body and has 39 items, and among them are ones
 #   that fetch a spaCy model from a direct GitHub link. What MAS reads is only the embedding
@@ -8,21 +8,21 @@
 #   environment.yml is of the form name: cynovela and creates it in conda's shared place, so
 #   it cannot be used for the path of creating an environment dedicated to the package
 #   (decision 14-5).
-#
+
 # The revisions match what is written in requirements.txt. By using the same revisions as the
 # application body, the revisions of the parts used for computing the embedding are kept from
 # disagreeing.
-#
+
 # === 日本語 ===
 # Mac Accelerator Service (外部の推論サーバ) をホスト側で動かすための部品。
-#
+
 # なぜ requirements.txt と別にするか:
 #   requirements.txt は本体アプリ用で 39 件在り、その中には spaCy のモデルを
 #   GitHub の直リンクから取るものも含まれる。MAS が読むのは埋め込みモデルだけで
 #   あり、本体アプリの部品は要らない。
 #   environment.yml は name: cynovela の形で conda の共有の場所へ作るものであり、
 #   配布物専用の環境を作る道には使えない (決定 14-5)。
-#
+
 # 版は requirements.txt の記載に合わせている。本体アプリと同じ版を使うことで、
 # 埋め込みの計算に使う部品の版が食い違わないようにしている。
 torch==2.13.0

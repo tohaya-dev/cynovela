@@ -1,4 +1,4 @@
-// i18n.js - Cynovela v13
+// i18n.js
 
 function t(key, vars = {}) {
   const str = (I18N[CYNOVELA_LANG] && I18N[CYNOVELA_LANG][key])
@@ -245,7 +245,7 @@ function _getAppSettings() {
 }
 
 function saveChatTabs(tabs, activeId) {
-  // DD-CYN-0095 §3-A: 利用者ごとのキーへ保存する (state.js の _chatTabStorageKey)
+  // §3-A: 利用者ごとのキーへ保存する (state.js の _chatTabStorageKey)
   localStorage.setItem(_chatTabStorageKey(_CHAT_TAB_KEY), JSON.stringify(tabs));
   if (activeId) localStorage.setItem(_chatTabStorageKey('cynovela_chat_active_tab'), activeId);
 }

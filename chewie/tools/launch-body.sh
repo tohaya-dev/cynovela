@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-#  Cynovela 入口 (entry-unify-20260802 / DD-CYN-0020 S-1〜S-4)
+#  Cynovela 入口 (entry-unify-20260802 / S-1〜S-4)
 #
 #  受け取り手が実行するのはこの1本だけです。start.sh は廃止し、
 #  中身はこのファイルの関数として吸収しました。
@@ -30,7 +30,7 @@
 #    --setup 実行エンジンを選んでから、足りないものをそこへ入れる。入れたら止まる
 #    --check 読み取りだけで同じ検査を回し、結果を store/env-check.txt へ書いて終わる
 #
-#  --setup が実行エンジンを決める順番 (DD-CYN-0031):
+#  --setup が実行エンジンを決める順番 ():
 #    1. まず conda を見に行く。使えるなら、この配布物専用の conda 環境を新しく作る。
 #       名前の既定は 'cynovela-dist' で、--env-name で変えられる。
 #    2. conda が使えないときだけ、この配布物の中 (.venv-cynovela) へ倒す。
@@ -43,7 +43,7 @@
 # ============================================================
 set -e
 
-# DD-CYN-0069 M-5: 本体は tools/ の下の部品になった (決定 12-2)。保存先の基準は配布物のルートディレクトリのまま。
+# M-5: 本体は tools/ の下の部品になった (決定 12-2)。保存先の基準は配布物のルートディレクトリのまま。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHARED_ENV_NAME="cynovela"
 DIST_ENV_NAME="cynovela-dist"
@@ -52,24 +52,24 @@ VENV_DIR="$SCRIPT_DIR/.venv-cynovela"
 REPORT_FILE="$SCRIPT_DIR/store/env-check.txt"
 REQ_FILE="$SCRIPT_DIR/requirements.txt"
 INGEST_ROOTS_HELPER="$SCRIPT_DIR/scripts/ingest_roots.py"
-INGEST_ROOTS_FILE=""   # 保存先が決まってから入れる (DD-CYN-0053)
+INGEST_ROOTS_FILE=""   # 保存先が決まってから入れる ()
 MODEL_DIR="$SCRIPT_DIR/store/models/models--BAAI--bge-m3"
 DEFAULT_PORT_FALLBACK=8765   # 設定が読めないときにだけ使う値
 
 MODE_CHECK=0
 MODE_SETUP=0
-# DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
+# 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"
-# DD-CYN-0107 F-c: 取り込み元のバックアップは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
+# F-c: 取り込み元のバックアップは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
 #   素の python3 (版の検査なし) へは倒れない。満たすものが無いときは理由と、その場で効く
 #   操作を出す。
-# DD-CYN-0117 R-1: 版は名前で当てず、conf_pick_py がその python 自身に答えさせる。
+# R-1: 版は名前で当てず、conf_pick_py がその python 自身に答えさせる。
 #   ∴ 配布物専用の conda 環境の python (名前は python) も候補に入る。
 ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" || true)"
 _roots_py() {
     if [ -z "$ROOTS_PY" ]; then
-        # DD-CYN-0117 R-4: いま失敗した入口 (Cynovela-start.command は ./launch.sh を
+        # R-4: いま失敗した入口 (Cynovela-start.command は ./launch.sh を
         #   呼ぶだけの同じ道) をもう一度押せ、とは言わない。その場で効く操作を出す。
         echo "エラー: 3.12 以上の python が見つかりません。取り込み元のバックアップ (store/ingest-roots.json) を扱えません。" >&2
         echo "       直し方: ./launch.sh --setup を叩いてください。この配布物の中に python の保存先が作られ、以後この操作が通ります。" >&2
@@ -91,10 +91,10 @@ BASE_CHOICE=""      # --base で先に決められる: conda / venv / none
 ENV_NAME=""         # --env-name。空なら DIST_ENV_NAME を使う
 VERBOSE=0           # --verbose。1 なら pip/conda の素の出力をそのまま出す
 BASE_LOCKED=0       # --setup で選び終わったら 1。以後 resolve_python は上書きしない
-CUSTOM_PY=""        # --python。DD-CYN-0070 N-1 の「自分で指定する」の受け口
+CUSTOM_PY=""        # --python。N-1 の「自分で指定する」の受け口
 APP_ARGS=()
 
-# DD-CYN-0037 §7-5-3: ヘルプは2段。
+# §7-5-3: ヘルプは2段。
 #   先に出るのは「受け取り手が使うもの」だけ。試験・開発用は --help-all の下へ隔離する。
 #   隠すだけで、名前も挙動も変えない (外から叩いている手順書と記録が壊れるため)。
 usage() {
@@ -160,7 +160,7 @@ usage_all() {
 USAGE_ALL
 }
 
-# 知らない指定を渡されたときは、黙って落ちずにヘルプを出す (DD-CYN-0032 B2)。
+# 知らない指定を渡されたときは、黙って落ちずにヘルプを出す (B2)。
 #   値 (先頭が - でないもの) は直前の指定の値として本体へそのまま渡す。
 #   先頭が - で、下の一覧に無いものだけを「知らない指定」として扱う。
 KNOWN_APP_FLAGS=" --demo --lmstudio-url --mode --host --lan --local-only --port --allow-tailscale --allow-subnet --reset-admin "
@@ -171,11 +171,11 @@ unknown_arg() {
     exit 2
 }
 
-# DD-CYN-0037 §7-5-2: 引数が1つも無いときは、番号で答えるだけで進める形にする。
+# §7-5-2: 引数が1つも無いときは、番号で答えるだけで進める形にする。
 #   端末から人が叩いたときだけ聞く (非対話では従来どおり黙って既定で進む)。
 ARGC_AT_START=$#
 
-# 取り込み元を足したあとのガイド。形態を見て出し分ける (DD-CYN-0077 S-1)。
+# 取り込み元を足したあとのガイド。形態を見て出し分ける (S-1)。
 #   見分け方は Cynovela-add-folder.command と同じで、deploy/container の有無を見る。
 #   在ればコンテナ (コンテナ) で動く形。束縛は起動時にしか張れないため起動し直しが要る。
 #   無ければこの Mac で直接動く形。バックアップは参照のたびに読み直されるため要らない
@@ -240,7 +240,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         --python)
-            # DD-CYN-0070 N-1: 「自分で指定する」の受け口。入口 (launch.sh) の選択が渡す。
+            # N-1: 「自分で指定する」の受け口。入口 (launch.sh) の選択が渡す。
             #   受け取り手が直接使ってもよい。指した Python をそのまま使う。動作は約束しない。
             if [ -z "${2:-}" ] || [ ! -x "${2:-}" ]; then
                 echo "使い方: ./launch.sh --python <実行できる Python の場所>"
@@ -294,7 +294,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         -*)
-            # DD-CYN-0032 B2: 本体が受ける指定だけを通し、それ以外はヘルプを出して止まる。
+            # B2: 本体が受ける指定だけを通し、それ以外はヘルプを出して止まる。
             case "$KNOWN_APP_FLAGS" in
                 *" $1 "*) APP_ARGS+=("$1") ;;
                 *)        unknown_arg "$1" ;;
@@ -318,7 +318,7 @@ for _a in ${APP_ARGS[@]+"${APP_ARGS[@]}"}; do
 done
 
 # ============================================================
-# DD-CYN-0037 §7-5-2: 引数なしのときの問いかけ
+# §7-5-2: 引数なしのときの問いかけ
 #   聞くのは3つまで。待ち受ける番号は聞かず、こちらで決める。
 #   分からなければ Enter で必ず先へ進める。
 # ============================================================
@@ -326,7 +326,7 @@ done
 # この配布物が前に上げた本体が使っている番号なら、掛け直せるので空きとみなす。
 _port_is_usable() {
     local _p="$1" _pid
-    # DD-CYN-0095: LISTEN だけを見る (残存クライアント接続で「使用中」と誤検知しない)
+    # LISTEN だけを見る (残存クライアント接続で「使用中」と誤検知しない)
     lsof -nP -iTCP:"$_p" -sTCP:LISTEN >/dev/null 2>&1 || return 0
     for _pid in $(lsof -t -i ":$_p" 2>/dev/null || true); do
         _is_our_server "$_pid" || return 1
@@ -430,7 +430,7 @@ run_interactive() {
             ;;
     esac
 
-    # DD-CYN-0097 §5-A (決定 40-2・40-4): 構成の問いを撤去した。示す形が text の
+    # §5-A (決定 40-2・40-4): 構成の問いを撤去した。示す形が text の
     #   1つだけになったため、尋ねずにそのまま text で進む。引数 (--mode 等) で渡す道は
     #   従来どおり残っている (server.py の受け付けは変えていない)。
     APP_ARGS+=(--mode text)
@@ -454,7 +454,7 @@ run_interactive() {
 }
 
 # ------------------------------------------------------------
-# DD-CYN-0032 B3: 取り込み元が1件も足されていないときの既定
+# B3: 取り込み元が1件も足されていないときの既定
 #   何も渡されないときは、この配布物の中のダミー資料の場所を取り込み元にする (決定 9-3)。
 #   場所は起動のたびにここで解き直す ($SCRIPT_DIR 基準)。バックアップへ展開先の絶対の場所を
 #   焼き付けないため、配布物を別の場所へ移しても同じように効く。
@@ -465,7 +465,7 @@ DEFAULT_INGEST_DIR="$SCRIPT_DIR/dummy-corpus"
 DEFAULT_INGEST_USED=0
 NO_ROOTS_AND_NO_DEFAULT=0
 
-# portable-roots-20260808 (DD-CYN-0066 F-2): 数えるだけなので生読みでも件数は合うが、
+# portable-roots-20260808 (F-2): 数えるだけなので生読みでも件数は合うが、
 #   バックアップの読み口を1か所へ寄せるため、ここも scripts/ingest_roots.py に読ませる。
 _roots_count() {
     python3 "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" --repo "$SCRIPT_DIR" list 2>/dev/null \
@@ -490,7 +490,7 @@ if [ "$_user_gave_ingest" = "0" ] && [ "$(_roots_count)" = "0" ]; then
 fi
 
 # ------------------------------------------------------------
-# DD-CYN-0032 B5: 掛け直しを必ず効かせる
+# B5: 掛け直しを必ず効かせる
 #   落とす相手は「この配布物が起動した本体」だけ。まとめて落とす形 (pkill 等) は使わない。
 #   バックアップ (store/server.pid) が無い・古いときでも、使っている番号から相手を1つずつ確かめる。
 #   落とせなかったときは黙って進まない。何が上がっているかと手で止める方法を画面に出す。
@@ -677,7 +677,7 @@ effective_env_name() {
 #   4) システムの python3
 resolve_python() {
     local _dist
-    # DD-CYN-0070 N-1: --python で指定されたときは、それをそのまま使う。
+    # N-1: --python で指定されたときは、それをそのまま使う。
     #   入口 (launch.sh) は選ばれた形 (conda / 配布物の中 / 自分で指定) の python を
     #   この指定で渡す。∴ 受け取り手が選んだとおりのもので立ち上がる。
     if [ -n "$CUSTOM_PY" ]; then
@@ -802,7 +802,7 @@ run_probe() {
         add_report "版: $("$PY" -V 2>&1)"
     else
         add_report "使う python: 見つかりません"
-        # DD-CYN-0117 R-5 (版7): ガイドを、いまこの機材に在るものに合わせて出し分ける。
+        # R-5 (版7): ガイドを、いまこの機材に在るものに合わせて出し分ける。
         #   旧: 無条件に「conda (miniforge) を入れてから」と出していた。∴ conda が
         #   既に在る機材では、同じ書き出しの中で
         #     conda の保存先: /opt/homebrew/Caskroom/miniforge/base
@@ -817,8 +817,8 @@ run_probe() {
             add_blocker "python が見つかりません。次のどちらかを入れてから ./launch.sh --setup を実行してください。conda (miniforge): https://github.com/conda-forge/miniforge/releases/latest  /  Python 3.12 以上: https://www.python.org/downloads/"
         fi
     fi
-    # DD-CYN-0107 F-c: バックアップに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
-    # DD-CYN-0117 R-1: 使う python が決まった後で、バックアップに使う python を解き直す。
+    # F-c: バックアップに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
+    # R-1: 使う python が決まった後で、バックアップに使う python を解き直す。
     #   解き直さないと、同じ書き出しの中で
     #     使う python      : .../envs/cynovela-dist/bin/python   版: Python 3.12.13
     #     バックアップに使う python: ありません (3.12 系が見つかりません)
@@ -829,9 +829,9 @@ run_probe() {
     else
         add_report "バックアップに使う python: ありません (3.12 以上のものが見つかりません)"
         if [ -s "$INGEST_ROOTS_FILE" ]; then
-            # DD-CYN-0117 R-2: これは起動を止める理由にならない。読めなくなるのは
+            # R-2: これは起動を止める理由にならない。読めなくなるのは
             #   取り込み元のバックアップだけで、本体は動く。∴ 気をつけること へ置く。
-            # DD-CYN-0117 R-4: いま失敗した入口をもう一度押せ、とは言わない。
+            # R-4: いま失敗した入口をもう一度押せ、とは言わない。
             add_warning "3.12 以上の python が見つかりません。取り込み元のバックアップ (store/ingest-roots.json) を読めないため、足したフォルダは読み込まれません。起動そのものは止まりません。直すには ./launch.sh --setup を叩いてください (この配布物の中に python の保存先が作られます)。"
         fi
     fi
@@ -950,11 +950,11 @@ run_probe() {
         # 「必要なモデルが見つかりません」の確認 (今すぐダウンロードして起動する /
         # 別のモードで起動する / やめる) へ届かなくなる。
         #
-        # DD-CYN-0099: 聞ける相手が居ないとき (アイコンからの起動・手順書・試験) も、ここでは
+        # 聞ける相手が居ないとき (アイコンからの起動・手順書・試験) も、ここでは
         #   止めない。本体 (server.py) が非対話のときは確認を出さずにダウンロードへ進むように
-        #   なったため (DD-CYN-0099)、blocker で止めると軽量版が非対話で永遠に起動できない。
+        #   なったため ()、blocker で止めると軽量版が非対話で永遠に起動できない。
         #   ダウンロードに失敗したときは本体が exit 2 と進め方の名指しで知らせる。
-        #   (旧 DD-CYN-0066 F-1 の blocker は、本体が入力の終わりで黙って落ちていた頃の塞ぎ)
+        #   (旧 F-1 の blocker は、本体が入力の終わりで黙って落ちていた頃の塞ぎ)
         if [ ! -t 0 ] || [ "$NO_PROMPT" = "1" ]; then
             add_warning "埋め込みモデル bge-m3 が手元にありません。この起動の仕方では確認を出せないため、起動の中でダウンロードを試みます (インターネットにつなぎます)。先に自分で置く場合は SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
         else
@@ -1008,7 +1008,7 @@ print_probe_result() {
 }
 
 # ------------------------------------------------------------
-# 入れている間の進み具合 (DD-CYN-0031 B3)
+# 入れている間の進み具合 (B3)
 #   全体で何件入れるかを先に出し、いま何件目かを1行で書き換える。
 #   --verbose のとき、および画面が出せないとき (端末でない) は素の出力へ戻す。
 #   pip の解き手はそのまま使う (1件ずつ入れると依存の解決が変わってしまうため)。
@@ -1072,7 +1072,7 @@ run_with_progress() {
 }
 
 # ------------------------------------------------------------
-# --setup の実行エンジン選び (DD-CYN-0031 B1・B2)
+# --setup の実行エンジン選び (B1・B2)
 #   まず conda を見に行く。使えるなら専用の conda 環境を新しく作る。
 #   使えないときだけ、この配布物の中の保存先へ倒す。
 #   選ぶところは番号で選ばせる。--base があれば聞かない。
@@ -1102,7 +1102,7 @@ choose_base() {
         return 0
     fi
 
-    # DD-CYN-0069 M-4 (決定 14-2・14-3・14-4・追記274 274-4):
+    # M-4 (決定 14-2・14-3・14-4・追記274 274-4):
     #   conda を先に見て、選択肢と「何がどこにどれだけ残るか・後で消す手順」を
     #   ターミナルへ出して選ばせる。数値は実測 (conda 環境 3.9GB = 同じ定義の環境の
     #   実測・venv 2.2GB = requirements.txt から実作成した実測・2026-08-08)。
@@ -1206,7 +1206,7 @@ setup_conda() {
 
 # venv を作れる python を探す (新しい版から順に。順序と書き方は falcon 側 tools/mas-phase.sh の原文と同じ)
 venv_base_python() {
-    # DD-CYN-0117 R-6 (版7): 要件は 3.12 以上である (pyproject.toml requires-python
+    # R-6 (版7): 要件は 3.12 以上である (pyproject.toml requires-python
     #   = ">=3.12" / environment.yml が python=3.12.13 を固定 / conf_pick_py も 3.12 以上)。
     #   旧: ここだけ 3.10 以上を通しており、「3.10 以上が見つかりません」と言いながら
     #   同じ画面で「3.12 を入れてください」と示す食い違いが出ていた (実測 20260817)。
@@ -1261,7 +1261,7 @@ install_requirements() {
     probe="$(missing_packages)"
     miss="$(printf '%s\n' "$probe" | awk -F'\t' '$1=="MISSING"{print $2}')"
     mism="$(printf '%s\n' "$probe" | awk -F'\t' '$1=="MISMATCH"{print $2}')"
-    # DD-CYN-0117 R-3: 「足りない部品」だけを見て止めない。版が違う部品も入れ直しの理由になる。
+    # R-3: 「足りない部品」だけを見て止めない。版が違う部品も入れ直しの理由になる。
     #   conda の道は environment.yml の pip 層で部品の名前が一通り揃うため、ここが
     #   MISSING だけを見ていると 2段目 (pip install -r requirements.txt) が一度も走らず、
     #   requirements.txt が求める版に届かないまま終わっていた (M5 実測で「版が違う部品」19 件)。
@@ -1313,7 +1313,7 @@ do_setup() {
 }
 
 # ------------------------------------------------------------
-# 要るものを枠で囲って出す (DD-CYN-0031 B4)
+# 要るものを枠で囲って出す (B4)
 #   入れ終わったときと、起動したときの両方で出す。
 #   パスワードの実値はここへ印字しない。同梱のバックアップの場所を示す。
 # ------------------------------------------------------------
@@ -1357,11 +1357,11 @@ print_next_steps() {
 # 本体の起動 (旧 start.sh をここへ吸収)
 # ------------------------------------------------------------
 start_app() {
-    # DD-CYN-0032 B5: 前に上がっていたものは、点検より前の stop_previous で落とし済み。
+    # B5: 前に上がっていたものは、点検より前の stop_previous で落とし済み。
     #   (従来はここで stop.sh を呼んでいたが、点検のポート判定がそれより先に走るため
     #    「別のものが使っています」で止まり、ここまで来られないことがあった。)
 
-    # DD-CYN-0066 F-5: 証明書の指し先を外す処理は、本編の頭 (_drop_stale_ssl_cert_file) へ
+    # F-5: 証明書の指し先を外す処理は、本編の頭 (_drop_stale_ssl_cert_file) へ
     #   移した。ここに置いていたときは --setup の道が start_app を通らないため、
     #   部品を入れる pip が実在しない証明書を指したまま走っていた。
 
@@ -1395,7 +1395,7 @@ start_app() {
 # ------------------------------------------------------------
 # 本編
 # ------------------------------------------------------------
-# DD-CYN-0066 F-5: 証明書の指し先を、何かを取りに行くより先に外す。
+# F-5: 証明書の指し先を、何かを取りに行くより先に外す。
 #   conda 環境では SSL_CERT_FILE が実在しない証明書を指すことがあり、証明書を使う処理が
 #   まとめて失敗する (旧 start.sh:16)。従来これを外していたのは start_app の中だったが、
 #   --setup の道は do_setup を呼んで exit するため start_app を通らない。
@@ -1420,7 +1420,7 @@ if [ "$MODE_CHECK" = "1" ] && [ "$MODE_SETUP" = "1" ]; then
     exit 2
 fi
 
-# DD-CYN-0037 §7-5-2: 引数が1つも無く、人が端末から叩いたときだけ番号で聞く。
+# §7-5-2: 引数が1つも無く、人が端末から叩いたときだけ番号で聞く。
 #   非対話 (手順書・試験・アイコンからの起動) では聞かず、従来どおり既定で進む。
 if [ "$ARGC_AT_START" = "0" ] && [ -t 0 ] && [ "$NO_PROMPT" != "1" ]; then
     run_interactive
@@ -1432,7 +1432,7 @@ if [ "$MODE_SETUP" = "1" ]; then
     do_setup
     run_probe
 
-    # 版が違う部品は知らせるだけで止めない (DD-CYN-0031 B6)
+    # 版が違う部品は知らせるだけで止めない (B6)
     if [ "${#WARNINGS[@]}" -gt 0 ]; then
         echo ""
         echo "== 気をつけること (止まりはしません) =="
@@ -1452,7 +1452,7 @@ if [ "$MODE_SETUP" = "1" ]; then
     exit 0
 fi
 
-# DD-CYN-0032 B5: 点検より先に落とす。
+# B5: 点検より先に落とす。
 #   ポートの空きを見る点検 (run_probe) が先だと、前に上げたものが居るだけで
 #   「別のものが使っています」と判定されて起動しないまま終わっていた。
 #   --check は読み取りだけ、--setup は入れるだけなので、どちらでも落とさない。

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cynovela の読み込むフォルダを足す入口 (DD-CYN-0071・決定 31-2)
+# Cynovela の読み込むフォルダを足す入口 (・決定 31-2)
 #   ダブルクリックするとターミナルが開き、フォルダを選ぶ画面が出ます。
 #   選ぶ画面とバックアップへの書き込みは ./launch.sh --add (tools/launch-body.sh) の
 #   既にある道をそのまま使い、このファイルは結果をガイドへ直すだけの薄い層です。
@@ -8,7 +8,7 @@
 set -u
 cd "$(dirname "$0")"
 
-# DD-CYN-0107 F-c: 表示用の JSON 読みも、動作要件 (3.12 系) を満たす python で行う。
+# F-c: 表示用の JSON 読みも、動作要件 (3.12 系) を満たす python で行う。
 #   実処理 (--add) の側は tools/launch-body.sh が同じ決めで検査する。
 CONF_REPO="$PWD"
 . tools/conf.sh

@@ -21,7 +21,7 @@ def default_llm_endpoint() -> str:
     コンテナ形態ではホストの LM Studio へホストゲートウェイ経由で届く必要があり、
     スタンドアロンでは localhost が正しい。判定はコンテナマーカーのみで行い、
     環境変数は一切参照しない (スタンドアロンの localhost を壊さない)。
-    DD-CYN-0105 F-c: ゲートウェイ名は実行形態で異なる。/run/.containerenv を置くのは
+    F-c: ゲートウェイ名は実行形態で異なる。/run/.containerenv を置くのは
     podman (host.containers.internal)、/.dockerenv を置くのは docker
     (host.docker.internal)。podman の分岐の値もスタンドアロンの localhost も変えていない。
     """

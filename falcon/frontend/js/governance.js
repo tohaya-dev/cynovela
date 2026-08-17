@@ -1,4 +1,4 @@
-// governance.js - Cynovela v13
+// governance.js
 
 // settings-unsaved-indicator-fix-20260628: LLM 主設定欄(#llm-provider/#llm-base-url/#llm-model)に
 // 手入力したがまだ「💾 まとめて適用」していない状態を「未適用の変更があります」と表示する最小実装。
@@ -197,7 +197,7 @@ async function renderSettings() {
   loadArchivedSection().catch(()=>{});
   // GUI修正2 #30: Settings本体の Chunking セクション
   loadChunkingMainSection().catch(()=>{});
-  // DD-CYN-0089 §6-B: ここが try に入っていなかったため、読めないとこの行より後ろ
+  // §6-B: ここが try に入っていなかったため、読めないとこの行より後ろ
   //   (LLM・埋め込み・利用者・バックアップ ほか) が丸ごと描かれないまま、画面には何も出なかった。
   //   読めなかったことを画面へ出し、描ける分は描く。
   try {

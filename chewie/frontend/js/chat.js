@@ -1,4 +1,4 @@
-// chat.js - Cynovela v13
+// chat.js
 
 function adjustChatFontSize(delta) {
   _chatFontSize = Math.max(11, Math.min(32, _chatFontSize + delta));
@@ -50,7 +50,7 @@ async function renderChat() {
     try {
       State._selectableWS = await API.get('/api/workspaces/selectable');
     } catch (e) {
-      // DD-CYN-0089 §6-B: 読めないと選択肢が空になり、公開済みでも「選べるものが無い」
+      // §6-B: 読めないと選択肢が空になり、公開済みでも「選べるものが無い」
       //   ように見える。読めなかったことを出す。
       State._selectableWS = [];
       const _m = (e && e.message) || '';
@@ -864,7 +864,7 @@ async function _sendChatStreamingUI(text, wsId, opts = {}) {
               if (!_fuPrev.length && Array.isArray(_citations)) {
                 _fuPrev = _citations.map(c => (c && c.chunk_preview) || '').filter(Boolean);
               }
-              // DD-CYN-0020 U-9: 取得できなかったときも黙って消さない。loadFollowupChips は
+              // U-9: 取得できなかったときも黙って消さない。loadFollowupChips は
               //   必ず表示物 (チップ or 理由の一行) を返すので、そのまま差し込む。
               loadFollowupChips(_ansText, wsId, _fuPrev).then(html => {
                 const _fel = document.getElementById(_followupId);
@@ -906,7 +906,7 @@ async function _sendChatStreamingUI(text, wsId, opts = {}) {
 }
 window._sendChatStreamingUI = _sendChatStreamingUI;
 
-// DD-CYN-0020 U-9: 次の質問候補 (フォローアップ) を「黙って消さない」形に置き換える。
+// U-9: 次の質問候補 (フォローアップ) を「黙って消さない」形に置き換える。
 //   従来 (workspace.js の同名関数) は、受け口が 403/失敗のとき catch で ''、0 枚のときも ''
 //   を返し、呼び出し側も `if (html)` で握り潰していた。この 2 層のため、閲覧者には候補が
 //   無表示かつ無告知で消えていた (受け口が管理者限定だったことが表面に出なかった)。
@@ -950,7 +950,7 @@ async function loadFollowupChips(answer, workspaceId, previews) {
   const list = (r && r.followups) || [];
   if (!list.length) {
     const _reason = (r && (r.reason || r.error)) || '';
-    // DD-CYN-0094 C: モデル不在は本回答側と同じ理由 (モデル名つき) をそのまま出す
+    // C: モデル不在は本回答側と同じ理由 (モデル名つき) をそのまま出す
     if (r && r.reason === 'model_not_found' && r.error) {
       return _followupNoticeHtml(lj(`No next-question suggestions: ${r.error}`,
                                     `次の質問候補はありません: ${r.error}`));

@@ -1,4 +1,4 @@
-// main.js - Cynovela v13
+// main.js
 
 function bi(en, ja) {
   return '<span class="en">' + en + '</span><span class="ja">' + ja + '</span>';
@@ -1998,7 +1998,7 @@ async function openQuickStartModal() {
       <div style="margin-top:6px;">
         <button class="btn btn-sm" onclick="qsScanFolder()">${bi('📋 Scan (breakdown preview)','📋 スキャン (内訳プレビュー)')}</button>
       </div>
-      <!-- DD-CYN-0094 D -->
+      <!-- D -->
       <div style="margin-top:4px;font-size:12px;color:#64748b;">${lj('If a folder is not in the list, run ./launch.sh --add-path &lt;folder path&gt; in Terminal to register it, then restart with ./launch.sh to make it selectable.', '一覧に無いフォルダは、ターミナルで ./launch.sh --add-path &lt;フォルダのパス&gt; を実行して取り込み元に登録し、./launch.sh で起動し直すと選べるようになります。')}</div>
 
       <div id="qs-preview-host" style="margin-top:12px;"></div>

@@ -125,8 +125,8 @@ For details, see `docs/rbac.md`.
 ### 3.1 Common headers
 
 - `Content-Type: application/json`
-- `Authorization: Bearer <token>`
-- `X-Request-ID: <uuid>` … added to all requests on the server side (the default of `logging.request_id = true`)
+- `Authorization: Bearer<token>`
+- `X-Request-ID:<uuid>` … added to all requests on the server side (the default of `logging.request_id = true`)
 
 ### 3.2 Responses
 
@@ -197,7 +197,6 @@ The `limit` of audit log retrieval (`get_audit_logs` of MCP) is 10 by default an
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -324,8 +323,8 @@ API リクエストは原則として `Authorization` ヘッダーで認証情�
 ### 3.1 共通ヘッダー
 
 - `Content-Type: application/json`
-- `Authorization: Bearer <token>`
-- `X-Request-ID: <uuid>` … サーバー側で全リクエストに付与（`logging.request_id = true` の既定）
+- `Authorization: Bearer<token>`
+- `X-Request-ID:<uuid>` … サーバー側で全リクエストに付与（`logging.request_id = true` の既定）
 
 ### 3.2 レスポンス
 
@@ -397,4 +396,3 @@ JSON 形式が基本です。エラー時は次の形式で返します。
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

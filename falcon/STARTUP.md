@@ -51,7 +51,7 @@ No communication begins until you choose one of them.
 | `--local-only` | Restrict to inside your own machine only (the default listens on all addresses, `0.0.0.0`) |
 | `--port N` | Port number (default 8801. It can be changed with `server.port` in `cynovela.yaml`) |
 
-### List of startup forms (--mode) (measured in DD-CYN-0097, 2026-08-12)
+### List of startup forms (--mode) (measured in , 2026-08-12)
 
 | Form | What changes |
 |---|---|
@@ -59,7 +59,7 @@ No communication begins until you choose one of them.
 | `--mode lite` | Switching is not wired, so only the displayed name changes (behavior is the same as text) |
 | `--mode lite-en` | Switching is not wired, so only the displayed name changes (behavior is the same as text) |
 
-All of them can be specified in the form `./launch.sh --demo --mode <name> --port <number>` (measured).
+All of them can be specified in the form `./launch.sh --demo --mode<name> --port<number>` (measured).
 
 
 ## Startup in a container (podman)
@@ -97,7 +97,7 @@ You can pass any number of ingest sources (the root folders of documents) at sta
 
 # List and delete (list and "remove" can also be done from Settings -> 📁 ingest sources on the screen)
 ./launch.sh --list
-./launch.sh --remove <internal name>
+./launch.sh --remove<internal name>
 ```
 
 - `--ingest` is **an argument of the container startup script**. The startup options of `server.py` in this form do not have `--ingest` (measured 2026-08-02: the argparse of `server.py` in the container edition does not have `--ingest`; it exists only in the host direct-start edition).
@@ -105,7 +105,7 @@ You can pass any number of ingest sources (the root folders of documents) at sta
 - Registered roots are kept in the backup file `store/ingest-roots.json`.
 - If you pass no root at all, it starts with the dummy documents inside this package (`dummy-corpus`) as the ingest source. When there is no root at all in the folder browsing of the screen, the guide "there is not even one ingest source yet" appears.
 - Paths outside the roots are refused with 403 (please add them as an ingest source first, then use them).
-- After logging in as the administrator, if you run `./launch.sh --sync-labels <Bearer token>`, the path display on the screen becomes the actual location on the Mac side.
+- After logging in as the administrator, if you run `./launch.sh --sync-labels<Bearer token>`, the path display on the screen becomes the actual location on the Mac side.
 
 ## Login (default user names and initial passwords)
 
@@ -275,7 +275,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 | `--local-only` | 自分のマシンの中だけに絞る（既定は全アドレス `0.0.0.0` で待ち受け） |
 | `--port N` | ポート番号（既定 8801。`cynovela.yaml` の `server.port` で変えられます） |
 
-### 起動の形（--mode）の一覧（DD-CYN-0097 実測・2026-08-12）
+### 起動の形（--mode）の一覧（実測・2026-08-12）
 
 | 形 | 何が変わるか |
 |---|---|
@@ -283,7 +283,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 | `--mode lite` | 切替は未配線のため、表示名が変わるだけです（動作は text と同じ） |
 | `--mode lite-en` | 切替は未配線のため、表示名が変わるだけです（動作は text と同じ） |
 
-いずれも `./launch.sh --demo --mode <名前> --port <番号>` の形で指定できます（実測済み）。
+いずれも `./launch.sh --demo --mode<名前> --port<番号>` の形で指定できます（実測済み）。
 
 
 ## コンテナでの起動（podman）
@@ -321,7 +321,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 
 # 一覧・削除（一覧と「外す」は画面の Settings → 📁 取り込み元 からもできます）
 ./launch.sh --list
-./launch.sh --remove <中の名前>
+./launch.sh --remove<中の名前>
 ```
 
 - `--ingest` は**コンテナ起動用スクリプトの引数**です。本形態の `server.py` の起動指定に `--ingest` はありません（2026-08-02 実測: コンテナ版の `server.py` の argparse に `--ingest` は無く、ホスト直起動版にのみ在ります）。
@@ -329,7 +329,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 - 登録済みのルートはバックアップファイル `store/ingest-roots.json` に保持されます。
 - ルートを1件も渡さない場合は、この配布物の中のダミー資料（`dummy-corpus`）を取り込み元にして起動します。画面のフォルダ参照でルートが1件も無いときは「取り込み元がまだ1件もありません」とガイドが出ます。
 - ルートの外のパスは 403 で拒否されます（先に取り込み元として足してから使ってください）。
-- 管理者でログイン後、`./launch.sh --sync-labels <Bearerトークン>` を実行すると、画面のパス表示が Mac 側の実際の場所になります。
+- 管理者でログイン後、`./launch.sh --sync-labels<Bearerトークン>` を実行すると、画面のパス表示が Mac 側の実際の場所になります。
 
 ## ログイン（既定の利用者名と初期パスワード）
 

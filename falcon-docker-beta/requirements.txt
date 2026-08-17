@@ -52,7 +52,7 @@ python-pptx==1.0.2
 # fix061 F3: /metrics endpoint (activates the FIX-050 wiring in server.py) / fix061 F3: /metrics endpoint (server.py の FIX-050 配線を活性化)
 prometheus-fastapi-instrumentator==8.0.2
 
-# release/v1.0.0-alpha: Required so that server.py reads the paths section of cynovela.yaml at startup / release/v1.0.0-alpha: cynovela.yaml の paths セクションを server.py 起動時に読むため必須
+# Required so that server.py reads the paths section of cynovela.yaml at startup / cynovela.yaml の paths セクションを server.py 起動時に読むため必須
 pyyaml==6.0.3
 
 # PORTABILITY FIX 20260527 M3: Upper-bound pins are stated explicitly to avoid breaking compatibility / 互換性破壊回避のため上限ピンを明示

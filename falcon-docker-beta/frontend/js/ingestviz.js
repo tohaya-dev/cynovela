@@ -266,7 +266,7 @@ const IngestViz = (function () {
       ? `📂 ${lj('Classification', '分類')}: <b>${_esc(_classLabel('doc_type', topDoc))}</b> ／ ${lj('Sensitivity', '機微度')}: <b>${_esc(_classLabel('sensitivity', topSens))}</b>`
       : `📊 ${lj(`Indexed ${chunks} chunks`, `${chunks} チャンクをインデックス化`)}${fileCnt ? ` ／ ${lj(`${fileCnt} files`, `${fileCnt} ファイル`)}` : ''}`;
 
-    // DD-CYN-0091 C: 飛ばしたファイルの一覧 (ファイル名+理由) を完了サマリーに出す
+    // C: 飛ばしたファイルの一覧 (ファイル名+理由) を完了サマリーに出す
     const _skDetails = Array.isArray(data.skipped_details) ? data.skipped_details : [];
     const lineSkip = _skDetails.length
       ? `<div class="iv-done-line" style="color:#b45309;">⚠ ${lj(`Skipped ${_skDetails.length} file(s)`, `${_skDetails.length} ファイルを飛ばしました`)}: ${_esc(_skDetails.slice(0, 10).map(d => `${d.file}（${d.reason}）`).join(' / '))}${_skDetails.length > 10 ? ' …' : ''}</div>`

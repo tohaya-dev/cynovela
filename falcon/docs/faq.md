@@ -98,7 +98,6 @@ Improving RAG quality, JWT authentication, and publishing MCP are the main roadm
 <!-- BACKLOG: ロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。 -->
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -197,4 +196,3 @@ RAG 品質の向上、JWT 認証、MCP 公開などが主要なロードマッ�
 <!-- BACKLOG: ロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。 -->
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

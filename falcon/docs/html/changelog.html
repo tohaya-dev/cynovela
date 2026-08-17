@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Changelog / 変更履歴 — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Changelog / 変更履歴 — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -198,569 +198,567 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Changelog</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Changelog</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">About this document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About this document</strong><br>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">About this document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About this document</strong><br>
       Cynovela is a completely unofficial learning tool, built so that an individual can understand the concepts of AI infrastructure tools by working with them hands-on. It is not a commercial product or an official implementation. Everything is implemented from scratch, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official view of any company or product.
-    </blockquote>
-    <p>This records the main changes to Cynovela in chronological order.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</blockquote>
+<p>This records the main changes to Cynovela in chronological order.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Alpha GA (2026-05-26) — overview</span>
-  </div>
-  <div class="slide-body">
-    <p>Alpha GA is the milestone at which "the whole core flow works as a tool for personal learning". Through Stage 0 to Stage 6, the main features of guardrails, PII detection, RAG and MCP integration came into operation.</p>
-    <h3>Stage 0: startup foundation</h3>
-    <ul>
-      <li>Tidying up the CLI argument definitions with argparse</li>
-      <li>Introducing the 5 kinds of <code>--mode</code> (full / text / lite / lite-en / minimal)</li>
-      <li>Preflight at startup (checking that the required models exist; downloading them or proposing an alternative mode when they are not yet obtained)</li>
-      <li>Skipping the interactive prompts during script execution with <code>CYNOVELA_NONINTERACTIVE=1</code></li>
-      <li>Centralizing the settings with <code>cynovela.yaml</code>, with environment variable overrides</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title"> () — overview</span>
+</div>
+<div class="slide-body">
+<p> is the milestone at which "the whole core flow works as a tool for personal learning". Through Stage 0 to Stage 6, the main features of guardrails, PII detection, RAG and MCP integration came into operation.</p>
+<h3>Stage 0: startup foundation</h3>
+<ul>
+<li>Tidying up the CLI argument definitions with argparse</li>
+<li>Introducing the 5 kinds of<code>--mode</code> (full / text / lite / lite-en / minimal)</li>
+<li>Preflight at startup (checking that the required models exist; downloading them or proposing an alternative mode when they are not yet obtained)</li>
+<li>Skipping the interactive prompts during script execution with<code>CYNOVELA_NONINTERACTIVE=1</code></li>
+<li>Centralizing the settings with<code>cynovela.yaml</code>, with environment variable overrides</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 1: data persistence and FK consistency</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>Building out the SQLite schema (<code>workspaces</code>, <code>collections</code>, <code>sources</code>, <code>files</code>, <code>chunks</code>, <code>audit_logs</code>, etc.)</li>
-      <li>Applying <code>PRAGMA foreign_keys = ON</code> to every connection</li>
-      <li>The <code>_purge_chunks_for_*()</code> family of helpers that clean up both SQLite and ChromaDB on deletion</li>
-      <li>Introducing <code>_stable_fid(path)</code> for <code>file_id</code> stability after a re-scan</li>
-      <li>Thorough use of the audit recording helper <code>_log_audit(conn, action, target, detail)</code></li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 1: data persistence and FK consistency</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>Building out the SQLite schema (<code>workspaces</code>,<code>collections</code>,<code>sources</code>,<code>files</code>,<code>chunks</code>,<code>audit_logs</code>, etc.)</li>
+<li>Applying<code>PRAGMA foreign_keys = ON</code> to every connection</li>
+<li>The<code>_purge_chunks_for_*()</code> family of helpers that clean up both SQLite and ChromaDB on deletion</li>
+<li>Introducing<code>_stable_fid(path)</code> for<code>file_id</code> stability after a re-scan</li>
+<li>Thorough use of the audit recording helper<code>_log_audit(conn, action, target, detail)</code></li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 2: guardrails and PII</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>4 kinds of guardrail actions (<code>mask</code> / <code>exclude_from_rag</code> / <code>log_only</code> / <code>allow</code>)</li>
-      <li>Detection of 8 kinds of PII patterns (URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4)</li>
-      <li>Generating dual-tier storage (raw / masked) at Publish time</li>
-      <li>Protecting the raw body with Fernet encryption (<code>vault_enc.py</code>)</li>
-      <li>3-layer prompt injection countermeasures (input check, post-retrieval check, output check)</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 2: guardrails and PII</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>4 kinds of guardrail actions (<code>mask</code> /<code>exclude_from_rag</code> /<code>log_only</code> /<code>allow</code>)</li>
+<li>Detection of 8 kinds of PII patterns (URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4)</li>
+<li>Generating dual-tier storage (raw / masked) at Publish time</li>
+<li>Protecting the raw body with Fernet encryption (<code>vault_enc.py</code>)</li>
+<li>3-layer prompt injection countermeasures (input check, post-retrieval check, output check)</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 3: the RAG pipeline</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>Hybrid integration of BM25 + vector search (default: RRF, k=60)</li>
-      <li>BAAI/bge-m3 vector embedding</li>
-      <li>Swappable Reranker (CrossEncoder, FlashRank, Ollama, HTTP)</li>
-      <li>Advanced search features (MMR, Parent-Child chunking, Multi-Query, CRAG, HyDE, Adaptive RAG)</li>
-      <li>Adopting a confidence threshold (cosine similarity 0.50)</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 3: the RAG pipeline</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>Hybrid integration of BM25 + vector search (default: RRF, k=60)</li>
+<li>BAAI/bge-m3 vector embedding</li>
+<li>Swappable Reranker (CrossEncoder, FlashRank, Ollama, HTTP)</li>
+<li>Advanced search features (MMR, Parent-Child chunking, Multi-Query, CRAG, HyDE, Adaptive RAG)</li>
+<li>Adopting a confidence threshold (cosine similarity 0.50)</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 4: Smart Ingestion</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>Automatic classification into 14 kinds of document categories</li>
-      <li>3 kinds of classification engines (lightweight, LLM, hybrid)</li>
-      <li>Per-path hash differential sync by DataSyncService (default 60 second interval)</li>
-      <li>Contextual Chunking (prepending metadata to the beginning of a chunk)</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 4: Smart Ingestion</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>Automatic classification into 14 kinds of document categories</li>
+<li>3 kinds of classification engines (lightweight, LLM, hybrid)</li>
+<li>Per-path hash differential sync by DataSyncService (default 60 second interval)</li>
+<li>Contextual Chunking (prepending metadata to the beginning of a chunk)</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 5: RBAC and auditing</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>Applying a SQL CHECK constraint for the 3 roles (admin / curator / viewer)</li>
-      <li>Building out 4 kinds of RBAC helper functions (<code>_require_admin</code>, <code>_require_authenticated</code>, <code>_require_role</code>, <code>_require_admin_or_self</code>)</li>
-      <li>Applying RBAC checks to 33 routers (242 places)</li>
-      <li>Forbidding modification and deletion of audit_logs through the API</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 5: RBAC and auditing</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>Applying a SQL CHECK constraint for the 3 roles (admin / curator / viewer)</li>
+<li>Building out 4 kinds of RBAC helper functions (<code>_require_admin</code>,<code>_require_authenticated</code>,<code>_require_role</code>,<code>_require_admin_or_self</code>)</li>
+<li>Applying RBAC checks to 33 routers (242 places)</li>
+<li>Forbidding modification and deletion of audit_logs through the API</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 6: external integration</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>Releasing the MCP server (11 tools)</li>
-      <li>Connecting to LM Studio / Ollama / OpenAI-compatible APIs</li>
-      <li>Building out the flags for LAN sharing and Tailscale sharing (<code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code>)</li>
-      <li>IP allowlist middleware</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 6: external integration</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>Releasing the MCP server (11 tools)</li>
+<li>Connecting to LM Studio / Ollama / OpenAI-compatible APIs</li>
+<li>Building out the flags for LAN sharing and Tailscale sharing (<code>--lan</code> /<code>--allow-tailscale</code> /<code>--allow-subnet</code>)</li>
+<li>IP allowlist middleware</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Main fix history — security hardening</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li><strong>Complete removal of login by user_id alone</strong>: the legacy path was deleted and username/password made mandatory.</li>
-      <li><strong>Making <code>/api/auth/users</code> admin-only</strong>: the unauthenticated permission in demo mode was abolished.</li>
-      <li><strong>Limiting the PII detection history to admin</strong>: <code>/api/guardrails/pii-detections</code> was changed to admin only.</li>
-      <li><strong>Abolishing the chat popup route</strong>: <code>/chat-popup</code> was changed to 410 Gone.</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Main fix history — security hardening</span>
+</div>
+<div class="slide-body">
+<ul>
+<li><strong>Complete removal of login by user_id alone</strong>: the legacy path was deleted and username/password made mandatory.</li>
+<li><strong>Making<code>/api/auth/users</code> admin-only</strong>: the unauthenticated permission in demo mode was abolished.</li>
+<li><strong>Limiting the PII detection history to admin</strong>:<code>/api/guardrails/pii-detections</code> was changed to admin only.</li>
+<li><strong>Abolishing the chat popup route</strong>:<code>/chat-popup</code> was changed to 410 Gone.</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Main fix history — bug fixes</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li><strong>Strengthening the path validation of <code>/api/sources</code></strong>: prevents references to system paths.</li>
-      <li><strong>Validation of <code>llm_endpoint</code></strong>: restricts changes that reference the internal network.</li>
-      <li><strong>Fixing the placement order of the system prompt</strong>: placed after retrieved_content (prevents it being overridden by the document).</li>
-      <li><strong>Eliminating <code>INSERT OR REPLACE</code></strong>: unified on <code>ON CONFLICT DO UPDATE</code> to prevent a false FK CASCADE firing.</li>
-      <li><strong>Testability of <code>_publish_semaphore</code></strong>: moved from module scope to dependency injection (carried over from Stage-3).</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Main fix history — bug fixes</span>
+</div>
+<div class="slide-body">
+<ul>
+<li><strong>Strengthening the path validation of<code>/api/sources</code></strong>: prevents references to system paths.</li>
+<li><strong>Validation of<code>llm_endpoint</code></strong>: restricts changes that reference the internal network.</li>
+<li><strong>Fixing the placement order of the system prompt</strong>: placed after retrieved_content (prevents it being overridden by the document).</li>
+<li><strong>Eliminating<code>INSERT OR REPLACE</code></strong>: unified on<code>ON CONFLICT DO UPDATE</code> to prevent a false FK CASCADE firing.</li>
+<li><strong>Testability of<code>_publish_semaphore</code></strong>: moved from module scope to dependency injection (carried over from Stage-3).</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-12">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Main fix history — quality improvements</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>Reduced pyright errors from 16 to 0</li>
-      <li>Protecting all contracts of the dependency constraints with import-linter</li>
-      <li>Expanded the pytest suite to 14 PHASEs / more than 405 assertions</li>
-      <li>Maintaining 0 console errors</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Main fix history — quality improvements</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>Reduced pyright errors from 16 to 0</li>
+<li>Protecting all contracts of the dependency constraints with import-linter</li>
+<li>Expanded the pytest suite to 14 PHASEs / more than 405 assertions</li>
+<li>Maintaining 0 console errors</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-13">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Planned items toward Beta GA — authentication and RAG</span>
-  </div>
-  <div class="slide-body">
-    <p>Beta GA is a milestone under consideration, with the goal of "a state that withstands simple shared use in addition to personal learning".</p>
-    <h3>Authentication and authorization</h3>
-    <ul>
-      <li>Full introduction of JWT authentication (enforcing RBAC in all modes)</li>
-      <li>Issuing API keys per user</li>
-    </ul>
-    <h3>RAG quality</h3>
-    <ul>
-      <li>Real Reranker tests (quality verification of CrossEncoder etc.)</li>
-      <li>Tuning the chunk strategy (considering making Contextual Chunking the default)</li>
-      <li>Considering the introduction of structured answer templates</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Planned items toward Beta GA — authentication and RAG</span>
+</div>
+<div class="slide-body">
+<p>Beta GA is a milestone under consideration, with the goal of "a state that withstands simple shared use in addition to personal learning".</p>
+<h3>Authentication and authorization</h3>
+<ul>
+<li>Full introduction of JWT authentication (enforcing RBAC in all modes)</li>
+<li>Issuing API keys per user</li>
+</ul>
+<h3>RAG quality</h3>
+<ul>
+<li>Real Reranker tests (quality verification of CrossEncoder etc.)</li>
+<li>Tuning the chunk strategy (considering making Contextual Chunking the default)</li>
+<li>Considering the introduction of structured answer templates</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Planned items toward Beta GA — stability and integration</span>
-  </div>
-  <div class="slide-body">
-    <h3>Stability</h3>
-    <ul>
-      <li>Persisting the Embedding / Reranker settings to YAML (currently in memory only)</li>
-      <li>Hardening the error recovery paths</li>
-      <li>Integrating DataSyncService with publish (currently a noop)</li>
-    </ul>
-    <h3>Extending integrations</h3>
-    <ul>
-      <li>Expanding the tools published by the MCP server</li>
-      <li>Extending the Chunks viewer of KnowledgeCatalog (metadata search, citation tracking)</li>
-    </ul>
-    <h3>Diversifying the backend</h3>
-    <ul>
-      <li>Qdrant / LanceDB vector store support (currently only a skeleton)</li>
-      <li>Implementing MLX Embedding / Reranker (Apple Silicon optimization)</li>
-    </ul>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Planned items toward Beta GA — stability and integration</span>
+</div>
+<div class="slide-body">
+<h3>Stability</h3>
+<ul>
+<li>Persisting the Embedding / Reranker settings to YAML (currently in memory only)</li>
+<li>Hardening the error recovery paths</li>
+<li>Integrating DataSyncService with publish (currently a noop)</li>
+</ul>
+<h3>Extending integrations</h3>
+<ul>
+<li>Expanding the tools published by the MCP server</li>
+<li>Extending the Chunks viewer of KnowledgeCatalog (metadata search, citation tracking)</li>
+</ul>
+<h3>Diversifying the backend</h3>
+<ul>
+<li>Qdrant / LanceDB vector store support (currently only a skeleton)</li>
+<li>Implementing MLX Embedding / Reranker (Apple Silicon optimization)</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide cover" id="slide-15">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">変更履歴（Changelog）</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">変更履歴（Changelog）</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-16">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-    <p>Cynovela の主要な変更内容を時系列で記録します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+<p>Cynovela の主要な変更内容を時系列で記録します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Alpha GA（2026-05-26）— 概要</span>
-  </div>
-  <div class="slide-body">
-    <p>Alpha GA は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。</p>
-    <h3>Stage 0: 起動基盤</h3>
-    <ul>
-      <li>argparse による CLI 引数定義の整理</li>
-      <li><code>--mode</code>（full / text / lite / lite-en / minimal）の 5 種を導入</li>
-      <li>起動時 preflight（必要モデルの存在確認、未取得時のダウンロード or 代替モード提案）</li>
-      <li><code>CYNOVELA_NONINTERACTIVE=1</code> でスクリプト実行時の対話スキップ</li>
-      <li><code>cynovela.yaml</code> による設定の一元化と環境変数オーバーライド</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">（）— 概要</span>
+</div>
+<div class="slide-body">
+<p> は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。</p>
+<h3>Stage 0: 起動基盤</h3>
+<ul>
+<li>argparse による CLI 引数定義の整理</li>
+<li><code>--mode</code>（full / text / lite / lite-en / minimal）の 5 種を導入</li>
+<li>起動時 preflight（必要モデルの存在確認、未取得時のダウンロード or 代替モード提案）</li>
+<li><code>CYNOVELA_NONINTERACTIVE=1</code> でスクリプト実行時の対話スキップ</li>
+<li><code>cynovela.yaml</code> による設定の一元化と環境変数オーバーライド</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 1: データ永続化と FK 整合性</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>SQLite スキーマの整備（<code>workspaces</code>、<code>collections</code>、<code>sources</code>、<code>files</code>、<code>chunks</code>、<code>audit_logs</code> 等）</li>
-      <li><code>PRAGMA foreign_keys = ON</code> の全接続適用</li>
-      <li>削除時に SQLite と ChromaDB の両方をクリーンアップする <code>_purge_chunks_for_*()</code> 系ヘルパー</li>
-      <li>再スキャン後の <code>file_id</code> 安定性のための <code>_stable_fid(path)</code> 導入</li>
-      <li>監査記録ヘルパー <code>_log_audit(conn, action, target, detail)</code> の徹底</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 1: データ永続化と FK 整合性</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>SQLite スキーマの整備（<code>workspaces</code>、<code>collections</code>、<code>sources</code>、<code>files</code>、<code>chunks</code>、<code>audit_logs</code> 等）</li>
+<li><code>PRAGMA foreign_keys = ON</code> の全接続適用</li>
+<li>削除時に SQLite と ChromaDB の両方をクリーンアップする<code>_purge_chunks_for_*()</code> 系ヘルパー</li>
+<li>再スキャン後の<code>file_id</code> 安定性のための<code>_stable_fid(path)</code> 導入</li>
+<li>監査記録ヘルパー<code>_log_audit(conn, action, target, detail)</code> の徹底</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 2: ガードレール・PII</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>4 種のガードレールアクション（<code>mask</code> / <code>exclude_from_rag</code> / <code>log_only</code> / <code>allow</code>）</li>
-      <li>8 種類の PII パターン検出（URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4）</li>
-      <li>Dual-tier 保管（raw / masked）の Publish 時生成</li>
-      <li>Fernet 暗号化による raw 本文保護（<code>vault_enc.py</code>）</li>
-      <li>3 層プロンプトインジェクション対策（入力検査・retrieval 後検査・出力検査）</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 2: ガードレール・PII</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>4 種のガードレールアクション（<code>mask</code> /<code>exclude_from_rag</code> /<code>log_only</code> /<code>allow</code>）</li>
+<li>8 種類の PII パターン検出（URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4）</li>
+<li>Dual-tier 保管（raw / masked）の Publish 時生成</li>
+<li>Fernet 暗号化による raw 本文保護（<code>vault_enc.py</code>）</li>
+<li>3 層プロンプトインジェクション対策（入力検査・retrieval 後検査・出力検査）</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 3: RAG パイプライン</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>BM25 + ベクター検索のハイブリッド統合（既定: RRF、k=60）</li>
-      <li>BAAI/bge-m3 ベクター埋め込み</li>
-      <li>Reranker の差し替え（CrossEncoder、FlashRank、Ollama、HTTP）</li>
-      <li>高度な検索機能（MMR、Parent-Child チャンキング、Multi-Query、CRAG、HyDE、Adaptive RAG）</li>
-      <li>信頼度閾値（cosine similarity 0.50）を採用</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 3: RAG パイプライン</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>BM25 + ベクター検索のハイブリッド統合（既定: RRF、k=60）</li>
+<li>BAAI/bge-m3 ベクター埋め込み</li>
+<li>Reranker の差し替え（CrossEncoder、FlashRank、Ollama、HTTP）</li>
+<li>高度な検索機能（MMR、Parent-Child チャンキング、Multi-Query、CRAG、HyDE、Adaptive RAG）</li>
+<li>信頼度閾値（cosine similarity 0.50）を採用</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 4: Smart Ingestion</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>14 種類のドキュメントカテゴリ自動分類</li>
-      <li>3 種類の分類エンジン（軽量、LLM、ハイブリッド）</li>
-      <li>DataSyncService によるパス単位のハッシュ差分同期（既定 60 秒間隔）</li>
-      <li>Contextual Chunking（メタデータをチャンク冒頭に付加）</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 4: Smart Ingestion</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>14 種類のドキュメントカテゴリ自動分類</li>
+<li>3 種類の分類エンジン（軽量、LLM、ハイブリッド）</li>
+<li>DataSyncService によるパス単位のハッシュ差分同期（既定 60 秒間隔）</li>
+<li>Contextual Chunking（メタデータをチャンク冒頭に付加）</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 5: RBAC・監査</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>3 ロール（admin / curator / viewer）の SQL CHECK 制約適用</li>
-      <li>RBAC ヘルパー関数 4 種の整備（<code>_require_admin</code>、<code>_require_authenticated</code>、<code>_require_role</code>、<code>_require_admin_or_self</code>）</li>
-      <li>33 ルーター（242 箇所）への RBAC チェック適用</li>
-      <li>audit_logs の API 経由変更・削除を禁止</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 5: RBAC・監査</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>3 ロール（admin / curator / viewer）の SQL CHECK 制約適用</li>
+<li>RBAC ヘルパー関数 4 種の整備（<code>_require_admin</code>、<code>_require_authenticated</code>、<code>_require_role</code>、<code>_require_admin_or_self</code>）</li>
+<li>33 ルーター（242 箇所）への RBAC チェック適用</li>
+<li>audit_logs の API 経由変更・削除を禁止</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-23">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Stage 6: 外部連携</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>MCP サーバー（11 ツール）の公開</li>
-      <li>LM Studio / Ollama / OpenAI 互換 API 接続</li>
-      <li>LAN 共有・Tailscale 共有のフラグ整備（<code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code>）</li>
-      <li>IP アローリストミドルウェア</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Stage 6: 外部連携</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>MCP サーバー（11 ツール）の公開</li>
+<li>LM Studio / Ollama / OpenAI 互換 API 接続</li>
+<li>LAN 共有・Tailscale 共有のフラグ整備（<code>--lan</code> /<code>--allow-tailscale</code> /<code>--allow-subnet</code>）</li>
+<li>IP アローリストミドルウェア</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-24">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">主要修正履歴 — セキュリティ強化</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li><strong>user_id 単独ログインの完全撤去</strong>: レガシーパスを削除し、username/password 必須化。</li>
-      <li><strong><code>/api/auth/users</code> の admin 必須化</strong>: デモモードでの未認証許可を撤廃。</li>
-      <li><strong>PII 検出履歴の admin 限定化</strong>: <code>/api/guardrails/pii-detections</code> を admin 専用に変更。</li>
-      <li><strong>Chat popup ルートの廃止</strong>: <code>/chat-popup</code> を 410 Gone に変更。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">主要修正履歴 — セキュリティ強化</span>
+</div>
+<div class="slide-body">
+<ul>
+<li><strong>user_id 単独ログインの完全撤去</strong>: レガシーパスを削除し、username/password 必須化。</li>
+<li><strong><code>/api/auth/users</code> の admin 必須化</strong>: デモモードでの未認証許可を撤廃。</li>
+<li><strong>PII 検出履歴の admin 限定化</strong>:<code>/api/guardrails/pii-detections</code> を admin 専用に変更。</li>
+<li><strong>Chat popup ルートの廃止</strong>:<code>/chat-popup</code> を 410 Gone に変更。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-25">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">主要修正履歴 — バグ修正</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li><strong><code>/api/sources</code> の path バリデーション強化</strong>: システムパスへの参照を防止。</li>
-      <li><strong><code>llm_endpoint</code> のバリデーション</strong>: 内部ネットワーク参照変更の制限。</li>
-      <li><strong>システムプロンプト配置順序の修正</strong>: retrieved_content の後に配置（文書による上書き防止）。</li>
-      <li><strong><code>INSERT OR REPLACE</code> の排除</strong>: FK CASCADE 誤発火を防ぐため <code>ON CONFLICT DO UPDATE</code> に統一。</li>
-      <li><strong><code>_publish_semaphore</code> のテスト容易性</strong>: モジュールスコープから依存注入化（Stage-3 引き継ぎ）。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">主要修正履歴 — バグ修正</span>
+</div>
+<div class="slide-body">
+<ul>
+<li><strong><code>/api/sources</code> の path バリデーション強化</strong>: システムパスへの参照を防止。</li>
+<li><strong><code>llm_endpoint</code> のバリデーション</strong>: 内部ネットワーク参照変更の制限。</li>
+<li><strong>システムプロンプト配置順序の修正</strong>: retrieved_content の後に配置（文書による上書き防止）。</li>
+<li><strong><code>INSERT OR REPLACE</code> の排除</strong>: FK CASCADE 誤発火を防ぐため<code>ON CONFLICT DO UPDATE</code> に統一。</li>
+<li><strong><code>_publish_semaphore</code> のテスト容易性</strong>: モジュールスコープから依存注入化（Stage-3 引き継ぎ）。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-26">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">主要修正履歴 — 品質改善</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li>pyright エラーを 16 件から 0 件に削減</li>
-      <li>import-linter による依存関係制約の全 contracts 保護</li>
-      <li>pytest スイートを 14 PHASE / 405 アサーション以上に拡充</li>
-      <li>console エラー 0 件を維持</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">主要修正履歴 — 品質改善</span>
+</div>
+<div class="slide-body">
+<ul>
+<li>pyright エラーを 16 件から 0 件に削減</li>
+<li>import-linter による依存関係制約の全 contracts 保護</li>
+<li>pytest スイートを 14 PHASE / 405 アサーション以上に拡充</li>
+<li>console エラー 0 件を維持</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-27">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Beta GA に向けた予定事項 — 認証・RAG</span>
-  </div>
-  <div class="slide-body">
-    <p>Beta GA は「個人学習に加えて簡易な共同利用にも耐えうる状態」をゴールとして検討中の節目です。</p>
-    <h3>認証・認可</h3>
-    <ul>
-      <li>JWT 認証の本格導入（全モードでの RBAC 強制）</li>
-      <li>ユーザー単位の API キー発行</li>
-    </ul>
-    <h3>RAG 品質</h3>
-    <ul>
-      <li>Reranker 実体テスト（CrossEncoder 等の品質検証）</li>
-      <li>チャンク戦略の調整（Contextual Chunking のデフォルト化検討）</li>
-      <li>構造化回答テンプレートの導入検討</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Beta GA に向けた予定事項 — 認証・RAG</span>
+</div>
+<div class="slide-body">
+<p>Beta GA は「個人学習に加えて簡易な共同利用にも耐えうる状態」をゴールとして検討中の節目です。</p>
+<h3>認証・認可</h3>
+<ul>
+<li>JWT 認証の本格導入（全モードでの RBAC 強制）</li>
+<li>ユーザー単位の API キー発行</li>
+</ul>
+<h3>RAG 品質</h3>
+<ul>
+<li>Reranker 実体テスト（CrossEncoder 等の品質検証）</li>
+<li>チャンク戦略の調整（Contextual Chunking のデフォルト化検討）</li>
+<li>構造化回答テンプレートの導入検討</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-28">
-  <div class="slide-header">
-    <span class="doc-name">Changelog</span>
-    <span class="slide-title">Beta GA に向けた予定事項 — 安定性・連携</span>
-  </div>
-  <div class="slide-body">
-    <h3>安定性</h3>
-    <ul>
-      <li>Embedding / Reranker 設定の YAML 永続化（現状はメモリのみ）</li>
-      <li>エラー回復経路の堅牢化</li>
-      <li>DataSyncService の publish 連携統合（現状は noop）</li>
-    </ul>
-    <h3>連携拡張</h3>
-    <ul>
-      <li>MCP サーバーの公開ツール拡充</li>
-      <li>KnowledgeCatalog の Chunks ビューア拡張（メタデータ検索、出典追跡）</li>
-    </ul>
-    <h3>バックエンド多様化</h3>
-    <ul>
-      <li>Qdrant / LanceDB のベクターストア対応（現状は骨格のみ）</li>
-      <li>MLX Embedding / Reranker の実装（Apple Silicon 最適化）</li>
-    </ul>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Changelog</span>
+<span class="slide-title">Beta GA に向けた予定事項 — 安定性・連携</span>
+</div>
+<div class="slide-body">
+<h3>安定性</h3>
+<ul>
+<li>Embedding / Reranker 設定の YAML 永続化（現状はメモリのみ）</li>
+<li>エラー回復経路の堅牢化</li>
+<li>DataSyncService の publish 連携統合（現状は noop）</li>
+</ul>
+<h3>連携拡張</h3>
+<ul>
+<li>MCP サーバーの公開ツール拡充</li>
+<li>KnowledgeCatalog の Chunks ビューア拡張（メタデータ検索、出典追跡）</li>
+</ul>
+<h3>バックエンド多様化</h3>
+<ul>
+<li>Qdrant / LanceDB のベクターストア対応（現状は骨格のみ）</li>
+<li>MLX Embedding / Reranker の実装（Apple Silicon 最適化）</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 28</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 28</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

@@ -99,7 +99,7 @@ def list_policies_guardrails_alias(
     offset: int = 0,
     q: str | None = None,
 ):
-    """fix061 A6: /api/policies の alias (v11 E2E 経路維持)。"""
+    """fix061 A6: /api/policies の alias ( E2E 経路維持)。"""
     return list_policies(request, limit=limit, offset=offset, q=q)
 
 

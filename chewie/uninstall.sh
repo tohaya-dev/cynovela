@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cynovela を手元から取り除くための道 (DD-CYN-0088・chewie 版)
+# Cynovela を手元から取り除くための道 (・chewie 版)
 #
 #   ターミナルから叩きます:  bash uninstall.sh
 #

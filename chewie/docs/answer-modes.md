@@ -12,7 +12,7 @@
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
 > It does not represent the official position of any company or product.
 
-Cynovela's RAG (Retrieval-Augmented Generation) answers change their behavior according to the combination of a **mode** and a **preset**, depending on the use case. This document organizes the modes that can be confirmed as of Alpha GA, together with their implementation evidence.
+Cynovela's RAG (Retrieval-Augmented Generation) answers change their behavior according to the combination of a **mode** and a **preset**, depending on the use case. This document organizes the modes that can be confirmed as of , together with their implementation evidence.
 
 ---
 
@@ -94,7 +94,7 @@ The search `grep -rn "structured.*answer\|answer.*template\|template.*answer" --
 - No structured fields in the `ChunkHit` / `RetrievalResult` dataclasses
 - No instruction in the system prompt such as "return in JSON format" or "return with `<answer>XXX</answer>` tags"
 
-Therefore, as of Alpha GA, a **free-form answer is the standard**.
+Therefore, as of , a **free-form answer is the standard**.
 
 ### 3.2 The Citation Feature Is Implemented
 
@@ -133,7 +133,7 @@ As a lesson from the past, **using the RRF score for the abstention judgment is 
 `config.rag.confidence_threshold` is defined as a value, but within the search pipeline (`rag_retrieve`) it remains only **partially integrated** into explicit exclusion logic.
 
 - Handling of 0 search results → automatic switching to `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` is unimplemented
-- A separate processing flow when the top score < threshold is unimplemented
+- A separate processing flow when the top score< threshold is unimplemented
 <!-- BACKLOG: full integration of the abstention fallback based on confidence_threshold is unimplemented -->
 
 ### 4.4 Policy for Adjustment
@@ -171,7 +171,6 @@ For details, see `docs/rbac.md`.
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -184,7 +183,7 @@ Last updated: 2026-05-26 / Alpha GA edition
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
 
-Cynovela の RAG（検索拡張生成）回答は、用途に応じて **モード** と **プリセット** の組み合わせで挙動が変わります。本ドキュメントでは、Alpha GA 時点で確認できるモードを実装根拠とあわせて整理します。
+Cynovela の RAG（検索拡張生成）回答は、用途に応じて **モード** と **プリセット** の組み合わせで挙動が変わります。本ドキュメントでは、現時点で確認できるモードを実装根拠とあわせて整理します。
 
 ---
 
@@ -266,7 +265,7 @@ MCP（外部ツール）からは `rag_general` ツールを呼ぶことで、RA
 - `ChunkHit` / `RetrievalResult` dataclass に構造化フィールドなし
 - システムプロンプトに「JSON 形式で返す」「`<answer>XXX</answer>` タグで返す」等の指示なし
 
-そのため、Alpha GA 時点では **自由形式の回答が標準** です。
+そのため、現時点では **自由形式の回答が標準** です。
 
 ### 3.2 引用機能は実装済み
 
@@ -305,7 +304,7 @@ rag:
 `config.rag.confidence_threshold` は値としては定義済みですが、検索パイプライン（`rag_retrieve`）の中で **明示的な除外ロジックには部分統合** に留まります。
 
 - 検索結果の 0 件処理 → `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` への自動切替は未実装
-- 最高スコア < threshold での別処理フローは未実装
+- 最高スコア< threshold での別処理フローは未実装
 <!-- BACKLOG: confidence_threshold を踏まえた Abstention フォールバックの完全統合は未実装 -->
 
 ### 4.4 調整の方針
@@ -343,4 +342,3 @@ rag:
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

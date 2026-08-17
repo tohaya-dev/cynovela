@@ -1,18 +1,18 @@
-"""core.version — このツールの版数の単一の入手元 (version-single-source-20260731 / DD-CYN-0007 B8)。
+"""core.version — このツールの版数の単一の入手元 (version-single-source-20260731 / B8)。
 
-版の表記が 6 か所で食い違っていた (実測: `未設定` / `0.0.0` / `1.0.0-alpha` / `0.1.0` /
+版の表記が 6 か所で食い違っていた (実測: `未設定` / `0.0.0` / `` / `0.1.0` /
 `2.0` / `v3.0.0「Kenobi」`)。うち実行時に出るのは次の 4 つだけだった。
 
-  - `1.0.0-alpha`  … GET /api/health の JSON
+  - ``  … GET /api/health の JSON
   - `0.1.0`        … /openapi.json と /docs (FastAPI に version= を渡していないため既定値)
   - `2.0`          … MCP の serverInfo (別軸の番号なので触らない)
   - MAS の版       … 別サービスなので触らない
 
-`1.0.0-alpha` を正とする。理由は 3 つ。
+`` を正とする。理由は 3 つ。
   1. 受け取り手の目に最も触れる (API 応答とファイル冒頭の両方に出る唯一の値)。
   2. ここ 1 か所を読ませれば /api/health と /openapi.json /docs が同時に追随する。
   3. 既存の記録と矛盾しない (README・docs/quickstart.md・コード内の
-     `release/v1.0.0-alpha` を前提にした記述群と揃う)。
+     `` を前提にした記述群と揃う)。
 
 なぜ config.py ではなくこの新しいファイルに置くか:
   config.py は設定の読み口であり、変更を厳しく制限している対象である。版の定数は
@@ -20,6 +20,6 @@
   このモジュールは何も import しないので、どこから読んでも循環しない。
 """
 
-APP_VERSION = "1.0.0-alpha"
+APP_VERSION = ""
 
 __all__ = ["APP_VERSION"]

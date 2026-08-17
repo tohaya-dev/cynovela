@@ -8,7 +8,7 @@
 
 ```bash
 conda activate cynovela
-cd ~/Projects/cynovela/v11
+cd ~/Cynovela
 bash start.sh
 ```
 
@@ -33,7 +33,7 @@ python -m pytest tests/ -q
 
 ```bash
 conda activate cynovela
-cd ~/Projects/cynovela/v11
+cd ~/Cynovela
 bash start.sh
 ```
 

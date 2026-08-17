@@ -19,21 +19,21 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[ドキュメント名] — Cynovela</title>
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ドキュメント名] — Cynovela</title>
+<style>
     /* _slide-base.css の内容を全文ここに貼る */
-  </style>
+</style>
 </head>
 <body>
 <div class="slide-deck" id="deck">
-  <!-- スライドをここに並べる -->
+<!-- スライドをここに並べる -->
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / N</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+<span id="slide-counter">1 / N</span>
+<button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>
 let current = 0;
@@ -63,9 +63,9 @@ show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
 ### Rule 1: cover slide (always one at the top)
 ```html
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">[# の見出しテキスト、なければファイル名]</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">[# の見出しテキスト、なければファイル名]</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 ```
 
@@ -73,17 +73,17 @@ show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
 Each `## テキスト` becomes one slide.
 ```html
 <div class="slide" id="slide-N">
-  <div class="slide-header">
-    <span class="doc-name">[ドキュメント名]</span>
-    <span class="slide-title">[## のテキスト]</span>
-  </div>
-  <div class="slide-body">
-    <!-- ## 以降 次の ## までの内容 -->
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">[ドキュメント名]</span>
+<span class="slide-title">[## のテキスト]</span>
+</div>
+<div class="slide-body">
+<!-- ## 以降 次の ## までの内容 -->
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 ```
 
@@ -122,17 +122,17 @@ becomes its own slide as a single `<blockquote>` right after the cover slide.
 
 ```html
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">[ドキュメント名]</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>[免責テキスト全文]</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">[ドキュメント名]</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>[免責テキスト全文]</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 ```
 
@@ -142,7 +142,7 @@ Chapter detection uses the heading text (prefixes such as "S-1", "G-1", "D-1", o
 
 ```html
 <div class="slide chapter-slide" id="slide-N">
-  <div class="chapter-title">[章名（S-1 セットアップ など）]</div>
+<div class="chapter-title">[章名（S-1 セットアップ など）]</div>
 </div>
 ```
 
@@ -150,8 +150,8 @@ Chapter detection uses the heading text (prefixes such as "S-1", "G-1", "D-1", o
 Put a `slide-footer` at the end of every non-cover slide:
 ```html
 <div class="slide-footer">
-  <span class="brand">Cyno<span class="accent">vela</span></span>
-  <span>非公式・個人学習目的 / Alpha GA</span>
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
 </div>
 ```
 
@@ -193,21 +193,21 @@ After generating all slides, write the actual number of slides into the N of
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[ドキュメント名] — Cynovela</title>
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[ドキュメント名] — Cynovela</title>
+<style>
     /* _slide-base.css の内容を全文ここに貼る */
-  </style>
+</style>
 </head>
 <body>
 <div class="slide-deck" id="deck">
-  <!-- スライドをここに並べる -->
+<!-- スライドをここに並べる -->
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-  <span id="slide-counter">1 / N</span>
-  <button id="btn-next" onclick="navigate(1)">次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+<span id="slide-counter">1 / N</span>
+<button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>
 let current = 0;
@@ -237,9 +237,9 @@ show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
 ### ルール1: カバースライド（先頭に必ず1枚）
 ```html
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">[# の見出しテキスト、なければファイル名]</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">[# の見出しテキスト、なければファイル名]</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 ```
 
@@ -247,17 +247,17 @@ show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
 各 `## テキスト` が1枚のスライドになる。
 ```html
 <div class="slide" id="slide-N">
-  <div class="slide-header">
-    <span class="doc-name">[ドキュメント名]</span>
-    <span class="slide-title">[## のテキスト]</span>
-  </div>
-  <div class="slide-body">
-    <!-- ## 以降 次の ## までの内容 -->
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">[ドキュメント名]</span>
+<span class="slide-title">[## のテキスト]</span>
+</div>
+<div class="slide-body">
+<!-- ## 以降 次の ## までの内容 -->
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 ```
 
@@ -296,17 +296,17 @@ Markdownの先頭にある `> **このドキュメントについて**` など�
 
 ```html
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">[ドキュメント名]</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>[免責テキスト全文]</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">[ドキュメント名]</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>[免責テキスト全文]</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 ```
 
@@ -316,7 +316,7 @@ Markdownの先頭にある `> **このドキュメントについて**` など�
 
 ```html
 <div class="slide chapter-slide" id="slide-N">
-  <div class="chapter-title">[章名（S-1 セットアップ など）]</div>
+<div class="chapter-title">[章名（S-1 セットアップ など）]</div>
 </div>
 ```
 
@@ -324,8 +324,8 @@ Markdownの先頭にある `> **このドキュメントについて**` など�
 すべての非カバースライドの末尾に `slide-footer` を入れる:
 ```html
 <div class="slide-footer">
-  <span class="brand">Cyno<span class="accent">vela</span></span>
-  <span>非公式・個人学習目的 / Alpha GA</span>
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
 </div>
 ```
 

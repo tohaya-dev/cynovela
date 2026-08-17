@@ -1,4 +1,4 @@
-// state.js - Cynovela v13
+// state.js
 
 // fix062: Phase 3 split で frontend/app.js:374 の初期化が漏れたため、最初に読まれる
 // split JS である state.js の冒頭で window._pagerCallbacks を初期化する。
@@ -616,7 +616,7 @@ const POLICY_TYPES = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "
 //   表に無いキーは落とさず数えたまま出す。画面側で許可リストを持って
 //   リスト外の型を 0 件に潰さないこと (それが「マスキングしたのに画面に出ない」の原因になる)。
 //
-// DD-CYN-0020 U-6: サーバが返し得る型名を実測で数え直し、表に無かった 6 つを足した。
+// U-6: サーバが返し得る型名を実測で数え直し、表に無かった 6 つを足した。
 //   入手元は 2 系統ある:
 //     (a) guardrail.PII_PATTERNS のラベル (13種) … 表に揃っていた
 //     (b) utils/metadata/pii.py の型名 … 足りていなかった
@@ -648,7 +648,7 @@ const PII_TYPE_LABELS = {
   URL:          { icon: '🔗', en: 'URL',                     ja: 'URL' },
   INTERNAL_URL: { icon: '🔗', en: 'Internal URL',            ja: '内部URL' },
   DATE_TIME:    { icon: '📅', en: 'Date',                    ja: '日付' },
-  // DD-CYN-0020 U-6: utils/metadata/pii.py 側の型名 (上の行と同じ物を指す別名を含む)
+  // U-6: utils/metadata/pii.py 側の型名 (上の行と同じ物を指す別名を含む)
   CREDIT_CARD:  { icon: '💳', en: 'Credit card number',      ja: 'クレジットカード番号' },
   MY_NUMBER:    { icon: '🆔', en: 'My Number',               ja: 'マイナンバー' },
   EMAIL_ADDRESS:{ icon: '✉️', en: 'Email address',           ja: 'メールアドレス' },
@@ -659,12 +659,12 @@ const PII_TYPE_LABELS = {
 function piiTypeLabel(key) {
   const d = PII_TYPE_LABELS[key];
   if (d) return lj(d.en, d.ja);
-  // DD-CYN-0020 U-6: 表に無い型でも件数は落とさない。ただし内部の型名 (生の値) を
+  // U-6: 表に無い型でも件数は落とさない。ただし内部の型名 (生の値) を
   //   そのまま画面へ出さない。型が増えたときに読み手が意味を取り違えないよう、
   //   共通の言い方へ寄せる。生の型名は piiTypeTitle() から取れる (吹き出し用)。
   return lj('Other sensitive data', 'その他の個人情報');
 }
-// DD-CYN-0020 U-6: 表に無い型を調べたいときのための生の型名。呼び出し側で
+// U-6: 表に無い型を調べたいときのための生の型名。呼び出し側で
 //   title 属性 (吹き出し) に入れて使う。表に在る型では型名を返さない (空)。
 function piiTypeTitle(key) {
   return PII_TYPE_LABELS[key] ? '' : String(key == null ? '' : key);
@@ -919,7 +919,7 @@ let _chunkingPresets = null;
 const _QS_FILE_EXT_RE = /\.(pdf|txt|md|csv|docx?|xlsx?|pptx?|html?|eml|zip|json|xml|jpg|jpeg|png|heic|webp|gif|mp4|mov|mkv|webm|mp3|wav|flac|m4a|ogg)$/i;
 const _CHAT_TAB_KEY = 'cynovela_chat_tabs';
 const _CHAT_TAB_MAX = 5;
-// DD-CYN-0095 §3-A: チャットタブは利用者ごとに分けて保存する。
+// §3-A: チャットタブは利用者ごとに分けて保存する。
 //   固定キーだと同じブラウザで前の利用者 (例: 管理者) の session_id が次の利用者
 //   (例: 閲覧者) へ持ち越され、会話の所有権検査 (403) に当たって質問が通らなくなる。
 function _chatTabStorageKey(base) {
@@ -1426,7 +1426,7 @@ async function renderSources() {
       State.sources = res;
     }
   } catch (e) {
-    // DD-CYN-0089 §6-B: 読めなかったときに黙って空にすると「ありません」と出る。
+    // §6-B: 読めなかったときに黙って空にすると「ありません」と出る。
     State.sources = [];
     showToast(lj(`Could not read the data sources: ${(e && e.message) || ''}`,
       `取り込み元の一覧を読めませんでした: ${(e && e.message) || ''}`), 'error');
@@ -1595,7 +1595,7 @@ async function renderWorkspaces() {
       State.workspaces = res;
     }
   } catch (e) {
-    // DD-CYN-0089 §6-B: 同上。
+    // §6-B: 同上。
     State.workspaces = [];
     showToast(lj(`Could not read the workspaces: ${(e && e.message) || ''}`,
       `作業場所の一覧を読めませんでした: ${(e && e.message) || ''}`), 'error');
@@ -1741,7 +1741,7 @@ function _colPublishStateBadge(col) {
   return `<span class="tag" style="background:${bg};color:${fg};">${label}</span>`;
 }
 
-// U-8 (DD-CYN-0020): Publish は「押した後に断る」のではなく「押す前に見せる」。
+// U-8 (): Publish は「押した後に断る」のではなく「押す前に見せる」。
 //   一覧を描いたあとで publish-diff を引き、前回の Publish から変更が無いコレクションは
 //   再Publish ボタンを無効にし、無効にした理由をボタンの隣へ必ず出す (黙って押せなくしない)。
 //   差分が取れなかったときは「変更が無い」とも「ある」とも言えないので、素通しで公開へ
@@ -1801,7 +1801,7 @@ async function renderCollections() {
       State.collections = res;
     }
   } catch (e) {
-    // DD-CYN-0089 §6-B: 同上。
+    // §6-B: 同上。
     State.collections = [];
     showToast(lj(`Could not read the collections: ${(e && e.message) || ''}`,
       `資料の一覧を読めませんでした: ${(e && e.message) || ''}`), 'error');
@@ -2292,7 +2292,7 @@ async function publishCollection(id) {
   }
   // #4: 変更なし → 再Publish を完全ブロック (同期/モーダル経路)。
   //     ui.js startPublishStream と同じ publish-diff を利用。
-  //     U-8 (DD-CYN-0020): 取得失敗時も素通しさせない。ボタンは _applyPublishGate() が
+  //     U-8 (): 取得失敗時も素通しさせない。ボタンは _applyPublishGate() が
   //     押す前に無効化するが、押した時点でも必ずここで取り直して判断する。
   try {
     const _diff = await API.get(`/api/collections/${id}/publish-diff`);

@@ -112,7 +112,7 @@ def _early_parse_demo() -> bool:
 
 
 _early_demo = _early_parse_demo()
-# release/v1.0.0-alpha (2026-05-24): パス解決を cynovela.yaml の paths: セクションに一本化。
+#  (2026-05-24): パス解決を cynovela.yaml の paths: セクションに一本化。
 # 起動モード (フラグ無し / --demo / --mock) を問わず、env CYNOVELA_DB / CYNOVELA_CHROMA が
 # 未設定なら cynovela.yaml の paths から ./store 配下の demo DB / Chroma を既定値にする。
 # env で export 上書きされている場合は setdefault が no-op になる (既存値優先)。
@@ -126,7 +126,7 @@ try:
         _paths_cfg.get("data_dir", "./store")
     ))
     _demo_db_rel  = _paths_cfg.get("db", {}).get("demo" if _early_demo else "clean", "db/demo.db" if _early_demo else "db/cynovela.db")
-    # vector-path-by-mode-20260731 (DD-CYN-0007 B4): インデックスの保存先も起動の形態で選ぶ。
+    # vector-path-by-mode-20260731 (B4): インデックスの保存先も起動の形態で選ぶ。
     #   従来は --demo の有無に関わらず必ず vector.demo を返していたため、本番起動でも
     #   画面 (起動時の "Chroma (resolved): …") にデモ側の保存先が出ていた。
     #   cynovela.yaml には vector.default のキーが在るのに、読むコードが 1 か所も無かった。
@@ -148,7 +148,7 @@ except Exception:
     _backup_rel    = "backups"
     _log_rel       = "logs"
     _models_rel    = "models"
-# DD-CYN-0053: 保存先の正は cynovela.yaml の paths だけとする。
+# 保存先の正は cynovela.yaml の paths だけとする。
 #   従来は setdefault だったため、外から環境変数を与えると設定より強く効いた。
 #   ここで必ず入れ直し、外からの上書きを効かせない。
 #   なお下の4つは、この走りの中でデータ層へ渡すための受け渡しであり、設定の口ではない。
@@ -277,13 +277,13 @@ async def lifespan(app_instance):
         logger.warning(f"AuditLogListener executor shutdown failed: {_e}")
 
 
-# version-single-source-20260731 (DD-CYN-0007 B8): version= を渡していなかったため
+# version-single-source-20260731 (B8): version= を渡していなかったため
 #   /openapi.json と /docs には FastAPI の既定値 0.1.0 が出ていた。core/version.py から読む。
 app = FastAPI(title="Cynovela", version=APP_VERSION, lifespan=lifespan)
 
 # STEP 5: SlowAPI レートリミット
 # 既定: 200 req/min/IP, /api/chat は 30 req/min/IP
-# DD-CYN-0067 G-2: 環境変数 (CYNOVELA_DISABLE_RATE_LIMIT) で守りを切る口を撤去した。
+# G-2: 環境変数 (CYNOVELA_DISABLE_RATE_LIMIT) で守りを切る口を撤去した。
 #   守りの挙動を設定の外 (env) から変えられる形を残さない。
 if True:
     try:
@@ -1179,7 +1179,7 @@ def _create_backup(label: str = "") -> dict:
             conn.close()
     except Exception:
         pass
-    # release/v1.0.0-alpha: バックアップ書き込みは cynovela.db / chroma 命名で統一
+    # バックアップ書き込みは cynovela.db / chroma 命名で統一
     if DB_PATH_FOR_BACKUP.exists():
         _shutil.copy2(str(DB_PATH_FOR_BACKUP), str(backup_dir / "cynovela.db"))
     if CHROMA_PATH_FOR_BACKUP.exists():
@@ -1225,18 +1225,18 @@ def _restore_backup(name: str) -> dict:
         raise HTTPException(404, "バックアップが見つかりません")
     if backup_dir.resolve().parent != BACKUP_BASE.resolve():
         raise HTTPException(400, "不正なパスです")
-    # release/v1.0.0-alpha: cynovela.db / chroma 命名を先に探し、旧 v13/v12 命名にフォールバック（後方互換）
+    # cynovela.db / chroma 命名を先に探し、旧 / 命名にフォールバック（後方互換）
     db_src = backup_dir / "cynovela.db"
     chroma_src = backup_dir / "chroma"
     if not db_src.exists():
-        for _legacy_db, _legacy_chroma in [("v13.db", "v13-chromadb"), ("v12.db", "v12-chromadb")]:
+        for _legacy_db, _legacy_chroma in [(".db", "-chromadb"), (".db", "-chromadb")]:
             _db_legacy = backup_dir / _legacy_db
             if _db_legacy.exists():
                 db_src = _db_legacy
                 chroma_src = backup_dir / _legacy_chroma
                 break
         else:
-            raise HTTPException(400, "バックアップが破損しています (cynovela.db / v13.db / v12.db いずれも見つかりません)")
+            raise HTTPException(400, "バックアップが破損しています (cynovela.db / .db / .db いずれも見つかりません)")
     # 現状を before-restore として自動バックアップ
     auto_meta = _create_backup(label="before-restore")
     # 復元
@@ -2311,7 +2311,7 @@ def _run_publish_background(
                     #   平文がある取り込みの瞬間にしか判定できない (インデックスの本文は暗号文) ため、
                     #   ここで残して publish-summary から読み出す。
                     "placeholder_only_files": list(final_event.get("placeholder_only_files") or []),  # pyright: ignore[reportOptionalMemberAccess]
-                    # DD-CYN-0091 C: 飛ばしたファイルの一覧 (publish-summary が読み出す)
+                    # C: 飛ばしたファイルの一覧 (publish-summary が読み出す)
                     "skipped_details": list(final_event.get("skipped_details") or []),  # pyright: ignore[reportOptionalMemberAccess]
                 },
             )
@@ -2901,12 +2901,12 @@ _MODE_MODELS = {
 # （実測 2026-07-13: lite 公称約470MB→4.62GB / lite-en 公称約22MB→677MB）。
 # sentence_transformers のロードに必要なのは model.safetensors ＋ tokenizer/config 系
 # 軽量ファイルのみのため、lite 系はダウンロード対象をそこへ絞る。
-# DD-CYN-0099: BAAI 系も絞り込みへ載せる。無制限の snapshot_download はリポジトリの
+# BAAI 系も絞り込みへ載せる。無制限の snapshot_download はリポジトリの
 #   重複形式 (onnx 等) まで取るため実測 4.47GB になっていた (2026-08-12)。必要な部品は
 #   同梱スナップショット (全部入りで実運用済み) の構成と同一で、bge-m3 は
 #   pytorch_model.bin ＋ tokenizer/config 系 ＋ colbert/sparse の .pt、reranker は
 #   model.safetensors ＋ tokenizer/config 系である。falcon 軽量版の curl ダウンロード
-#   (DD-CYN-0078 T-1 で実証) も同じ構成を用いている。
+#   (T-1 で実証) も同じ構成を用いている。
 _LITE_DL_ALLOW_PATTERNS = {
     "BAAI/bge-m3": [
         "pytorch_model.bin",  # 本体重み (safetensors 非配布)
@@ -2968,7 +2968,7 @@ def _preflight_model_check(args) -> bool:
     except Exception:
         _pf_external = False
     if _pf_external:
-        # DD-CYN-0095 §6-6-4: 役割は "Embedding（英語特化）" のような添え書きつきでも
+        # §6-6-4: 役割は "Embedding（英語特化）" のような添え書きつきでも
         #   埋め込みである。完全一致だと lite-en だけ免除から漏れ、外部の推論サーバ設定でも
         #   起動できなかった (lite は通るのに lite-en は落ちる非対称の原因)。前方一致にする。
         required = [r for r in required if not (r[2] or "").lower().startswith("embedding")]
@@ -3012,7 +3012,7 @@ def _preflight_model_check(args) -> bool:
         print("  ※ 日本語ドキュメントには --mode lite を推奨します")
         print()
 
-    # DD-CYN-0099: 非対話 (人が見ていない実行) では黙って取り消さず、ダウンロードしてから起動する。
+    # 非対話 (人が見ていない実行) では黙って取り消さず、ダウンロードしてから起動する。
     #   従来は CYNOVELA_NONINTERACTIVE=1 が exit 2、TTY 無しは input() の EOF で「キャンセル」
     #   となり、軽量版が非対話では起動に到達できなかった。∴ 非対話は [1] と同じ道へ倒す。
     #   ダウンロードに失敗したときの進め方は、下の失敗時のガイドで名指しする (黙って落ちない)。
@@ -3079,7 +3079,7 @@ def _preflight_model_check(args) -> bool:
             logger.error(
                 f"[Cynovela]   B) SETUP-ACCELERATOR.md の手順でモデルを {save_dir} へ置いてから起動する"
             )
-            # DD-CYN-0099: 失敗を exit 2 で知らせる (包み・自動実行が失敗を検出できるように)
+            # 失敗を exit 2 で知らせる (包み・自動実行が失敗を検出できるように)
             sys.exit(2)
         logger.info("[Cynovela] 全モデルの準備が完了しました。起動します。")
         return True
@@ -3190,7 +3190,7 @@ from routers import chat as _r_chat
 # SECURITY(bugaudit-20260706): /api/transcribe は生の文字起こしをマスキングなしで返し、
 #   認証済みなら viewer でも音声内の生PIIを平文取得できる統治ホールだった。マウントしない。
 # from routers import transcribe as _r_transcribe
-# DD-CYN-0020 U-2: 音声入力そのものを撤去した。統治経路だった routers/voice.py も
+# U-2: 音声入力そのものを撤去した。統治経路だった routers/voice.py も
 #   ファイルごと削除したため、ここでの取り込みもやめる。音声の受け口は 1 つも無い。
 
 app.include_router(_r_health.router)
@@ -3229,7 +3229,7 @@ app.include_router(_r_guardrails.router)
 app.include_router(_r_settings.router)
 app.include_router(_r_chat.router)
 # app.include_router(_r_transcribe.router)  # SECURITY(bugaudit-20260706): 生PII egress ホール封鎖のため撤去
-# DD-CYN-0020 U-2: app.include_router(_r_voice.router) は音声撤去に伴い削除。
+# U-2: app.include_router(_r_voice.router) は音声撤去に伴い削除。
 
 
 # ─── OpenAPI 文書化補完: 認証ゲート由来の 401/403 をグローバルに注入 ───
@@ -3288,7 +3288,7 @@ if __name__ == "__main__":
         ),
     )
     # LAN-RESTORE 20260724: 既定を全アドレス向けに戻す（元仕様）。絞る場合は --local-only を明示する。
-    # DD-CYN-0053: 既定は cynovela.yaml の server.host / server.port から採る。
+    # 既定は cynovela.yaml の server.host / server.port から採る。
     #   指定 (--host / --port) を付けたときは、そちらが強い。
     try:
         from core.config import CYNOVELA_CONFIG as _cfg_for_bind
@@ -3330,7 +3330,7 @@ if __name__ == "__main__":
 
     # fixall-B5 20260602: 実ポートを routers/mcp.py 等が参照できるようにする
     # (旧 mcp.py はポート 8765 をリテラル直書きしており --port 変更時に不整合だった)。
-    # DD-CYN-0053: 受け渡しを環境変数からやめ、走っている間だけ覚えておくコンテナへ入れる。
+    # 受け渡しを環境変数からやめ、走っている間だけ覚えておくコンテナへ入れる。
     from core import runtime as _runtime
     _runtime.SERVER_PORT = str(args.port)
 

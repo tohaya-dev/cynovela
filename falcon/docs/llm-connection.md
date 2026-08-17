@@ -160,7 +160,6 @@ Apart from the LLM, the Reranker that reorders the search results is also replac
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -321,4 +320,3 @@ LLM とは別に、検索結果の並び替えを担う Reranker も差し替え
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

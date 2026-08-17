@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-#  Cynovela 入口 (entry-unify-20260802 / DD-CYN-0020 S-1〜S-4)
+#  Cynovela 入口 (entry-unify-20260802 / S-1〜S-4)
 #
 #  受け取り手が実行するのはこの1本だけです。
 #  この系統は「コンテナ (コンテナ) で動かす形」の1本道です。ホストで直接動かす道は
@@ -35,7 +35,7 @@
 #  共有の conda 環境 'cynovela' は使いません。書き込みもしません。
 #  (この形態の部品はすべてコンテナの中に入っています。)
 #
-#  実行エンジンの選択について (DD-CYN-0031):
+#  実行エンジンの選択について ():
 #    この形態には「選ぶ実行エンジン」がありません。本体を動かす python はコンテナ (イメージ) の
 #    中に入っており、ホスト側の python も conda も使いません。
 #    ∴ 他の2系統にある --base / --env-name (conda 環境を作るか、配布物の中に作るか) は
@@ -44,7 +44,7 @@
 # ============================================================
 set -e
 
-# DD-CYN-0069 M-5: 本体は tools/ の下の部品になった (決定 12-2)。保存先の基準は配布物のルートディレクトリのまま。
+# M-5: 本体は tools/ の下の部品になった (決定 12-2)。保存先の基準は配布物のルートディレクトリのまま。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTAINER_PART="$SCRIPT_DIR/deploy/container/run-container.sh"
 REPORT_FILE="$SCRIPT_DIR/store/env-check.txt"
@@ -54,10 +54,10 @@ KEYFILE="$SCRIPT_DIR/keys/secret.key"
 
 MODE_CHECK=0
 MODE_SETUP=0
-# DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
+# 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"
-# DD-CYN-0107 F-c: 取り込み元のバックアップは、動作要件 (3.12 系) を満たす python でのみ読み書きする。
+# F-c: 取り込み元のバックアップは、動作要件 (3.12 系) を満たす python でのみ読み書きする。
 #   素の python3 (版の検査なし) へは倒れない。3.12 系が無いときは理由と入れ方を出して止める。
 ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" || true)"
 _roots_py() {
@@ -71,7 +71,7 @@ _roots_py() {
 HOSTPORT_DEFAULT="$(conf_get_num server port 8801)"
 HOSTPORT="$HOSTPORT_DEFAULT"
 CNAME_DEFAULT="$(conf_get_or container name "$CONF_DEFAULT_CNAME")"
-# DD-CYN-0074 Q-1: モデルの保存先は cynovela.yaml の paths: の models_dir: から読む。
+# Q-1: モデルの保存先は cynovela.yaml の paths: の models_dir: から読む。
 #   空なら従来どおり、この配布物の中の store/models を使う。
 #   コンテナへ渡す元も同じ1つの値である (deploy/container/run-container.sh も同じ行を読む)。
 #   ∴ ここで「あり」と言ったのにコンテナの中から見えない、ということは起きない。
@@ -87,7 +87,7 @@ NO_PROMPT=0
 FETCH_MODEL=0
 PART_ARGS=()
 
-# ---------- コンテナの実行エンジン (実行体) の解決 (DD-CYN-0048) ----------
+# ---------- コンテナの実行エンジン (実行体) の解決 () ----------
 #   決める順: ①設定/指定での明示 (在れば探索しない) ②podman → docker の探索。
 #   探索は 受け継いだ PATH → ログインシェル → 決まった保存先 の3段。
 #   採った実行体は store/engine-bin/podman の橋渡しに置き、PATH の先頭に足す
@@ -131,7 +131,7 @@ engine_resolve() {  # 0=使える (ENGINE_PATH/ENGINE_NAME が入る) / 1=見つ
         esac
     else
         # 指定が無いときの既定は Podman だけを探す (決定 24-1)。
-        # Docker へ黙って倒れる分岐は撤去した (DD-CYN-0070 N-1・決定 30-2)。
+        # Docker へ黙って倒れる分岐は撤去した (N-1・決定 30-2)。
         # Docker・自分で指定は、入口 (launch.sh) の選択で container.engine /
         # engine_command に書かれてから、上の明示指定の道で使われる。
         ENGINE_PATH="$(_engine_find_one podman)"
@@ -167,7 +167,7 @@ engine_activate() {  # 橋渡しを置き、PATH の先頭に足し、起動の�
     echo "[engine] 使うもの: $ENGINE_NAME ($ENGINE_PATH)"
 }
 
-# DD-CYN-0106 F-b: `container exists` は podman 固有のサブコマンドで docker には無い
+# F-b: `container exists` は podman 固有のサブコマンドで docker には無い
 #   (実測 2026-08-13: `docker container exists` → "unknown command"・rc=1)。
 #   そのため docker では「同じ名前のコンテナ」も「自分が使っている口」も常に
 #   見つからない側へ倒れ、掛け直しの道と名前のぶつかりの知らせが働かない。
@@ -180,7 +180,7 @@ _cyn_container_exists() {  # $1=コンテナの名前 → 0=在る / 1=無い
     esac
 }
 
-# DD-CYN-0037 §7-5-3: ヘルプは2段。
+# §7-5-3: ヘルプは2段。
 #   先に出るのは「受け取り手が使うもの」だけ。試験・開発用は --help-all の下へ隔離する。
 #   隠すだけで、名前も挙動も変えない (外から叩いている手順書と記録が壊れるため)。
 usage() {
@@ -246,7 +246,7 @@ usage_all() {
 USAGE_ALL
 }
 
-# 知らない指定を渡されたときは、黙って落ちずにヘルプを出す (DD-CYN-0032 B2)。
+# 知らない指定を渡されたときは、黙って落ちずにヘルプを出す (B2)。
 KNOWN_PART_FLAGS=" --demo --local-only "
 KNOWN_PART_WORDS=" full text lite lite-en minimal "
 unknown_arg() {
@@ -261,7 +261,7 @@ unknown_arg() {
 #   取り込み元の管理引数はここで受ける (以前は deploy/container/run-container.sh が
 #   受けていた。受け取り手が2本のスクリプトを使い分ける形をやめる)。
 # ------------------------------------------------------------
-# DD-CYN-0037 §7-5-2: 引数が1つも無いときは、番号で答えるだけで進める形にする。
+# §7-5-2: 引数が1つも無いときは、番号で答えるだけで進める形にする。
 ARGC_AT_START=$#
 
 while [ $# -gt 0 ]; do
@@ -364,7 +364,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         --mode)
-            # DD-CYN-0095 §3-D: 手引きは --mode <名前> と書いており、裸の語 (text 等) しか
+            # §3-D: 手引きは --mode <名前> と書いており、裸の語 (text 等) しか
             #   受けない従来の形と食い違っていた。--mode <名前> も同じ意味で受ける。
             if [ -z "${2:-}" ]; then
                 echo "使い方: ./launch.sh --mode <text|lite|lite-en>"
@@ -377,7 +377,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         *)
-            # DD-CYN-0032 B2: 組み立て用の部品が受ける指定・モードだけを通し、
+            # B2: 組み立て用の部品が受ける指定・モードだけを通し、
             #   それ以外はヘルプを出して止まる (部品側の "unknown arg" まで行かせない)。
             case "$KNOWN_PART_FLAGS" in
                 *" $1 "*) PART_ARGS+=("$1"); shift; continue ;;
@@ -396,7 +396,7 @@ engine_resolve && engine_activate
 
 
 # ============================================================
-# DD-CYN-0037 §7-5-2: 引数なしのときの問いかけ
+# §7-5-2: 引数なしのときの問いかけ
 #   聞くのは2つまで。開く番号は聞かず、こちらで決める。
 #   分からなければ Enter で必ず先へ進める。
 # ============================================================
@@ -404,7 +404,7 @@ engine_resolve && engine_activate
 # この配布物が前に起動したコンテナが使っている番号なら、掛け直せるので空きとみなす。
 _port_is_usable() {
     local _p="$1" _pcname _powner _prun _pports
-    # DD-CYN-0095: LISTEN だけを見る (残存クライアント接続で「使用中」と誤検知しない)
+    # LISTEN だけを見る (残存クライアント接続で「使用中」と誤検知しない)
     lsof -nP -iTCP:"$_p" -sTCP:LISTEN >/dev/null 2>&1 || return 0
     _pcname="$CNAME_DEFAULT"
     command -v podman >/dev/null 2>&1 || return 1
@@ -458,7 +458,7 @@ _fetch_model() {
     return 0
 }
 
-# 選ばれたフォルダを「モデルの保存先」として cynovela.yaml へ書き留める (DD-CYN-0074 Q-1)。
+# 選ばれたフォルダを「モデルの保存先」として cynovela.yaml へ書き留める (Q-1)。
 #   受け取り手が選ぶのは models--BAAI--bge-m3 そのものか、その親のどちらでもよい。
 #   中身 (snapshots の下に実ファイル) が在ることを確かめてからでないと書かない。
 #   0=つないだ / 1=つなげなかった
@@ -483,7 +483,7 @@ _link_model_dir() {  # $1=選ばれたフォルダ
     return 1
 }
 
-# 次に何をすればよいかを画面へ出す (DD-CYN-0074 Q-1)。
+# 次に何をすればよいかを画面へ出す (Q-1)。
 #   効き目は断言しない。ダウンロードは相手先とネットの具合で変わる。
 _print_model_next_steps() {
     echo ""
@@ -540,7 +540,7 @@ _ask_model_if_missing() {
             }
             ;;
         2)
-            # DD-CYN-0074 Q-1: 選ばれた場所を cynovela.yaml へ書き留めて、そのまま使う。
+            # Q-1: 選ばれた場所を cynovela.yaml へ書き留めて、そのまま使う。
             #   コンテナへ渡す元も同じ値を読むので、コピー替えなくても中から見える。
             local _sel
             _sel="$(osascript -e 'POSIX path of (choose folder with prompt "bge-m3 が入っているフォルダを選んでください")' 2>/dev/null || true)"
@@ -562,7 +562,7 @@ _ask_model_if_missing() {
     esac
 }
 
-# DD-CYN-0074 Q-1: モデルが無いときの一手。run_probe のあとに呼ぶ。
+# Q-1: モデルが無いときの一手。run_probe のあとに呼ぶ。
 #   端末が在れば聞く (ダウンロードする / つなぐ / やめる)。
 #   端末が無いとき (アイコンからの起動・手順書・試験) は聞けないので、
 #   足りないものとして積み、次に何をすればよいかを並べてから止める。
@@ -607,7 +607,7 @@ run_interactive() {
             ;;
     esac
 
-    # DD-CYN-0097 §5-A (決定 40-2・40-4): 構成の問いを撤去した。示す形が text の
+    # §5-A (決定 40-2・40-4): 構成の問いを撤去した。示す形が text の
     #   1つだけになったため、尋ねずにそのまま text で進む。引数 (--mode 等) で渡す道は
     #   従来どおり残っている (server.py の受け付けは変えていない)。
     PART_ARGS+=(text)
@@ -658,7 +658,7 @@ run_probe() {
     else
         add_report "python3: ありません"
     fi
-    # DD-CYN-0107 F-c: バックアップに使うのは動作要件 (3.12 系) を満たす python だけ。有無ではなく版まで見る。
+    # F-c: バックアップに使うのは動作要件 (3.12 系) を満たす python だけ。有無ではなく版まで見る。
     if [ -n "$ROOTS_PY" ]; then
         add_report "バックアップに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
     else
@@ -684,7 +684,7 @@ run_probe() {
     add_report "== Podman / 仮想機械 =="
     if command -v podman >/dev/null 2>&1; then
         add_report "podman: $(podman --version 2>&1)"
-        # DD-CYN-0105 F-d: 仮想機械 (podman machine) は podman 固有。橋渡し先が docker や
+        # F-d: 仮想機械 (podman machine) は podman 固有。橋渡し先が docker や
         #   自分で指定した実行体のときにこの検査を通すと、必ず「仮想機械がありません」で
         #   止まってしまう。∴ 実体が podman のときだけ従来どおり検査し、それ以外は
         #   応答の検査だけを行う。podman 側の分岐の中身は変えていない。
@@ -719,7 +719,7 @@ run_probe() {
     fi
 
     # 6. 使うポートの空き
-    #    DD-CYN-0032 B5: 使っているのが「この配布物が前に起動したコンテナ」なら止める理由にしない。
+    #    B5: 使っているのが「この配布物が前に起動したコンテナ」なら止める理由にしない。
     #      従来は使用中というだけで無条件に blocker を積み、コンテナを置き換える処理
     #      (run-container.sh) へ進む前に exit 1 していた。∴ 掛け直しが一度も通らなかった。
     add_report "== ポート =="
@@ -763,7 +763,7 @@ run_probe() {
     fi
 
     # 8. モデル保存先の有無と中身
-    #    探し先は「cynovela.yaml の paths: の models_dir: が指す1か所」だけにする (DD-CYN-0074 Q-1)。
+    #    探し先は「cynovela.yaml の paths: の models_dir: が指す1か所」だけにする (Q-1)。
     #    (1) コンテナへ渡すのも同じ1つの値で (run-container.sh の -v)、両者は同じ行を読む。
     #        ∴ 5か所を見て「あり」と言い、コンテナの中では見えない、という食い違いは起きない。
     #    (2) コンテナは画面を持たない起動 (podman run -d) なので、本体の
@@ -857,7 +857,7 @@ do_setup() {
 }
 
 # ------------------------------------------------------------
-# 要るものを枠で囲って出す (DD-CYN-0031 B4)
+# 要るものを枠で囲って出す (B4)
 #   用意し終わったときと、起動したときの両方で出す。
 #   パスワードの実値はここへ印字しない。同梱のバックアップの場所を示す。
 #   この形態はコンテナを裏で動かすため、本体が出すガイドは受け取り手の画面へ
@@ -918,13 +918,13 @@ if [ "$MODE_CHECK" = "1" ] && [ "$MODE_SETUP" = "1" ]; then
     exit 2
 fi
 
-# DD-CYN-0037 §7-5-2: 引数が1つも無く、人が端末から叩いたときだけ番号で聞く。
+# §7-5-2: 引数が1つも無く、人が端末から叩いたときだけ番号で聞く。
 #   非対話 (手順書・試験・アイコンからの起動) では聞かず、従来どおり既定で進む。
 if [ "$ARGC_AT_START" = "0" ] && [ -t 0 ] && [ "$NO_PROMPT" != "1" ]; then
     run_interactive
 fi
 
-# DD-CYN-0046: アイコンの道 (非対話) で「ダウンロードする」が押されたときの取得。
+# アイコンの道 (非対話) で「ダウンロードする」が押されたときの取得。
 #   対話の道は run_interactive 内の _ask_model_if_missing が同じ役を持つ。
 #   画面 (launcher.applescript) が確認を取ってから印を立てるため、ここでは聞かずに取得する。
 if [ "$FETCH_MODEL" = "1" ]; then
@@ -957,7 +957,7 @@ if [ "$MODE_SETUP" = "1" ]; then
     run_probe
     _resolve_model_or_block
 
-    # 版が違うもの・足りないものは知らせるだけで止めない (DD-CYN-0031 B6)
+    # 版が違うもの・足りないものは知らせるだけで止めない (B6)
     if [ "${#WARNINGS[@]}" -gt 0 ]; then
         echo ""
         echo "== 気をつけること (止まりはしません) =="

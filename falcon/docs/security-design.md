@@ -275,7 +275,7 @@ When composing the LLM prompt, the design is that the **system prompt is placed 
 
 ---
 
-## 10. Alpha GA known limitations
+## 10.  known limitations
 
 | Item | Status |
 |---|---|
@@ -289,7 +289,6 @@ When composing the LLM prompt, the design is that the **system prompt is placed 
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -568,7 +567,7 @@ LLM プロンプトを構成する際、**システムプロンプトは retriev
 
 ---
 
-## 10. Alpha GA 既知制限
+## 10. 既知の制限
 
 | 項目 | 状態 |
 |---|---|
@@ -582,4 +581,3 @@ LLM プロンプトを構成する際、**システムプロンプトは retriev
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

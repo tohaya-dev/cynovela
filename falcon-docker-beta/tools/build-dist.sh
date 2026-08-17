@@ -13,7 +13,7 @@
 #   tar は決定論的に作る (所有者・時刻・並び順を固定し gzip はタイムスタンプ無し)
 #   ため、同じ入力からは同じハッシュが出る。
 #
-# bundled-data-20260731 (DD-CYN-0007 B0):
+# bundled-data-20260731 (B0):
 #   同梱するインデックス (store/vector) とデータベース (store/db/demo.db) は、**パッケージングの場で**
 #   配布物内の dummy-corpus/ から作る。従来は作業ツリーのものを名指しで複製していたが、
 #   作業ツリーは開発の過程で溜まったもの (旧世代の資料・撤去したはずの作業場所・
@@ -39,7 +39,7 @@
 # クリーン化はパスワードの塩を作り直すため、走らせるたびに DB のバイト列が変わる
 # (塩を固定するのは論外)。よって**同じ配布物を2回作ってもハッシュは一致しない。**
 # 同等性の判定は、塊の数・取り込み元・復号後の本文・埋め込みの一致で行うこと
-# (詳しくは tools/build_bundled_data.py の頭書きと DD-CYN-0007 の記録)。
+# (詳しくは tools/build_bundled_data.py の頭書きと の記録)。
 #
 # 第5引数に金庫鍵 (store/secret.key) のパスを渡すと、それを同梱する。省略時の探索順は
 # 下の resolve_vault_key() を参照。**新しい環境変数は 1 つも増やさない**。
@@ -138,14 +138,14 @@ run_re = re.compile(r"[!-~]+")
 delim_re = re.compile(r"""[\s"'`=:;,()<>\[\]{}|/\\]+""")
 ctx_re = re.compile(r"""(?i)(password|passwd|\bpw\b|パスワード)[^\n]{0,20}?[=:：][ \t]*["'`]?$""")
 word_re = re.compile(r"[\w.\-]")
-# fixed-initial-credentials-20260802 (DD-CYN-0021 §3-2):
+# fixed-initial-credentials-20260802 (§3-2):
 #   初期のパスワードは固定値になり、受け取り手が入れるように配布物の中のガイドへ明記する。
 #   ∴ その2つは「ガイド (STARTUP.md)」と「設定 (cynovela.yaml)」に限って許す。
 #   それ以外の場所 (データベース・記録・コード・作業の残りかす) に出たら従来どおり止める。
 #   許した箇所も件数と場所を必ず画面へ出す (黙って通さない)。
 allowed_paths = {          # 記号 -> 出てよい相対パスの集合
     "T3": {"STARTUP.md", "cynovela.yaml"},   # 管理者の初期のパスワード
-    # DD-CYN-0070 N-4 連動: 閲覧者の値も設定 (auth.viewer_initial_password) に書く形に
+    # N-4 連動: 閲覧者の値も設定 (auth.viewer_initial_password) に書く形に
     #   なったため、管理者と同じく cynovela.yaml を許す。他の場所は従来どおり止める。
     "T4": {"STARTUP.md", "cynovela.yaml"},   # 閲覧者の初期のパスワード
 }
@@ -359,7 +359,7 @@ add_if_untracked "SETUP-ACCELERATOR.md" "外の推論サーバの立て方 (受�
 # 起動時の「既に在れば生成しない」判定は config.py の _load_or_create_secret_key()
 # に既にあるため、鍵を置いておくだけで足りる。コード側の変更は不要。
 #
-# bundled-data-20260731 (DD-CYN-0007 B0): 鍵は**同梱データを作る前**に置く。
+# bundled-data-20260731 (B0): 鍵は**同梱データを作る前**に置く。
 #   同梱データはこの鍵で暗号化されるので、鍵と中身が噛み合わないという事態が
 #   構造的に起こらなくなる (従来は作業ツリーで作られた中身と、別に選ばれた鍵を
 #   後から突き合わせていた)。
@@ -397,7 +397,7 @@ else
   echo "[dist] インデックスを作るあいだだけ store/models を読み取り専用で繋ぐ (軽量版には同梱しない)"
 fi
 
-# ── 同梱データをパッケージングの場で作る (bundled-data-20260731 / DD-CYN-0007 B0) ──
+# ── 同梱データをパッケージングの場で作る (bundled-data-20260731 / B0) ──
 # 従来はここで作業ツリーの store/db/demo.db と store/vector をそのまま複製していた。
 # 作業ツリーは開発の過程で溜まったもの (旧世代の資料・撤去したはずの作業場所・
 # 開発機の利用者名) を含むため、配布物の中身の入手元を言えなかった。実測では
@@ -413,7 +413,7 @@ if [ -z "$BUNDLED_COUNTS" ]; then
 fi
 echo "[dist] 同梱データの数え上げ: $BUNDLED_COUNTS"
 
-# ── 既定の取り込み元を配布物の中へ向ける (portable-roots-20260808 / DD-CYN-0066 F-2) ──
+# ── 既定の取り込み元を配布物の中へ向ける (portable-roots-20260808 / F-2) ──
 # 決定 9-3: 同梱デモの取り込み元は、配布物の中に置いたダミー資料の場所を指す。
 #   従来はこのバックアップ (store/ingest-roots.json) をパッケージングの場で 1 度も書いていなかったため、
 #   受け取り手の側では取り込み元 0 件で立ち上がり、一覧が空のまま行き止まりになっていた。
@@ -437,7 +437,7 @@ if grep -q '"/' "$STAGE/$NAME/store/ingest-roots.json"; then
 fi
 echo "[dist] 既定の取り込み元に絶対パス: 0件"
 
-# ── 保存領域の名前を配布物ごとに分ける (dist-volume-identity-20260808 / DD-CYN-0066 F-3) ──
+# ── 保存領域の名前を配布物ごとに分ける (dist-volume-identity-20260808 / F-3) ──
 # falcon の保存領域は Podman の名前つき保存領域 (${volume_prefix}-db / -vec / -bk) であって、
 # 配布物のディレクトリの中には無い。接頭辞が全配布物で同じ既定値 (cyn) だったため、
 # 以前の配布物・以前の実行が作った cyn-db がその機材に残っていると podman はそれを黙って
@@ -463,7 +463,7 @@ else
   echo "[dist] container.volume_prefix はこの系統に無い (この Mac の中で直接動く形態のため)"
 fi
 
-# ── 初期のパスワードを固定値にする (fixed-initial-credentials-20260802・DD-CYN-0021 §3-2) ──
+# ── 初期のパスワードを固定値にする (fixed-initial-credentials-20260802・§3-2) ──
 #   受け取り手が入れない配布物を作らないため、管理者と閲覧者の初期のパスワードは固定値にし、
 #   配布物の中のガイド (STARTUP.md) に書く。乱数は使わない。
 #   平文はこのリポジトリのどこにも置かない。tools/dist-initial-credentials.local
@@ -505,7 +505,7 @@ open(path, "w", encoding="utf-8").write(new)
 print("[dist] 同梱の設定に管理者の初期のパスワードを書いた (cynovela.yaml auth.admin_initial_password)")
 PYYAML
 
-# DD-CYN-0070 N-4: 閲覧者の初期のパスワードも同じ形で書く。従来は管理者だけを書いており、
+# N-4: 閲覧者の初期のパスワードも同じ形で書く。従来は管理者だけを書いており、
 #   引数なし (本番) の閲覧者 seed (db.py・N-4 で demo 分岐の外へ移した) が乱数へ倒れ、
 #   ガイド (STARTUP.md) に書いた値では入れなかった。新しい値は作らない (ガイドと同じ値)。
 python - "$STAGE/$NAME/cynovela.yaml" "$VIEWER_PW" <<'PYYAML'
@@ -579,11 +579,11 @@ PY
 #   消える。落とすのは**通行証 (JWT) の署名鍵だけ**で、これは受け取り手ごとに
 #   config.py の _load_or_create_jwt_signing_key() が自動生成するので配る必要がない
 #   (共有すると他所で発行された通行証が通ってしまう)。パスを名指しで消す。
-# ── DD-CYN-0050: ダブルクリックの入口は .command のファイルである ──
-#   DD-CYN-0066 F-8: 以前ここに在った「ダイアログの .app」の説明を落とした。同梱をやめた
-#   のは DD-CYN-0050 であり、その原稿 (tools/launcher-app/launcher.applescript) は
+# ── ダブルクリックの入口は .command のファイルである ──
+#   F-8: 以前ここに在った「ダイアログの .app」の説明を落とした。同梱をやめた
+#   のは であり、その原稿 (tools/launcher-app/launcher.applescript) は
 #   本流に残してある。受け取り手が押す入口は、下の 3 つの .command だけである
-#   (DD-CYN-0071 決定 31-2 で、起動・停止に「取り込み元を足す」が加わった)。
+#   (決定 31-2 で、起動・停止に「取り込み元を足す」が加わった)。
 #   3つの .command は追跡ファイルのため git archive がそのまま同梱する。
 #   ダブルクリックで開くには実行ビットが必須のため、ここで確かめて確実に付ける。
 for _cmdf in "Cynovela-start.command" "Cynovela-stop.command" "Cynovela-add-folder.command"; do
@@ -613,7 +613,7 @@ rmdir "$STAGE/$NAME/store/backups" 2>/dev/null || true
 #   baseline-report.md は 2026-05-15 の調査ログ (作る側の home パスと conda 環境名が
 #   そのまま写っている)。受け取り手には使い道が無い。
 #   中身は当時の事実なのでツリー側は書き換えない。配布物から外すだけにする。
-# oldname-zero-20260731 (DD-CYN-0007): 退避先の覚え書き (旧名を含むファイル名) は
+# oldname-zero-20260731 (): 退避先の覚え書き (旧名を含むファイル名) は
 #   本流から外した。ここでその名前を書いていると、パッケージング処理そのものが配布物の中に
 #   旧名を持ち込んでしまう (受け入れの旧名検査が、この 1 行に当たっていた)。
 #   DEV-NOTE-mba.md は開発の覚え書きで、旧名と作る側のバックアップ先を含む。
@@ -633,7 +633,7 @@ rm -rf "$STAGE/$NAME/instructions" "$STAGE/$NAME/docs/spec-raw" \
        "$STAGE/$NAME/tests"
 rm -f "$STAGE/$NAME/MANIFEST-anchor-candidate-20260713.md" \
       "$STAGE/$NAME/deploy/k8s/20-deployment.yaml"
-# bundled-data-20260731 (DD-CYN-0007 B11): 過去の実行の一覧文書は、当時の作業ツリーの
+# bundled-data-20260731 (B11): 過去の実行の一覧文書は、当時の作業ツリーの
 #   数え上げ (資料30本 / 47,106 塊) をそのまま書いており、いま同梱するもの (dummy-corpus
 #   の資料と、そこから作った塊) とは別物である。過去の事実の記録なのでツリー側は
 #   書き換えず、ステージから落として、代わりに**この配布物の実際の数え上げ**を書き出す。

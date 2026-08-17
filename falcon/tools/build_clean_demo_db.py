@@ -244,7 +244,7 @@ def _relocate_source_paths(conn) -> dict:
 
 
 
-# ── N-1 (DD-CYN-0020): インデックス (chroma.sqlite3) に焼き込まれた絶対パスの正規化 ──────────
+# ── N-1 (): インデックス (chroma.sqlite3) に焼き込まれた絶対パスの正規化 ──────────
 # demo.db 側 (_relocate_source_paths) は 2026-07-28 から相対化しているが、インデックスの
 # embedding_metadata.file_path ほかには取り込み時の**絶対**パスがそのまま残る。
 # 実測 2026-08-02 (本流の作業ツリー・読み取りのみ):
@@ -507,7 +507,7 @@ def main(src: str, out: str, dump_dir: str | None = None,
     # 4c) mba-launch-20260728: 参照先 (sources.path ほか) を展開フォルダ相対へ改める
     relocated = _relocate_source_paths(conn)
 
-    # 4d) N-1 (DD-CYN-0020): インデックス (chroma.sqlite3) 側の絶対パスも同じ規則で相対へ改める。
+    # 4d) N-1 (): インデックス (chroma.sqlite3) 側の絶対パスも同じ規則で相対へ改める。
     #     demo.db だけ相対化しても、インデックスには取り込み時の絶対パスが焼き込まれたまま残る
     #     (実測 2026-08-02: 本流の作業ツリーで chewie 26,371 セル / falcon 26 セル)。
     _chroma_path = chroma if chroma is not None else _default_chroma_path(out)

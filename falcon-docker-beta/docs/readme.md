@@ -156,7 +156,6 @@ It contains none of the source code, trademarks, logos or official documentation
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -313,4 +312,3 @@ python server.py --demo --lmstudio-url http://localhost:1234
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

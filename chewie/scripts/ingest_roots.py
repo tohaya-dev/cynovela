@@ -19,7 +19,7 @@ root-name-reuse-20260729: ただし同じ host_path を外して再び追加し�
 used_names は旧形式 (名前だけの文字列配列) も読み込める。旧形式の項目は対応先不明として
 名前の予約だけを引き継ぎ、現に登録されているルートからは対応を補う。番号や符号を詰め直さない。
 
-portable-roots-20260808 (DD-CYN-0066 F-2 / 決定 9-3):
+portable-roots-20260808 (F-2 / 決定 9-3):
   バックアップに書く host_path には、配布物のルートディレクトリからの相対の書き方 "@app/<以下の道>" を置ける。
   パッケージングの場で書き込む**既定の取り込み元だけ**がこの形になる (tools/build-dist.sh が
   add --portable で書く)。受け取り手が自分で足したものは、従来どおりその機材の絶対パスで
@@ -151,7 +151,7 @@ def _load(path: str, repo: str | None = None) -> dict:  # noqa: C901
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
         except ValueError:
-            # DD-CYN-0039: _save の書き戻し (os.replace が使えない形態) の途中で落ちた
+            # _save の書き戻し (os.replace が使えない形態) の途中で落ちた
             # バックアップは本体が欠けるが、全文は .tmp 側に書き終わっている。そちらを読む。
             with open(path + ".tmp", "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -203,8 +203,8 @@ def _save(path: str, data: dict, repo: str | None = None) -> None:
     try:
         os.replace(tmp, path)
     except OSError:
-        # DD-CYN-0039: バックアップを1本の bind でコンテナへ渡す形態では、マウント点への
-        # os.replace が EBUSY で失敗する (DD-CYN-0038 項9)。tmp に全文が書き
+        # バックアップを1本の bind でコンテナへ渡す形態では、マウント点への
+        # os.replace が EBUSY で失敗する (項9)。tmp に全文が書き
         # 終わっているので同じファイルへ書き戻す。途中で落ちても tmp が完全な
         # バックアップとして残り、_load が拾う。
         with open(path, "w", encoding="utf-8") as f:

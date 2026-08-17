@@ -247,7 +247,7 @@ ALTER TABLE collections ADD COLUMN rag_mode TEXT;   -- 旧: raw_mode の保存�
 def split_chunks(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]:
     chunks = []
     start = 0
-    while start < len(text):
+    while start< len(text):
         end = start + chunk_size
         chunks.append(text[start:end])
         start = end - overlap
@@ -291,7 +291,6 @@ The old `classifier.py` defines the 8 categories PII / Financial / HR / Legal / 
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -540,7 +539,7 @@ ALTER TABLE collections ADD COLUMN rag_mode TEXT;   -- 旧: raw_mode の保存�
 def split_chunks(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]:
     chunks = []
     start = 0
-    while start < len(text):
+    while start< len(text):
         end = start + chunk_size
         chunks.append(text[start:end])
         start = end - overlap
@@ -584,4 +583,3 @@ RAG_STRATEGIES = {"simple", "hybrid_bm25", "contextual"}
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

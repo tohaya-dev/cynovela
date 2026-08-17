@@ -250,7 +250,6 @@ The body text in the raw side vault is stored encrypted with Fernet (symmetric k
 The next step is "hands-on (advanced)", which goes on to workspace separation, MCP (Model Context Protocol) integration, and so on.
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -501,4 +500,3 @@ raw 側保管庫の本文は Fernet（対称鍵暗号）で暗号化されて保
 次のステップは「ハンズオン（応用編）」で、ワークスペース分離・MCP（Model Context Protocol）連携などに進みます。
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

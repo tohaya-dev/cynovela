@@ -1,7 +1,7 @@
 #!/bin/bash
-# Cynovela 起動の入口の中身 (DD-CYN-0044 §5-2)
+# Cynovela 起動の入口の中身 (§5-2)
 #   Cynovela-start.command / Cynovela-stop.command が呼ぶ。端末からも同じものを叩ける。
-#   DD-CYN-0066 F-8: ここに書いてあった「Cynovela をはじめる.app」は DD-CYN-0050 で
+#   F-8: ここに書いてあった「Cynovela をはじめる.app」は で
 #   退けた入口である。いま在るのは 2 つの .command だけなので、名前を実物へ改めた。
 #   画面(ダイアログ)側は選ぶだけにし、待つ処理・状態の管理はすべてここで背景に持つ。
 #   ∴ 画面が出ている間も、起動を待っている間も、他のアプリの操作を妨げない。
@@ -12,7 +12,7 @@ FORM="host"                   # container = コンテナで動かす / host = �
 CORE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$CORE_DIR/../.." && pwd)"
 
-# DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
+# 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 #   コンテナの名前はここで1度だけ決め、止める・見る・組み立てる のすべてで同じ値を使う。
 CONF_REPO="$REPO"
 . "$REPO/tools/conf.sh"
@@ -22,7 +22,7 @@ STATE_FILE="$REPO/store/launch-app.state"
 LOG="$REPO/store/launch-app.log"
 mkdir -p "$REPO/store"
 
-# ---------- コンテナの実行エンジン (実行体) の解決 (DD-CYN-0048) ----------
+# ---------- コンテナの実行エンジン (実行体) の解決 () ----------
 #   アイコンから起動すると PATH が素の値になり、端末では見つかる podman が見つからない。
 #   決める順: ①設定/指定での明示 (在れば探索しない) ②podman → docker の探索 ③画面側で選んでもらう。
 #   探索は 受け継いだ PATH → ログインシェル → 決まった保存先 の3段。
@@ -67,7 +67,7 @@ engine_resolve() {  # 0=使える (ENGINE_PATH/ENGINE_NAME が入る) / 1=見つ
         esac
     else
         # 指定が無いときの既定は Podman だけを探す (決定 24-1)。
-        # Docker へ黙って倒れる分岐は撤去した (DD-CYN-0070 N-1・決定 30-2)。
+        # Docker へ黙って倒れる分岐は撤去した (N-1・決定 30-2)。
         ENGINE_PATH="$(_engine_find_one podman)"
     fi
     [ -z "$ENGINE_PATH" ] && return 1
@@ -220,9 +220,9 @@ cmd_start() {
 
     : >> "$LOG"
     local lpid
-    # DD-CYN-0053: 環境変数では何も渡さない。聞かずに進めることと、コンテナの名前と、
+    # 環境変数では何も渡さない。聞かずに進めることと、コンテナの名前と、
     # 保存先は、いずれも設定ファイル (cynovela.yaml) と指定 (--no-prompt) で伝える。
-    # DD-CYN-0053: 背景に投げたものを、この場から切り離す (disown)。
+    # 背景に投げたものを、この場から切り離す (disown)。
     #   切り離さないと、この入口のプロセスが本体の終わりまで居残る
     #   (アイコンで起動したあと、使い終わっても1本ずつ溜まっていく)。
     ( cd "$REPO" && { nohup ./launch.sh --no-prompt $args >> "$LOG" 2>&1 &
@@ -325,7 +325,7 @@ cmd_root_names() { cmd_list_roots | grep -o '"name": "[^"]*"' | cut -d'"' -f4; }
 cmd_add_root()   { ( cd "$REPO" && ./launch.sh --add-path "$1" 2>&1 ); }
 cmd_remove_root(){ ( cd "$REPO" && ./launch.sh --remove "$1" 2>&1 ); }
 
-# 実行エンジンの状態を1行で返す (DD-CYN-0048)。画面 (launcher.applescript) が読む。
+# 実行エンジンの状態を1行で返す ()。画面 (launcher.applescript) が読む。
 #   ENGINE=ok NAME=<名前> / ENGINE=not-running NAME=<名前> / ENGINE=not-found
 #   "engine set <パス>" は「場所を選ぶ」で指された実行ファイルを設定へ覚える。
 cmd_engine() {

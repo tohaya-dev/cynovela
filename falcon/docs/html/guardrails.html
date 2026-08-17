@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guardrails / guardrails — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardrails / guardrails — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --cyn-bg:           #f5f6f8;
@@ -180,190 +180,190 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Cynovela Guardrails</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Cynovela Guardrails</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning purposes</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">About This Document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About This Document</strong><br>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">About This Document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About This Document</strong><br>
       Cynovela is a completely unofficial learning tool, built by an individual to understand the concepts behind AI platform tools by hands-on work. It is not a commercial product nor an official implementation. Everything is originally implemented, on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">1. How the Guardrails Work</span>
-  </div>
-  <div class="slide-body">
-    <p>The guardrail (a mechanism that detects and stops inappropriate input and output on the LLM path) works in Cynovela for the following three purposes.</p>
-    <ol>
-      <li><strong>Ingest phase</strong>: at publish time, the PII (personal information) contained in the body text of each chunk is detected, and according to the policy one of "mask it", "exclude it from the vector DB", "only leave a log", or "let it through" is selected.</li>
-      <li><strong>Query acceptance phase</strong>: if there is a sign of prompt injection in the query of the user, it is blocked immediately with 400.</li>
-      <li><strong>Answer generation phase</strong>: the response text of the LLM is inspected for wording that carries confidential information out, and it is recorded on detection.</li>
-    </ol>
-    <p><strong>Removed (2026-07-24)</strong>: the former "ingest without masking" (Raw mode, <code>collections.raw_only</code>) has been removed. Ingest always goes through masking, and search always reads the masked layer. The column is kept for the preservation of past data.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">1. How the Guardrails Work</span>
+</div>
+<div class="slide-body">
+<p>The guardrail (a mechanism that detects and stops inappropriate input and output on the LLM path) works in Cynovela for the following three purposes.</p>
+<ol>
+<li><strong>Ingest phase</strong>: at publish time, the PII (personal information) contained in the body text of each chunk is detected, and according to the policy one of "mask it", "exclude it from the vector DB", "only leave a log", or "let it through" is selected.</li>
+<li><strong>Query acceptance phase</strong>: if there is a sign of prompt injection in the query of the user, it is blocked immediately with 400.</li>
+<li><strong>Answer generation phase</strong>: the response text of the LLM is inspected for wording that carries confidential information out, and it is recorded on detection.</li>
+</ol>
+<p><strong>Removed (2026-07-24)</strong>: the former "ingest without masking" (Raw mode,<code>collections.raw_only</code>) has been removed. Ingest always goes through masking, and search always reads the masked layer. The column is kept for the preservation of past data.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">1.1 Entry Points / 1.2 Policy Structure</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>1.1 Entry points</h3>
-    <table>
-      <thead><tr><th>Path</th><th>What is configured</th><th>Operation API</th></tr></thead>
-      <tbody>
-        <tr><td>Workspace policy</td><td>Defines classification × action in a policy bound to a workspace</td><td><code>/api/policies/*</code> (admin only)</td></tr>
-        <tr><td>Blocked topics</td><td>block / warn on strings contained in the query</td><td><code>/api/guardrails/blocked-topics</code> (admin only)</td></tr>
-        <tr><td>Prompt injection inspection</td><td>14 English and Japanese patterns built into the code + 4 output patterns</td><td>Fixed in code (<code>routers/chat.py:55-91</code>)</td></tr>
-      </tbody>
-    </table>
-    <h3>1.2 The triple of policy × classification × action</h3>
-    <p>One policy (for example <code>pol-pii</code>) is expressed as JSON that defines an action for each classification class.</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">1.1 Entry Points / 1.2 Policy Structure</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>1.1 Entry points</h3>
+<table>
+<thead><tr><th>Path</th><th>What is configured</th><th>Operation API</th></tr></thead>
+<tbody>
+<tr><td>Workspace policy</td><td>Defines classification × action in a policy bound to a workspace</td><td><code>/api/policies/*</code> (admin only)</td></tr>
+<tr><td>Blocked topics</td><td>block / warn on strings contained in the query</td><td><code>/api/guardrails/blocked-topics</code> (admin only)</td></tr>
+<tr><td>Prompt injection inspection</td><td>14 English and Japanese patterns built into the code + 4 output patterns</td><td>Fixed in code (<code>routers/chat.py:55-91</code>)</td></tr>
+</tbody>
+</table>
+<h3>1.2 The triple of policy × classification × action</h3>
+<p>One policy (for example<code>pol-pii</code>) is expressed as JSON that defines an action for each classification class.</p>
 <pre><code>[
   {"classifier": "PII", "action": "mask"},
   {"classifier": "Financial", "action": "exclude_from_rag"}
 ]</code></pre>
-    <p>A policy is bound to a workspace (the <code>workspace_policies</code> table) and is applied to publishes under that workspace.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<p>A policy is bound to a workspace (the<code>workspace_policies</code> table) and is applied to publishes under that workspace.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">2. Categories (Classification Classes)</span>
-  </div>
-  <div class="slide-body">
-    <p>Three classification classes can be confirmed from the seed data of <code>db.py:855 / 861 / 867</code>.</p>
-    <table>
-      <thead><tr><th>Classification name</th><th>Meaning</th><th>Example of how it is used</th></tr></thead>
-      <tbody>
-        <tr><td><code>PII</code></td><td>Personal information in general (name, contact details, account number, etc.)</td><td>Targeted by all three seed policies <code>pol-pii</code>, <code>pol-strict</code>, and <code>pol-log</code></td></tr>
-        <tr><td><code>Financial</code></td><td>Financial and transaction information (credit card numbers, etc.)</td><td>Same as above</td></tr>
-        <tr><td><code>HR</code></td><td>Human resources information</td><td>Targeted only by <code>pol-strict</code> (<code>exclude_from_rag</code>)</td></tr>
-      </tbody>
-    </table>
-    <p>The old <code>classifier.py</code> also has definitions for the eight categories PII / Financial / HR / Legal / Healthcare / Sales / Technical / Marketing, but that is a separate line from Smart Ingestion (classification of the document type at ingest time); the seeds actually used on the guardrail side are the three above.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">2. Categories (Classification Classes)</span>
+</div>
+<div class="slide-body">
+<p>Three classification classes can be confirmed from the seed data of<code>db.py:855 / 861 / 867</code>.</p>
+<table>
+<thead><tr><th>Classification name</th><th>Meaning</th><th>Example of how it is used</th></tr></thead>
+<tbody>
+<tr><td><code>PII</code></td><td>Personal information in general (name, contact details, account number, etc.)</td><td>Targeted by all three seed policies<code>pol-pii</code>,<code>pol-strict</code>, and<code>pol-log</code></td></tr>
+<tr><td><code>Financial</code></td><td>Financial and transaction information (credit card numbers, etc.)</td><td>Same as above</td></tr>
+<tr><td><code>HR</code></td><td>Human resources information</td><td>Targeted only by<code>pol-strict</code> (<code>exclude_from_rag</code>)</td></tr>
+</tbody>
+</table>
+<p>The old<code>classifier.py</code> also has definitions for the eight categories PII / Financial / HR / Legal / Healthcare / Sales / Technical / Marketing, but that is a separate line from Smart Ingestion (classification of the document type at ingest time); the seeds actually used on the guardrail side are the three above.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">3. Initial Policies (Seeds)</span>
-  </div>
-  <div class="slide-body">
-    <p>Three initial policies are seeded at <code>db.py:851-870</code>.</p>
-    <table>
-      <thead><tr><th>Policy ID</th><th>Display name</th><th>Definition</th></tr></thead>
-      <tbody>
-        <tr><td><code>pol-pii</code></td><td>PII protection policy</td><td>PII: mask, Financial: exclude_from_rag</td></tr>
-        <tr><td><code>pol-strict</code></td><td>Strict control policy</td><td>PII: mask, Financial: exclude_from_rag, HR: exclude_from_rag</td></tr>
-        <tr><td><code>pol-log</code></td><td>Log-only policy</td><td>PII: log_only, Financial: log_only</td></tr>
-      </tbody>
-    </table>
-    <p>By default they are not bound to any workspace. They are assigned and used when a workspace is created.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">3. Initial Policies (Seeds)</span>
+</div>
+<div class="slide-body">
+<p>Three initial policies are seeded at<code>db.py:851-870</code>.</p>
+<table>
+<thead><tr><th>Policy ID</th><th>Display name</th><th>Definition</th></tr></thead>
+<tbody>
+<tr><td><code>pol-pii</code></td><td>PII protection policy</td><td>PII: mask, Financial: exclude_from_rag</td></tr>
+<tr><td><code>pol-strict</code></td><td>Strict control policy</td><td>PII: mask, Financial: exclude_from_rag, HR: exclude_from_rag</td></tr>
+<tr><td><code>pol-log</code></td><td>Log-only policy</td><td>PII: log_only, Financial: log_only</td></tr>
+</tbody>
+</table>
+<p>By default they are not bound to any workspace. They are assigned and used when a workspace is created.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">4. Kinds of Actions</span>
-  </div>
-  <div class="slide-body">
-    <p><code>valid_actions</code> at <code>routers/policies.py:201</code> is the authoritative definition.</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">4. Kinds of Actions</span>
+</div>
+<div class="slide-body">
+<p><code>valid_actions</code> at<code>routers/policies.py:201</code> is the authoritative definition.</p>
 <pre><code>valid_actions = {"mask", "exclude_from_rag", "log_only", "allow"}</code></pre>
-    <table>
-      <thead><tr><th>Action</th><th>Behavior</th><th>Use case</th></tr></thead>
-      <tbody>
-        <tr><td><code>mask</code></td><td>Replaces the matched part with <code>[MASKED:XXX]</code> before storing</td><td>You want to keep most of the document body usable while hiding only the personal information</td></tr>
-        <tr><td><code>exclude_from_rag</code></td><td>Does not insert the matched chunk into the vector DB</td><td>A classification that "must not be included in the search targets at all"</td></tr>
-        <tr><td><code>log_only</code></td><td>Detects but neither masks nor excludes; records only into <code>audit_logs</code></td><td>For learning and for collecting statistics</td></tr>
-        <tr><td><code>allow</code></td><td>Does nothing</td><td>A classification you want to let through as an exception</td></tr>
-      </tbody>
-    </table>
-    <p>The actual dispatch is done at <code>guardrail.py:31-90</code> (the <code>exclude_from_rag</code> / <code>mask</code> branch).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<table>
+<thead><tr><th>Action</th><th>Behavior</th><th>Use case</th></tr></thead>
+<tbody>
+<tr><td><code>mask</code></td><td>Replaces the matched part with<code>[MASKED:XXX]</code> before storing</td><td>You want to keep most of the document body usable while hiding only the personal information</td></tr>
+<tr><td><code>exclude_from_rag</code></td><td>Does not insert the matched chunk into the vector DB</td><td>A classification that "must not be included in the search targets at all"</td></tr>
+<tr><td><code>log_only</code></td><td>Detects but neither masks nor excludes; records only into<code>audit_logs</code></td><td>For learning and for collecting statistics</td></tr>
+<tr><td><code>allow</code></td><td>Does nothing</td><td>A classification you want to let through as an exception</td></tr>
+</tbody>
+</table>
+<p>The actual dispatch is done at<code>guardrail.py:31-90</code> (the<code>exclude_from_rag</code> /<code>mask</code> branch).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">4.1 Actions on the Blocked Topics Side</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p>Blocked topics added through <code>/api/guardrails/blocked-topics</code> take actions of a separate line.</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">4.1 Actions on the Blocked Topics Side</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p>Blocked topics added through<code>/api/guardrails/blocked-topics</code> take actions of a separate line.</p>
 <pre><code>if act not in ("block", "warn"):
     raise api_error("BAD_REQUEST", "action must be 'block' or 'warn'", status=400)</code></pre>
-    <table>
-      <thead><tr><th>Action</th><th>Behavior</th></tr></thead>
-      <tbody>
-        <tr><td><code>block</code></td><td>Blocks a query that contains the matched pattern</td></tr>
-        <tr><td><code>warn</code></td><td>Lets it through but records it as a warning</td></tr>
-      </tbody>
-    </table>
-    <p>Registration as a regular expression is also possible (<code>is_regex=true</code>); if there is an error at compile time, 400 is returned with <code>INVALID_REGEX</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<table>
+<thead><tr><th>Action</th><th>Behavior</th></tr></thead>
+<tbody>
+<tr><td><code>block</code></td><td>Blocks a query that contains the matched pattern</td></tr>
+<tr><td><code>warn</code></td><td>Lets it through but records it as a warning</td></tr>
+</tbody>
+</table>
+<p>Registration as a regular expression is also possible (<code>is_regex=true</code>); if there is an error at compile time, 400 is returned with<code>INVALID_REGEX</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">5. Three-Layer Defense Against Prompt Injection</span>
-  </div>
-  <div class="slide-body">
-    <p>The following three stages of inspection are implemented in <code>routers/chat.py</code>.</p>
-    <h3>5.1 Input inspection (detect_prompt_injection)</h3>
-    <p><code>routers/chat.py:55-91</code>. If the query contains any of the following 14 English and Japanese patterns, it is blocked immediately with 400 and <code>PROMPT_INJECTION_BLOCKED</code> is recorded in <code>audit_logs</code>.</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">5. Three-Layer Defense Against Prompt Injection</span>
+</div>
+<div class="slide-body">
+<p>The following three stages of inspection are implemented in<code>routers/chat.py</code>.</p>
+<h3>5.1 Input inspection (detect_prompt_injection)</h3>
+<p><code>routers/chat.py:55-91</code>. If the query contains any of the following 14 English and Japanese patterns, it is blocked immediately with 400 and<code>PROMPT_INJECTION_BLOCKED</code> is recorded in<code>audit_logs</code>.</p>
 <pre><code>INJECTION_PATTERNS = [
     r"ignore\s+(previous|all|prior)\s+instructions?",
     r"forget\s+(everything|all|previous)",
@@ -380,103 +380,103 @@ a:hover { text-decoration: underline; }
     r"これまでの指示を(無視|忘れて)",
     r"(全ての|すべての)(ドキュメント|文書|データ)を(教えて|表示)",
 ]</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">5.2 Retrieval Result Inspection / 5.3 Output Inspection</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>5.2 Retrieval result inspection (filter_poisoned_chunks)</h3>
-    <p><code>routers/chat.py:94-111</code>. The same pattern inspection is performed on the body text of the chunks obtained as search results, and the matched chunks are excluded before the context is assembled (<code>routers/chat.py:1268</code>). This is a countermeasure against "indirect attacks in which injection wording is planted in the body text of a document".</p>
-    <h3>5.3 Output inspection (detect_output_exfiltration)</h3>
-    <p><code>routers/chat.py:114-125</code>. The response text of the LLM is inspected for the following 4 patterns, and it is recorded on detection.</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">5.2 Retrieval Result Inspection / 5.3 Output Inspection</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<h3>5.2 Retrieval result inspection (filter_poisoned_chunks)</h3>
+<p><code>routers/chat.py:94-111</code>. The same pattern inspection is performed on the body text of the chunks obtained as search results, and the matched chunks are excluded before the context is assembled (<code>routers/chat.py:1268</code>). This is a countermeasure against "indirect attacks in which injection wording is planted in the body text of a document".</p>
+<h3>5.3 Output inspection (detect_output_exfiltration)</h3>
+<p><code>routers/chat.py:114-125</code>. The response text of the LLM is inspected for the following 4 patterns, and it is recorded on detection.</p>
 <pre><code>EXFILTRATION_PATTERNS = [
     r"\bHACKED\b",
     r"\bPWNED\b",
     r"SECRET-ALPHA-TOKEN",
     r"\[\s*SYSTEM\s+OVERRIDE\s*\]",
 ]</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">5.4-5.5 Verification and the LLM Judge</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>5.4 Security verification</h3>
-    <p>Verified against international AI security evaluation criteria, including countermeasures against indirect attacks through documents.</p>
-    <h3>5.5 Auxiliary means: the LLM judge</h3>
-    <p><code>llm_judge_pi(text)</code> at <code>utils/metadata/pii.py:263</code> also provides a mechanism that makes an additional LLM-judge-based decision on patterns that regular expressions cannot fully catch (introduced in Stage R7 C-5).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">5.4-5.5 Verification and the LLM Judge</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<h3>5.4 Security verification</h3>
+<p>Verified against international AI security evaluation criteria, including countermeasures against indirect attacks through documents.</p>
+<h3>5.5 Auxiliary means: the LLM judge</h3>
+<p><code>llm_judge_pi(text)</code> at<code>utils/metadata/pii.py:263</code> also provides a mechanism that makes an additional LLM-judge-based decision on patterns that regular expressions cannot fully catch (introduced in Stage R7 C-5).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-12">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">6. Placement of the System Prompt</span>
-  </div>
-  <div class="slide-body">
-    <p>As an important principle of the design, <strong>the system prompt (the operating instructions given to the LLM in advance) is placed "after" the retrieved content (the body text of the retrieved documents)</strong>.</p>
-    <p>If it were placed in front, a path would be created in which it can be overwritten by wording such as <code>[SYSTEM OVERRIDE]</code> written inside the body text of a document.</p>
-    <blockquote><strong>Principle</strong>: place the system prompt "after" retrieved_content. If it is placed in front, it becomes overwritable by a document.</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">6. Placement of the System Prompt</span>
+</div>
+<div class="slide-body">
+<p>As an important principle of the design,<strong>the system prompt (the operating instructions given to the LLM in advance) is placed "after" the retrieved content (the body text of the retrieved documents)</strong>.</p>
+<p>If it were placed in front, a path would be created in which it can be overwritten by wording such as<code>[SYSTEM OVERRIDE]</code> written inside the body text of a document.</p>
+<blockquote><strong>Principle</strong>: place the system prompt "after" retrieved_content. If it is placed in front, it becomes overwritable by a document.</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-13">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">7. Audit Log (audit_logs)</span>
-  </div>
-  <div class="slide-body">
-    <p>Events where a guardrail fired are recorded in the <code>audit_logs</code> table. In <code>_AUDIT_CATEGORY_MAP</code> at <code>core/audit.py:15</code>, <code>PROMPT_INJECTION_BLOCKED</code> and <code>pii_detected</code> are mapped to the <code>security</code> category.</p>
-    <blockquote><code>audit_logs</code> is made so that it <strong>cannot be deleted or modified through the API</strong>; tamper prevention is built into the design.</blockquote>
-    <p>There are the following two lines of aggregation endpoints (both are admin only):</p>
-    <ul>
-      <li><code>/api/guardrails/pii-detections</code> (GET): aggregates PII detections from <code>audit_logs</code></li>
-      <li><code>/api/pii-detections</code> (GET): aggregates per document from the <code>chunks</code> table</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">7. Audit Log (audit_logs)</span>
+</div>
+<div class="slide-body">
+<p>Events where a guardrail fired are recorded in the<code>audit_logs</code> table. In<code>_AUDIT_CATEGORY_MAP</code> at<code>core/audit.py:15</code>,<code>PROMPT_INJECTION_BLOCKED</code> and<code>pii_detected</code> are mapped to the<code>security</code> category.</p>
+<blockquote><code>audit_logs</code> is made so that it<strong>cannot be deleted or modified through the API</strong>; tamper prevention is built into the design.</blockquote>
+<p>There are the following two lines of aggregation endpoints (both are admin only):</p>
+<ul>
+<li><code>/api/guardrails/pii-detections</code> (GET): aggregates PII detections from<code>audit_logs</code></li>
+<li><code>/api/pii-detections</code> (GET): aggregates per document from the<code>chunks</code> table</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">8. How to Add a Custom Detector</span>
-  </div>
-  <div class="slide-body">
-    <h3>8.1 Adding a PII regular expression</h3>
-    <p>Add a tuple of <code>(entity_type, re.compile(pattern), mask_token)</code> to the list at <code>guardrail.py:137-153</code>.</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">8. How to Add a Custom Detector</span>
+</div>
+<div class="slide-body">
+<h3>8.1 Adding a PII regular expression</h3>
+<p>Add a tuple of<code>(entity_type, re.compile(pattern), mask_token)</code> to the list at<code>guardrail.py:137-153</code>.</p>
 <pre><code>("CUSTOM_ID", re.compile(r"\bCUST-\d{6}\b"), "[MASKED:CUSTOMID]"),</code></pre>
-    <p>The number of detections is aggregated into audit_logs and can be confirmed from <code>/api/guardrails/pii-detections</code>.</p>
-    <h3>8.2 Adding a guardrail category</h3>
-    <p>If you want to add a new classification class, include the new classification name in the policy JSON and POST it to <code>/api/policies</code>.</p>
+<p>The number of detections is aggregated into audit_logs and can be confirmed from<code>/api/guardrails/pii-detections</code>.</p>
+<h3>8.2 Adding a guardrail category</h3>
+<p>If you want to add a new classification class, include the new classification name in the policy JSON and POST it to<code>/api/policies</code>.</p>
 <pre><code>{
   "id": "pol-custom",
   "name": "カスタムポリシー",
@@ -486,216 +486,215 @@ a:hover { text-decoration: underline; }
   ],
   "status": "active"
 }</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">8.3-8.4 Blocked Topics and Injection</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>8.3 Adding a blocked topic</h3>
-    <p>POST to <code>/api/guardrails/blocked-topics</code> (admin only) with the pattern string and the action (<code>block</code> / <code>warn</code>), plus <code>is_regex=true</code> if needed.</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">8.3-8.4 Blocked Topics and Injection</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>8.3 Adding a blocked topic</h3>
+<p>POST to<code>/api/guardrails/blocked-topics</code> (admin only) with the pattern string and the action (<code>block</code> /<code>warn</code>), plus<code>is_regex=true</code> if needed.</p>
 <pre><code>{
   "pattern": "社外秘プロジェクトX",
   "action": "block",
   "is_regex": false
 }</code></pre>
-    <p>When registering as a regular expression, it is compiled in advance with the equivalent of <code>re.compile()</code>; if it is invalid, 400 is returned with <code>INVALID_REGEX</code>.</p>
-    <h3>8.4 Adding a prompt injection pattern</h3>
-    <p>Add the regular expression to the <code>INJECTION_PATTERNS</code> / <code>EXFILTRATION_PATTERNS</code> lists at <code>routers/chat.py:55-91</code>. Because they are built into the code, a restart is required after adding.</p>
-    <blockquote>Last updated: 2026-05-26 / Alpha GA edition</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<p>When registering as a regular expression, it is compiled in advance with the equivalent of<code>re.compile()</code>; if it is invalid, 400 is returned with<code>INVALID_REGEX</code>.</p>
+<h3>8.4 Adding a prompt injection pattern</h3>
+<p>Add the regular expression to the<code>INJECTION_PATTERNS</code> /<code>EXFILTRATION_PATTERNS</code> lists at<code>routers/chat.py:55-91</code>. Because they are built into the code, a restart is required after adding.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide cover" id="slide-16">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Cynovela ガードレール</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Cynovela ガードレール</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">1. ガードレールの仕組み</span>
-  </div>
-  <div class="slide-body">
-    <p>ガードレール（guardrail：LLM 経路で不適切な入力・出力を検出して止める仕組み）は、Cynovela において次の 3 つの目的で機能します。</p>
-    <ol>
-      <li><strong>取込フェーズ</strong>: Publish のときに各 chunk の本文に含まれる PII（個人情報）を検出し、ポリシーに応じて「マスクする」「ベクター DB から除外する」「ログだけ残す」「通す」のいずれかを選びます。</li>
-      <li><strong>クエリ受付フェーズ</strong>: ユーザのクエリにプロンプトインジェクションの兆候があれば即座に 400 で遮断します。</li>
-      <li><strong>回答生成フェーズ</strong>: LLM の応答テキストから機密情報持ち出し文言を検査し、検出時には記録します。</li>
-    </ol>
-    <p><strong>廃止（2026-07-24）</strong>: かつて存在した「マスキングなしで取り込む（Raw モード・<code>collections.raw_only</code>）」は廃止されました。取り込みは常にマスキングを経由し、検索は常にマスキング済みの層を引きます。過去データの列は保全のため残っています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">1. ガードレールの仕組み</span>
+</div>
+<div class="slide-body">
+<p>ガードレール（guardrail：LLM 経路で不適切な入力・出力を検出して止める仕組み）は、Cynovela において次の 3 つの目的で機能します。</p>
+<ol>
+<li><strong>取込フェーズ</strong>: Publish のときに各 chunk の本文に含まれる PII（個人情報）を検出し、ポリシーに応じて「マスクする」「ベクター DB から除外する」「ログだけ残す」「通す」のいずれかを選びます。</li>
+<li><strong>クエリ受付フェーズ</strong>: ユーザのクエリにプロンプトインジェクションの兆候があれば即座に 400 で遮断します。</li>
+<li><strong>回答生成フェーズ</strong>: LLM の応答テキストから機密情報持ち出し文言を検査し、検出時には記録します。</li>
+</ol>
+<p><strong>廃止（2026-07-24）</strong>: かつて存在した「マスキングなしで取り込む（Raw モード・<code>collections.raw_only</code>）」は廃止されました。取り込みは常にマスキングを経由し、検索は常にマスキング済みの層を引きます。過去データの列は保全のため残っています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">1.1 入口・1.2 ポリシー構造</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>1.1 入口</h3>
-    <table>
-      <thead><tr><th>経路</th><th>設定対象</th><th>操作 API</th></tr></thead>
-      <tbody>
-        <tr><td>Workspace ポリシー</td><td>Workspace に紐付くポリシーで分類×アクションを定義</td><td><code>/api/policies/*</code>（admin 限定）</td></tr>
-        <tr><td>禁止トピック</td><td>クエリに含まれた文字列を block / warn</td><td><code>/api/guardrails/blocked-topics</code>（admin 限定）</td></tr>
-        <tr><td>プロンプトインジェクション検査</td><td>コード組み込みの英日 14 パターン + 出力 4 パターン</td><td>コード固定（<code>routers/chat.py:55-91</code>）</td></tr>
-      </tbody>
-    </table>
-    <h3>1.2 ポリシー × 分類 × アクションの三項</h3>
-    <p>1 つのポリシー（例: <code>pol-pii</code>）は、分類クラスごとにアクションを定めた JSON で表現されます。</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">1.1 入口・1.2 ポリシー構造</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>1.1 入口</h3>
+<table>
+<thead><tr><th>経路</th><th>設定対象</th><th>操作 API</th></tr></thead>
+<tbody>
+<tr><td>Workspace ポリシー</td><td>Workspace に紐付くポリシーで分類×アクションを定義</td><td><code>/api/policies/*</code>（admin 限定）</td></tr>
+<tr><td>禁止トピック</td><td>クエリに含まれた文字列を block / warn</td><td><code>/api/guardrails/blocked-topics</code>（admin 限定）</td></tr>
+<tr><td>プロンプトインジェクション検査</td><td>コード組み込みの英日 14 パターン + 出力 4 パターン</td><td>コード固定（<code>routers/chat.py:55-91</code>）</td></tr>
+</tbody>
+</table>
+<h3>1.2 ポリシー × 分類 × アクションの三項</h3>
+<p>1 つのポリシー（例:<code>pol-pii</code>）は、分類クラスごとにアクションを定めた JSON で表現されます。</p>
 <pre><code>[
   {"classifier": "PII", "action": "mask"},
   {"classifier": "Financial", "action": "exclude_from_rag"}
 ]</code></pre>
-    <p>ポリシーは Workspace に紐付き（<code>workspace_policies</code> テーブル）、その Workspace 配下の Publish に対して適用されます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p>ポリシーは Workspace に紐付き（<code>workspace_policies</code> テーブル）、その Workspace 配下の Publish に対して適用されます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">2. カテゴリ（分類クラス）</span>
-  </div>
-  <div class="slide-body">
-    <p><code>db.py:855 / 861 / 867</code> のシードデータから確認できる分類クラスは 3 件です。</p>
-    <table>
-      <thead><tr><th>分類名</th><th>意味</th><th>使われ方の例</th></tr></thead>
-      <tbody>
-        <tr><td><code>PII</code></td><td>個人情報全般（氏名・連絡先・口座番号など）</td><td><code>pol-pii</code>・<code>pol-strict</code>・<code>pol-log</code> の全 3 シードポリシーで対象</td></tr>
-        <tr><td><code>Financial</code></td><td>財務・取引情報（クレジットカード番号等）</td><td>同上</td></tr>
-        <tr><td><code>HR</code></td><td>人事情報</td><td><code>pol-strict</code> のみで対象（<code>exclude_from_rag</code>）</td></tr>
-      </tbody>
-    </table>
-    <p>旧 <code>classifier.py</code> には PII / Financial / HR / Legal / Healthcare / Sales / Technical / Marketing の 8 カテゴリ定義もありますが、これは Smart Ingestion（取込時の文書種別分類）とは別系統で、ガードレール側で実際に使われているシードは上記 3 件です。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">2. カテゴリ（分類クラス）</span>
+</div>
+<div class="slide-body">
+<p><code>db.py:855 / 861 / 867</code> のシードデータから確認できる分類クラスは 3 件です。</p>
+<table>
+<thead><tr><th>分類名</th><th>意味</th><th>使われ方の例</th></tr></thead>
+<tbody>
+<tr><td><code>PII</code></td><td>個人情報全般（氏名・連絡先・口座番号など）</td><td><code>pol-pii</code>・<code>pol-strict</code>・<code>pol-log</code> の全 3 シードポリシーで対象</td></tr>
+<tr><td><code>Financial</code></td><td>財務・取引情報（クレジットカード番号等）</td><td>同上</td></tr>
+<tr><td><code>HR</code></td><td>人事情報</td><td><code>pol-strict</code> のみで対象（<code>exclude_from_rag</code>）</td></tr>
+</tbody>
+</table>
+<p>旧<code>classifier.py</code> には PII / Financial / HR / Legal / Healthcare / Sales / Technical / Marketing の 8 カテゴリ定義もありますが、これは Smart Ingestion（取込時の文書種別分類）とは別系統で、ガードレール側で実際に使われているシードは上記 3 件です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">3. 初期ポリシー（シード）</span>
-  </div>
-  <div class="slide-body">
-    <p><code>db.py:851-870</code> で 3 件の初期ポリシーがシードされます。</p>
-    <table>
-      <thead><tr><th>ポリシー ID</th><th>表示名</th><th>定義</th></tr></thead>
-      <tbody>
-        <tr><td><code>pol-pii</code></td><td>PII 保護ポリシー</td><td>PII: mask, Financial: exclude_from_rag</td></tr>
-        <tr><td><code>pol-strict</code></td><td>厳格管理ポリシー</td><td>PII: mask, Financial: exclude_from_rag, HR: exclude_from_rag</td></tr>
-        <tr><td><code>pol-log</code></td><td>ログのみポリシー</td><td>PII: log_only, Financial: log_only</td></tr>
-      </tbody>
-    </table>
-    <p>既定ではどのワークスペースにも紐付いていません。ワークスペースを作成するときに割り当てて使います。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">3. 初期ポリシー（シード）</span>
+</div>
+<div class="slide-body">
+<p><code>db.py:851-870</code> で 3 件の初期ポリシーがシードされます。</p>
+<table>
+<thead><tr><th>ポリシー ID</th><th>表示名</th><th>定義</th></tr></thead>
+<tbody>
+<tr><td><code>pol-pii</code></td><td>PII 保護ポリシー</td><td>PII: mask, Financial: exclude_from_rag</td></tr>
+<tr><td><code>pol-strict</code></td><td>厳格管理ポリシー</td><td>PII: mask, Financial: exclude_from_rag, HR: exclude_from_rag</td></tr>
+<tr><td><code>pol-log</code></td><td>ログのみポリシー</td><td>PII: log_only, Financial: log_only</td></tr>
+</tbody>
+</table>
+<p>既定ではどのワークスペースにも紐付いていません。ワークスペースを作成するときに割り当てて使います。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">4. アクション種別</span>
-  </div>
-  <div class="slide-body">
-    <p><code>routers/policies.py:201</code> の <code>valid_actions</code> が権威定義です。</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">4. アクション種別</span>
+</div>
+<div class="slide-body">
+<p><code>routers/policies.py:201</code> の<code>valid_actions</code> が権威定義です。</p>
 <pre><code>valid_actions = {"mask", "exclude_from_rag", "log_only", "allow"}</code></pre>
-    <table>
-      <thead><tr><th>アクション</th><th>動作</th><th>ユースケース</th></tr></thead>
-      <tbody>
-        <tr><td><code>mask</code></td><td>該当箇所を <code>[MASKED:XXX]</code> に置換してから保管</td><td>文書本文の大半を活かしつつ、個人情報だけ伏せたい</td></tr>
-        <tr><td><code>exclude_from_rag</code></td><td>該当 chunk をベクター DB に投入しない</td><td>「そもそも検索対象に含めたくない」分類</td></tr>
-        <tr><td><code>log_only</code></td><td>検出するがマスクも除外もしない、<code>audit_logs</code> にだけ記録</td><td>学習・統計収集目的</td></tr>
-        <tr><td><code>allow</code></td><td>何もしない</td><td>例外的に通したい分類</td></tr>
-      </tbody>
-    </table>
-    <p>実際の振り分けは <code>guardrail.py:31-90</code> で行われます（<code>exclude_from_rag</code> / <code>mask</code> 分岐）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<table>
+<thead><tr><th>アクション</th><th>動作</th><th>ユースケース</th></tr></thead>
+<tbody>
+<tr><td><code>mask</code></td><td>該当箇所を<code>[MASKED:XXX]</code> に置換してから保管</td><td>文書本文の大半を活かしつつ、個人情報だけ伏せたい</td></tr>
+<tr><td><code>exclude_from_rag</code></td><td>該当 chunk をベクター DB に投入しない</td><td>「そもそも検索対象に含めたくない」分類</td></tr>
+<tr><td><code>log_only</code></td><td>検出するがマスクも除外もしない、<code>audit_logs</code> にだけ記録</td><td>学習・統計収集目的</td></tr>
+<tr><td><code>allow</code></td><td>何もしない</td><td>例外的に通したい分類</td></tr>
+</tbody>
+</table>
+<p>実際の振り分けは<code>guardrail.py:31-90</code> で行われます（<code>exclude_from_rag</code> /<code>mask</code> 分岐）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-23">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">4.1 禁止トピック側のアクション</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p><code>/api/guardrails/blocked-topics</code> で追加する禁止トピックは別系統のアクションを取ります。</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">4.1 禁止トピック側のアクション</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p><code>/api/guardrails/blocked-topics</code> で追加する禁止トピックは別系統のアクションを取ります。</p>
 <pre><code>if act not in ("block", "warn"):
     raise api_error("BAD_REQUEST", "action must be 'block' or 'warn'", status=400)</code></pre>
-    <table>
-      <thead><tr><th>アクション</th><th>動作</th></tr></thead>
-      <tbody>
-        <tr><td><code>block</code></td><td>該当パターンを含むクエリを遮断</td></tr>
-        <tr><td><code>warn</code></td><td>通すが警告として記録</td></tr>
-      </tbody>
-    </table>
-    <p>正規表現での登録も可能（<code>is_regex=true</code>）で、コンパイル時にエラーがあると <code>INVALID_REGEX</code> で 400 を返します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<table>
+<thead><tr><th>アクション</th><th>動作</th></tr></thead>
+<tbody>
+<tr><td><code>block</code></td><td>該当パターンを含むクエリを遮断</td></tr>
+<tr><td><code>warn</code></td><td>通すが警告として記録</td></tr>
+</tbody>
+</table>
+<p>正規表現での登録も可能（<code>is_regex=true</code>）で、コンパイル時にエラーがあると<code>INVALID_REGEX</code> で 400 を返します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-24">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">5. プロンプトインジェクション 3 層防御</span>
-  </div>
-  <div class="slide-body">
-    <p><code>routers/chat.py</code> には次の 3 段階の検査が実装されています。</p>
-    <h3>5.1 入力検査（detect_prompt_injection）</h3>
-    <p><code>routers/chat.py:55-91</code>。クエリに次の英日 14 パターンが含まれていれば即時 400 で遮断し、<code>audit_logs</code> に <code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">5. プロンプトインジェクション 3 層防御</span>
+</div>
+<div class="slide-body">
+<p><code>routers/chat.py</code> には次の 3 段階の検査が実装されています。</p>
+<h3>5.1 入力検査（detect_prompt_injection）</h3>
+<p><code>routers/chat.py:55-91</code>。クエリに次の英日 14 パターンが含まれていれば即時 400 で遮断し、<code>audit_logs</code> に<code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
 <pre><code>INJECTION_PATTERNS = [
     r"ignore\s+(previous|all|prior)\s+instructions?",
     r"forget\s+(everything|all|previous)",
@@ -712,103 +711,103 @@ a:hover { text-decoration: underline; }
     r"これまでの指示を(無視|忘れて)",
     r"(全ての|すべての)(ドキュメント|文書|データ)を(教えて|表示)",
 ]</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-25">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">5.2 取得結果検査 / 5.3 出力検査</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>5.2 取得結果検査（filter_poisoned_chunks）</h3>
-    <p><code>routers/chat.py:94-111</code>。検索結果として取得した chunk 本文に対しても同じパターン検査を行い、context を組み立てる前に該当 chunk を除外します（<code>routers/chat.py:1268</code>）。これは「ドキュメント本文に注入文言を仕込まれる間接攻撃」への対策です。</p>
-    <h3>5.3 出力検査（detect_output_exfiltration）</h3>
-    <p><code>routers/chat.py:114-125</code>。LLM の応答テキストから次の 4 パターンを検査し、検出時に記録します。</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">5.2 取得結果検査 / 5.3 出力検査</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<h3>5.2 取得結果検査（filter_poisoned_chunks）</h3>
+<p><code>routers/chat.py:94-111</code>。検索結果として取得した chunk 本文に対しても同じパターン検査を行い、context を組み立てる前に該当 chunk を除外します（<code>routers/chat.py:1268</code>）。これは「ドキュメント本文に注入文言を仕込まれる間接攻撃」への対策です。</p>
+<h3>5.3 出力検査（detect_output_exfiltration）</h3>
+<p><code>routers/chat.py:114-125</code>。LLM の応答テキストから次の 4 パターンを検査し、検出時に記録します。</p>
 <pre><code>EXFILTRATION_PATTERNS = [
     r"\bHACKED\b",
     r"\bPWNED\b",
     r"SECRET-ALPHA-TOKEN",
     r"\[\s*SYSTEM\s+OVERRIDE\s*\]",
 ]</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-26">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">5.4-5.5 検証と LLM judge</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>5.4 セキュリティ検証</h3>
-    <p>国際的な AI セキュリティ評価指標に基づき検証済み、ドキュメント経由の間接攻撃対策を含みます。</p>
-    <h3>5.5 補助手段：LLM judge</h3>
-    <p><code>utils/metadata/pii.py:263</code> の <code>llm_judge_pi(text)</code> で、正規表現では拾いきれないパターンを LLM judge ベースで追加判定する機構も用意されています（Stage R7 C-5 で導入）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">5.4-5.5 検証と LLM judge</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<h3>5.4 セキュリティ検証</h3>
+<p>国際的な AI セキュリティ評価指標に基づき検証済み、ドキュメント経由の間接攻撃対策を含みます。</p>
+<h3>5.5 補助手段：LLM judge</h3>
+<p><code>utils/metadata/pii.py:263</code> の<code>llm_judge_pi(text)</code> で、正規表現では拾いきれないパターンを LLM judge ベースで追加判定する機構も用意されています（Stage R7 C-5 で導入）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-27">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">6. システムプロンプトの配置</span>
-  </div>
-  <div class="slide-body">
-    <p>設計上の重要原則として、<strong>システムプロンプト（事前指定された LLM の動作指示）は retrieved content（取得した文書本文）の「後」に配置します</strong>。</p>
-    <p>前に置くとドキュメント本文の中に書かれた <code>[SYSTEM OVERRIDE]</code> などの文言で上書きされる経路ができてしまうためです。</p>
-    <blockquote><strong>原則</strong>: システムプロンプトは retrieved_content の「後」に配置すること。前に置くと文書で上書き可能になる。</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">6. システムプロンプトの配置</span>
+</div>
+<div class="slide-body">
+<p>設計上の重要原則として、<strong>システムプロンプト（事前指定された LLM の動作指示）は retrieved content（取得した文書本文）の「後」に配置します</strong>。</p>
+<p>前に置くとドキュメント本文の中に書かれた<code>[SYSTEM OVERRIDE]</code> などの文言で上書きされる経路ができてしまうためです。</p>
+<blockquote><strong>原則</strong>: システムプロンプトは retrieved_content の「後」に配置すること。前に置くと文書で上書き可能になる。</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-28">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">7. 監査ログ（audit_logs）</span>
-  </div>
-  <div class="slide-body">
-    <p>ガードレールが発火したイベントは <code>audit_logs</code> テーブルに記録されます。<code>core/audit.py:15</code> の <code>_AUDIT_CATEGORY_MAP</code> で <code>PROMPT_INJECTION_BLOCKED</code> と <code>pii_detected</code> は <code>security</code> カテゴリにマップされます。</p>
-    <blockquote><code>audit_logs</code> は <strong>API 経由での削除・変更ができない</strong>ようになっており、改ざん防止が設計に組み込まれています。</blockquote>
-    <p>集計エンドポイントは次の 2 系統です（いずれも admin 限定）：</p>
-    <ul>
-      <li><code>/api/guardrails/pii-detections</code>（GET）: <code>audit_logs</code> から PII 検出を集計</li>
-      <li><code>/api/pii-detections</code>（GET）: <code>chunks</code> テーブルからドキュメント単位で集計</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">7. 監査ログ（audit_logs）</span>
+</div>
+<div class="slide-body">
+<p>ガードレールが発火したイベントは<code>audit_logs</code> テーブルに記録されます。<code>core/audit.py:15</code> の<code>_AUDIT_CATEGORY_MAP</code> で<code>PROMPT_INJECTION_BLOCKED</code> と<code>pii_detected</code> は<code>security</code> カテゴリにマップされます。</p>
+<blockquote><code>audit_logs</code> は<strong>API 経由での削除・変更ができない</strong>ようになっており、改ざん防止が設計に組み込まれています。</blockquote>
+<p>集計エンドポイントは次の 2 系統です（いずれも admin 限定）：</p>
+<ul>
+<li><code>/api/guardrails/pii-detections</code>（GET）:<code>audit_logs</code> から PII 検出を集計</li>
+<li><code>/api/pii-detections</code>（GET）:<code>chunks</code> テーブルからドキュメント単位で集計</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-29">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">8. カスタム検出器の追加方法</span>
-  </div>
-  <div class="slide-body">
-    <h3>8.1 PII 正規表現の追加</h3>
-    <p><code>guardrail.py:137-153</code> のリストに <code>(entity_type, re.compile(pattern), mask_token)</code> のタプルを追加します。</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">8. カスタム検出器の追加方法</span>
+</div>
+<div class="slide-body">
+<h3>8.1 PII 正規表現の追加</h3>
+<p><code>guardrail.py:137-153</code> のリストに<code>(entity_type, re.compile(pattern), mask_token)</code> のタプルを追加します。</p>
 <pre><code>("CUSTOM_ID", re.compile(r"\bCUST-\d{6}\b"), "[MASKED:CUSTOMID]"),</code></pre>
-    <p>検出件数は audit_logs に集計され、<code>/api/guardrails/pii-detections</code> から確認できます。</p>
-    <h3>8.2 ガードレールカテゴリの追加</h3>
-    <p>新しい分類クラスを追加したい場合は、ポリシー JSON に新規分類名を含めて <code>/api/policies</code> に POST します。</p>
+<p>検出件数は audit_logs に集計され、<code>/api/guardrails/pii-detections</code> から確認できます。</p>
+<h3>8.2 ガードレールカテゴリの追加</h3>
+<p>新しい分類クラスを追加したい場合は、ポリシー JSON に新規分類名を含めて<code>/api/policies</code> に POST します。</p>
 <pre><code>{
   "id": "pol-custom",
   "name": "カスタムポリシー",
@@ -818,43 +817,42 @@ a:hover { text-decoration: underline; }
   ],
   "status": "active"
 }</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-30">
-  <div class="slide-header">
-    <span class="doc-name">guardrails</span>
-    <span class="slide-title">8.3-8.4 禁止トピック・インジェクション</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>8.3 禁止トピックの追加</h3>
-    <p><code>/api/guardrails/blocked-topics</code>（POST、admin 限定）にパターン文字列とアクション（<code>block</code> / <code>warn</code>）、必要なら <code>is_regex=true</code> を付けて投げます。</p>
+<div class="slide-header">
+<span class="doc-name">guardrails</span>
+<span class="slide-title">8.3-8.4 禁止トピック・インジェクション</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>8.3 禁止トピックの追加</h3>
+<p><code>/api/guardrails/blocked-topics</code>（POST、admin 限定）にパターン文字列とアクション（<code>block</code> /<code>warn</code>）、必要なら<code>is_regex=true</code> を付けて投げます。</p>
 <pre><code>{
   "pattern": "社外秘プロジェクトX",
   "action": "block",
   "is_regex": false
 }</code></pre>
-    <p>正規表現として登録する場合は事前に <code>re.compile()</code> 相当でコンパイルされ、無効なら <code>INVALID_REGEX</code> で 400 が返ります。</p>
-    <h3>8.4 プロンプトインジェクションパターンの追加</h3>
-    <p><code>routers/chat.py:55-91</code> の <code>INJECTION_PATTERNS</code> / <code>EXFILTRATION_PATTERNS</code> リストに正規表現を追加します。コード組み込みのため、追加後は再起動が必要です。</p>
-    <blockquote>最終更新: 2026-05-26 / Alpha GA 対応版</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p>正規表現として登録する場合は事前に<code>re.compile()</code> 相当でコンパイルされ、無効なら<code>INVALID_REGEX</code> で 400 が返ります。</p>
+<h3>8.4 プロンプトインジェクションパターンの追加</h3>
+<p><code>routers/chat.py:55-91</code> の<code>INJECTION_PATTERNS</code> /<code>EXFILTRATION_PATTERNS</code> リストに正規表現を追加します。コード組み込みのため、追加後は再起動が必要です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 30</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 30</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

@@ -1,4 +1,4 @@
-// admin.js - Cynovela v13
+// admin.js
 
 function roleLevel(role) { return { admin:2, viewer:1 }[role] || 0; }
 

@@ -216,104 +216,104 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;bac
 <!-- This screen is bilingual: every label carries a span.en (English) and a span.ja (日本語) pair. -->
 <body class="lang-ja">
 <div class="shell">
-  <header class="topbar">
-    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5L16 9" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div><h1>Cynovela Trust Console</h1><p><span class="en">AI transparency proof layer for local RAG</span><span class="ja">ローカルRAGの「信頼の見える化」</span></p></div></div>
-    <div class="acts">
-      <span class="pill ok" id="llmPill"><span class="dot"></span><span id="llmPillTxt">Local LLM</span></span>
-      <span class="pill ai"><svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="6" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="18" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M8 11 16 7M8 13l8 4" stroke="currentColor" stroke-width="1.4"/></svg>MCP&nbsp;<span class="mono" id="mcpVal">—</span></span>
-      <button class="tbtn" id="themeBtn" data-title-en="Toggle light / dark" data-title-ja="ライト/ダーク切替" title="Toggle light / dark / ライト/ダーク切替"><svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M21 12.8A8 8 0 1 1 11.2 3 6.2 6.2 0 0 0 21 12.8Z"/></svg></button>
-    </div>
-  </header>
+<header class="topbar">
+<div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5L16 9" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div><h1>Cynovela Trust Console</h1><p><span class="en">AI transparency proof layer for local RAG</span><span class="ja">ローカルRAGの「信頼の見える化」</span></p></div></div>
+<div class="acts">
+<span class="pill ok" id="llmPill"><span class="dot"></span><span id="llmPillTxt">Local LLM</span></span>
+<span class="pill ai"><svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="6" r="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="18" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M8 11 16 7M8 13l8 4" stroke="currentColor" stroke-width="1.4"/></svg>MCP&nbsp;<span class="mono" id="mcpVal">—</span></span>
+<button class="tbtn" id="themeBtn" data-title-en="Toggle light / dark" data-title-ja="ライト/ダーク切替" title="Toggle light / dark / ライト/ダーク切替"><svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M21 12.8A8 8 0 1 1 11.2 3 6.2 6.2 0 0 0 21 12.8Z"/></svg></button>
+</div>
+</header>
 
-  <section class="hero">
-    <div class="hcard reactor">
-      <div class="core"><div class="halo"></div>
-        <svg viewBox="0 0 200 200"><defs><linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--ok)"/><stop offset="1" stop-color="var(--info)"/></linearGradient></defs>
-          <circle class="ringtrk" cx="100" cy="100" r="78"/><circle class="ringval" id="trustRing" cx="100" cy="100" r="78"/><circle class="orbit" cx="100" cy="100" r="92"/></svg>
-        <div class="mid"><div class="lab">Data Trust Score</div><div class="n"><span id="m-trust">—</span><small>/100</small></div><div class="st" id="m-trust-state"><span class="en">Measuring</span><span class="ja">計測中</span></div></div>
-      </div>
-      <div class="rband">
-        <div class="rbar"><span class="rmark" id="trustMark" style="left:0%"></span></div>
-        <div class="rbl"><span><span class="en">Risk</span><span class="ja">危険</span></span><span><span class="en">Guarded</span><span class="ja">要対処</span></span><span><span class="en">Good</span><span class="ja">良好</span></span><span><span class="en">Excellent</span><span class="ja">優秀</span></span></div>
-        <div class="rnow" id="m-trust-band"><span class="en">Aggregating trust score…</span><span class="ja">信頼スコアを集計中…</span></div>
-        <div class="rhint" id="m-trust-hint" data-title-en="Equal-weight average of measured axes. Policy contribution = assignment rate (share of workspaces with a policy)." data-title-ja="計測できた軸の等重み平均。ポリシー寄与=割り当て率（設定済WSの割合）。" title="Equal-weight average of measured axes. Policy contribution = assignment rate (share of workspaces with a policy). / 計測できた軸の等重み平均。ポリシー寄与=割り当て率（設定済WSの割合）。"><span class="en">Average of measured axes (loading breakdown…)</span><span class="ja">計測軸の平均（内訳を読み込み中…）</span></div>
-      </div>
-    </div>
+<section class="hero">
+<div class="hcard reactor">
+<div class="core"><div class="halo"></div>
+<svg viewBox="0 0 200 200"><defs><linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--ok)"/><stop offset="1" stop-color="var(--info)"/></linearGradient></defs>
+<circle class="ringtrk" cx="100" cy="100" r="78"/><circle class="ringval" id="trustRing" cx="100" cy="100" r="78"/><circle class="orbit" cx="100" cy="100" r="92"/></svg>
+<div class="mid"><div class="lab">Data Trust Score</div><div class="n"><span id="m-trust">—</span><small>/100</small></div><div class="st" id="m-trust-state"><span class="en">Measuring</span><span class="ja">計測中</span></div></div>
+</div>
+<div class="rband">
+<div class="rbar"><span class="rmark" id="trustMark" style="left:0%"></span></div>
+<div class="rbl"><span><span class="en">Risk</span><span class="ja">危険</span></span><span><span class="en">Guarded</span><span class="ja">要対処</span></span><span><span class="en">Good</span><span class="ja">良好</span></span><span><span class="en">Excellent</span><span class="ja">優秀</span></span></div>
+<div class="rnow" id="m-trust-band"><span class="en">Aggregating trust score…</span><span class="ja">信頼スコアを集計中…</span></div>
+<div class="rhint" id="m-trust-hint" data-title-en="Equal-weight average of measured axes. Policy contribution = assignment rate (share of workspaces with a policy)." data-title-ja="計測できた軸の等重み平均。ポリシー寄与=割り当て率（設定済WSの割合）。" title="Equal-weight average of measured axes. Policy contribution = assignment rate (share of workspaces with a policy). / 計測できた軸の等重み平均。ポリシー寄与=割り当て率（設定済WSの割合）。"><span class="en">Average of measured axes (loading breakdown…)</span><span class="ja">計測軸の平均（内訳を読み込み中…）</span></div>
+</div>
+</div>
 
-    <div class="hcard aiready">
-      <div class="ah"><h2>AI Readiness <span class="en">— Operational readiness</span><span class="ja">— 業務利用の準備度</span></h2><span class="ovr" id="m-ai-bottleneck">—</span></div>
-      <div class="asc"><span class="en">Is this data safe to feed to AI? Only data that clears all four gates is "Ready". The lowest gate caps the whole score.</span><span class="ja">AIに渡してよいデータか。4つのゲートを全部通って初めて「Ready」。最も低いゲートで全体が頭打ちになります。</span></div>
-      <div class="stage" id="stage-ingest"><div class="sr"><div class="nm"><i></i><span class="en">Ingest</span><span class="ja">取込</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">All documents vectorized</span><span class="ja">全文書がベクトル化済み</span></div></div>
-      <div class="stage" id="stage-classify"><div class="sr"><div class="nm"><i></i><span class="en">Classify</span><span class="ja">分類</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">Sensitivity-label coverage</span><span class="ja">機微度ラベルの付与率</span></div></div>
-      <div class="stage" id="stage-protect"><div class="sr"><div class="nm"><i></i><span class="en">Protect</span><span class="ja">保護</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">Protection coverage (published &amp; masked collections)</span><span class="ja">保護カバレッジ（公開済み・マスキング済み保管コレクション）</span></div></div>
-      <div class="stage" id="stage-policy"><div class="sr"><div class="nm"><i></i><span class="en">Policy</span><span class="ja">ポリシー</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">Share of workspaces with an access policy</span><span class="ja">WSにアクセスポリシーを設定した割合</span></div></div>
-      <div class="neck" id="m-ai-neck"><span class="en">Aggregating readiness…</span><span class="ja">準備度を集計中…</span></div>
-    </div>
-  </section>
+<div class="hcard aiready">
+<div class="ah"><h2>AI Readiness<span class="en">— Operational readiness</span><span class="ja">— 業務利用の準備度</span></h2><span class="ovr" id="m-ai-bottleneck">—</span></div>
+<div class="asc"><span class="en">Is this data safe to feed to AI? Only data that clears all four gates is "Ready". The lowest gate caps the whole score.</span><span class="ja">AIに渡してよいデータか。4つのゲートを全部通って初めて「Ready」。最も低いゲートで全体が頭打ちになります。</span></div>
+<div class="stage" id="stage-ingest"><div class="sr"><div class="nm"><i></i><span class="en">Ingest</span><span class="ja">取込</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">All documents vectorized</span><span class="ja">全文書がベクトル化済み</span></div></div>
+<div class="stage" id="stage-classify"><div class="sr"><div class="nm"><i></i><span class="en">Classify</span><span class="ja">分類</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">Sensitivity-label coverage</span><span class="ja">機微度ラベルの付与率</span></div></div>
+<div class="stage" id="stage-protect"><div class="sr"><div class="nm"><i></i><span class="en">Protect</span><span class="ja">保護</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">Protection coverage (published &amp; masked collections)</span><span class="ja">保護カバレッジ（公開済み・マスキング済み保管コレクション）</span></div></div>
+<div class="stage" id="stage-policy"><div class="sr"><div class="nm"><i></i><span class="en">Policy</span><span class="ja">ポリシー</span></div><div class="pc">—</div></div><div class="bar"><b></b></div><div class="crit"><span class="en">Share of workspaces with an access policy</span><span class="ja">WSにアクセスポリシーを設定した割合</span></div></div>
+<div class="neck" id="m-ai-neck"><span class="en">Aggregating readiness…</span><span class="ja">準備度を集計中…</span></div>
+</div>
+</section>
 
-  <section class="kpi-strip">
-    <div class="vital ok"><div class="vl"><span class="en">User rating (likes)</span><span class="ja">利用者評価（いいね集計）</span></div><div class="vn"><span id="m-faith">—</span><small id="m-faith-u"></small></div><div class="vc" id="m-faith-c"><span class="en">👍 Share of likes. Aggregated from chat ratings (like / dislike). Local aggregation, no external transmission.</span><span class="ja">👍いいねの割合。チャットの評価（いいね／よくないね）から集計。ローカル集計・外部送信なし</span></div></div>
-    <div class="vital ai"><div class="vl"><span class="en">Avg. retrieval score</span><span class="ja">検索スコア平均</span></div><div class="vn"><span id="m-recall">—</span><small id="m-recall-u"></small></div><div class="vc"><span class="en">Average of the top retrieval score (cosine similarity 0–1) at answer time.</span><span class="ja">回答時の最上位検索スコア（コサイン類似度 0–1）の平均。</span><span id="m-recall-below" style="color:var(--risk);font-weight:600"></span></div></div>
-    <div class="vital info"><div class="vl"><span class="en">PII detected · masked</span><span class="ja">PII 検出・マスキング</span></div><div class="vn"><span id="m-pii">—</span><small id="m-pii-u"></small></div><div class="vc"><span class="en">Measured exposure of confidential personal data → basis for publish / handling decisions.</span><span class="ja">社外秘の個人情報がどれだけ潜むかの実測 → 公開可否・取扱区分を決める根拠</span></div></div>
-    <div class="vital info"><div class="vl"><span class="en">Audit trail</span><span class="ja">監査証跡</span></div><div class="vn"><span id="m-audit">—</span><small id="m-audit-u"></small></div><div class="vc"><span class="en">Every AI decision logged reproducibly → submittable evidence for audit, accountability and regulatory response.</span><span class="ja">全AI判断を再現可能に記録 → 監査・説明責任・規制対応の証跡として提出できる</span></div></div>
-  </section>
+<section class="kpi-strip">
+<div class="vital ok"><div class="vl"><span class="en">User rating (likes)</span><span class="ja">利用者評価（いいね集計）</span></div><div class="vn"><span id="m-faith">—</span><small id="m-faith-u"></small></div><div class="vc" id="m-faith-c"><span class="en">👍 Share of likes. Aggregated from chat ratings (like / dislike). Local aggregation, no external transmission.</span><span class="ja">👍いいねの割合。チャットの評価（いいね／よくないね）から集計。ローカル集計・外部送信なし</span></div></div>
+<div class="vital ai"><div class="vl"><span class="en">Avg. retrieval score</span><span class="ja">検索スコア平均</span></div><div class="vn"><span id="m-recall">—</span><small id="m-recall-u"></small></div><div class="vc"><span class="en">Average of the top retrieval score (cosine similarity 0–1) at answer time.</span><span class="ja">回答時の最上位検索スコア（コサイン類似度 0–1）の平均。</span><span id="m-recall-below" style="color:var(--risk);font-weight:600"></span></div></div>
+<div class="vital info"><div class="vl"><span class="en">PII detected · masked</span><span class="ja">PII 検出・マスキング</span></div><div class="vn"><span id="m-pii">—</span><small id="m-pii-u"></small></div><div class="vc"><span class="en">Measured exposure of confidential personal data → basis for publish / handling decisions.</span><span class="ja">社外秘の個人情報がどれだけ潜むかの実測 → 公開可否・取扱区分を決める根拠</span></div></div>
+<div class="vital info"><div class="vl"><span class="en">Audit trail</span><span class="ja">監査証跡</span></div><div class="vn"><span id="m-audit">—</span><small id="m-audit-u"></small></div><div class="vc"><span class="en">Every AI decision logged reproducibly → submittable evidence for audit, accountability and regulatory response.</span><span class="ja">全AI判断を再現可能に記録 → 監査・説明責任・規制対応の証跡として提出できる</span></div></div>
+</section>
 
-  <div class="row">
-    <div class="col">
-      <section class="card">
-        <div class="head"><div><div class="ttl"><span class="en">Recommended actions</span><span class="ja">AI推奨アクション</span></div><div class="sc"><span class="en">Turns answer-quality metrics into the top moves to raise trust.</span><span class="ja">回答品質の指標から、信頼を上げる打ち手を提示します</span></div></div><div class="right"><button class="btn info" id="exportPdfBtn">Export PDF</button><span class="help" data-tip-en="Converts current quality metrics (protection, classification, policy assignment, masked PII) into up to three actionable moves. Act from each row, or generate an auditor-ready PDF." data-tip-ja="現在の品質指標（保護・分類・ポリシー割り当て・マスキング）から弱点を最大3件の打ち手に変換して提示。各行から対処でき、監査官に出せるPDFも生成できます。" data-tip="Converts current quality metrics (protection, classification, policy assignment, masked PII) into up to three actionable moves. Act from each row, or generate an auditor-ready PDF. / 現在の品質指標（保護・分類・ポリシー割り当て・マスキング）から弱点を最大3件の打ち手に変換して提示。各行から対処でき、監査官に出せるPDFも生成できます。">?</span></div></div>
-        <div class="selfaudit"><div class="sa-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M21 3v6h-6"/><path d="m9 12 2 2 4-4"/></svg><span class="en">Self-audit:</span><span class="ja">自己監査：</span><span id="m-selfaudit"><span class="en">Preparing</span><span class="ja">準備中</span></span></div><div class="sa-r" id="m-selfaudit-next"><span class="en">Local · no external transmission</span><span class="ja">ローカル・外部送信なし</span></div></div>
-        <div class="rlist" id="m-actions"><div class="empty"><span class="en">Aggregating recommended actions…</span><span class="ja">推奨アクションを集計中…</span></div></div>
-      </section>
-      <section class="card">
-        <div class="head"><div><div class="ttl"><span class="en">AI usage summary</span><span class="ja">AI利用サマリ</span></div><div class="sc"><span class="en">Cumulative AI queries / sessions and today's usage (measured).</span><span class="ja">AIへのクエリ・セッションの累計と本日の利用状況（実測）</span></div></div><div class="right"><span class="help" data-tip-en="Measured AI usage for this workspace. Shows cumulative messages / sessions and today's query count." data-tip-ja="このワークスペースでのAI利用の実測値です。累計メッセージ・セッション数と本日のクエリ件数を表示します。" data-tip="Measured AI usage for this workspace. Shows cumulative messages / sessions and today's query count. / このワークスペースでのAI利用の実測値です。累計メッセージ・セッション数と本日のクエリ件数を表示します。">?</span></div></div>
-        <div class="dec-sum">
-          <div class="dec-cards">
-            <div class="vital ai"><div class="vl"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="en">Cumulative messages</span><span class="ja">累計メッセージ</span></div><div class="vn"><span id="m-dec-total">—</span></div></div>
-            <div class="vital info"><div class="vl"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg><span class="en">Sessions</span><span class="ja">セッション</span></div><div class="vn"><span id="m-dec-sessions">—</span></div></div>
-            <div class="vital ok"><div class="vl"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="en">Queries today</span><span class="ja">本日クエリ</span></div><div class="vn"><span id="m-dec-zero">—</span></div></div>
-          </div>
-        </div>
-      </section>
-      <!-- fix-ingestui B-4: moved the confidence threshold panel into the empty space at the top left (just under "AI usage summary") to fix the left/right balance (content, data supply and id unchanged) / 信頼度しきい値パネルを左上(AI利用サマリ直下)の余白へ移動し左右バランス是正(中身・データ供給・id は不変) -->
-      <section class="card">
-        <div class="head"><div><div class="ttl"><span class="en">Confidence threshold</span><span class="ja">信頼度しきい値</span></div><div class="sc"><span class="en">Minimum score to accept an answer, plus recent below-threshold rate.</span><span class="ja">回答を採用する最小スコアと、直近回答のしきい値割れ実績</span></div></div><div class="right"><span class="help" data-tip-en="Protection / classification / policy attainment lives in 'AI Readiness' (top-left). Here we show the confidence threshold (actual setting) and the share of recent answers whose top retrieval score fell below it." data-tip-ja="保護・分類・ポリシーの達成度は左上の「AI Readiness」が正本です。ここは信頼度しきい値(設定の実値)と、直近回答が最上位検索スコアでしきい値を割った割合を示します。" data-tip="Protection / classification / policy attainment lives in 'AI Readiness' (top-left). Here we show the confidence threshold (actual setting) and the share of recent answers whose top retrieval score fell below it. / 保護・分類・ポリシーの達成度は左上の「AI Readiness」が正本です。ここは信頼度しきい値(設定の実値)と、直近回答が最上位検索スコアでしきい値を割った割合を示します。">?</span></div></div>
-        <div class="thr"><div class="t"><span>Threshold health · <span class="en">threshold</span><span class="ja">しきい値</span></span><span class="mono" id="m-threshold" style="font-weight:700">—</span></div><div class="ln"><div class="mk" id="threshMark"></div></div><div class="nt" id="m-thr-note"><span class="en">Aggregating near-threshold queries…</span><span class="ja">境界付近クエリを集計中…</span></div></div>
-      </section>
-    </div>
-    <div class="col">
-      <section class="card">
-        <div class="head"><div><div class="ttl">Trust Surface · <span class="en">4 trust elements</span><span class="ja">信頼の4要素</span></div><div class="sc"><span class="en">Four viewpoints scored 0–100. A dented axis is a current weak spot.</span><span class="ja">4つの観点を0–100で採点。へこんだ軸が今の弱点です</span></div></div><div class="right"><span class="help" data-tip-en="Four viewpoints: protection coverage / policy / classification / evidence disclosure. Closer to the outer ring (100) is healthier; toward the center is weaker." data-tip-ja="保護カバレッジ／ポリシー／分類／根拠開示の4観点。外周(100)に近いほど健全、内側に入るほど弱点です。" data-tip="Four viewpoints: protection coverage / policy / classification / evidence disclosure. Closer to the outer ring (100) is healthier; toward the center is weaker. / 保護カバレッジ／ポリシー／分類／根拠開示の4観点。外周(100)に近いほど健全、内側に入るほど弱点です。">?</span></div></div>
-        <div class="radar-wrap"><svg id="radar" viewBox="0 0 460 380"></svg></div>
-        <div class="radar-na"><span class="en">Protect = protection coverage (published & masked collections / all collections) / Policy = assignment rate / Classify = classified ratio / Evidence = answer retrieval grounding. N/A = no data yet (excluded from score, not zero).</span><span class="ja">保護=保護カバレッジ（公開済み・マスキング済み保管コレクション / 全コレクション）／ポリシー=割り当て率／分類=分類済み率／根拠=回答の検索グラウンディング。N/A＝該当データなし（0点ではなくスコア非算入）。</span></div>
-        <div class="takeaway"><span class="tk" id="m-tk-weak"><i></i><span class="en">Weak: aggregating</span><span class="ja">弱点：集計中</span></span><span class="tk" id="m-tk-strong"><i></i><span class="en">Strong: aggregating</span><span class="ja">強み：集計中</span></span></div>
-        <div class="fresh"><div class="cap">Doc freshness · <span class="en">document freshness</span><span class="ja">文書の鮮度</span></div>
-          <div id="m-fresh"><div class="empty"><span class="en">Loading document freshness…</span><span class="ja">文書の鮮度を読み込み中…</span></div></div>
-        </div>
-      </section>
-    </div>
-  </div>
+<div class="row">
+<div class="col">
+<section class="card">
+<div class="head"><div><div class="ttl"><span class="en">Recommended actions</span><span class="ja">AI推奨アクション</span></div><div class="sc"><span class="en">Turns answer-quality metrics into the top moves to raise trust.</span><span class="ja">回答品質の指標から、信頼を上げる打ち手を提示します</span></div></div><div class="right"><button class="btn info" id="exportPdfBtn">Export PDF</button><span class="help" data-tip-en="Converts current quality metrics (protection, classification, policy assignment, masked PII) into up to three actionable moves. Act from each row, or generate an auditor-ready PDF." data-tip-ja="現在の品質指標（保護・分類・ポリシー割り当て・マスキング）から弱点を最大3件の打ち手に変換して提示。各行から対処でき、監査官に出せるPDFも生成できます。" data-tip="Converts current quality metrics (protection, classification, policy assignment, masked PII) into up to three actionable moves. Act from each row, or generate an auditor-ready PDF. / 現在の品質指標（保護・分類・ポリシー割り当て・マスキング）から弱点を最大3件の打ち手に変換して提示。各行から対処でき、監査官に出せるPDFも生成できます。">?</span></div></div>
+<div class="selfaudit"><div class="sa-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M21 3v6h-6"/><path d="m9 12 2 2 4-4"/></svg><span class="en">Self-audit:</span><span class="ja">自己監査：</span><span id="m-selfaudit"><span class="en">Preparing</span><span class="ja">準備中</span></span></div><div class="sa-r" id="m-selfaudit-next"><span class="en">Local · no external transmission</span><span class="ja">ローカル・外部送信なし</span></div></div>
+<div class="rlist" id="m-actions"><div class="empty"><span class="en">Aggregating recommended actions…</span><span class="ja">推奨アクションを集計中…</span></div></div>
+</section>
+<section class="card">
+<div class="head"><div><div class="ttl"><span class="en">AI usage summary</span><span class="ja">AI利用サマリ</span></div><div class="sc"><span class="en">Cumulative AI queries / sessions and today's usage (measured).</span><span class="ja">AIへのクエリ・セッションの累計と本日の利用状況（実測）</span></div></div><div class="right"><span class="help" data-tip-en="Measured AI usage for this workspace. Shows cumulative messages / sessions and today's query count." data-tip-ja="このワークスペースでのAI利用の実測値です。累計メッセージ・セッション数と本日のクエリ件数を表示します。" data-tip="Measured AI usage for this workspace. Shows cumulative messages / sessions and today's query count. / このワークスペースでのAI利用の実測値です。累計メッセージ・セッション数と本日のクエリ件数を表示します。">?</span></div></div>
+<div class="dec-sum">
+<div class="dec-cards">
+<div class="vital ai"><div class="vl"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="en">Cumulative messages</span><span class="ja">累計メッセージ</span></div><div class="vn"><span id="m-dec-total">—</span></div></div>
+<div class="vital info"><div class="vl"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg><span class="en">Sessions</span><span class="ja">セッション</span></div><div class="vn"><span id="m-dec-sessions">—</span></div></div>
+<div class="vital ok"><div class="vl"><svg class="vi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="en">Queries today</span><span class="ja">本日クエリ</span></div><div class="vn"><span id="m-dec-zero">—</span></div></div>
+</div>
+</div>
+</section>
+<!-- fix-ingestui B-4: moved the confidence threshold panel into the empty space at the top left (just under "AI usage summary") to fix the left/right balance (content, data supply and id unchanged) / 信頼度しきい値パネルを左上(AI利用サマリ直下)の余白へ移動し左右バランス是正(中身・データ供給・id は不変) -->
+<section class="card">
+<div class="head"><div><div class="ttl"><span class="en">Confidence threshold</span><span class="ja">信頼度しきい値</span></div><div class="sc"><span class="en">Minimum score to accept an answer, plus recent below-threshold rate.</span><span class="ja">回答を採用する最小スコアと、直近回答のしきい値割れ実績</span></div></div><div class="right"><span class="help" data-tip-en="Protection / classification / policy attainment lives in 'AI Readiness' (top-left). Here we show the confidence threshold (actual setting) and the share of recent answers whose top retrieval score fell below it." data-tip-ja="保護・分類・ポリシーの達成度は左上の「AI Readiness」が正本です。ここは信頼度しきい値(設定の実値)と、直近回答が最上位検索スコアでしきい値を割った割合を示します。" data-tip="Protection / classification / policy attainment lives in 'AI Readiness' (top-left). Here we show the confidence threshold (actual setting) and the share of recent answers whose top retrieval score fell below it. / 保護・分類・ポリシーの達成度は左上の「AI Readiness」が正本です。ここは信頼度しきい値(設定の実値)と、直近回答が最上位検索スコアでしきい値を割った割合を示します。">?</span></div></div>
+<div class="thr"><div class="t"><span>Threshold health ·<span class="en">threshold</span><span class="ja">しきい値</span></span><span class="mono" id="m-threshold" style="font-weight:700">—</span></div><div class="ln"><div class="mk" id="threshMark"></div></div><div class="nt" id="m-thr-note"><span class="en">Aggregating near-threshold queries…</span><span class="ja">境界付近クエリを集計中…</span></div></div>
+</section>
+</div>
+<div class="col">
+<section class="card">
+<div class="head"><div><div class="ttl">Trust Surface ·<span class="en">4 trust elements</span><span class="ja">信頼の4要素</span></div><div class="sc"><span class="en">Four viewpoints scored 0–100. A dented axis is a current weak spot.</span><span class="ja">4つの観点を0–100で採点。へこんだ軸が今の弱点です</span></div></div><div class="right"><span class="help" data-tip-en="Four viewpoints: protection coverage / policy / classification / evidence disclosure. Closer to the outer ring (100) is healthier; toward the center is weaker." data-tip-ja="保護カバレッジ／ポリシー／分類／根拠開示の4観点。外周(100)に近いほど健全、内側に入るほど弱点です。" data-tip="Four viewpoints: protection coverage / policy / classification / evidence disclosure. Closer to the outer ring (100) is healthier; toward the center is weaker. / 保護カバレッジ／ポリシー／分類／根拠開示の4観点。外周(100)に近いほど健全、内側に入るほど弱点です。">?</span></div></div>
+<div class="radar-wrap"><svg id="radar" viewBox="0 0 460 380"></svg></div>
+<div class="radar-na"><span class="en">Protect = protection coverage (published & masked collections / all collections) / Policy = assignment rate / Classify = classified ratio / Evidence = answer retrieval grounding. N/A = no data yet (excluded from score, not zero).</span><span class="ja">保護=保護カバレッジ（公開済み・マスキング済み保管コレクション / 全コレクション）／ポリシー=割り当て率／分類=分類済み率／根拠=回答の検索グラウンディング。N/A＝該当データなし（0点ではなくスコア非算入）。</span></div>
+<div class="takeaway"><span class="tk" id="m-tk-weak"><i></i><span class="en">Weak: aggregating</span><span class="ja">弱点：集計中</span></span><span class="tk" id="m-tk-strong"><i></i><span class="en">Strong: aggregating</span><span class="ja">強み：集計中</span></span></div>
+<div class="fresh"><div class="cap">Doc freshness ·<span class="en">document freshness</span><span class="ja">文書の鮮度</span></div>
+<div id="m-fresh"><div class="empty"><span class="en">Loading document freshness…</span><span class="ja">文書の鮮度を読み込み中…</span></div></div>
+</div>
+</section>
+</div>
+</div>
 
-  <section class="card kb">
-    <div class="seg">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
-        <div class="cap" style="margin:0">Document classification · <span class="en">classification distribution</span><span class="ja">文書の分類分布</span></div>
-        <button class="btn info" id="allCatBtn" style="font-size:13px;padding:6px 12px"><span class="en">View all classes ↗</span><span class="ja">全分類を見る ↗</span></button>
-      </div>
-      <div style="font-size:13.5px;color:var(--dim);margin-bottom:12px"><span class="en">The metadata engine auto-classifies sensitivity, department, retention, publishability and more. Main classes shown here.</span><span class="ja">メタデータエンジンが機微度・部門・保持期間・公開可否ほかを自動分類。ここでは主要分類を表示。</span></div>
-      <div id="m-cats"><div class="empty"><span class="en">Loading classification distribution…</span><span class="ja">分類分布を読み込み中…</span></div></div>
-    </div>
-    <div class="seg">
-      <div class="cap">Vector store · <span class="en">vector DB size</span><span class="ja">ベクトルDB容量</span></div>
-      <div class="store-bar"><div class="store-fill" id="storeFill"></div></div>
-      <div class="store-row"><span class="used" id="m-store-used"><span class="en">Used —</span><span class="ja">使用 —</span></span><span class="free" id="m-store-free"><span class="en">Free —</span><span class="ja">残り —</span></span></div>
-      <div class="store-sub" id="m-store-sub"><span class="en">Aggregating vectorized chunks… · BGE-M3 (1024-dim)</span><span class="ja">ベクトル化チャンク数を集計中… · BGE-M3（1024次元）</span></div>
-    </div>
-  </section>
+<section class="card kb">
+<div class="seg">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
+<div class="cap" style="margin:0">Document classification ·<span class="en">classification distribution</span><span class="ja">文書の分類分布</span></div>
+<button class="btn info" id="allCatBtn" style="font-size:13px;padding:6px 12px"><span class="en">View all classes ↗</span><span class="ja">全分類を見る ↗</span></button>
+</div>
+<div style="font-size:13.5px;color:var(--dim);margin-bottom:12px"><span class="en">The metadata engine auto-classifies sensitivity, department, retention, publishability and more. Main classes shown here.</span><span class="ja">メタデータエンジンが機微度・部門・保持期間・公開可否ほかを自動分類。ここでは主要分類を表示。</span></div>
+<div id="m-cats"><div class="empty"><span class="en">Loading classification distribution…</span><span class="ja">分類分布を読み込み中…</span></div></div>
+</div>
+<div class="seg">
+<div class="cap">Vector store ·<span class="en">vector DB size</span><span class="ja">ベクトルDB容量</span></div>
+<div class="store-bar"><div class="store-fill" id="storeFill"></div></div>
+<div class="store-row"><span class="used" id="m-store-used"><span class="en">Used —</span><span class="ja">使用 —</span></span><span class="free" id="m-store-free"><span class="en">Free —</span><span class="ja">残り —</span></span></div>
+<div class="store-sub" id="m-store-sub"><span class="en">Aggregating vectorized chunks… · BGE-M3 (1024-dim)</span><span class="ja">ベクトル化チャンク数を集計中… · BGE-M3（1024次元）</span></div>
+</div>
+</section>
 
-  <div class="legend"><span class="cap"><span class="en">Legend · color = meaning</span><span class="ja">凡例 · 色 = 意味</span></span><span class="li g"><i></i><span class="en">Safe / normal</span><span class="ja">安全・正常</span></span><span class="li w"><i></i><span class="en">Warning / caution</span><span class="ja">警告・要注意</span></span><span class="li r"><i></i><span class="en">Risk / action needed</span><span class="ja">リスク・要対処</span></span><span class="li a"><i></i><span class="en">AI processing</span><span class="ja">AI処理</span></span><span class="li b"><i></i><span class="en">Data / evidence</span><span class="ja">データ・根拠</span></span></div>
-  <div class="foot" id="m-foot"><span class="en">Cynovela Trust Console · fully local · values are live real data (N/A where not measured)</span><span class="ja">Cynovela Trust Console · ローカル完結 · 表示値はライブ実データ（未計測は N/A）</span></div>
+<div class="legend"><span class="cap"><span class="en">Legend · color = meaning</span><span class="ja">凡例 · 色 = 意味</span></span><span class="li g"><i></i><span class="en">Safe / normal</span><span class="ja">安全・正常</span></span><span class="li w"><i></i><span class="en">Warning / caution</span><span class="ja">警告・要注意</span></span><span class="li r"><i></i><span class="en">Risk / action needed</span><span class="ja">リスク・要対処</span></span><span class="li a"><i></i><span class="en">AI processing</span><span class="ja">AI処理</span></span><span class="li b"><i></i><span class="en">Data / evidence</span><span class="ja">データ・根拠</span></span></div>
+<div class="foot" id="m-foot"><span class="en">Cynovela Trust Console · fully local · values are live real data (N/A where not measured)</span><span class="ja">Cynovela Trust Console · ローカル完結 · 表示値はライブ実データ（未計測は N/A）</span></div>
 </div>
 <script>
 const root=document.documentElement,ti=document.getElementById('themeIcon');

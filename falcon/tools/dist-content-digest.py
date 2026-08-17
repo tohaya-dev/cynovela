@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""配布物の「内容の一致」検査値を出す (dist-content-digest-20260731 / DD-CYN-0007)。
+"""配布物の「内容の一致」検査値を出す (dist-content-digest-20260731 / )。
 
 使い方:
     python dist-content-digest.py <アプリのツリー> <demo.db> <chroma ディレクトリ>

@@ -39,8 +39,8 @@ What to check when it does not work:
 
 ```bash
 cd ~/Downloads                # tar.gz を置いた場所へ
-tar -xzf <配布物名>.tar.gz
-cd <展開してできたフォルダ>      # 名前は cynovela- で始まります (ls で確認できます)
+tar -xzf<配布物名>.tar.gz
+cd<展開してできたフォルダ>      # 名前は cynovela- で始まります (ls で確認できます)
 ls launch.sh                  # このファイルが見えれば展開できています
 ```
 
@@ -231,7 +231,7 @@ From a terminal, do it as follows.
 
 # 今どれが登録されているか見る／消す
 ./launch.sh --list
-./launch.sh --remove <一覧に出た名前>
+./launch.sh --remove<一覧に出た名前>
 ```
 
 Your own documents are used in **production** (no arguments). Do not add `--demo` here.
@@ -321,8 +321,8 @@ conda が入っていない場合は miniforge を入れてください。
 
 ```bash
 cd ~/Downloads                # tar.gz を置いた場所へ
-tar -xzf <配布物名>.tar.gz
-cd <展開してできたフォルダ>      # 名前は cynovela- で始まります (ls で確認できます)
+tar -xzf<配布物名>.tar.gz
+cd<展開してできたフォルダ>      # 名前は cynovela- で始まります (ls で確認できます)
 ls launch.sh                  # このファイルが見えれば展開できています
 ```
 
@@ -511,7 +511,7 @@ Python（3.12 系）はその最初の一度で用意されます。無いまま
 
 # 今どれが登録されているか見る／消す
 ./launch.sh --list
-./launch.sh --remove <一覧に出た名前>
+./launch.sh --remove<一覧に出た名前>
 ```
 
 自分の資料は**本番**（引数なし）で使います。ここでは `--demo` は付けません。

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLM Connection / LLM 接続ガイド — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Connection / LLM 接続ガイド — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -198,168 +198,168 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">LLM Connection Guide</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning purposes</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">LLM Connection Guide</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning purposes</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">About This Document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About This Document</strong><br>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">About This Document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About This Document</strong><br>
       Cynovela is a completely unofficial learning tool built by an individual in order to understand the concepts of AI infrastructure tools hands-on. It is not a commercial product and not an official implementation. The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official view of any company or product in any way.
-    </blockquote>
-    <p>Cynovela connects over HTTP to an external LLM (large language model) server to generate answers. This document explains the representative connection methods and how to switch between them.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</blockquote>
+<p>Cynovela connects over HTTP to an external LLM (large language model) server to generate answers. This document explains the representative connection methods and how to switch between them.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">1. Connection Architecture</span>
-  </div>
-  <div class="slide-body">
-    <p>The LLM connection layer of Cynovela (<code>llm_adapter.py</code>) is designed so that it can connect to any service that has an OpenAI-compatible <code>/v1/chat/completions</code> endpoint. With <code>LMStudioAdapter</code> (an OpenAI-compatible adapter) as the main axis, it supports several local LLM runners simply by swapping the URL.</p>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">1. Connection Architecture</span>
+</div>
+<div class="slide-body">
+<p>The LLM connection layer of Cynovela (<code>llm_adapter.py</code>) is designed so that it can connect to any service that has an OpenAI-compatible<code>/v1/chat/completions</code> endpoint. With<code>LMStudioAdapter</code> (an OpenAI-compatible adapter) as the main axis, it supports several local LLM runners simply by swapping the URL.</p>
 <pre><code>Cynovela サーバー
   ↓ HTTP POST /v1/chat/completions
 LLM ランナー（LM Studio / Ollama / vLLM 等）
   ↓ ストリーム応答
 Cynovela サーバー（ガードレール → ユーザーへ返却）</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">2. Connecting to LM Studio</span>
-  </div>
-  <div class="slide-body">
-    <p>LM Studio is an LLM runner with a GUI for the desktop. It is the default connection target of Cynovela.</p>
-    <h3>2-1. Startup option</h3>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">2. Connecting to LM Studio</span>
+</div>
+<div class="slide-body">
+<p>LM Studio is an LLM runner with a GUI for the desktop. It is the default connection target of Cynovela.</p>
+<h3>2-1. Startup option</h3>
 <pre><code>python server.py --lmstudio-url http://localhost:1234</code></pre>
-    <p><code>--lmstudio-url</code> can be omitted; the default value is <code>http://localhost:1234</code>.</p>
-    <h3>2-2. Preparation on the LM Studio side</h3>
-    <ol>
-      <li>Start LM Studio and load any model (for example, a model that supports Japanese).</li>
-      <li>On the &quot;Local Server&quot; tab, enable the OpenAI-compatible API and make it listen on port 1234.</li>
-      <li>When you start the Cynovela server, it connects through <code>/v1/chat/completions</code>.</li>
-    </ol>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<p><code>--lmstudio-url</code> can be omitted; the default value is<code>http://localhost:1234</code>.</p>
+<h3>2-2. Preparation on the LM Studio side</h3>
+<ol>
+<li>Start LM Studio and load any model (for example, a model that supports Japanese).</li>
+<li>On the &quot;Local Server&quot; tab, enable the OpenAI-compatible API and make it listen on port 1234.</li>
+<li>When you start the Cynovela server, it connects through<code>/v1/chat/completions</code>.</li>
+</ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">2-3. URL Normalization Behavior</span>
-  </div>
-  <div class="slide-body">
-    <p>The LLM adapter automatically strips a trailing <code>/</code> and <code>/v1</code> from the URL and normalizes it. All of the following are treated as the same connection target.</p>
-    <ul>
-      <li><code>http://localhost:1234</code></li>
-      <li><code>http://localhost:1234/</code></li>
-      <li><code>http://localhost:1234/v1</code></li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">2-3. URL Normalization Behavior</span>
+</div>
+<div class="slide-body">
+<p>The LLM adapter automatically strips a trailing<code></code> and<code>/v1</code> from the URL and normalizes it. All of the following are treated as the same connection target.</p>
+<ul>
+<li><code>http://localhost:1234</code></li>
+<li><code>http://localhost:1234</code></li>
+<li><code>http://localhost:1234/v1</code></li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">3. Connecting to Ollama</span>
-  </div>
-  <div class="slide-body">
-    <p>Ollama is a CLI-centric local LLM runner. Because it provides an OpenAI-compatible API, you can connect simply by giving Ollama's OpenAI-compatible endpoint to <code>--lmstudio-url</code>.</p>
-    <h3>3-1. Startup example</h3>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">3. Connecting to Ollama</span>
+</div>
+<div class="slide-body">
+<p>Ollama is a CLI-centric local LLM runner. Because it provides an OpenAI-compatible API, you can connect simply by giving Ollama's OpenAI-compatible endpoint to<code>--lmstudio-url</code>.</p>
+<h3>3-1. Startup example</h3>
 <pre><code>python server.py --lmstudio-url http://localhost:11434</code></pre>
-    <h3>3-2. Using Ollama as a Reranker</h3>
-    <p>Ollama can be connected not only for LLM inference but also as a Reranker provider. Configure it in <code>cynovela.yaml</code> as follows.</p>
+<h3>3-2. Using Ollama as a Reranker</h3>
+<p>Ollama can be connected not only for LLM inference but also as a Reranker provider. Configure it in<code>cynovela.yaml</code> as follows.</p>
 <pre><code>reranker:
   provider: ollama
   base_url: http://localhost:11434
   model: bge-reranker-v2-m3</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">4. Connecting to an LLM on a Remote Machine</span>
-  </div>
-  <div class="slide-body">
-    <p>You can also run LM Studio / Ollama on a different machine and connect to it from Cynovela over the network. This is useful when you want to consolidate GPUs on a separate machine.</p>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">4. Connecting to an LLM on a Remote Machine</span>
+</div>
+<div class="slide-body">
+<p>You can also run LM Studio / Ollama on a different machine and connect to it from Cynovela over the network. This is useful when you want to consolidate GPUs on a separate machine.</p>
 <pre><code>python server.py --lmstudio-url http://192.168.1.50:1234</code></pre>
-    <p>On the target machine, LM Studio or Ollama must be configured to listen on &quot;all interfaces&quot;.</p>
-    <blockquote>
-      <strong>Security note</strong>: LLM communication is plain HTTP. Exposing it outside the LAN is not recommended. Connecting over a VPN such as Tailscale is recommended.
-    </blockquote>
-    <blockquote>
-      <strong>Egress blocking of the CRAG pre-read (crag-egress-guard)</strong>: When a remote / non-local LLM endpoint is specified, the CRAG (corrective RAG) pre-read (<code>context_preview</code>) is not sent outside. Before sending, it decides whether the endpoint is local, and if it is non-local (including cases where it cannot be determined) it does not send the pre-read and skips CRAG. This prevents fragments of the raw body text from leaking to an external LLM even for an administrator. With a local LLM (LM Studio / Ollama running locally), CRAG remains enabled as before.
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<p>On the target machine, LM Studio or Ollama must be configured to listen on &quot;all interfaces&quot;.</p>
+<blockquote>
+<strong>Security note</strong>: LLM communication is plain HTTP. Exposing it outside the LAN is not recommended. Connecting over a VPN such as Tailscale is recommended.
+</blockquote>
+<blockquote>
+<strong>Egress blocking of the CRAG pre-read (crag-egress-guard)</strong>: When a remote / non-local LLM endpoint is specified, the CRAG (corrective RAG) pre-read (<code>context_preview</code>) is not sent outside. Before sending, it decides whether the endpoint is local, and if it is non-local (including cases where it cannot be determined) it does not send the pre-read and skips CRAG. This prevents fragments of the raw body text from leaking to an external LLM even for an administrator. With a local LLM (LM Studio / Ollama running locally), CRAG remains enabled as before.
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">5. List of Supported Providers</span>
-  </div>
-  <div class="slide-body">
-    <p>Switch with the <code>llm.provider</code> key in <code>cynovela.yaml</code>.</p>
-    <table>
-      <thead><tr><th>Provider</th><th>Value</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td>LM Studio</td><td><code>lmstudio</code></td><td>Connects to the OpenAI-compatible API of LM Studio (default)</td></tr>
-        <tr><td>OpenAI-compatible (generic)</td><td><code>openai_compat</code></td><td>Any service that has an OpenAI-compatible <code>/v1</code> API (vLLM / OpenRouter / Ollama and so on)</td></tr>
-        <tr><td>Mock</td><td><code>mock</code></td><td>Returns a fixed string without calling an LLM (for testing)</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">5. List of Supported Providers</span>
+</div>
+<div class="slide-body">
+<p>Switch with the<code>llm.provider</code> key in<code>cynovela.yaml</code>.</p>
+<table>
+<thead><tr><th>Provider</th><th>Value</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>LM Studio</td><td><code>lmstudio</code></td><td>Connects to the OpenAI-compatible API of LM Studio (default)</td></tr>
+<tr><td>OpenAI-compatible (generic)</td><td><code>openai_compat</code></td><td>Any service that has an OpenAI-compatible<code>/v1</code> API (vLLM / OpenRouter / Ollama and so on)</td></tr>
+<tr><td>Mock</td><td><code>mock</code></td><td>Returns a fixed string without calling an LLM (for testing)</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">5-1. Configuration Example for an OpenAI-compatible Connection</span>
-  </div>
-  <div class="slide-body">
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">5-1. Configuration Example for an OpenAI-compatible Connection</span>
+</div>
+<div class="slide-body">
 <pre><code>llm:
   provider: openai_compat
   base_url: http://localhost:8000
@@ -367,224 +367,223 @@ Cynovela サーバー（ガードレール → ユーザーへ返却）</code></
   api_key: ""          # 設定UIで入力（このセッションのみ保持・保存しない）
   max_concurrent: 3
   timeout_seconds: 120</code></pre>
-    <h3>5-2. Mock mode</h3>
-    <p>The <code>--mock</code> option that used to exist (a verification mode that never calls an LLM) has been removed. Specifying it now stops with an error.</p>
-    <p>In that mode the Embedding also switched to TF-IDF (a lightweight embedding based on term frequency), and no external model download occurred. It is not suitable for checking the quality of RAG (retrieval-augmented generation), but it is useful for verifying the UI and the flow.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<h3>5-2. Mock mode</h3>
+<p>The<code>--mock</code> option that used to exist (a verification mode that never calls an LLM) has been removed. Specifying it now stops with an error.</p>
+<p>In that mode the Embedding also switched to TF-IDF (a lightweight embedding based on term frequency), and no external model download occurred. It is not suitable for checking the quality of RAG (retrieval-augmented generation), but it is useful for verifying the UI and the flow.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">6. Related Environment Variables</span>
-  </div>
-  <div class="slide-body">
-    <p>The main environment variables usable for the LLM connection are as follows.</p>
-    <table>
-      <thead><tr><th>Environment variable</th><th>Purpose</th></tr></thead>
-      <tbody>
-        <tr><td><code>CYNOVELA_LLM_BASE_URL</code></td><td>Overrides the LLM base URL</td></tr>
-        <tr><td><em>(no environment variable)</em></td><td>The LLM API key is entered in the settings UI (kept for this session only, never saved)</td></tr>
-        <tr><td><code>CYNOVELA_LLM_MODEL</code></td><td>LLM model name (used only for OpenAI-compatible connections)</td></tr>
-        <tr><td><code>CYNOVELA_LLM_PROVIDER</code></td><td>LLM provider name</td></tr>
-        <tr><td><code>CYNOVELA_LLM_MAX_CONCURRENT</code></td><td>Upper limit of concurrent executions</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">6. Related Environment Variables</span>
+</div>
+<div class="slide-body">
+<p>The main environment variables usable for the LLM connection are as follows.</p>
+<table>
+<thead><tr><th>Environment variable</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>CYNOVELA_LLM_BASE_URL</code></td><td>Overrides the LLM base URL</td></tr>
+<tr><td><em>(no environment variable)</em></td><td>The LLM API key is entered in the settings UI (kept for this session only, never saved)</td></tr>
+<tr><td><code>CYNOVELA_LLM_MODEL</code></td><td>LLM model name (used only for OpenAI-compatible connections)</td></tr>
+<tr><td><code>CYNOVELA_LLM_PROVIDER</code></td><td>LLM provider name</td></tr>
+<tr><td><code>CYNOVELA_LLM_MAX_CONCURRENT</code></td><td>Upper limit of concurrent executions</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">LLM Connection Guide</span>
-    <span class="slide-title">7. Reranker Providers</span>
-  </div>
-  <div class="slide-body">
-    <p>Apart from the LLM, the Reranker that reorders the search results is also replaceable. Specify it with <code>reranker.provider</code> in <code>cynovela.yaml</code>.</p>
-    <table>
-      <thead><tr><th>Provider</th><th>Value</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td>Disabled</td><td><code>none</code></td><td>Does not use a Reranker</td></tr>
-        <tr><td>CrossEncoder</td><td><code>cross_encoder</code></td><td>A local CrossEncoder model (the default high-quality configuration)</td></tr>
-        <tr><td>FlashRank</td><td><code>flashrank</code></td><td>A lightweight Reranker library</td></tr>
-        <tr><td>MLX</td><td><code>mlx</code></td><td>A skeleton implementation for Apple Silicon (the real one is future work)</td></tr>
-        <tr><td>Ollama</td><td><code>ollama</code></td><td>A Reranker by way of Ollama</td></tr>
-        <tr><td>HTTP</td><td><code>http</code></td><td>An arbitrary HTTP endpoint</td></tr>
-      </tbody>
-    </table>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / personal learning purposes / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM Connection Guide</span>
+<span class="slide-title">7. Reranker Providers</span>
+</div>
+<div class="slide-body">
+<p>Apart from the LLM, the Reranker that reorders the search results is also replaceable. Specify it with<code>reranker.provider</code> in<code>cynovela.yaml</code>.</p>
+<table>
+<thead><tr><th>Provider</th><th>Value</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>Disabled</td><td><code>none</code></td><td>Does not use a Reranker</td></tr>
+<tr><td>CrossEncoder</td><td><code>cross_encoder</code></td><td>A local CrossEncoder model (the default high-quality configuration)</td></tr>
+<tr><td>FlashRank</td><td><code>flashrank</code></td><td>A lightweight Reranker library</td></tr>
+<tr><td>MLX</td><td><code>mlx</code></td><td>A skeleton implementation for Apple Silicon (the real one is future work)</td></tr>
+<tr><td>Ollama</td><td><code>ollama</code></td><td>A Reranker by way of Ollama</td></tr>
+<tr><td>HTTP</td><td><code>http</code></td><td>An arbitrary HTTP endpoint</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / personal learning purposes</span>
+</div>
 </div>
 
 
 <div class="slide cover" id="slide-12">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">LLM 接続ガイド</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">LLM 接続ガイド</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-13">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-    <p>Cynovela は外部の LLM（大規模言語モデル）サーバーに HTTP 経由で接続して回答生成を行います。本ドキュメントでは、代表的な接続方法と切り替え手順を説明します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+<p>Cynovela は外部の LLM（大規模言語モデル）サーバーに HTTP 経由で接続して回答生成を行います。本ドキュメントでは、代表的な接続方法と切り替え手順を説明します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">1. 接続アーキテクチャ</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela の LLM 接続層（<code>llm_adapter.py</code>）は、OpenAI 互換の <code>/v1/chat/completions</code> エンドポイントを持つ任意のサービスに接続できる設計です。<code>LMStudioAdapter</code>（OpenAI 互換アダプター）を主軸として、URL を差し替えることで複数のローカル LLM ランナーに対応します。</p>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">1. 接続アーキテクチャ</span>
+</div>
+<div class="slide-body">
+<p>Cynovela の LLM 接続層（<code>llm_adapter.py</code>）は、OpenAI 互換の<code>/v1/chat/completions</code> エンドポイントを持つ任意のサービスに接続できる設計です。<code>LMStudioAdapter</code>（OpenAI 互換アダプター）を主軸として、URL を差し替えることで複数のローカル LLM ランナーに対応します。</p>
 <pre><code>Cynovela サーバー
   ↓ HTTP POST /v1/chat/completions
 LLM ランナー（LM Studio / Ollama / vLLM 等）
   ↓ ストリーム応答
 Cynovela サーバー（ガードレール → ユーザーへ返却）</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">2. LM Studio との接続</span>
-  </div>
-  <div class="slide-body">
-    <p>LM Studio はデスクトップ向けの GUI 付き LLM ランナーです。Cynovela の既定接続先になっています。</p>
-    <h3>2-1. 起動時オプション</h3>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">2. LM Studio との接続</span>
+</div>
+<div class="slide-body">
+<p>LM Studio はデスクトップ向けの GUI 付き LLM ランナーです。Cynovela の既定接続先になっています。</p>
+<h3>2-1. 起動時オプション</h3>
 <pre><code>python server.py --lmstudio-url http://localhost:1234</code></pre>
-    <p><code>--lmstudio-url</code> は省略可能で、既定値は <code>http://localhost:1234</code> です。</p>
-    <h3>2-2. LM Studio 側の準備</h3>
-    <ol>
-      <li>LM Studio を起動して任意のモデル（例: 日本語対応モデル）をロードします。</li>
-      <li>「Local Server」タブで OpenAI 互換 API を有効化し、ポート 1234 で待ち受け状態にします。</li>
-      <li>Cynovela サーバーを起動すると、<code>/v1/chat/completions</code> 経由で接続されます。</li>
-    </ol>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p><code>--lmstudio-url</code> は省略可能で、既定値は<code>http://localhost:1234</code> です。</p>
+<h3>2-2. LM Studio 側の準備</h3>
+<ol>
+<li>LM Studio を起動して任意のモデル（例: 日本語対応モデル）をロードします。</li>
+<li>「Local Server」タブで OpenAI 互換 API を有効化し、ポート 1234 で待ち受け状態にします。</li>
+<li>Cynovela サーバーを起動すると、<code>/v1/chat/completions</code> 経由で接続されます。</li>
+</ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-16">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">2-3. URL 正規化の挙動</span>
-  </div>
-  <div class="slide-body">
-    <p>LLM アダプターは URL 末尾の <code>/</code> および <code>/v1</code> を自動的に除去して正規化します。以下はいずれも同じ接続先として扱われます。</p>
-    <ul>
-      <li><code>http://localhost:1234</code></li>
-      <li><code>http://localhost:1234/</code></li>
-      <li><code>http://localhost:1234/v1</code></li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">2-3. URL 正規化の挙動</span>
+</div>
+<div class="slide-body">
+<p>LLM アダプターは URL 末尾の<code></code> および<code>/v1</code> を自動的に除去して正規化します。以下はいずれも同じ接続先として扱われます。</p>
+<ul>
+<li><code>http://localhost:1234</code></li>
+<li><code>http://localhost:1234</code></li>
+<li><code>http://localhost:1234/v1</code></li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">3. Ollama との接続</span>
-  </div>
-  <div class="slide-body">
-    <p>Ollama は CLI 中心のローカル LLM ランナーです。OpenAI 互換 API を提供しているため、<code>--lmstudio-url</code> に Ollama の OpenAI 互換エンドポイントを指定するだけで接続できます。</p>
-    <h3>3-1. 起動例</h3>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">3. Ollama との接続</span>
+</div>
+<div class="slide-body">
+<p>Ollama は CLI 中心のローカル LLM ランナーです。OpenAI 互換 API を提供しているため、<code>--lmstudio-url</code> に Ollama の OpenAI 互換エンドポイントを指定するだけで接続できます。</p>
+<h3>3-1. 起動例</h3>
 <pre><code>python server.py --lmstudio-url http://localhost:11434</code></pre>
-    <h3>3-2. Reranker としての Ollama 利用</h3>
-    <p>Ollama は LLM 推論だけでなく、Reranker（再ランク付け）プロバイダーとしても接続できます。<code>cynovela.yaml</code> で次のように設定します。</p>
+<h3>3-2. Reranker としての Ollama 利用</h3>
+<p>Ollama は LLM 推論だけでなく、Reranker（再ランク付け）プロバイダーとしても接続できます。<code>cynovela.yaml</code> で次のように設定します。</p>
 <pre><code>reranker:
   provider: ollama
   base_url: http://localhost:11434
   model: bge-reranker-v2-m3</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">4. リモートマシン上の LLM への接続</span>
-  </div>
-  <div class="slide-body">
-    <p>LM Studio / Ollama を別マシンで動かして、Cynovela からネットワーク経由で接続することもできます。これは GPU を別マシンに集約したい場合に有用です。</p>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">4. リモートマシン上の LLM への接続</span>
+</div>
+<div class="slide-body">
+<p>LM Studio / Ollama を別マシンで動かして、Cynovela からネットワーク経由で接続することもできます。これは GPU を別マシンに集約したい場合に有用です。</p>
 <pre><code>python server.py --lmstudio-url http://192.168.1.50:1234</code></pre>
-    <p>接続先マシン側で、LM Studio または Ollama を「すべてのインターフェイス」で待ち受けるよう設定しておく必要があります。</p>
-    <blockquote>
-      <strong>セキュリティ上の注意</strong>: LLM 通信は HTTP 平文です。LAN 外への公開は推奨しません。Tailscale などの VPN 経由で接続することを推奨します。
-    </blockquote>
-    <blockquote>
-      <strong>CRAG 下読みの egress 封鎖（crag-egress-guard）</strong>: リモート／非ローカルの LLM エンドポイントを指定した場合、CRAG（自己修正 RAG）の下読み（<code>context_preview</code>）は外部へ送出されません。送信前にエンドポイントがローカルかを判定し、非ローカル（判定不能を含む）なら下読みを送らず CRAG をスキップします。これにより admin であっても raw 本文の断片が外部 LLM へ漏れることを防ぎます。ローカル LLM（LM Studio / Ollama をローカルで実行）では従来どおり CRAG が有効です。
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p>接続先マシン側で、LM Studio または Ollama を「すべてのインターフェイス」で待ち受けるよう設定しておく必要があります。</p>
+<blockquote>
+<strong>セキュリティ上の注意</strong>: LLM 通信は HTTP 平文です。LAN 外への公開は推奨しません。Tailscale などの VPN 経由で接続することを推奨します。
+</blockquote>
+<blockquote>
+<strong>CRAG 下読みの egress 封鎖（crag-egress-guard）</strong>: リモート／非ローカルの LLM エンドポイントを指定した場合、CRAG（自己修正 RAG）の下読み（<code>context_preview</code>）は外部へ送出されません。送信前にエンドポイントがローカルかを判定し、非ローカル（判定不能を含む）なら下読みを送らず CRAG をスキップします。これにより admin であっても raw 本文の断片が外部 LLM へ漏れることを防ぎます。ローカル LLM（LM Studio / Ollama をローカルで実行）では従来どおり CRAG が有効です。
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">5. 対応プロバイダー一覧</span>
-  </div>
-  <div class="slide-body">
-    <p><code>cynovela.yaml</code> の <code>llm.provider</code> キーで切り替えます。</p>
-    <table>
-      <thead><tr><th>プロバイダー</th><th>値</th><th>説明</th></tr></thead>
-      <tbody>
-        <tr><td>LM Studio</td><td><code>lmstudio</code></td><td>LM Studio の OpenAI 互換 API へ接続（既定）</td></tr>
-        <tr><td>OpenAI 互換（汎用）</td><td><code>openai_compat</code></td><td>OpenAI 互換 <code>/v1</code> API を持つ任意のサービス（vLLM / OpenRouter / Ollama 等）</td></tr>
-        <tr><td>モック</td><td><code>mock</code></td><td>LLM を呼び出さず、固定文字列を返す（テスト用）</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">5. 対応プロバイダー一覧</span>
+</div>
+<div class="slide-body">
+<p><code>cynovela.yaml</code> の<code>llm.provider</code> キーで切り替えます。</p>
+<table>
+<thead><tr><th>プロバイダー</th><th>値</th><th>説明</th></tr></thead>
+<tbody>
+<tr><td>LM Studio</td><td><code>lmstudio</code></td><td>LM Studio の OpenAI 互換 API へ接続（既定）</td></tr>
+<tr><td>OpenAI 互換（汎用）</td><td><code>openai_compat</code></td><td>OpenAI 互換<code>/v1</code> API を持つ任意のサービス（vLLM / OpenRouter / Ollama 等）</td></tr>
+<tr><td>モック</td><td><code>mock</code></td><td>LLM を呼び出さず、固定文字列を返す（テスト用）</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">5-1. OpenAI 互換接続の設定例</span>
-  </div>
-  <div class="slide-body">
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">5-1. OpenAI 互換接続の設定例</span>
+</div>
+<div class="slide-body">
 <pre><code>llm:
   provider: openai_compat
   base_url: http://localhost:8000
@@ -592,71 +591,70 @@ Cynovela サーバー（ガードレール → ユーザーへ返却）</code></
   api_key: ""          # 設定UIで入力（このセッションのみ保持・保存しない）
   max_concurrent: 3
   timeout_seconds: 120</code></pre>
-    <h3>5-2. モックモード</h3>
-    <p>以前あった <code>--mock</code>（LLM を全く呼び出さない検証モード）は撤去済みです。いま指定するとエラーで止まります。</p>
-    <p>このモードでは Embedding（埋め込み）も TF-IDF（語彙頻度ベースの軽量埋め込み）に切り替わり、外部モデルのダウンロードも発生しません。RAG（検索拡張生成）の品質確認には適しませんが、UI とフロー検証には有用です。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<h3>5-2. モックモード</h3>
+<p>以前あった<code>--mock</code>（LLM を全く呼び出さない検証モード）は撤去済みです。いま指定するとエラーで止まります。</p>
+<p>このモードでは Embedding（埋め込み）も TF-IDF（語彙頻度ベースの軽量埋め込み）に切り替わり、外部モデルのダウンロードも発生しません。RAG（検索拡張生成）の品質確認には適しませんが、UI とフロー検証には有用です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">6. 関連する環境変数</span>
-  </div>
-  <div class="slide-body">
-    <p>LLM 接続関係で使用できる主な環境変数は以下です。</p>
-    <table>
-      <thead><tr><th>環境変数</th><th>用途</th></tr></thead>
-      <tbody>
-        <tr><td><code>CYNOVELA_LLM_BASE_URL</code></td><td>LLM ベース URL を上書き</td></tr>
-        <tr><td><em>（環境変数なし）</em></td><td>LLM API キーは設定UIで入力（このセッションのみ保持・保存しない）</td></tr>
-        <tr><td><code>CYNOVELA_LLM_MODEL</code></td><td>LLM モデル名（OpenAI 互換時のみ使用）</td></tr>
-        <tr><td><code>CYNOVELA_LLM_PROVIDER</code></td><td>LLM プロバイダー名</td></tr>
-        <tr><td><code>CYNOVELA_LLM_MAX_CONCURRENT</code></td><td>同時実行数の上限</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">6. 関連する環境変数</span>
+</div>
+<div class="slide-body">
+<p>LLM 接続関係で使用できる主な環境変数は以下です。</p>
+<table>
+<thead><tr><th>環境変数</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>CYNOVELA_LLM_BASE_URL</code></td><td>LLM ベース URL を上書き</td></tr>
+<tr><td><em>（環境変数なし）</em></td><td>LLM API キーは設定UIで入力（このセッションのみ保持・保存しない）</td></tr>
+<tr><td><code>CYNOVELA_LLM_MODEL</code></td><td>LLM モデル名（OpenAI 互換時のみ使用）</td></tr>
+<tr><td><code>CYNOVELA_LLM_PROVIDER</code></td><td>LLM プロバイダー名</td></tr>
+<tr><td><code>CYNOVELA_LLM_MAX_CONCURRENT</code></td><td>同時実行数の上限</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">LLM 接続ガイド</span>
-    <span class="slide-title">7. Reranker（再ランク付け）プロバイダー</span>
-  </div>
-  <div class="slide-body">
-    <p>LLM とは別に、検索結果の並び替えを担う Reranker も差し替え可能です。<code>cynovela.yaml</code> の <code>reranker.provider</code> で指定します。</p>
-    <table>
-      <thead><tr><th>プロバイダー</th><th>値</th><th>説明</th></tr></thead>
-      <tbody>
-        <tr><td>無効</td><td><code>none</code></td><td>Reranker を使わない</td></tr>
-        <tr><td>CrossEncoder</td><td><code>cross_encoder</code></td><td>ローカルの CrossEncoder モデル（既定の高品質構成）</td></tr>
-        <tr><td>FlashRank</td><td><code>flashrank</code></td><td>軽量 Reranker ライブラリ</td></tr>
-        <tr><td>MLX</td><td><code>mlx</code></td><td>Apple Silicon 向けの骨格実装（実体は将来対応）</td></tr>
-        <tr><td>Ollama</td><td><code>ollama</code></td><td>Ollama 経由の Reranker</td></tr>
-        <tr><td>HTTP</td><td><code>http</code></td><td>任意の HTTP エンドポイント</td></tr>
-      </tbody>
-    </table>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">LLM 接続ガイド</span>
+<span class="slide-title">7. Reranker（再ランク付け）プロバイダー</span>
+</div>
+<div class="slide-body">
+<p>LLM とは別に、検索結果の並び替えを担う Reranker も差し替え可能です。<code>cynovela.yaml</code> の<code>reranker.provider</code> で指定します。</p>
+<table>
+<thead><tr><th>プロバイダー</th><th>値</th><th>説明</th></tr></thead>
+<tbody>
+<tr><td>無効</td><td><code>none</code></td><td>Reranker を使わない</td></tr>
+<tr><td>CrossEncoder</td><td><code>cross_encoder</code></td><td>ローカルの CrossEncoder モデル（既定の高品質構成）</td></tr>
+<tr><td>FlashRank</td><td><code>flashrank</code></td><td>軽量 Reranker ライブラリ</td></tr>
+<tr><td>MLX</td><td><code>mlx</code></td><td>Apple Silicon 向けの骨格実装（実体は将来対応）</td></tr>
+<tr><td>Ollama</td><td><code>ollama</code></td><td>Ollama 経由の Reranker</td></tr>
+<tr><td>HTTP</td><td><code>http</code></td><td>任意の HTTP エンドポイント</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 22</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 22</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

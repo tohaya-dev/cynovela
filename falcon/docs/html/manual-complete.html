@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manual Complete / Cynovela 完全マニュアル — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual Complete / Cynovela 完全マニュアル — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -198,7 +198,7 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
@@ -206,508 +206,508 @@ a:hover { text-decoration: underline; }
 
 <!-- Cover (English) -->
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Cynovela Complete Manual</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Cynovela Complete Manual</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning</div>
 </div>
 
 <!-- About (English) -->
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">About This Document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About this document</strong><br>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">About This Document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About this document</strong><br>
       Cynovela is a completely unofficial learning tool built by an individual to understand the concepts behind AI platform tools by hands-on work. It is not a commercial product or an official implementation. The implementation is entirely original and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product in any way.
-    </blockquote>
-    <p>This manual is an integrated document that collects all of Cynovela's features in one place. Refer to it when you want to work across the individual documents.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</blockquote>
+<p>This manual is an integrated document that collects all of Cynovela's features in one place. Refer to it when you want to work across the individual documents.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- TOC (English) -->
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Table of Contents</span>
-  </div>
-  <div class="slide-body">
-    <ol>
-      <li>Overview</li>
-      <li>Concepts of AI Governance</li>
-      <li>Installation and Startup</li>
-      <li>Basic Operations</li>
-      <li>Design Details</li>
-      <li>External Integrations</li>
-      <li>Known Limitations</li>
-      <li>FAQ</li>
-    </ol>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Table of Contents</span>
+</div>
+<div class="slide-body">
+<ol>
+<li>Overview</li>
+<li>Concepts of AI Governance</li>
+<li>Installation and Startup</li>
+<li>Basic Operations</li>
+<li>Design Details</li>
+<li>External Integrations</li>
+<li>Known Limitations</li>
+<li>FAQ</li>
+</ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 1: Overview (English) -->
 <div class="slide chapter-slide" id="slide-4">
-  <div class="chapter-title">Chapter 1 — Overview</div>
+<div class="chapter-title">Chapter 1 — Overview</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">1-1. What Is Cynovela</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela is a completely unofficial learning tool built by an individual to understand the concepts behind AI platform tools by hands-on work.</p>
-    <p>It is designed so you can experience "what it looks like when you actually build it" for features such as the following, which the referenced AI platform tools provide.</p>
-    <ul>
-      <li>Data governance (guardrails, PII detection, audit logs)</li>
-      <li>Data ingest (automatic classification, metadata extraction, incremental sync)</li>
-      <li>RAG (retrieval-augmented generation) pipeline</li>
-      <li>Role-based access control (RBAC)</li>
-      <li>MCP (Model Context Protocol) integration</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">1-1. What Is Cynovela</span>
+</div>
+<div class="slide-body">
+<p>Cynovela is a completely unofficial learning tool built by an individual to understand the concepts behind AI platform tools by hands-on work.</p>
+<p>It is designed so you can experience "what it looks like when you actually build it" for features such as the following, which the referenced AI platform tools provide.</p>
+<ul>
+<li>Data governance (guardrails, PII detection, audit logs)</li>
+<li>Data ingest (automatic classification, metadata extraction, incremental sync)</li>
+<li>RAG (retrieval-augmented generation) pipeline</li>
+<li>Role-based access control (RBAC)</li>
+<li>MCP (Model Context Protocol) integration</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">1-2. Design Concepts</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela is designed with the top priority of "not stopping at reading, but learning by running it yourself".</p>
-    <ul>
-      <li><strong>No missing core features</strong>: essential features such as guardrails / PII / RAG / RBAC / audit logs are not omitted; they are implemented in a simplified form.</li>
-      <li><strong>Built from OSS only</strong>: it uses only easily obtainable OSS, such as FastAPI, SQLite, ChromaDB, BAAI/bge-m3, and cryptography (Fernet).</li>
-      <li><strong>Fully local</strong>: by default it assumes a connection to a local LLM runner such as LM Studio or Ollama. No cloud dependency.</li>
-      <li><strong>Idempotent and non-destructive</strong>: schema changes consistently use <code>CREATE TABLE IF NOT EXISTS</code> and <code>ALTER TABLE</code> wrapped in <code>try/except</code>, and data updates use <code>INSERT ... ON CONFLICT DO UPDATE</code>.</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">1-2. Design Concepts</span>
+</div>
+<div class="slide-body">
+<p>Cynovela is designed with the top priority of "not stopping at reading, but learning by running it yourself".</p>
+<ul>
+<li><strong>No missing core features</strong>: essential features such as guardrails / PII / RAG / RBAC / audit logs are not omitted; they are implemented in a simplified form.</li>
+<li><strong>Built from OSS only</strong>: it uses only easily obtainable OSS, such as FastAPI, SQLite, ChromaDB, BAAI/bge-m3, and cryptography (Fernet).</li>
+<li><strong>Fully local</strong>: by default it assumes a connection to a local LLM runner such as LM Studio or Ollama. No cloud dependency.</li>
+<li><strong>Idempotent and non-destructive</strong>: schema changes consistently use<code>CREATE TABLE IF NOT EXISTS</code> and<code>ALTER TABLE</code> wrapped in<code>try/except</code>, and data updates use<code>INSERT ... ON CONFLICT DO UPDATE</code>.</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">1-3. Position of the Project</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela is not a commercial product. It does not represent the official position of any referenced company or product. The implementation is entirely original and contains no source code, trademarks, or official documentation from the referenced sources.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">1-3. Position of the Project</span>
+</div>
+<div class="slide-body">
+<p>Cynovela is not a commercial product. It does not represent the official position of any referenced company or product. The implementation is entirely original and contains no source code, trademarks, or official documentation from the referenced sources.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 2: AI Governance (English) -->
 <div class="slide chapter-slide" id="slide-8">
-  <div class="chapter-title">Chapter 2 — Concepts of AI Governance</div>
+<div class="chapter-title">Chapter 2 — Concepts of AI Governance</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">2-1. Data Classification and Labeling</span>
-  </div>
-  <div class="slide-body">
-    <p>This chapter organizes, from eight points of view, how Cynovela reproduces the governance features that AI platform tools have in common. This is the mechanism that mechanically decides "what kind of thing" each document is and attaches a label to it. Cynovela defines 14 categories.</p>
-    <ul>
-      <li>Governance and policy documents / incident reports / technical guides and manuals</li>
-      <li>Case studies / meeting minutes / audit and assessment reports / POC evaluation reports</li>
-      <li>FAQs / white papers / checklists</li>
-      <li>Proposals and RFPs / newsletters and technical information / references and glossaries / other</li>
-    </ul>
-    <p>In addition, it performs a supplementary classification into 5 document formats (contract, technical specification, email, report, manual).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">2-1. Data Classification and Labeling</span>
+</div>
+<div class="slide-body">
+<p>This chapter organizes, from eight points of view, how Cynovela reproduces the governance features that AI platform tools have in common. This is the mechanism that mechanically decides "what kind of thing" each document is and attaches a label to it. Cynovela defines 14 categories.</p>
+<ul>
+<li>Governance and policy documents / incident reports / technical guides and manuals</li>
+<li>Case studies / meeting minutes / audit and assessment reports / POC evaluation reports</li>
+<li>FAQs / white papers / checklists</li>
+<li>Proposals and RFPs / newsletters and technical information / references and glossaries / other</li>
+</ul>
+<p>In addition, it performs a supplementary classification into 5 document formats (contract, technical specification, email, report, manual).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">2-2. Detecting Confidential Information</span>
-  </div>
-  <div class="slide-body">
-    <p>This is the mechanism that detects and masks confidential information (PII, personal information). Cynovela has two families of detectors.</p>
-    <h4>Primary (regular-expression based, <code>guardrail.py</code>)</h4>
-    <ul>
-      <li>URL, EMAIL, PHONE_JP (mobile), PHONE_LAND (landline), CREDIT (credit card), MYNUMBER (Japanese individual number), PASSPORT, IPV4</li>
-    </ul>
-    <h4>Secondary (Presidio + GiNZA NER fallback, <code>utils/metadata/pii.py</code>)</h4>
-    <ul>
-      <li>PERSON_JP, ORG_JP, LOC_JP, ADDRESS_JP, EMAIL_ADDRESS, PHONE_NUMBER, DATE_TIME, INTERNAL_URL</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">2-2. Detecting Confidential Information</span>
+</div>
+<div class="slide-body">
+<p>This is the mechanism that detects and masks confidential information (PII, personal information). Cynovela has two families of detectors.</p>
+<h4>Primary (regular-expression based,<code>guardrail.py</code>)</h4>
+<ul>
+<li>URL, EMAIL, PHONE_JP (mobile), PHONE_LAND (landline), CREDIT (credit card), MYNUMBER (Japanese individual number), PASSPORT, IPV4</li>
+</ul>
+<h4>Secondary (Presidio + GiNZA NER fallback,<code>utils/metadata/pii.py</code>)</h4>
+<ul>
+<li>PERSON_JP, ORG_JP, LOC_JP, ADDRESS_JP, EMAIL_ADDRESS, PHONE_NUMBER, DATE_TIME, INTERNAL_URL</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">2-3. Access Control (RBAC)</span>
-  </div>
-  <div class="slide-body">
-    <p>This is the mechanism that restricts the information a user can see and the operations a user can perform according to the user's role.</p>
-    <table>
-      <thead><tr><th>Role</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>admin</code></td><td>Full administrative rights</td></tr>
-        <tr><td><code>viewer</code></td><td>View only</td></tr>
-      </tbody>
-    </table>
-    <blockquote>Names such as <code>curator</code> / <code>data-scientist</code> are accepted as backward-compatible values, but in the current implementation they are normalized to <code>viewer</code> and carry no specific rights (the effective roles are the two values <code>admin</code> / <code>viewer</code>).</blockquote>
-    <p>RBAC is checked in 33 routers (242 places) and is consolidated into 4 helper functions (<code>_require_admin</code>, <code>_require_authenticated</code>, <code>_require_role</code>, <code>_require_admin_or_self</code>).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">2-3. Access Control (RBAC)</span>
+</div>
+<div class="slide-body">
+<p>This is the mechanism that restricts the information a user can see and the operations a user can perform according to the user's role.</p>
+<table>
+<thead><tr><th>Role</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>admin</code></td><td>Full administrative rights</td></tr>
+<tr><td><code>viewer</code></td><td>View only</td></tr>
+</tbody>
+</table>
+<blockquote>Names such as<code>curator</code> /<code>data-scientist</code> are accepted as backward-compatible values, but in the current implementation they are normalized to<code>viewer</code> and carry no specific rights (the effective roles are the two values<code>admin</code> /<code>viewer</code>).</blockquote>
+<p>RBAC is checked in 33 routers (242 places) and is consolidated into 4 helper functions (<code>_require_admin</code>,<code>_require_authenticated</code>,<code>_require_role</code>,<code>_require_admin_or_self</code>).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-12">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">2-4. Audit Logs / 2-5. Guardrails</span>
-  </div>
-  <div class="slide-body">
-    <h3>2-4. Audit logs</h3>
-    <p>Important operations (creating and deleting a Source or Workspace, Publish, Chat, PII detection, authentication failure, and so on) are recorded in a form that cannot be tampered with. Cynovela forbids changing or deleting rows of the <code>audit_logs</code> table through the API.</p>
-    <h3>2-5. Guardrails</h3>
-    <p>This is the mechanism that defines how to deal with detected information and with input queries. Cynovela has 4 kinds of actions.</p>
-    <table>
-      <thead><tr><th>Action</th><th>Behavior</th></tr></thead>
-      <tbody>
-        <tr><td><code>mask</code></td><td>Replace the matched part with a mask token (<code>[MASKED:EMAIL]</code> and so on)</td></tr>
-        <tr><td><code>exclude_from_rag</code></td><td>Exclude it from RAG search</td></tr>
-        <tr><td><code>log_only</code></td><td>Only record the detection, take no action</td></tr>
-        <tr><td><code>allow</code></td><td>Allow (explicitly allowlisted)</td></tr>
-      </tbody>
-    </table>
-    <p>A policy is combined with several classification classes (PII, Financial, HR) and bound to a Workspace. The seed data provides 3 of them: <code>pol-pii</code>, <code>pol-strict</code>, and <code>pol-log</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">2-4. Audit Logs / 2-5. Guardrails</span>
+</div>
+<div class="slide-body">
+<h3>2-4. Audit logs</h3>
+<p>Important operations (creating and deleting a Source or Workspace, Publish, Chat, PII detection, authentication failure, and so on) are recorded in a form that cannot be tampered with. Cynovela forbids changing or deleting rows of the<code>audit_logs</code> table through the API.</p>
+<h3>2-5. Guardrails</h3>
+<p>This is the mechanism that defines how to deal with detected information and with input queries. Cynovela has 4 kinds of actions.</p>
+<table>
+<thead><tr><th>Action</th><th>Behavior</th></tr></thead>
+<tbody>
+<tr><td><code>mask</code></td><td>Replace the matched part with a mask token (<code>[MASKED:EMAIL]</code> and so on)</td></tr>
+<tr><td><code>exclude_from_rag</code></td><td>Exclude it from RAG search</td></tr>
+<tr><td><code>log_only</code></td><td>Only record the detection, take no action</td></tr>
+<tr><td><code>allow</code></td><td>Allow (explicitly allowlisted)</td></tr>
+</tbody>
+</table>
+<p>A policy is combined with several classification classes (PII, Financial, HR) and bound to a Workspace. The seed data provides 3 of them:<code>pol-pii</code>,<code>pol-strict</code>, and<code>pol-log</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-13">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">2-6. Encryption</span>
-  </div>
-  <div class="slide-body">
-    <p>Highly confidential raw text (the data before masking) is stored encrypted with Fernet (symmetric-key encryption).</p>
-    <ul>
-      <li><strong>Key management</strong>: the <code>CYNOVELA_SECRET_KEY</code> environment variable (generated automatically when not specified; specifying it explicitly is recommended in production)</li>
-      <li><strong>Targets</strong>: the <code>chunks</code> / <code>parent_chunks</code> tables in SQLite and the <code>*__raw</code> collections in ChromaDB</li>
-      <li><strong>Format</strong>: the <code>enc:</code> prefix plus a base64 string (idempotent, no double encryption)</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">2-6. Encryption</span>
+</div>
+<div class="slide-body">
+<p>Highly confidential raw text (the data before masking) is stored encrypted with Fernet (symmetric-key encryption).</p>
+<ul>
+<li><strong>Key management</strong>: the<code>CYNOVELA_SECRET_KEY</code> environment variable (generated automatically when not specified; specifying it explicitly is recommended in production)</li>
+<li><strong>Targets</strong>: the<code>chunks</code> /<code>parent_chunks</code> tables in SQLite and the<code>*__raw</code> collections in ChromaDB</li>
+<li><strong>Format</strong>: the<code>enc:</code> prefix plus a base64 string (idempotent, no double encryption)</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">2-7. Countermeasures Against Prompt Injection</span>
-  </div>
-  <div class="slide-body">
-    <p>To prevent malicious instruction injection into the LLM, a 3-layer defense is implemented.</p>
-    <ol>
-      <li><strong>Input inspection</strong>: if the query contains any of 14 English and Japanese injection patterns (<code>ignore previous instructions</code>, <code>これまでの指示を無視</code>, and so on), it is blocked immediately with HTTP 400.</li>
-      <li><strong>Post-retrieval inspection</strong>: chunks in the search results that contain injection wording are excluded.</li>
-      <li><strong>Output inspection</strong>: the LLM response is checked for <code>HACKED</code> / <code>PWNED</code> / <code>SECRET-ALPHA-TOKEN</code> / <code>[SYSTEM OVERRIDE]</code>.</li>
-    </ol>
-    <p>On detection, <code>PROMPT_INJECTION_BLOCKED</code> is recorded in <code>audit_logs</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">2-7. Countermeasures Against Prompt Injection</span>
+</div>
+<div class="slide-body">
+<p>To prevent malicious instruction injection into the LLM, a 3-layer defense is implemented.</p>
+<ol>
+<li><strong>Input inspection</strong>: if the query contains any of 14 English and Japanese injection patterns (<code>ignore previous instructions</code>,<code>これまでの指示を無視</code>, and so on), it is blocked immediately with HTTP 400.</li>
+<li><strong>Post-retrieval inspection</strong>: chunks in the search results that contain injection wording are excluded.</li>
+<li><strong>Output inspection</strong>: the LLM response is checked for<code>HACKED</code> /<code>PWNED</code> /<code>SECRET-ALPHA-TOKEN</code> /<code>[SYSTEM OVERRIDE]</code>.</li>
+</ol>
+<p>On detection,<code>PROMPT_INJECTION_BLOCKED</code> is recorded in<code>audit_logs</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">2-8. Data Minimization (Dual-Tier Storage)</span>
-  </div>
-  <div class="slide-body">
-    <p>For the same document, raw (the original text) and masked (the masked text) are stored in separate records and separate vector collections, so that the source referred to is switched according to the role.</p>
-    <ul>
-      <li><strong>admin role</strong>: refers to the raw collection (<code>{cid}__raw</code>, Fernet encrypted)</li>
-      <li><strong>Other roles</strong>: refer to the masked collection (<code>{cid}__masked</code>)</li>
-    </ul>
-    <p>In addition, <code>_mask_for_viewer</code> is also applied to the LLM output, which gives a second layer of defense.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">2-8. Data Minimization (Dual-Tier Storage)</span>
+</div>
+<div class="slide-body">
+<p>For the same document, raw (the original text) and masked (the masked text) are stored in separate records and separate vector collections, so that the source referred to is switched according to the role.</p>
+<ul>
+<li><strong>admin role</strong>: refers to the raw collection (<code>{cid}__raw</code>, Fernet encrypted)</li>
+<li><strong>Other roles</strong>: refer to the masked collection (<code>{cid}__masked</code>)</li>
+</ul>
+<p>In addition,<code>_mask_for_viewer</code> is also applied to the LLM output, which gives a second layer of defense.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 3: Installation and Startup (English) -->
 <div class="slide chapter-slide" id="slide-16">
-  <div class="chapter-title">Chapter 3 — Installation and Startup</div>
+<div class="chapter-title">Chapter 3 — Installation and Startup</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">3-1. Recommended Environment / 3-2. Startup Commands</span>
-  </div>
-  <div class="slide-body">
-    <h3>3-1. Recommended environment</h3>
-    <ul>
-      <li>macOS (Apple Silicon recommended), Linux, Windows</li>
-      <li>Python 3.10 or later</li>
-      <li>A conda environment (recommended environment name: <code>cynovela</code>)</li>
-    </ul>
-    <h3>3-2. Startup commands</h3>
-    <h4>Demo mode (the easiest)</h4>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">3-1. Recommended Environment / 3-2. Startup Commands</span>
+</div>
+<div class="slide-body">
+<h3>3-1. Recommended environment</h3>
+<ul>
+<li>macOS (Apple Silicon recommended), Linux, Windows</li>
+<li>Python 3.10 or later</li>
+<li>A conda environment (recommended environment name:<code>cynovela</code>)</li>
+</ul>
+<h3>3-2. Startup commands</h3>
+<h4>Demo mode (the easiest)</h4>
 <pre><code>python server.py --demo</code></pre>
-    <p>Open <code>http://127.0.0.1:8765</code> in a browser.</p>
-    <h4>Real LLM mode</h4>
-    <p>Start LM Studio or Ollama separately, then run the following.</p>
+<p>Open<code>http://127.0.0.1:8765</code> in a browser.</p>
+<h4>Real LLM mode</h4>
+<p>Start LM Studio or Ollama separately, then run the following.</p>
 <pre><code>python server.py --demo --lmstudio-url http://localhost:1234</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">3-3. Startup Modes (<code>--mode</code>)</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>mode</th><th>Description</th><th>Required model</th><th>Recommended environment</th></tr></thead>
-      <tbody>
-        <tr><td><code>text</code></td><td>All text RAG features (default)</td><td>BAAI/bge-m3</td><td>No GPU needed</td></tr>
-        <tr><td><code>lite</code></td><td>The switch is <strong>not wired up</strong>, so in fact it is BAAI/bge-m3 (behavior is the same as text; only the displayed name changes)</td><td>—</td><td>—</td></tr>
-        <tr><td><code>lite-en</code></td><td>The switch is <strong>not wired up</strong>, so in fact it is BAAI/bge-m3 (behavior is the same as text; only the displayed name changes)</td><td>—</td><td>—</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">3-3. Startup Modes (<code>--mode</code>)</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>mode</th><th>Description</th><th>Required model</th><th>Recommended environment</th></tr></thead>
+<tbody>
+<tr><td><code>text</code></td><td>All text RAG features (default)</td><td>BAAI/bge-m3</td><td>No GPU needed</td></tr>
+<tr><td><code>lite</code></td><td>The switch is<strong>not wired up</strong>, so in fact it is BAAI/bge-m3 (behavior is the same as text; only the displayed name changes)</td><td>—</td><td>—</td></tr>
+<tr><td><code>lite-en</code></td><td>The switch is<strong>not wired up</strong>, so in fact it is BAAI/bge-m3 (behavior is the same as text; only the displayed name changes)</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">3-4. List of CLI Arguments</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>Flag</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>--demo</code></td><td>Start with the demo database <code>store/db/demo.db</code> (without it, production is used, that is <code>store/db/cynovela.db</code>; neither is lost on restart)</td></tr>
-        <tr><td><code>--lmstudio-url</code></td><td>LM Studio base URL (default: <code>http://localhost:1234</code>)</td></tr>
-        <tr><td><code>--mode</code></td><td>Startup mode (text / lite / lite-en)</td></tr>
-        <tr><td><code>--host</code></td><td>Bind address (default: <code>127.0.0.1</code>)</td></tr>
-        <tr><td><code>--port</code></td><td>Port number (default: <code>8765</code>)</td></tr>
-        <tr><td><code>--lan</code></td><td>Expose on the LAN (<code>host=0.0.0.0</code>)</td></tr>
-        <tr><td><code>--allow-tailscale</code></td><td>Allow the Tailscale subnet (<code>100.64.0.0/10</code>)</td></tr>
-        <tr><td><code>--allow-subnet</code></td><td>Add a custom subnet (can be given several times)</td></tr>
-        <tr><td><code>--local-only</code></td><td>Restrict to this machine only (<code>host=127.0.0.1</code>)</td></tr>
-        <tr><td><code>--reset-admin</code></td><td>Reset the administrator password, print it, and exit (add <code>--demo</code> when fixing the demo)</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">3-4. List of CLI Arguments</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--demo</code></td><td>Start with the demo database<code>store/db/demo.db</code> (without it, production is used, that is<code>store/db/cynovela.db</code>; neither is lost on restart)</td></tr>
+<tr><td><code>--lmstudio-url</code></td><td>LM Studio base URL (default:<code>http://localhost:1234</code>)</td></tr>
+<tr><td><code>--mode</code></td><td>Startup mode (text / lite / lite-en)</td></tr>
+<tr><td><code>--host</code></td><td>Bind address (default:<code>127.0.0.1</code>)</td></tr>
+<tr><td><code>--port</code></td><td>Port number (default:<code>8765</code>)</td></tr>
+<tr><td><code>--lan</code></td><td>Expose on the LAN (<code>host=0.0.0.0</code>)</td></tr>
+<tr><td><code>--allow-tailscale</code></td><td>Allow the Tailscale subnet (<code>100.64.0.0/10</code>)</td></tr>
+<tr><td><code>--allow-subnet</code></td><td>Add a custom subnet (can be given several times)</td></tr>
+<tr><td><code>--local-only</code></td><td>Restrict to this machine only (<code>host=127.0.0.1</code>)</td></tr>
+<tr><td><code>--reset-admin</code></td><td>Reset the administrator password, print it, and exit (add<code>--demo</code> when fixing the demo)</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">3-5. PII Detection Modes / 3-6. Preflight</span>
-  </div>
-  <div class="slide-body">
-    <h3>3-5. PII detection modes</h3>
-    <p>Specify it with the <code>pii_mode</code> key in <code>cynovela.yaml</code>.</p>
-    <table>
-      <thead><tr><th>Value</th><th>Detection method</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>Regular expressions only</td></tr>
-        <tr><td><code>standard</code> (default)</td><td>Regular expressions + GiNZA NER</td></tr>
-        <tr><td><code>quality</code></td><td>Regular expressions + GiNZA NER + detailed filtering</td></tr>
-      </tbody>
-    </table>
-    <p>To change it at run time, send a PUT to <code>/api/settings/pii-mode</code>.</p>
-    <h3>3-6. Preflight check</h3>
-    <p>At startup it checks that the required models are present, and if some model has not been downloaded it offers the following choices.</p>
-    <ol>
-      <li>Download now and start (saved under <code>~/.cynovela/models/</code> from HuggingFace)</li>
-      <li>Start in an alternative mode (full → text → lite → lite-en → mock)</li>
-      <li>Cancel</li>
-    </ol>
-    <p>When running from a script, you can skip this prompt with <code>CYNOVELA_NONINTERACTIVE=1</code> (it exits when a model is missing).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">3-5. PII Detection Modes / 3-6. Preflight</span>
+</div>
+<div class="slide-body">
+<h3>3-5. PII detection modes</h3>
+<p>Specify it with the<code>pii_mode</code> key in<code>cynovela.yaml</code>.</p>
+<table>
+<thead><tr><th>Value</th><th>Detection method</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>Regular expressions only</td></tr>
+<tr><td><code>standard</code> (default)</td><td>Regular expressions + GiNZA NER</td></tr>
+<tr><td><code>quality</code></td><td>Regular expressions + GiNZA NER + detailed filtering</td></tr>
+</tbody>
+</table>
+<p>To change it at run time, send a PUT to<code>/api/settings/pii-mode</code>.</p>
+<h3>3-6. Preflight check</h3>
+<p>At startup it checks that the required models are present, and if some model has not been downloaded it offers the following choices.</p>
+<ol>
+<li>Download now and start (saved under<code>~/.cynovela/models</code> from HuggingFace)</li>
+<li>Start in an alternative mode (full → text → lite → lite-en → mock)</li>
+<li>Cancel</li>
+</ol>
+<p>When running from a script, you can skip this prompt with<code>CYNOVELA_NONINTERACTIVE=1</code> (it exits when a model is missing).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 4: Basic Operations (English) -->
 <div class="slide chapter-slide" id="slide-21">
-  <div class="chapter-title">Chapter 4 — Basic Operations</div>
+<div class="chapter-title">Chapter 4 — Basic Operations</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">4-1. Core Flow (Steps 1–3)</span>
-  </div>
-  <div class="slide-body">
-    <p>The main operations of Cynovela follow the flow below.</p>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">4-1. Core Flow (Steps 1–3)</span>
+</div>
+<div class="slide-body">
+<p>The main operations of Cynovela follow the flow below.</p>
 <pre><code>Source 登録 → Scan → Workspace 作成 → Collection 作成 → Publish → RAG Chat</code></pre>
-    <h4>Step 1: Register a Source</h4>
-    <p>Register the origin of the data (a local folder). POST a path to <code>/api/sources</code>, or register it from the UI with the "Add Source" button.</p>
-    <h4>Step 2: Scan</h4>
-    <p>The files under the registered Source are scanned and records are created in the <code>files</code> table. Each file is given a deterministic ID derived from its path (<code>_stable_fid(path)</code>).</p>
-    <h4>Step 3: Create a Workspace</h4>
-    <p>A Workspace is "the unit that groups several Collections" and also "the unit that binds a guardrail policy and users together".</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<h4>Step 1: Register a Source</h4>
+<p>Register the origin of the data (a local folder). POST a path to<code>/api/sources</code>, or register it from the UI with the "Add Source" button.</p>
+<h4>Step 2: Scan</h4>
+<p>The files under the registered Source are scanned and records are created in the<code>files</code> table. Each file is given a deterministic ID derived from its path (<code>_stable_fid(path)</code>).</p>
+<h4>Step 3: Create a Workspace</h4>
+<p>A Workspace is "the unit that groups several Collections" and also "the unit that binds a guardrail policy and users together".</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-23">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">4-1. Core Flow (Steps 4–6)</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>Step 4: Create a Collection</h4>
-    <p>A Collection is the unit of "a set of files plus a classification and chunking strategy". Its state moves through <code>draft → ingested → publishing → ready</code>.</p>
-    <ul>
-      <li><code>rag_strategy</code>: <code>simple</code> / <code>hybrid_bm25</code> (default) / <code>contextual</code></li>
-      <li><code>chunk_size</code>, <code>chunk_overlap</code></li>
-      <li><code>access_level</code>: <code>public</code> / <code>internal</code> / <code>confidential</code></li>
-      <li><code>allowed_roles_json</code>: the ACL (access control list)</li>
-    </ul>
-    <h4>Step 5: Publish</h4>
-    <p>The files in the Collection are split into chunks, turned into vectors, and put into ChromaDB. At Publish time the following happen at the same time.</p>
-    <ul>
-      <li>Generation of chunks for both the raw and the masked tier</li>
-      <li>PII detection and Fernet encryption (raw side only)</li>
-      <li>Building the BM25 index</li>
-      <li>Recording into <code>publish_history</code> (doc_count, chunk_count, pii_count, excluded_count, elapsed_seconds, and so on)</li>
-    </ul>
-    <h4>Step 6: RAG Chat</h4>
-    <p>When the user enters a question, the pipeline of search → reranker → LLM generation → guardrail application → returning the answer is executed.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">4-1. Core Flow (Steps 4–6)</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>Step 4: Create a Collection</h4>
+<p>A Collection is the unit of "a set of files plus a classification and chunking strategy". Its state moves through<code>draft → ingested → publishing → ready</code>.</p>
+<ul>
+<li><code>rag_strategy</code>:<code>simple</code> /<code>hybrid_bm25</code> (default) /<code>contextual</code></li>
+<li><code>chunk_size</code>,<code>chunk_overlap</code></li>
+<li><code>access_level</code>:<code>public</code> /<code>internal</code> /<code>confidential</code></li>
+<li><code>allowed_roles_json</code>: the ACL (access control list)</li>
+</ul>
+<h4>Step 5: Publish</h4>
+<p>The files in the Collection are split into chunks, turned into vectors, and put into ChromaDB. At Publish time the following happen at the same time.</p>
+<ul>
+<li>Generation of chunks for both the raw and the masked tier</li>
+<li>PII detection and Fernet encryption (raw side only)</li>
+<li>Building the BM25 index</li>
+<li>Recording into<code>publish_history</code> (doc_count, chunk_count, pii_count, excluded_count, elapsed_seconds, and so on)</li>
+</ul>
+<h4>Step 6: RAG Chat</h4>
+<p>When the user enters a question, the pipeline of search → reranker → LLM generation → guardrail application → returning the answer is executed.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-24">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">4-2. RAG Presets</span>
-  </div>
-  <div class="slide-body">
-    <p>There are 5 presets you can choose from the UI.</p>
-    <table>
-      <thead><tr><th>ID</th><th>Name</th><th>Purpose</th></tr></thead>
-      <tbody>
-        <tr><td><code>tech_doc</code></td><td>Technical document</td><td>For manuals</td></tr>
-        <tr><td><code>confidential</code></td><td>Confidential document</td><td>Internal documents containing PII</td></tr>
-        <tr><td><code>personal_memo</code></td><td>Personal memo</td><td>Minutes and memos</td></tr>
-        <tr><td><code>multimedia</code></td><td>Multimedia</td><td>A mix of images and Office files</td></tr>
-        <tr><td><code>quickstart</code></td><td>Quick start</td><td>Fully automatic, for beginners</td></tr>
-      </tbody>
-    </table>
-    <p>Each preset defines a combination of <code>chunking</code>, <code>rag_mode</code>, and <code>guardrail</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">4-2. RAG Presets</span>
+</div>
+<div class="slide-body">
+<p>There are 5 presets you can choose from the UI.</p>
+<table>
+<thead><tr><th>ID</th><th>Name</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>tech_doc</code></td><td>Technical document</td><td>For manuals</td></tr>
+<tr><td><code>confidential</code></td><td>Confidential document</td><td>Internal documents containing PII</td></tr>
+<tr><td><code>personal_memo</code></td><td>Personal memo</td><td>Minutes and memos</td></tr>
+<tr><td><code>multimedia</code></td><td>Multimedia</td><td>A mix of images and Office files</td></tr>
+<tr><td><code>quickstart</code></td><td>Quick start</td><td>Fully automatic, for beginners</td></tr>
+</tbody>
+</table>
+<p>Each preset defines a combination of<code>chunking</code>,<code>rag_mode</code>, and<code>guardrail</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-25">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">4-3. Answer Modes / 4-4. User Management</span>
-  </div>
-  <div class="slide-body">
-    <h3>4-3. Answer modes</h3>
-    <p>There are 3 RAG modes.</p>
-    <table>
-      <thead><tr><th>RAG Mode</th><th>Contents</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>Minimal RAG (one search, options omitted)</td></tr>
-        <tr><td><code>standard</code></td><td>Standard (BM25 hybrid, reranker optional)</td></tr>
-        <tr><td><code>hq</code></td><td>High quality (CRAG / Multi-Query / HyDE enabled)</td></tr>
-      </tbody>
-    </table>
-    <p>In addition, there is a feature that switches the answer style by role.</p>
-    <ul>
-      <li><code>admin</code>: complete information including technical details, setting values, and internal structure</li>
-      <li><code>reader</code>: an explanation focused on the main points, avoiding technical jargon</li>
-    </ul>
-    <h3>4-4. User management</h3>
-    <p>For backward compatibility the SQL CHECK constraint allows the 3 values <code>admin</code> / <code>curator</code> / <code>viewer</code>, but in the current implementation <code>curator</code> is normalized to <code>viewer</code>, so the effective roles are the two values <code>admin</code> / <code>viewer</code>. On first startup you can create the admin user with the <code>CYNOVELA_ADMIN_USERNAME</code> and <code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code> environment variables.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">4-3. Answer Modes / 4-4. User Management</span>
+</div>
+<div class="slide-body">
+<h3>4-3. Answer modes</h3>
+<p>There are 3 RAG modes.</p>
+<table>
+<thead><tr><th>RAG Mode</th><th>Contents</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>Minimal RAG (one search, options omitted)</td></tr>
+<tr><td><code>standard</code></td><td>Standard (BM25 hybrid, reranker optional)</td></tr>
+<tr><td><code>hq</code></td><td>High quality (CRAG / Multi-Query / HyDE enabled)</td></tr>
+</tbody>
+</table>
+<p>In addition, there is a feature that switches the answer style by role.</p>
+<ul>
+<li><code>admin</code>: complete information including technical details, setting values, and internal structure</li>
+<li><code>reader</code>: an explanation focused on the main points, avoiding technical jargon</li>
+</ul>
+<h3>4-4. User management</h3>
+<p>For backward compatibility the SQL CHECK constraint allows the 3 values<code>admin</code> /<code>curator</code> /<code>viewer</code>, but in the current implementation<code>curator</code> is normalized to<code>viewer</code>, so the effective roles are the two values<code>admin</code> /<code>viewer</code>. On first startup you can create the admin user with the<code>CYNOVELA_ADMIN_USERNAME</code> and<code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code> environment variables.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 5: Design Details (English) -->
 <div class="slide chapter-slide" id="slide-26">
-  <div class="chapter-title">Chapter 5 — Design Details</div>
+<div class="chapter-title">Chapter 5 — Design Details</div>
 </div>
 
 <div class="slide" id="slide-27">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">5-1. RAG Pipeline — Main Flow</span>
-  </div>
-  <div class="slide-body">
-    <p>The main function <code>rag_retrieve()</code> executes the following flow.</p>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">5-1. RAG Pipeline — Main Flow</span>
+</div>
+<div class="slide-body">
+<p>The main function<code>rag_retrieve()</code> executes the following flow.</p>
 <pre><code>1. Vector Search (ChromaDB)
    ├ MMR（多様性確保）
    └ ACL フィルタリング
@@ -722,913 +722,912 @@ a:hover { text-decoration: underline; }
    └ CrossEncoder / BGE-Reranker など
 6. Final Ranking
    └ Top n_results 件を返却</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-28">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">5-1. RAG Pipeline — Main Parameters</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p>Main parameters (the <code>rag</code> section of <code>cynovela.yaml</code>):</p>
-    <ul>
-      <li><code>strategy</code>: <code>hybrid_bm25</code> (default)</li>
-      <li><code>default_n_results</code>: 5</li>
-      <li><code>confidence_threshold</code>: 0.40 (the value defined for the parameter, on the cosine scale)</li>
-      <li><code>vector_weight</code>: 0.7, <code>bm25_weight</code>: 0.3</li>
-      <li><code>hybrid_method</code>: <code>rrf</code> (default) / <code>weighted</code></li>
-      <li><code>rrf_k</code>: 60</li>
-      <li><code>mmr_enabled</code>: true, <code>mmr_lambda</code>: 0.7, <code>mmr_fetch_k</code>: 20</li>
-      <li><code>parent_child_enabled</code>: true, <code>child_chunk_size</code>: 256, <code>parent_chunk_size</code>: 1000</li>
-      <li><code>multi_query_enabled</code>: true, <code>multi_query_count</code>: 3</li>
-      <li><code>crag_enabled</code>: true, <code>crag_max_loops</code>: 1</li>
-      <li><code>hyde_enabled</code>: false</li>
-      <li><code>adaptive_enabled</code>: true, <code>adaptive_threshold</code>: 2.0</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">5-1. RAG Pipeline — Main Parameters</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p>Main parameters (the<code>rag</code> section of<code>cynovela.yaml</code>):</p>
+<ul>
+<li><code>strategy</code>:<code>hybrid_bm25</code> (default)</li>
+<li><code>default_n_results</code>: 5</li>
+<li><code>confidence_threshold</code>: 0.40 (the value defined for the parameter, on the cosine scale)</li>
+<li><code>vector_weight</code>: 0.7,<code>bm25_weight</code>: 0.3</li>
+<li><code>hybrid_method</code>:<code>rrf</code> (default) /<code>weighted</code></li>
+<li><code>rrf_k</code>: 60</li>
+<li><code>mmr_enabled</code>: true,<code>mmr_lambda</code>: 0.7,<code>mmr_fetch_k</code>: 20</li>
+<li><code>parent_child_enabled</code>: true,<code>child_chunk_size</code>: 256,<code>parent_chunk_size</code>: 1000</li>
+<li><code>multi_query_enabled</code>: true,<code>multi_query_count</code>: 3</li>
+<li><code>crag_enabled</code>: true,<code>crag_max_loops</code>: 1</li>
+<li><code>hyde_enabled</code>: false</li>
+<li><code>adaptive_enabled</code>: true,<code>adaptive_threshold</code>: 2.0</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-29">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">5-2. Advanced RAG (the PHASE A series)</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>Name</th><th>Function</th></tr></thead>
-      <tbody>
-        <tr><td>MMR</td><td>Balances relevance against diversity</td></tr>
-        <tr><td>Parent-Child</td><td>Expands the surrounding context of a search hit</td></tr>
-        <tr><td>Hybrid Search</td><td>Combines BM25 and vector search with RRF or weighting</td></tr>
-        <tr><td>Multi-Query</td><td>Expands the query into N queries with the LLM and searches in parallel</td></tr>
-        <tr><td>CRAG (Corrective RAG)</td><td>The LLM judges the quality of the search results and searches again if they are insufficient</td></tr>
-        <tr><td>HyDE</td><td>Generates a hypothetical passage, then searches with its embedding</td></tr>
-        <tr><td>Adaptive RAG</td><td>Judges the complexity of the question and starts an agentic loop</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">5-2. Advanced RAG (the PHASE A series)</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>Name</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>MMR</td><td>Balances relevance against diversity</td></tr>
+<tr><td>Parent-Child</td><td>Expands the surrounding context of a search hit</td></tr>
+<tr><td>Hybrid Search</td><td>Combines BM25 and vector search with RRF or weighting</td></tr>
+<tr><td>Multi-Query</td><td>Expands the query into N queries with the LLM and searches in parallel</td></tr>
+<tr><td>CRAG (Corrective RAG)</td><td>The LLM judges the quality of the search results and searches again if they are insufficient</td></tr>
+<tr><td>HyDE</td><td>Generates a hypothetical passage, then searches with its embedding</td></tr>
+<tr><td>Adaptive RAG</td><td>Judges the complexity of the question and starts an agentic loop</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-30">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">5-3. Smart Ingestion and Collection — Classification Engines</span>
-  </div>
-  <div class="slide-body">
-    <h4>Classification engines</h4>
-    <table>
-      <thead><tr><th>Engine</th><th>Behavior</th></tr></thead>
-      <tbody>
-        <tr><td><code>LightweightClassifier</code></td><td>Rule based (the file name plus keywords in the first 500 characters)</td></tr>
-        <tr><td><code>LLMClassifier</code></td><td>Zero-shot classification with a local LLM such as Ollama</td></tr>
-        <tr><td><code>HybridClassifier</code></td><td>Prefers the lightweight one, falls back to the LLM below a confidence of 0.65</td></tr>
-      </tbody>
-    </table>
-    <h4>State transitions of a Collection</h4>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">5-3. Smart Ingestion and Collection — Classification Engines</span>
+</div>
+<div class="slide-body">
+<h4>Classification engines</h4>
+<table>
+<thead><tr><th>Engine</th><th>Behavior</th></tr></thead>
+<tbody>
+<tr><td><code>LightweightClassifier</code></td><td>Rule based (the file name plus keywords in the first 500 characters)</td></tr>
+<tr><td><code>LLMClassifier</code></td><td>Zero-shot classification with a local LLM such as Ollama</td></tr>
+<tr><td><code>HybridClassifier</code></td><td>Prefers the lightweight one, falls back to the LLM below a confidence of 0.65</td></tr>
+</tbody>
+</table>
+<h4>State transitions of a Collection</h4>
 <pre><code>draft → ingested → ready
 draft → publishing → ready / failed
 publishing → stopped
 failed → draft</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-31">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">5-3. Smart Ingestion — Incremental Sync and Chunking</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>Hash-based incremental sync</h4>
-    <p><code>DataSyncService</code> scans the <code>sources</code> table periodically.</p>
-    <ul>
-      <li>Default interval: 60 seconds (minimum 10 seconds)</li>
-      <li>Compared against: the (source_id, path) records of the <code>files</code> table</li>
-      <li>Difference detection: additions and removals in the set of paths</li>
-    </ul>
-    <p>Integration with publish is not wired up; at present it only writes to the log.</p>
-    <h4>Chunk splitting</h4>
-    <ul>
-      <li>Default: a sliding window of 500 characters with 50 characters of overlap</li>
-      <li>When Contextual Chunking is enabled: metadata (file name, kind, sensitivity, department, position, tags) is prepended to the chunk</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">5-3. Smart Ingestion — Incremental Sync and Chunking</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>Hash-based incremental sync</h4>
+<p><code>DataSyncService</code> scans the<code>sources</code> table periodically.</p>
+<ul>
+<li>Default interval: 60 seconds (minimum 10 seconds)</li>
+<li>Compared against: the (source_id, path) records of the<code>files</code> table</li>
+<li>Difference detection: additions and removals in the set of paths</li>
+</ul>
+<p>Integration with publish is not wired up; at present it only writes to the log.</p>
+<h4>Chunk splitting</h4>
+<ul>
+<li>Default: a sliding window of 500 characters with 50 characters of overlap</li>
+<li>When Contextual Chunking is enabled: metadata (file name, kind, sensitivity, department, position, tags) is prepended to the chunk</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-32">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">5-4. Guardrails and PII (recap)</span>
-  </div>
-  <div class="slide-body">
-    <h4>Tier1 (masking at ingest time)</h4>
-    <p>At Publish time a dual row of raw / masked is generated from each chunk. Two collections, <code>{cid}__raw</code> and <code>{cid}__masked</code>, are created in ChromaDB. Two rows, <code>tier='raw'</code> and <code>tier='masked'</code>, are also stored in the SQLite <code>chunks</code> table.</p>
-    <h4>Tier2 (masking at answer time)</h4>
-    <p><code>_mask_for_viewer</code> is applied to the LLM output in 4 places on the chat path (normal / compare A / compare B / SSE). Masking is forced for everyone except admin.</p>
-    <h4>Fernet encryption</h4>
-    <p>The <code>enc_raw</code> / <code>dec_raw</code> interface of <code>vault_enc.py</code> (the <code>enc:</code> prefix, idempotent). Only the raw tier is encrypted; the masked tier passes through as is.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">5-4. Guardrails and PII (recap)</span>
+</div>
+<div class="slide-body">
+<h4>Tier1 (masking at ingest time)</h4>
+<p>At Publish time a dual row of raw / masked is generated from each chunk. Two collections,<code>{cid}__raw</code> and<code>{cid}__masked</code>, are created in ChromaDB. Two rows,<code>tier='raw'</code> and<code>tier='masked'</code>, are also stored in the SQLite<code>chunks</code> table.</p>
+<h4>Tier2 (masking at answer time)</h4>
+<p><code>_mask_for_viewer</code> is applied to the LLM output in 4 places on the chat path (normal / compare A / compare B / SSE). Masking is forced for everyone except admin.</p>
+<h4>Fernet encryption</h4>
+<p>The<code>enc_raw</code> /<code>dec_raw</code> interface of<code>vault_enc.py</code> (the<code>enc:</code> prefix, idempotent). Only the raw tier is encrypted; the masked tier passes through as is.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 6: External Integrations (English) -->
 <div class="slide chapter-slide" id="slide-33">
-  <div class="chapter-title">Chapter 6 — External Integrations</div>
+<div class="chapter-title">Chapter 6 — External Integrations</div>
 </div>
 
 <div class="slide" id="slide-34">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">6-1. LLM Connections</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela can connect to any service that has an OpenAI-compatible <code>/v1/chat/completions</code> endpoint.</p>
-    <h4>LM Studio</h4>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">6-1. LLM Connections</span>
+</div>
+<div class="slide-body">
+<p>Cynovela can connect to any service that has an OpenAI-compatible<code>/v1/chat/completions</code> endpoint.</p>
+<h4>LM Studio</h4>
 <pre><code>python server.py --lmstudio-url http://localhost:1234</code></pre>
-    <h4>Ollama</h4>
+<h4>Ollama</h4>
 <pre><code>python server.py --lmstudio-url http://localhost:11434</code></pre>
-    <h4>OpenAI compatible (generic)</h4>
+<h4>OpenAI compatible (generic)</h4>
 <pre><code>llm:
   provider: openai_compat
   base_url: http://localhost:8000
   model: meta-llama/Llama-3-8B-Instruct</code></pre>
-    <h4>Mock</h4>
+<h4>Mock</h4>
 <pre><code>python server.py --demo</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-35">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">6-2. MCP Integration</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela exposes 11 tools as an MCP server.</p>
-    <table>
-      <thead><tr><th>Category</th><th>Tools</th></tr></thead>
-      <tbody>
-        <tr><td>RAG search (4)</td><td><code>search_collection</code>, <code>search_across_collections</code>, <code>rag_with_role</code>, <code>rag_general</code></td></tr>
-        <tr><td>Information retrieval (4)</td><td><code>list_workspaces</code>, <code>get_workspace_info</code>, <code>get_collection_info</code>, <code>get_audit_logs</code></td></tr>
-        <tr><td>Administration (3)</td><td><code>list_sources</code>, <code>publish_collection</code>, <code>create_workspace</code></td></tr>
-      </tbody>
-    </table>
-    <p>You can connect from an MCP client such as LM Studio. As a limitation specific to conda environments, you must specify the path of the Python executable with the <code>CYNOVELA_MCP_PYTHON</code> environment variable.</p>
-    <p>For details, see <code>mcp-guide.md</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">6-2. MCP Integration</span>
+</div>
+<div class="slide-body">
+<p>Cynovela exposes 11 tools as an MCP server.</p>
+<table>
+<thead><tr><th>Category</th><th>Tools</th></tr></thead>
+<tbody>
+<tr><td>RAG search (4)</td><td><code>search_collection</code>,<code>search_across_collections</code>,<code>rag_with_role</code>,<code>rag_general</code></td></tr>
+<tr><td>Information retrieval (4)</td><td><code>list_workspaces</code>,<code>get_workspace_info</code>,<code>get_collection_info</code>,<code>get_audit_logs</code></td></tr>
+<tr><td>Administration (3)</td><td><code>list_sources</code>,<code>publish_collection</code>,<code>create_workspace</code></td></tr>
+</tbody>
+</table>
+<p>You can connect from an MCP client such as LM Studio. As a limitation specific to conda environments, you must specify the path of the Python executable with the<code>CYNOVELA_MCP_PYTHON</code> environment variable.</p>
+<p>For details, see<code>mcp-guide.md</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-36">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">6-3. LAN and Tailscale Sharing</span>
-  </div>
-  <div class="slide-body">
-    <h4>LAN sharing</h4>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">6-3. LAN and Tailscale Sharing</span>
+</div>
+<div class="slide-body">
+<h4>LAN sharing</h4>
 <pre><code>python server.py --lan --allow-subnet 192.168.1.0/24</code></pre>
-    <h4>Tailscale sharing</h4>
+<h4>Tailscale sharing</h4>
 <pre><code>python server.py --lan --allow-tailscale</code></pre>
-    <p>It detects the Tailscale IP automatically with <code>tailscale ip -4</code> and adds the <code>100.64.0.0/10</code> subnet to the allowlist.</p>
-    <p>For details, see <code>lan-sharing.md</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<p>It detects the Tailscale IP automatically with<code>tailscale ip -4</code> and adds the<code>100.64.0.0/10</code> subnet to the allowlist.</p>
+<p>For details, see<code>lan-sharing.md</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 7: Known Limitations (English) -->
 <div class="slide chapter-slide" id="slide-37">
-  <div class="chapter-title">Chapter 7 — Known Limitations</div>
+<div class="chapter-title">Chapter 7 — Known Limitations</div>
 </div>
 
 <div class="slide" id="slide-38">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">7-1 to 7-3. Known Limitations</span>
-  </div>
-  <div class="slide-body">
-    <h3>7-1. Authentication and authorization</h3>
-    <ul>
-      <li>Authentication uses JWT (issued by <code>POST /api/auth/login</code>, required even with <code>--demo</code>). The old <code>Bearer demo-token-&lt;user_id&gt;</code> form has been removed</li>
-      <li>There is no per-user API key issuing feature</li>
-    </ul>
-    <h3>7-2. Transport encryption</h3>
-    <ul>
-      <li>HTTPS is not supported (you need to terminate TLS at a reverse proxy)</li>
-      <li>Traffic to the LLM is also plaintext HTTP</li>
-    </ul>
-    <h3>7-3. Settings that are not persisted</h3>
-    <ul>
-      <li>Run-time changes to the embedding and reranker settings are not persisted to the YAML (they return to the defaults on restart)</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">7-1 to 7-3. Known Limitations</span>
+</div>
+<div class="slide-body">
+<h3>7-1. Authentication and authorization</h3>
+<ul>
+<li>Authentication uses JWT (issued by<code>POST /api/auth/login</code>, required even with<code>--demo</code>). The old<code>Bearer demo-token-&lt;user_id&gt;</code> form has been removed</li>
+<li>There is no per-user API key issuing feature</li>
+</ul>
+<h3>7-2. Transport encryption</h3>
+<ul>
+<li>HTTPS is not supported (you need to terminate TLS at a reverse proxy)</li>
+<li>Traffic to the LLM is also plaintext HTTP</li>
+</ul>
+<h3>7-3. Settings that are not persisted</h3>
+<ul>
+<li>Run-time changes to the embedding and reranker settings are not persisted to the YAML (they return to the defaults on restart)</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-39">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">7-4 to 7-7. Known Limitations</span>
-  </div>
-  <div class="slide-body">
-    <h3>7-4. Features that are only a skeleton</h3>
-    <ul>
-      <li>The Qdrant VectorStore (<code>add</code> / <code>search</code> and so on raise <code>NotImplementedError</code>)</li>
-      <li>MLX embedding / reranker (<code>NotImplementedError</code>)</li>
-      <li>The LanceDB backend</li>
-      <li>The GraphRAG strategy</li>
-    </ul>
-    <h3>7-5. DataSyncService</h3>
-    <ul>
-      <li>Integration with publish is not wired up (it only writes to the log)</li>
-      <li>No content_hash comparison (differences are detected per path only)</li>
-    </ul>
-    <h3>7-6. RAG pipeline</h3>
-    <ul>
-      <li>Structured answer templates are not implemented (free-form answers are the standard)</li>
-      <li>The low-confidence fallback is only partly implemented</li>
-    </ul>
-    <h3>7-7. UI</h3>
-    <ul>
-      <li>Some UI elements are <code>display:none</code> until JavaScript initializes</li>
-      <li>When switching the language (Japanese / English), some elements stay fixed</li>
-    </ul>
-    <p>For details, see <code>security-policy.md</code>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">7-4 to 7-7. Known Limitations</span>
+</div>
+<div class="slide-body">
+<h3>7-4. Features that are only a skeleton</h3>
+<ul>
+<li>The Qdrant VectorStore (<code>add</code> /<code>search</code> and so on raise<code>NotImplementedError</code>)</li>
+<li>MLX embedding / reranker (<code>NotImplementedError</code>)</li>
+<li>The LanceDB backend</li>
+<li>The GraphRAG strategy</li>
+</ul>
+<h3>7-5. DataSyncService</h3>
+<ul>
+<li>Integration with publish is not wired up (it only writes to the log)</li>
+<li>No content_hash comparison (differences are detected per path only)</li>
+</ul>
+<h3>7-6. RAG pipeline</h3>
+<ul>
+<li>Structured answer templates are not implemented (free-form answers are the standard)</li>
+<li>The low-confidence fallback is only partly implemented</li>
+</ul>
+<h3>7-7. UI</h3>
+<ul>
+<li>Some UI elements are<code>display:none</code> until JavaScript initializes</li>
+<li>When switching the language (Japanese / English), some elements stay fixed</li>
+</ul>
+<p>For details, see<code>security-policy.md</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <!-- Chapter 8: FAQ (English) -->
 <div class="slide chapter-slide" id="slide-40">
-  <div class="chapter-title">Chapter 8 — FAQ</div>
+<div class="chapter-title">Chapter 8 — FAQ</div>
 </div>
 
 <div class="slide" id="slide-41">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q1. How are ChromaDB and SQLite used differently?</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li><strong>SQLite</strong>: metadata (structured information such as Workspace, Collection, Source, File, User, AuditLog, and PublishHistory)</li>
-      <li><strong>ChromaDB</strong>: vector embeddings and the chunk text (for search)</li>
-    </ul>
-    <p>The two are deleted in sync by the <code>_purge_chunks_for_*()</code> helpers.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q1. How are ChromaDB and SQLite used differently?</span>
+</div>
+<div class="slide-body">
+<ul>
+<li><strong>SQLite</strong>: metadata (structured information such as Workspace, Collection, Source, File, User, AuditLog, and PublishHistory)</li>
+<li><strong>ChromaDB</strong>: vector embeddings and the chunk text (for search)</li>
+</ul>
+<p>The two are deleted in sync by the<code>_purge_chunks_for_*()</code> helpers.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-42">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q2. What happens if I lose the Fernet key?</span>
-  </div>
-  <div class="slide-body">
-    <p>The raw text (the part that is Fernet encrypted) can no longer be decrypted. The masked text passes through as is, so it can still be read, but even the admin role can no longer see the raw text. Keep <code>CYNOVELA_SECRET_KEY</code> in a safe place.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q2. What happens if I lose the Fernet key?</span>
+</div>
+<div class="slide-body">
+<p>The raw text (the part that is Fernet encrypted) can no longer be decrypted. The masked text passes through as is, so it can still be read, but even the admin role can no longer see the raw text. Keep<code>CYNOVELA_SECRET_KEY</code> in a safe place.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-43">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q3. How do I run all the tests?</span>
-  </div>
-  <div class="slide-body">
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q3. How do I run all the tests?</span>
+</div>
+<div class="slide-body">
 <pre><code>bash scripts/run_all_tests.sh</code></pre>
-    <p>14 PHASEs and more than 405 assertions are executed.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<p>14 PHASEs and more than 405 assertions are executed.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-44">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q4. Can I check quality without an LLM?</span>
-  </div>
-  <div class="slide-body">
-    <p>No. The former <code>--mock</code> option (the setting that ran it without calling an LLM) has been removed, and specifying it now stops with an error. Check quality in an environment with a real LLM.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q4. Can I check quality without an LLM?</span>
+</div>
+<div class="slide-body">
+<p>No. The former<code>--mock</code> option (the setting that ran it without calling an LLM) has been removed, and specifying it now stops with an error. Check quality in an environment with a real LLM.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-45">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q5. PII detection does not pick up Japanese addresses. Why?</span>
-  </div>
-  <div class="slide-body">
-    <p>Check the PII detection mode. <code>lite</code> uses regular expressions only, so natural-language PII such as an address is not detected. If you change it to <code>standard</code> or <code>quality</code>, detection of addresses, personal names, and organization names by GiNZA NER becomes active.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q5. PII detection does not pick up Japanese addresses. Why?</span>
+</div>
+<div class="slide-body">
+<p>Check the PII detection mode.<code>lite</code> uses regular expressions only, so natural-language PII such as an address is not detected. If you change it to<code>standard</code> or<code>quality</code>, detection of addresses, personal names, and organization names by GiNZA NER becomes active.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-46">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q6. I cannot connect from an MCP client</span>
-  </div>
-  <div class="slide-body">
-    <p>Check the following.</p>
-    <ul>
-      <li>Whether Cynovela itself (<code>server.py</code>) is already running on <code>http://127.0.0.1:8765</code></li>
-      <li>The value of the <code>CYNOVELA_TOKEN</code> environment variable and whether the token is still valid</li>
-      <li>Whether you have specified the Python path of the conda environment with <code>CYNOVELA_MCP_PYTHON</code></li>
-      <li>Whether the target Collection has reached the <code>ready</code> status</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q6. I cannot connect from an MCP client</span>
+</div>
+<div class="slide-body">
+<p>Check the following.</p>
+<ul>
+<li>Whether Cynovela itself (<code>server.py</code>) is already running on<code>http://127.0.0.1:8765</code></li>
+<li>The value of the<code>CYNOVELA_TOKEN</code> environment variable and whether the token is still valid</li>
+<li>Whether you have specified the Python path of the conda environment with<code>CYNOVELA_MCP_PYTHON</code></li>
+<li>Whether the target Collection has reached the<code>ready</code> status</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-47">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q7. Is it all right to publish it on the internet?</span>
-  </div>
-  <div class="slide-body">
-    <p>It is absolutely not recommended. HTTPS is not in place, JWT authentication is not implemented, and the file upload limits are loose, so exposing it directly to the internet carries serious risks.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q7. Is it all right to publish it on the internet?</span>
+</div>
+<div class="slide-body">
+<p>It is absolutely not recommended. HTTPS is not in place, JWT authentication is not implemented, and the file upload limits are loose, so exposing it directly to the internet carries serious risks.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-48">
-  <div class="slide-header">
-    <span class="doc-name">Complete Manual</span>
-    <span class="slide-title">Q8. How do I delete data completely?</span>
-  </div>
-  <div class="slide-body">
-    <p>If you delete a Source / Workspace / Collection from the UI, both SQLite and ChromaDB are cleaned up through the <code>_purge_chunks_for_*()</code> family of helpers. If you want a complete reset, delete the whole <code>~/.cynovela/</code> directory (take a backup beforehand).</p>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">Last updated: 2026-05-26 / Alpha GA edition</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">Complete Manual</span>
+<span class="slide-title">Q8. How do I delete data completely?</span>
+</div>
+<div class="slide-body">
+<p>If you delete a Source / Workspace / Collection from the UI, both SQLite and ChromaDB are cleaned up through the<code>_purge_chunks_for_*()</code> family of helpers. If you want a complete reset, delete the whole<code>~/.cynovela</code> directory (take a backup beforehand).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 <!-- Slide 1: Cover -->
 <div class="slide cover" id="slide-49">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Cynovela 完全マニュアル</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Cynovela 完全マニュアル</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <!-- Slide 2: About -->
 <div class="slide" id="slide-50">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-    <p>本マニュアルは、Cynovela のすべての機能を一冊にまとめた統合ドキュメントです。個別ドキュメントを横断したい場合に参照してください。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+<p>本マニュアルは、Cynovela のすべての機能を一冊にまとめた統合ドキュメントです。個別ドキュメントを横断したい場合に参照してください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Slide 3: TOC -->
 <div class="slide" id="slide-51">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">目次</span>
-  </div>
-  <div class="slide-body">
-    <ol>
-      <li>概要</li>
-      <li>AI ガバナンスのコンセプト</li>
-      <li>インストール・起動</li>
-      <li>基本操作</li>
-      <li>設計詳細</li>
-      <li>外部連携</li>
-      <li>既知制限</li>
-      <li>FAQ</li>
-    </ol>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">目次</span>
+</div>
+<div class="slide-body">
+<ol>
+<li>概要</li>
+<li>AI ガバナンスのコンセプト</li>
+<li>インストール・起動</li>
+<li>基本操作</li>
+<li>設計詳細</li>
+<li>外部連携</li>
+<li>既知制限</li>
+<li>FAQ</li>
+</ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 1: 概要 -->
 <div class="slide chapter-slide" id="slide-52">
-  <div class="chapter-title">第 1 章　概要</div>
+<div class="chapter-title">第 1 章　概要</div>
 </div>
 
 <div class="slide" id="slide-53">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">1-1. Cynovela とは</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。</p>
-    <p>参照元の AI 基盤ツールが提供する以下のような機能について、「実際に作るとどうなるか」を体験するために設計されています。</p>
-    <ul>
-      <li>データガバナンス（ガードレール、PII 検出、監査ログ）</li>
-      <li>データ取り込み（自動分類、メタデータ抽出、差分同期）</li>
-      <li>RAG（検索拡張生成）パイプライン</li>
-      <li>ロールベースアクセス制御（RBAC）</li>
-      <li>MCP（Model Context Protocol）連携</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">1-1. Cynovela とは</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。</p>
+<p>参照元の AI 基盤ツールが提供する以下のような機能について、「実際に作るとどうなるか」を体験するために設計されています。</p>
+<ul>
+<li>データガバナンス（ガードレール、PII 検出、監査ログ）</li>
+<li>データ取り込み（自動分類、メタデータ抽出、差分同期）</li>
+<li>RAG（検索拡張生成）パイプライン</li>
+<li>ロールベースアクセス制御（RBAC）</li>
+<li>MCP（Model Context Protocol）連携</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-54">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">1-2. 設計コンセプト</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は「読むだけで終わらせず、自分で動かして学ぶ」ことを最優先に設計されています。</p>
-    <ul>
-      <li><strong>コア機能を欠かさない</strong>: ガードレール / PII / RAG / RBAC / 監査ログ といった本質的機能は省略せず、簡素化したかたちで実装する。</li>
-      <li><strong>OSS のみで構成</strong>: FastAPI、SQLite、ChromaDB、BAAI/bge-m3、cryptography（Fernet）など、すべて入手しやすい OSS を使用。</li>
-      <li><strong>ローカル完結</strong>: 既定では LM Studio / Ollama などローカル LLM ランナーへの接続が前提。クラウド依存なし。</li>
-      <li><strong>冪等で破壊的でない</strong>: スキーマ変更は <code>CREATE TABLE IF NOT EXISTS</code> と <code>try/except</code> で囲んだ <code>ALTER TABLE</code>、データ更新は <code>INSERT ... ON CONFLICT DO UPDATE</code> を徹底。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">1-2. 設計コンセプト</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は「読むだけで終わらせず、自分で動かして学ぶ」ことを最優先に設計されています。</p>
+<ul>
+<li><strong>コア機能を欠かさない</strong>: ガードレール / PII / RAG / RBAC / 監査ログ といった本質的機能は省略せず、簡素化したかたちで実装する。</li>
+<li><strong>OSS のみで構成</strong>: FastAPI、SQLite、ChromaDB、BAAI/bge-m3、cryptography（Fernet）など、すべて入手しやすい OSS を使用。</li>
+<li><strong>ローカル完結</strong>: 既定では LM Studio / Ollama などローカル LLM ランナーへの接続が前提。クラウド依存なし。</li>
+<li><strong>冪等で破壊的でない</strong>: スキーマ変更は<code>CREATE TABLE IF NOT EXISTS</code> と<code>try/except</code> で囲んだ<code>ALTER TABLE</code>、データ更新は<code>INSERT ... ON CONFLICT DO UPDATE</code> を徹底。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-55">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">1-3. プロジェクトの位置付け</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は商用製品ではありません。参照元のいかなる会社・製品の公式見解も代表しません。実装はすべてオリジナルで、参照元のソースコード・商標・公式ドキュメントは一切含みません。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">1-3. プロジェクトの位置付け</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は商用製品ではありません。参照元のいかなる会社・製品の公式見解も代表しません。実装はすべてオリジナルで、参照元のソースコード・商標・公式ドキュメントは一切含みません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 2: AI ガバナンス -->
 <div class="slide chapter-slide" id="slide-56">
-  <div class="chapter-title">第 2 章　AI ガバナンスのコンセプト</div>
+<div class="chapter-title">第 2 章　AI ガバナンスのコンセプト</div>
 </div>
 
 <div class="slide" id="slide-57">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">2-1. データの分類とラベリング</span>
-  </div>
-  <div class="slide-body">
-    <p>AI 基盤ツールに共通するガバナンス機能を、Cynovela がどのように再現しているかを 8 つの観点で整理します。文書ごとに「何の種類か」を機械的に判断し、ラベルを付与する仕組みです。Cynovela は 14 種類のカテゴリを定義しています。</p>
-    <ul>
-      <li>ガバナンス・ポリシー文書 / インシデントレポート / 技術ガイド・マニュアル</li>
-      <li>導入事例 / 会議議事録 / 監査・評価報告書 / POC 評価報告書</li>
-      <li>FAQ・よくある質問 / ホワイトペーパー / チェックリスト</li>
-      <li>提案書・RFP / ニュースレター・技術情報 / リファレンス・用語集 / その他</li>
-    </ul>
-    <p>加えて 5 種のドキュメント形式分類（契約書、技術仕様書、メール、レポート、マニュアル）も補助的に行います。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">2-1. データの分類とラベリング</span>
+</div>
+<div class="slide-body">
+<p>AI 基盤ツールに共通するガバナンス機能を、Cynovela がどのように再現しているかを 8 つの観点で整理します。文書ごとに「何の種類か」を機械的に判断し、ラベルを付与する仕組みです。Cynovela は 14 種類のカテゴリを定義しています。</p>
+<ul>
+<li>ガバナンス・ポリシー文書 / インシデントレポート / 技術ガイド・マニュアル</li>
+<li>導入事例 / 会議議事録 / 監査・評価報告書 / POC 評価報告書</li>
+<li>FAQ・よくある質問 / ホワイトペーパー / チェックリスト</li>
+<li>提案書・RFP / ニュースレター・技術情報 / リファレンス・用語集 / その他</li>
+</ul>
+<p>加えて 5 種のドキュメント形式分類（契約書、技術仕様書、メール、レポート、マニュアル）も補助的に行います。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-58">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">2-2. 機密性の検出</span>
-  </div>
-  <div class="slide-body">
-    <p>機密情報（PII、個人情報）を検出してマスクする仕組みです。Cynovela は 2 系統の検出器を備えています。</p>
-    <h4>一次（正規表現ベース、<code>guardrail.py</code>）</h4>
-    <ul>
-      <li>URL、EMAIL、PHONE_JP（携帯）、PHONE_LAND（固定電話）、CREDIT（クレジットカード）、MYNUMBER（マイナンバー）、PASSPORT、IPV4</li>
-    </ul>
-    <h4>二次（Presidio + GiNZA NER フォールバック、<code>utils/metadata/pii.py</code>）</h4>
-    <ul>
-      <li>PERSON_JP、ORG_JP、LOC_JP、ADDRESS_JP、EMAIL_ADDRESS、PHONE_NUMBER、DATE_TIME、INTERNAL_URL</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">2-2. 機密性の検出</span>
+</div>
+<div class="slide-body">
+<p>機密情報（PII、個人情報）を検出してマスクする仕組みです。Cynovela は 2 系統の検出器を備えています。</p>
+<h4>一次（正規表現ベース、<code>guardrail.py</code>）</h4>
+<ul>
+<li>URL、EMAIL、PHONE_JP（携帯）、PHONE_LAND（固定電話）、CREDIT（クレジットカード）、MYNUMBER（マイナンバー）、PASSPORT、IPV4</li>
+</ul>
+<h4>二次（Presidio + GiNZA NER フォールバック、<code>utils/metadata/pii.py</code>）</h4>
+<ul>
+<li>PERSON_JP、ORG_JP、LOC_JP、ADDRESS_JP、EMAIL_ADDRESS、PHONE_NUMBER、DATE_TIME、INTERNAL_URL</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-59">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">2-3. アクセス制御（RBAC）</span>
-  </div>
-  <div class="slide-body">
-    <p>ユーザーのロールに応じて、見られる情報と実行できる操作を制限する仕組みです。</p>
-    <table>
-      <thead><tr><th>ロール</th><th>説明</th></tr></thead>
-      <tbody>
-        <tr><td><code>admin</code></td><td>フル管理権限</td></tr>
-        <tr><td><code>viewer</code></td><td>閲覧のみ</td></tr>
-      </tbody>
-    </table>
-    <blockquote><code>curator</code> / <code>data-scientist</code> 等の名称は後方互換の値として受理されますが、現行実装では <code>viewer</code> に正規化され、固有権限はありません（実効ロールは <code>admin</code> / <code>viewer</code> の 2 値）。</blockquote>
-    <p>RBAC は 33 のルーター（242 箇所）でチェックされ、4 種のヘルパー関数（<code>_require_admin</code>、<code>_require_authenticated</code>、<code>_require_role</code>、<code>_require_admin_or_self</code>）に集約されています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">2-3. アクセス制御（RBAC）</span>
+</div>
+<div class="slide-body">
+<p>ユーザーのロールに応じて、見られる情報と実行できる操作を制限する仕組みです。</p>
+<table>
+<thead><tr><th>ロール</th><th>説明</th></tr></thead>
+<tbody>
+<tr><td><code>admin</code></td><td>フル管理権限</td></tr>
+<tr><td><code>viewer</code></td><td>閲覧のみ</td></tr>
+</tbody>
+</table>
+<blockquote><code>curator</code> /<code>data-scientist</code> 等の名称は後方互換の値として受理されますが、現行実装では<code>viewer</code> に正規化され、固有権限はありません（実効ロールは<code>admin</code> /<code>viewer</code> の 2 値）。</blockquote>
+<p>RBAC は 33 のルーター（242 箇所）でチェックされ、4 種のヘルパー関数（<code>_require_admin</code>、<code>_require_authenticated</code>、<code>_require_role</code>、<code>_require_admin_or_self</code>）に集約されています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-60">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">2-4. 監査ログ・2-5. ガードレール</span>
-  </div>
-  <div class="slide-body">
-    <h3>2-4. 監査ログ</h3>
-    <p>重要操作（Source / Workspace 作成・削除、Publish、Chat、PII 検出、認証失敗 など）を改ざんできない形で記録します。Cynovela は <code>audit_logs</code> テーブルへの API 経由の変更・削除を禁止しています。</p>
-    <h3>2-5. ガードレール</h3>
-    <p>検出した情報や入力クエリに対して、どう対処するかを定義する仕組みです。Cynovela のアクションは 4 種類です。</p>
-    <table>
-      <thead><tr><th>アクション</th><th>動作</th></tr></thead>
-      <tbody>
-        <tr><td><code>mask</code></td><td>該当箇所をマスクトークン（<code>[MASKED:EMAIL]</code> 等）に置換</td></tr>
-        <tr><td><code>exclude_from_rag</code></td><td>RAG 検索対象から除外</td></tr>
-        <tr><td><code>log_only</code></td><td>検出のみ記録、アクションは取らない</td></tr>
-        <tr><td><code>allow</code></td><td>許可（明示的にホワイトリスト化）</td></tr>
-      </tbody>
-    </table>
-    <p>ポリシーは複数の分類クラス（PII、Financial、HR）と組み合わせて Workspace に紐付きます。シードデータでは <code>pol-pii</code>、<code>pol-strict</code>、<code>pol-log</code> の 3 種が用意されています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">2-4. 監査ログ・2-5. ガードレール</span>
+</div>
+<div class="slide-body">
+<h3>2-4. 監査ログ</h3>
+<p>重要操作（Source / Workspace 作成・削除、Publish、Chat、PII 検出、認証失敗 など）を改ざんできない形で記録します。Cynovela は<code>audit_logs</code> テーブルへの API 経由の変更・削除を禁止しています。</p>
+<h3>2-5. ガードレール</h3>
+<p>検出した情報や入力クエリに対して、どう対処するかを定義する仕組みです。Cynovela のアクションは 4 種類です。</p>
+<table>
+<thead><tr><th>アクション</th><th>動作</th></tr></thead>
+<tbody>
+<tr><td><code>mask</code></td><td>該当箇所をマスクトークン（<code>[MASKED:EMAIL]</code> 等）に置換</td></tr>
+<tr><td><code>exclude_from_rag</code></td><td>RAG 検索対象から除外</td></tr>
+<tr><td><code>log_only</code></td><td>検出のみ記録、アクションは取らない</td></tr>
+<tr><td><code>allow</code></td><td>許可（明示的にホワイトリスト化）</td></tr>
+</tbody>
+</table>
+<p>ポリシーは複数の分類クラス（PII、Financial、HR）と組み合わせて Workspace に紐付きます。シードデータでは<code>pol-pii</code>、<code>pol-strict</code>、<code>pol-log</code> の 3 種が用意されています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-61">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">2-6. 暗号化</span>
-  </div>
-  <div class="slide-body">
-    <p>機密度の高い raw 本文（マスク前データ）は Fernet（対称鍵暗号）で暗号化されて保存されます。</p>
-    <ul>
-      <li><strong>鍵管理</strong>: <code>CYNOVELA_SECRET_KEY</code> 環境変数（無指定時は自動生成、本番運用では明示推奨）</li>
-      <li><strong>対象</strong>: SQLite の <code>chunks</code> / <code>parent_chunks</code> テーブルおよび ChromaDB の <code>*__raw</code> コレクション</li>
-      <li><strong>形式</strong>: <code>enc:</code> プレフィックス + base64 文字列（冪等、二重暗号化なし）</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">2-6. 暗号化</span>
+</div>
+<div class="slide-body">
+<p>機密度の高い raw 本文（マスク前データ）は Fernet（対称鍵暗号）で暗号化されて保存されます。</p>
+<ul>
+<li><strong>鍵管理</strong>:<code>CYNOVELA_SECRET_KEY</code> 環境変数（無指定時は自動生成、本番運用では明示推奨）</li>
+<li><strong>対象</strong>: SQLite の<code>chunks</code> /<code>parent_chunks</code> テーブルおよび ChromaDB の<code>*__raw</code> コレクション</li>
+<li><strong>形式</strong>:<code>enc:</code> プレフィックス + base64 文字列（冪等、二重暗号化なし）</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-62">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">2-7. プロンプトインジェクション対策</span>
-  </div>
-  <div class="slide-body">
-    <p>LLM への悪意ある指示注入を防ぐため、3 層防御を実装しています。</p>
-    <ol>
-      <li><strong>入力検査</strong>: クエリに 14 種の英日インジェクションパターン（<code>ignore previous instructions</code>、<code>これまでの指示を無視</code> 等）が含まれていれば HTTP 400 で即遮断。</li>
-      <li><strong>Retrieval 後検査</strong>: 検索結果のチャンクからインジェクション文言を含むものを除外。</li>
-      <li><strong>出力検査</strong>: LLM 応答に <code>HACKED</code> / <code>PWNED</code> / <code>SECRET-ALPHA-TOKEN</code> / <code>[SYSTEM OVERRIDE]</code> が含まれていないか確認。</li>
-    </ol>
-    <p>検出時は <code>audit_logs</code> に <code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">2-7. プロンプトインジェクション対策</span>
+</div>
+<div class="slide-body">
+<p>LLM への悪意ある指示注入を防ぐため、3 層防御を実装しています。</p>
+<ol>
+<li><strong>入力検査</strong>: クエリに 14 種の英日インジェクションパターン（<code>ignore previous instructions</code>、<code>これまでの指示を無視</code> 等）が含まれていれば HTTP 400 で即遮断。</li>
+<li><strong>Retrieval 後検査</strong>: 検索結果のチャンクからインジェクション文言を含むものを除外。</li>
+<li><strong>出力検査</strong>: LLM 応答に<code>HACKED</code> /<code>PWNED</code> /<code>SECRET-ALPHA-TOKEN</code> /<code>[SYSTEM OVERRIDE]</code> が含まれていないか確認。</li>
+</ol>
+<p>検出時は<code>audit_logs</code> に<code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-63">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">2-8. データ最小化（Dual-Tier 保管）</span>
-  </div>
-  <div class="slide-body">
-    <p>同じ文書について、raw（生本文）と masked（マスク済み本文）を別々のレコード・別々のベクターコレクションに保存することで、ロールに応じて参照先を切り替えます。</p>
-    <ul>
-      <li><strong>admin ロール</strong>: raw コレクション（<code>{cid}__raw</code>、Fernet 暗号化）を参照</li>
-      <li><strong>その他のロール</strong>: masked コレクション（<code>{cid}__masked</code>）を参照</li>
-    </ul>
-    <p>加えて、LLM 出力にも <code>_mask_for_viewer</code> を適用して二重防御を実現しています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">2-8. データ最小化（Dual-Tier 保管）</span>
+</div>
+<div class="slide-body">
+<p>同じ文書について、raw（生本文）と masked（マスク済み本文）を別々のレコード・別々のベクターコレクションに保存することで、ロールに応じて参照先を切り替えます。</p>
+<ul>
+<li><strong>admin ロール</strong>: raw コレクション（<code>{cid}__raw</code>、Fernet 暗号化）を参照</li>
+<li><strong>その他のロール</strong>: masked コレクション（<code>{cid}__masked</code>）を参照</li>
+</ul>
+<p>加えて、LLM 出力にも<code>_mask_for_viewer</code> を適用して二重防御を実現しています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 3: インストール・起動 -->
 <div class="slide chapter-slide" id="slide-64">
-  <div class="chapter-title">第 3 章　インストール・起動</div>
+<div class="chapter-title">第 3 章　インストール・起動</div>
 </div>
 
 <div class="slide" id="slide-65">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">3-1. 推奨環境・3-2. 起動コマンド</span>
-  </div>
-  <div class="slide-body">
-    <h3>3-1. 推奨環境</h3>
-    <ul>
-      <li>macOS（Apple Silicon 推奨）、Linux、Windows</li>
-      <li>Python 3.10 以上</li>
-      <li>conda 環境（推奨環境名: <code>cynovela</code>）</li>
-    </ul>
-    <h3>3-2. 起動コマンド</h3>
-    <h4>デモモード（最も簡単）</h4>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">3-1. 推奨環境・3-2. 起動コマンド</span>
+</div>
+<div class="slide-body">
+<h3>3-1. 推奨環境</h3>
+<ul>
+<li>macOS（Apple Silicon 推奨）、Linux、Windows</li>
+<li>Python 3.10 以上</li>
+<li>conda 環境（推奨環境名:<code>cynovela</code>）</li>
+</ul>
+<h3>3-2. 起動コマンド</h3>
+<h4>デモモード（最も簡単）</h4>
 <pre><code>python server.py --demo</code></pre>
-    <p>ブラウザで <code>http://127.0.0.1:8765</code> を開きます。</p>
-    <h4>実 LLM モード</h4>
-    <p>LM Studio または Ollama を別途起動した状態で次を実行します。</p>
+<p>ブラウザで<code>http://127.0.0.1:8765</code> を開きます。</p>
+<h4>実 LLM モード</h4>
+<p>LM Studio または Ollama を別途起動した状態で次を実行します。</p>
 <pre><code>python server.py --demo --lmstudio-url http://localhost:1234</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-66">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">3-3. 起動モード（<code>--mode</code>）</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>mode</th><th>説明</th><th>必要モデル</th><th>推奨環境</th></tr></thead>
-      <tbody>
-        <tr><td><code>text</code></td><td>テキスト RAG 全機能（既定）</td><td>BAAI/bge-m3</td><td>GPU 不要</td></tr>
-        <tr><td><code>lite</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
-        <tr><td><code>lite-en</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">3-3. 起動モード（<code>--mode</code>）</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>mode</th><th>説明</th><th>必要モデル</th><th>推奨環境</th></tr></thead>
+<tbody>
+<tr><td><code>text</code></td><td>テキスト RAG 全機能（既定）</td><td>BAAI/bge-m3</td><td>GPU 不要</td></tr>
+<tr><td><code>lite</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
+<tr><td><code>lite-en</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-67">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">3-4. CLI 引数一覧</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>フラグ</th><th>説明</th></tr></thead>
-      <tbody>
-        <tr><td><code>--demo</code></td><td>デモのデータベース <code>store/db/demo.db</code> で起動（付けなければ本番＝<code>store/db/cynovela.db</code>。どちらも再起動では消えません）</td></tr>
-        <tr><td><code>--lmstudio-url</code></td><td>LM Studio ベース URL（既定: <code>http://localhost:1234</code>）</td></tr>
-        <tr><td><code>--mode</code></td><td>起動モード（text / lite / lite-en）</td></tr>
-        <tr><td><code>--host</code></td><td>バインドアドレス（既定: <code>127.0.0.1</code>）</td></tr>
-        <tr><td><code>--port</code></td><td>ポート番号（既定: <code>8765</code>）</td></tr>
-        <tr><td><code>--lan</code></td><td>LAN 公開（<code>host=0.0.0.0</code>）</td></tr>
-        <tr><td><code>--allow-tailscale</code></td><td>Tailscale サブネット（<code>100.64.0.0/10</code>）を許可</td></tr>
-        <tr><td><code>--allow-subnet</code></td><td>カスタムサブネットを追加（複数指定可）</td></tr>
-        <tr><td><code>--local-only</code></td><td>自マシン内だけに絞る（<code>host=127.0.0.1</code>）</td></tr>
-        <tr><td><code>--reset-admin</code></td><td>管理者パスワードをリセットして表示し終了（デモを直すときは <code>--demo</code> を併記）</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">3-4. CLI 引数一覧</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>フラグ</th><th>説明</th></tr></thead>
+<tbody>
+<tr><td><code>--demo</code></td><td>デモのデータベース<code>store/db/demo.db</code> で起動（付けなければ本番＝<code>store/db/cynovela.db</code>。どちらも再起動では消えません）</td></tr>
+<tr><td><code>--lmstudio-url</code></td><td>LM Studio ベース URL（既定:<code>http://localhost:1234</code>）</td></tr>
+<tr><td><code>--mode</code></td><td>起動モード（text / lite / lite-en）</td></tr>
+<tr><td><code>--host</code></td><td>バインドアドレス（既定:<code>127.0.0.1</code>）</td></tr>
+<tr><td><code>--port</code></td><td>ポート番号（既定:<code>8765</code>）</td></tr>
+<tr><td><code>--lan</code></td><td>LAN 公開（<code>host=0.0.0.0</code>）</td></tr>
+<tr><td><code>--allow-tailscale</code></td><td>Tailscale サブネット（<code>100.64.0.0/10</code>）を許可</td></tr>
+<tr><td><code>--allow-subnet</code></td><td>カスタムサブネットを追加（複数指定可）</td></tr>
+<tr><td><code>--local-only</code></td><td>自マシン内だけに絞る（<code>host=127.0.0.1</code>）</td></tr>
+<tr><td><code>--reset-admin</code></td><td>管理者パスワードをリセットして表示し終了（デモを直すときは<code>--demo</code> を併記）</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-68">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">3-5. PII 検出モード・3-6. Preflight</span>
-  </div>
-  <div class="slide-body">
-    <h3>3-5. PII 検出モード</h3>
-    <p><code>cynovela.yaml</code> の <code>pii_mode</code> キーで指定します。</p>
-    <table>
-      <thead><tr><th>値</th><th>検出方式</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>正規表現のみ</td></tr>
-        <tr><td><code>standard</code>（既定）</td><td>正規表現 + GiNZA NER</td></tr>
-        <tr><td><code>quality</code></td><td>正規表現 + GiNZA NER + 詳細フィルタリング</td></tr>
-      </tbody>
-    </table>
-    <p>実行時に変更する場合は <code>/api/settings/pii-mode</code> を PUT します。</p>
-    <h3>3-6. Preflight チェック</h3>
-    <p>起動時に必要モデルの存在確認を行い、未取得モデルがある場合は次の選択肢が提示されます。</p>
-    <ol>
-      <li>今すぐダウンロードして起動する（HuggingFace から <code>~/.cynovela/models/</code> 配下に保存）</li>
-      <li>代替モードで起動する（full → text → lite → lite-en → mock）</li>
-      <li>キャンセル</li>
-    </ol>
-    <p>スクリプト実行時は <code>CYNOVELA_NONINTERACTIVE=1</code> でこのプロンプトをスキップ（モデル不在時は exit）できます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">3-5. PII 検出モード・3-6. Preflight</span>
+</div>
+<div class="slide-body">
+<h3>3-5. PII 検出モード</h3>
+<p><code>cynovela.yaml</code> の<code>pii_mode</code> キーで指定します。</p>
+<table>
+<thead><tr><th>値</th><th>検出方式</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>正規表現のみ</td></tr>
+<tr><td><code>standard</code>（既定）</td><td>正規表現 + GiNZA NER</td></tr>
+<tr><td><code>quality</code></td><td>正規表現 + GiNZA NER + 詳細フィルタリング</td></tr>
+</tbody>
+</table>
+<p>実行時に変更する場合は<code>/api/settings/pii-mode</code> を PUT します。</p>
+<h3>3-6. Preflight チェック</h3>
+<p>起動時に必要モデルの存在確認を行い、未取得モデルがある場合は次の選択肢が提示されます。</p>
+<ol>
+<li>今すぐダウンロードして起動する（HuggingFace から<code>~/.cynovela/models</code> 配下に保存）</li>
+<li>代替モードで起動する（full → text → lite → lite-en → mock）</li>
+<li>キャンセル</li>
+</ol>
+<p>スクリプト実行時は<code>CYNOVELA_NONINTERACTIVE=1</code> でこのプロンプトをスキップ（モデル不在時は exit）できます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 4: 基本操作 -->
 <div class="slide chapter-slide" id="slide-69">
-  <div class="chapter-title">第 4 章　基本操作</div>
+<div class="chapter-title">第 4 章　基本操作</div>
 </div>
 
 <div class="slide" id="slide-70">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">4-1. コアフロー（Step 1〜3）</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela の主要操作は以下のフローに沿って進みます。</p>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">4-1. コアフロー（Step 1〜3）</span>
+</div>
+<div class="slide-body">
+<p>Cynovela の主要操作は以下のフローに沿って進みます。</p>
 <pre><code>Source 登録 → Scan → Workspace 作成 → Collection 作成 → Publish → RAG Chat</code></pre>
-    <h4>Step 1: Source 登録</h4>
-    <p>データの取得元（ローカルフォルダ）を登録します。<code>/api/sources</code> にパスを POST するか、UI から「Source 追加」ボタンで登録します。</p>
-    <h4>Step 2: Scan</h4>
-    <p>登録した Source 配下のファイルを走査し、<code>files</code> テーブルにレコードを作成します。各ファイルにはパス由来の決定論的 ID（<code>_stable_fid(path)</code>）が振られます。</p>
-    <h4>Step 3: Workspace 作成</h4>
-    <p>Workspace は「複数の Collection をまとめる単位」かつ「ガードレールポリシーとユーザーを紐付ける単位」です。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<h4>Step 1: Source 登録</h4>
+<p>データの取得元（ローカルフォルダ）を登録します。<code>/api/sources</code> にパスを POST するか、UI から「Source 追加」ボタンで登録します。</p>
+<h4>Step 2: Scan</h4>
+<p>登録した Source 配下のファイルを走査し、<code>files</code> テーブルにレコードを作成します。各ファイルにはパス由来の決定論的 ID（<code>_stable_fid(path)</code>）が振られます。</p>
+<h4>Step 3: Workspace 作成</h4>
+<p>Workspace は「複数の Collection をまとめる単位」かつ「ガードレールポリシーとユーザーを紐付ける単位」です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-71">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">4-1. コアフロー（Step 4〜6）</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>Step 4: Collection 作成</h4>
-    <p>Collection は「ファイル群 + 分類・チャンク戦略」の単位です。状態は <code>draft → ingested → publishing → ready</code> と遷移します。</p>
-    <ul>
-      <li><code>rag_strategy</code>: <code>simple</code> / <code>hybrid_bm25</code>（既定）/ <code>contextual</code></li>
-      <li><code>chunk_size</code>、<code>chunk_overlap</code></li>
-      <li><code>access_level</code>: <code>public</code> / <code>internal</code> / <code>confidential</code></li>
-      <li><code>allowed_roles_json</code>: ACL（アクセス制御リスト）</li>
-    </ul>
-    <h4>Step 5: Publish</h4>
-    <p>Collection 内のファイルをチャンク化・ベクター化して ChromaDB に投入します。Publish 時には次が同時に行われます。</p>
-    <ul>
-      <li>raw / masked 両 tier のチャンク生成</li>
-      <li>PII 検出と Fernet 暗号化（raw 側のみ）</li>
-      <li>BM25 インデックス構築</li>
-      <li><code>publish_history</code> への記録（doc_count、chunk_count、pii_count、excluded_count、elapsed_seconds など）</li>
-    </ul>
-    <h4>Step 6: RAG Chat</h4>
-    <p>ユーザーが質問を入力すると、検索 → Reranker → LLM 生成 → ガードレール適用 → 回答返却、というパイプラインが実行されます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">4-1. コアフロー（Step 4〜6）</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>Step 4: Collection 作成</h4>
+<p>Collection は「ファイル群 + 分類・チャンク戦略」の単位です。状態は<code>draft → ingested → publishing → ready</code> と遷移します。</p>
+<ul>
+<li><code>rag_strategy</code>:<code>simple</code> /<code>hybrid_bm25</code>（既定）/<code>contextual</code></li>
+<li><code>chunk_size</code>、<code>chunk_overlap</code></li>
+<li><code>access_level</code>:<code>public</code> /<code>internal</code> /<code>confidential</code></li>
+<li><code>allowed_roles_json</code>: ACL（アクセス制御リスト）</li>
+</ul>
+<h4>Step 5: Publish</h4>
+<p>Collection 内のファイルをチャンク化・ベクター化して ChromaDB に投入します。Publish 時には次が同時に行われます。</p>
+<ul>
+<li>raw / masked 両 tier のチャンク生成</li>
+<li>PII 検出と Fernet 暗号化（raw 側のみ）</li>
+<li>BM25 インデックス構築</li>
+<li><code>publish_history</code> への記録（doc_count、chunk_count、pii_count、excluded_count、elapsed_seconds など）</li>
+</ul>
+<h4>Step 6: RAG Chat</h4>
+<p>ユーザーが質問を入力すると、検索 → Reranker → LLM 生成 → ガードレール適用 → 回答返却、というパイプラインが実行されます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-72">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">4-2. RAG プリセット</span>
-  </div>
-  <div class="slide-body">
-    <p>UI から選べる 5 種類のプリセットがあります。</p>
-    <table>
-      <thead><tr><th>ID</th><th>名前</th><th>用途</th></tr></thead>
-      <tbody>
-        <tr><td><code>tech_doc</code></td><td>技術文書</td><td>マニュアル向け</td></tr>
-        <tr><td><code>confidential</code></td><td>機密文書</td><td>PII を含む社内文書</td></tr>
-        <tr><td><code>personal_memo</code></td><td>個人メモ</td><td>議事録・メモ</td></tr>
-        <tr><td><code>multimedia</code></td><td>マルチメディア</td><td>画像・Office 混在</td></tr>
-        <tr><td><code>quickstart</code></td><td>クイックスタート</td><td>初心者向け全自動</td></tr>
-      </tbody>
-    </table>
-    <p>各プリセットは <code>chunking</code>、<code>rag_mode</code>、<code>guardrail</code> の組み合わせを定義しています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">4-2. RAG プリセット</span>
+</div>
+<div class="slide-body">
+<p>UI から選べる 5 種類のプリセットがあります。</p>
+<table>
+<thead><tr><th>ID</th><th>名前</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>tech_doc</code></td><td>技術文書</td><td>マニュアル向け</td></tr>
+<tr><td><code>confidential</code></td><td>機密文書</td><td>PII を含む社内文書</td></tr>
+<tr><td><code>personal_memo</code></td><td>個人メモ</td><td>議事録・メモ</td></tr>
+<tr><td><code>multimedia</code></td><td>マルチメディア</td><td>画像・Office 混在</td></tr>
+<tr><td><code>quickstart</code></td><td>クイックスタート</td><td>初心者向け全自動</td></tr>
+</tbody>
+</table>
+<p>各プリセットは<code>chunking</code>、<code>rag_mode</code>、<code>guardrail</code> の組み合わせを定義しています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-73">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">4-3. 回答モード・4-4. ユーザー管理</span>
-  </div>
-  <div class="slide-body">
-    <h3>4-3. 回答モード</h3>
-    <p>RAG モードは 3 種類です。</p>
-    <table>
-      <thead><tr><th>RAG Mode</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>最小限の RAG（1 回検索、オプション省略）</td></tr>
-        <tr><td><code>standard</code></td><td>標準（BM25 ハイブリッド、Reranker オプション）</td></tr>
-        <tr><td><code>hq</code></td><td>高品質（CRAG / Multi-Query / HyDE 有効）</td></tr>
-      </tbody>
-    </table>
-    <p>加えて、ロール別に回答スタイルを切り替える機能があります。</p>
-    <ul>
-      <li><code>admin</code>: 技術詳細・設定値・内部構造を含む完全な情報</li>
-      <li><code>reader</code>: 専門用語を避けた要点重視の説明</li>
-    </ul>
-    <h3>4-4. ユーザー管理</h3>
-    <p>SQL CHECK 制約は後方互換のため <code>admin</code> / <code>curator</code> / <code>viewer</code> の 3 値を許容しますが、現行実装では <code>curator</code> は <code>viewer</code> に正規化され、実効ロールは <code>admin</code> / <code>viewer</code> の 2 値です。初回起動時は <code>CYNOVELA_ADMIN_USERNAME</code> と <code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code> 環境変数で admin ユーザーを作成できます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">4-3. 回答モード・4-4. ユーザー管理</span>
+</div>
+<div class="slide-body">
+<h3>4-3. 回答モード</h3>
+<p>RAG モードは 3 種類です。</p>
+<table>
+<thead><tr><th>RAG Mode</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>最小限の RAG（1 回検索、オプション省略）</td></tr>
+<tr><td><code>standard</code></td><td>標準（BM25 ハイブリッド、Reranker オプション）</td></tr>
+<tr><td><code>hq</code></td><td>高品質（CRAG / Multi-Query / HyDE 有効）</td></tr>
+</tbody>
+</table>
+<p>加えて、ロール別に回答スタイルを切り替える機能があります。</p>
+<ul>
+<li><code>admin</code>: 技術詳細・設定値・内部構造を含む完全な情報</li>
+<li><code>reader</code>: 専門用語を避けた要点重視の説明</li>
+</ul>
+<h3>4-4. ユーザー管理</h3>
+<p>SQL CHECK 制約は後方互換のため<code>admin</code> /<code>curator</code> /<code>viewer</code> の 3 値を許容しますが、現行実装では<code>curator</code> は<code>viewer</code> に正規化され、実効ロールは<code>admin</code> /<code>viewer</code> の 2 値です。初回起動時は<code>CYNOVELA_ADMIN_USERNAME</code> と<code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code> 環境変数で admin ユーザーを作成できます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 5: 設計詳細 -->
 <div class="slide chapter-slide" id="slide-74">
-  <div class="chapter-title">第 5 章　設計詳細</div>
+<div class="chapter-title">第 5 章　設計詳細</div>
 </div>
 
 <div class="slide" id="slide-75">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">5-1. RAG パイプライン — メインフロー</span>
-  </div>
-  <div class="slide-body">
-    <p>メイン関数 <code>rag_retrieve()</code> は次のフローを実行します。</p>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">5-1. RAG パイプライン — メインフロー</span>
+</div>
+<div class="slide-body">
+<p>メイン関数<code>rag_retrieve()</code> は次のフローを実行します。</p>
 <pre><code>1. Vector Search (ChromaDB)
    ├ MMR（多様性確保）
    └ ACL フィルタリング
@@ -1643,415 +1642,414 @@ failed → draft</code></pre>
    └ CrossEncoder / BGE-Reranker など
 6. Final Ranking
    └ Top n_results 件を返却</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-76">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">5-1. RAG パイプライン — 主要パラメータ</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p>主要パラメータ（<code>cynovela.yaml</code> の <code>rag</code> セクション）:</p>
-    <ul>
-      <li><code>strategy</code>: <code>hybrid_bm25</code>（既定）</li>
-      <li><code>default_n_results</code>: 5</li>
-      <li><code>confidence_threshold</code>: 0.40（パラメータ定義値、cosine スケール）</li>
-      <li><code>vector_weight</code>: 0.7、<code>bm25_weight</code>: 0.3</li>
-      <li><code>hybrid_method</code>: <code>rrf</code>（既定）/ <code>weighted</code></li>
-      <li><code>rrf_k</code>: 60</li>
-      <li><code>mmr_enabled</code>: true、<code>mmr_lambda</code>: 0.7、<code>mmr_fetch_k</code>: 20</li>
-      <li><code>parent_child_enabled</code>: true、<code>child_chunk_size</code>: 256、<code>parent_chunk_size</code>: 1000</li>
-      <li><code>multi_query_enabled</code>: true、<code>multi_query_count</code>: 3</li>
-      <li><code>crag_enabled</code>: true、<code>crag_max_loops</code>: 1</li>
-      <li><code>hyde_enabled</code>: false</li>
-      <li><code>adaptive_enabled</code>: true、<code>adaptive_threshold</code>: 2.0</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">5-1. RAG パイプライン — 主要パラメータ</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p>主要パラメータ（<code>cynovela.yaml</code> の<code>rag</code> セクション）:</p>
+<ul>
+<li><code>strategy</code>:<code>hybrid_bm25</code>（既定）</li>
+<li><code>default_n_results</code>: 5</li>
+<li><code>confidence_threshold</code>: 0.40（パラメータ定義値、cosine スケール）</li>
+<li><code>vector_weight</code>: 0.7、<code>bm25_weight</code>: 0.3</li>
+<li><code>hybrid_method</code>:<code>rrf</code>（既定）/<code>weighted</code></li>
+<li><code>rrf_k</code>: 60</li>
+<li><code>mmr_enabled</code>: true、<code>mmr_lambda</code>: 0.7、<code>mmr_fetch_k</code>: 20</li>
+<li><code>parent_child_enabled</code>: true、<code>child_chunk_size</code>: 256、<code>parent_chunk_size</code>: 1000</li>
+<li><code>multi_query_enabled</code>: true、<code>multi_query_count</code>: 3</li>
+<li><code>crag_enabled</code>: true、<code>crag_max_loops</code>: 1</li>
+<li><code>hyde_enabled</code>: false</li>
+<li><code>adaptive_enabled</code>: true、<code>adaptive_threshold</code>: 2.0</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-77">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">5-2. Advanced RAG（PHASE A シリーズ）</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>名称</th><th>機能</th></tr></thead>
-      <tbody>
-        <tr><td>MMR</td><td>関連性 vs 多様性のバランス調整</td></tr>
-        <tr><td>Parent-Child</td><td>検索ヒットの周辺コンテキストを拡張</td></tr>
-        <tr><td>Hybrid Search</td><td>BM25 + Vector を RRF または重み付けで統合</td></tr>
-        <tr><td>Multi-Query</td><td>LLM でクエリを N 個に展開して並列検索</td></tr>
-        <tr><td>CRAG（Corrective RAG）</td><td>LLM が検索結果の質を評価し、不十分なら再検索</td></tr>
-        <tr><td>HyDE</td><td>仮想文章生成 → その埋め込みで検索</td></tr>
-        <tr><td>Adaptive RAG</td><td>質問の複雑度を判定して Agentic ループを起動</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">5-2. Advanced RAG（PHASE A シリーズ）</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>名称</th><th>機能</th></tr></thead>
+<tbody>
+<tr><td>MMR</td><td>関連性 vs 多様性のバランス調整</td></tr>
+<tr><td>Parent-Child</td><td>検索ヒットの周辺コンテキストを拡張</td></tr>
+<tr><td>Hybrid Search</td><td>BM25 + Vector を RRF または重み付けで統合</td></tr>
+<tr><td>Multi-Query</td><td>LLM でクエリを N 個に展開して並列検索</td></tr>
+<tr><td>CRAG（Corrective RAG）</td><td>LLM が検索結果の質を評価し、不十分なら再検索</td></tr>
+<tr><td>HyDE</td><td>仮想文章生成 → その埋め込みで検索</td></tr>
+<tr><td>Adaptive RAG</td><td>質問の複雑度を判定して Agentic ループを起動</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-78">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">5-3. Smart Ingestion・Collection — 分類エンジン</span>
-  </div>
-  <div class="slide-body">
-    <h4>分類エンジン</h4>
-    <table>
-      <thead><tr><th>エンジン</th><th>動作</th></tr></thead>
-      <tbody>
-        <tr><td><code>LightweightClassifier</code></td><td>ルールベース（ファイル名 + 先頭 500 文字のキーワード）</td></tr>
-        <tr><td><code>LLMClassifier</code></td><td>Ollama 等のローカル LLM でゼロショット分類</td></tr>
-        <tr><td><code>HybridClassifier</code></td><td>軽量を優先、信頼度 0.65 未満で LLM フォールバック</td></tr>
-      </tbody>
-    </table>
-    <h4>Collection の状態遷移</h4>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">5-3. Smart Ingestion・Collection — 分類エンジン</span>
+</div>
+<div class="slide-body">
+<h4>分類エンジン</h4>
+<table>
+<thead><tr><th>エンジン</th><th>動作</th></tr></thead>
+<tbody>
+<tr><td><code>LightweightClassifier</code></td><td>ルールベース（ファイル名 + 先頭 500 文字のキーワード）</td></tr>
+<tr><td><code>LLMClassifier</code></td><td>Ollama 等のローカル LLM でゼロショット分類</td></tr>
+<tr><td><code>HybridClassifier</code></td><td>軽量を優先、信頼度 0.65 未満で LLM フォールバック</td></tr>
+</tbody>
+</table>
+<h4>Collection の状態遷移</h4>
 <pre><code>draft → ingested → ready
 draft → publishing → ready / failed
 publishing → stopped
 failed → draft</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-79">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">5-3. Smart Ingestion — 差分同期・チャンク</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>ハッシュ差分同期</h4>
-    <p><code>DataSyncService</code> が <code>sources</code> テーブルを定期的に走査します。</p>
-    <ul>
-      <li>既定間隔: 60 秒（最小 10 秒）</li>
-      <li>比較対象: <code>files</code> テーブルの (source_id, path) レコード</li>
-      <li>差分検出: パス集合の追加 / 削除</li>
-    </ul>
-    <p>publish 連携は未統合で、現状はログ出力のみ。</p>
-    <h4>チャンク分割</h4>
-    <ul>
-      <li>既定: スライディングウィンドウ 500 文字 × 50 文字 overlap</li>
-      <li>Contextual Chunking 有効時: メタデータ（ファイル名、種別、感度、部門、位置、タグ）をチャンク冒頭に付加</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">5-3. Smart Ingestion — 差分同期・チャンク</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>ハッシュ差分同期</h4>
+<p><code>DataSyncService</code> が<code>sources</code> テーブルを定期的に走査します。</p>
+<ul>
+<li>既定間隔: 60 秒（最小 10 秒）</li>
+<li>比較対象:<code>files</code> テーブルの (source_id, path) レコード</li>
+<li>差分検出: パス集合の追加 / 削除</li>
+</ul>
+<p>publish 連携は未統合で、現状はログ出力のみ。</p>
+<h4>チャンク分割</h4>
+<ul>
+<li>既定: スライディングウィンドウ 500 文字 × 50 文字 overlap</li>
+<li>Contextual Chunking 有効時: メタデータ（ファイル名、種別、感度、部門、位置、タグ）をチャンク冒頭に付加</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-80">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">5-4. ガードレール・PII（再掲）</span>
-  </div>
-  <div class="slide-body">
-    <h4>Tier1（取込時マスキング）</h4>
-    <p>Publish 時に各チャンクから raw / masked の dual-row を生成。ChromaDB には <code>{cid}__raw</code> と <code>{cid}__masked</code> の 2 コレクションを作成。SQLite <code>chunks</code> にも <code>tier='raw'</code> / <code>tier='masked'</code> の 2 行を保存。</p>
-    <h4>Tier2（回答時マスキング）</h4>
-    <p><code>_mask_for_viewer</code> が chat 経路 4 箇所（通常 / compare A / compare B / SSE）で LLM 出力に適用される。admin 以外は強制マスク。</p>
-    <h4>Fernet 暗号化</h4>
-    <p><code>vault_enc.py</code> の <code>enc_raw</code> / <code>dec_raw</code> インターフェース（<code>enc:</code> プレフィックス、冪等）。raw tier のみ暗号化、masked tier は素通し。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">5-4. ガードレール・PII（再掲）</span>
+</div>
+<div class="slide-body">
+<h4>Tier1（取込時マスキング）</h4>
+<p>Publish 時に各チャンクから raw / masked の dual-row を生成。ChromaDB には<code>{cid}__raw</code> と<code>{cid}__masked</code> の 2 コレクションを作成。SQLite<code>chunks</code> にも<code>tier='raw'</code> /<code>tier='masked'</code> の 2 行を保存。</p>
+<h4>Tier2（回答時マスキング）</h4>
+<p><code>_mask_for_viewer</code> が chat 経路 4 箇所（通常 / compare A / compare B / SSE）で LLM 出力に適用される。admin 以外は強制マスク。</p>
+<h4>Fernet 暗号化</h4>
+<p><code>vault_enc.py</code> の<code>enc_raw</code> /<code>dec_raw</code> インターフェース（<code>enc:</code> プレフィックス、冪等）。raw tier のみ暗号化、masked tier は素通し。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 6: 外部連携 -->
 <div class="slide chapter-slide" id="slide-81">
-  <div class="chapter-title">第 6 章　外部連携</div>
+<div class="chapter-title">第 6 章　外部連携</div>
 </div>
 
 <div class="slide" id="slide-82">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">6-1. LLM 接続</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は OpenAI 互換 <code>/v1/chat/completions</code> を持つ任意のサービスに接続できます。</p>
-    <h4>LM Studio</h4>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">6-1. LLM 接続</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は OpenAI 互換<code>/v1/chat/completions</code> を持つ任意のサービスに接続できます。</p>
+<h4>LM Studio</h4>
 <pre><code>python server.py --lmstudio-url http://localhost:1234</code></pre>
-    <h4>Ollama</h4>
+<h4>Ollama</h4>
 <pre><code>python server.py --lmstudio-url http://localhost:11434</code></pre>
-    <h4>OpenAI 互換（汎用）</h4>
+<h4>OpenAI 互換（汎用）</h4>
 <pre><code>llm:
   provider: openai_compat
   base_url: http://localhost:8000
   model: meta-llama/Llama-3-8B-Instruct</code></pre>
-    <h4>モック</h4>
+<h4>モック</h4>
 <pre><code>python server.py --demo</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-83">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">6-2. MCP 連携</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は MCP サーバーとして 11 ツールを公開しています。</p>
-    <table>
-      <thead><tr><th>カテゴリ</th><th>ツール</th></tr></thead>
-      <tbody>
-        <tr><td>RAG 検索系（4）</td><td><code>search_collection</code>、<code>search_across_collections</code>、<code>rag_with_role</code>、<code>rag_general</code></td></tr>
-        <tr><td>情報取得系（4）</td><td><code>list_workspaces</code>、<code>get_workspace_info</code>、<code>get_collection_info</code>、<code>get_audit_logs</code></td></tr>
-        <tr><td>管理系（3）</td><td><code>list_sources</code>、<code>publish_collection</code>、<code>create_workspace</code></td></tr>
-      </tbody>
-    </table>
-    <p>LM Studio などの MCP クライアントから接続できます。conda 環境固有の制限として、<code>CYNOVELA_MCP_PYTHON</code> 環境変数で Python 実行ファイルパスを指定する必要があります。</p>
-    <p>詳細は <code>mcp-guide.md</code> を参照してください。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">6-2. MCP 連携</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は MCP サーバーとして 11 ツールを公開しています。</p>
+<table>
+<thead><tr><th>カテゴリ</th><th>ツール</th></tr></thead>
+<tbody>
+<tr><td>RAG 検索系（4）</td><td><code>search_collection</code>、<code>search_across_collections</code>、<code>rag_with_role</code>、<code>rag_general</code></td></tr>
+<tr><td>情報取得系（4）</td><td><code>list_workspaces</code>、<code>get_workspace_info</code>、<code>get_collection_info</code>、<code>get_audit_logs</code></td></tr>
+<tr><td>管理系（3）</td><td><code>list_sources</code>、<code>publish_collection</code>、<code>create_workspace</code></td></tr>
+</tbody>
+</table>
+<p>LM Studio などの MCP クライアントから接続できます。conda 環境固有の制限として、<code>CYNOVELA_MCP_PYTHON</code> 環境変数で Python 実行ファイルパスを指定する必要があります。</p>
+<p>詳細は<code>mcp-guide.md</code> を参照してください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-84">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">6-3. LAN・Tailscale 共有</span>
-  </div>
-  <div class="slide-body">
-    <h4>LAN 共有</h4>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">6-3. LAN・Tailscale 共有</span>
+</div>
+<div class="slide-body">
+<h4>LAN 共有</h4>
 <pre><code>python server.py --lan --allow-subnet 192.168.1.0/24</code></pre>
-    <h4>Tailscale 共有</h4>
+<h4>Tailscale 共有</h4>
 <pre><code>python server.py --lan --allow-tailscale</code></pre>
-    <p><code>tailscale ip -4</code> で Tailscale IP を自動検出し、<code>100.64.0.0/10</code> サブネットを許可リストに追加します。</p>
-    <p>詳細は <code>lan-sharing.md</code> を参照してください。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p><code>tailscale ip -4</code> で Tailscale IP を自動検出し、<code>100.64.0.0/10</code> サブネットを許可リストに追加します。</p>
+<p>詳細は<code>lan-sharing.md</code> を参照してください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 7: 既知制限 -->
 <div class="slide chapter-slide" id="slide-85">
-  <div class="chapter-title">第 7 章　既知制限</div>
+<div class="chapter-title">第 7 章　既知制限</div>
 </div>
 
 <div class="slide" id="slide-86">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">7-1〜7-3. 既知制限</span>
-  </div>
-  <div class="slide-body">
-    <h3>7-1. 認証・認可</h3>
-    <ul>
-      <li>認証は JWT（<code>POST /api/auth/login</code> が発行・<code>--demo</code> でも必要）。旧 <code>Bearer demo-token-&lt;user_id&gt;</code> 形式は廃止済み</li>
-      <li>ユーザー単位の API キー発行機能なし</li>
-    </ul>
-    <h3>7-2. 通信暗号化</h3>
-    <ul>
-      <li>HTTPS 化未対応（リバースプロキシで TLS 終端する必要あり）</li>
-      <li>LLM 通信も HTTP 平文</li>
-    </ul>
-    <h3>7-3. 永続化されない設定</h3>
-    <ul>
-      <li>Embedding / Reranker 設定の実行時変更は YAML に永続化されない（再起動でデフォルトに戻る）</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">7-1〜7-3. 既知制限</span>
+</div>
+<div class="slide-body">
+<h3>7-1. 認証・認可</h3>
+<ul>
+<li>認証は JWT（<code>POST /api/auth/login</code> が発行・<code>--demo</code> でも必要）。旧<code>Bearer demo-token-&lt;user_id&gt;</code> 形式は廃止済み</li>
+<li>ユーザー単位の API キー発行機能なし</li>
+</ul>
+<h3>7-2. 通信暗号化</h3>
+<ul>
+<li>HTTPS 化未対応（リバースプロキシで TLS 終端する必要あり）</li>
+<li>LLM 通信も HTTP 平文</li>
+</ul>
+<h3>7-3. 永続化されない設定</h3>
+<ul>
+<li>Embedding / Reranker 設定の実行時変更は YAML に永続化されない（再起動でデフォルトに戻る）</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-87">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">7-4〜7-7. 既知制限</span>
-  </div>
-  <div class="slide-body">
-    <h3>7-4. 骨格のみの機能</h3>
-    <ul>
-      <li>Qdrant VectorStore（<code>add</code> / <code>search</code> 等が <code>NotImplementedError</code>）</li>
-      <li>MLX Embedding / Reranker（<code>NotImplementedError</code>）</li>
-      <li>LanceDB バックエンド</li>
-      <li>GraphRAG 戦略</li>
-    </ul>
-    <h3>7-5. DataSyncService</h3>
-    <ul>
-      <li>publish 連携未統合（ログ出力のみ）</li>
-      <li>content_hash 比較なし（パス単位の差分のみ）</li>
-    </ul>
-    <h3>7-6. RAG パイプライン</h3>
-    <ul>
-      <li>構造化回答テンプレート未実装（自由形式回答が標準）</li>
-      <li>低信頼度フォールバック部分実装</li>
-    </ul>
-    <h3>7-7. UI</h3>
-    <ul>
-      <li>一部 UI 要素は JavaScript 初期化まで <code>display:none</code></li>
-      <li>言語切替（日本語 / 英語）で一部要素は固定</li>
-    </ul>
-    <p>詳細は <code>security-policy.md</code> を参照してください。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">7-4〜7-7. 既知制限</span>
+</div>
+<div class="slide-body">
+<h3>7-4. 骨格のみの機能</h3>
+<ul>
+<li>Qdrant VectorStore（<code>add</code> /<code>search</code> 等が<code>NotImplementedError</code>）</li>
+<li>MLX Embedding / Reranker（<code>NotImplementedError</code>）</li>
+<li>LanceDB バックエンド</li>
+<li>GraphRAG 戦略</li>
+</ul>
+<h3>7-5. DataSyncService</h3>
+<ul>
+<li>publish 連携未統合（ログ出力のみ）</li>
+<li>content_hash 比較なし（パス単位の差分のみ）</li>
+</ul>
+<h3>7-6. RAG パイプライン</h3>
+<ul>
+<li>構造化回答テンプレート未実装（自由形式回答が標準）</li>
+<li>低信頼度フォールバック部分実装</li>
+</ul>
+<h3>7-7. UI</h3>
+<ul>
+<li>一部 UI 要素は JavaScript 初期化まで<code>display:none</code></li>
+<li>言語切替（日本語 / 英語）で一部要素は固定</li>
+</ul>
+<p>詳細は<code>security-policy.md</code> を参照してください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <!-- Chapter 8: FAQ -->
 <div class="slide chapter-slide" id="slide-88">
-  <div class="chapter-title">第 8 章　FAQ</div>
+<div class="chapter-title">第 8 章　FAQ</div>
 </div>
 
 <div class="slide" id="slide-89">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q1. ChromaDB と SQLite の使い分けは？</span>
-  </div>
-  <div class="slide-body">
-    <ul>
-      <li><strong>SQLite</strong>: メタデータ（Workspace、Collection、Source、File、User、AuditLog、PublishHistory など構造化情報）</li>
-      <li><strong>ChromaDB</strong>: ベクター埋め込みとチャンク本文（検索用途）</li>
-    </ul>
-    <p>両者は <code>_purge_chunks_for_*()</code> ヘルパーで同期削除されます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q1. ChromaDB と SQLite の使い分けは？</span>
+</div>
+<div class="slide-body">
+<ul>
+<li><strong>SQLite</strong>: メタデータ（Workspace、Collection、Source、File、User、AuditLog、PublishHistory など構造化情報）</li>
+<li><strong>ChromaDB</strong>: ベクター埋め込みとチャンク本文（検索用途）</li>
+</ul>
+<p>両者は<code>_purge_chunks_for_*()</code> ヘルパーで同期削除されます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-90">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q2. Fernet 鍵を紛失するとどうなりますか？</span>
-  </div>
-  <div class="slide-body">
-    <p>raw 本文（Fernet 暗号化されているもの）は復号できなくなります。masked 本文は素通しのため引き続き読めますが、admin ロールでも raw 本文の参照は不可能になります。<code>CYNOVELA_SECRET_KEY</code> は安全に保管してください。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q2. Fernet 鍵を紛失するとどうなりますか？</span>
+</div>
+<div class="slide-body">
+<p>raw 本文（Fernet 暗号化されているもの）は復号できなくなります。masked 本文は素通しのため引き続き読めますが、admin ロールでも raw 本文の参照は不可能になります。<code>CYNOVELA_SECRET_KEY</code> は安全に保管してください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-91">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q3. 全テストを実行するには？</span>
-  </div>
-  <div class="slide-body">
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q3. 全テストを実行するには？</span>
+</div>
+<div class="slide-body">
 <pre><code>bash scripts/run_all_tests.sh</code></pre>
-    <p>14 PHASE / 405 アサーション以上が実行されます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p>14 PHASE / 405 アサーション以上が実行されます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-92">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q4. LLM なしで品質確認はできますか？</span>
-  </div>
-  <div class="slide-body">
-    <p>できません。以前あった <code>--mock</code>（LLM を呼ばずに動かす指定）は撤去済みで、いま指定するとエラーで止まります。品質確認は実 LLM 環境で行ってください。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q4. LLM なしで品質確認はできますか？</span>
+</div>
+<div class="slide-body">
+<p>できません。以前あった<code>--mock</code>（LLM を呼ばずに動かす指定）は撤去済みで、いま指定するとエラーで止まります。品質確認は実 LLM 環境で行ってください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-93">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q5. PII 検出が日本語の住所を拾わないのですが？</span>
-  </div>
-  <div class="slide-body">
-    <p>PII 検出モードを確認してください。<code>lite</code> は正規表現のみのため、住所などの自然言語 PII は検出されません。<code>standard</code> または <code>quality</code> に変更すると GiNZA NER による住所・人名・組織名の検出が有効になります。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q5. PII 検出が日本語の住所を拾わないのですが？</span>
+</div>
+<div class="slide-body">
+<p>PII 検出モードを確認してください。<code>lite</code> は正規表現のみのため、住所などの自然言語 PII は検出されません。<code>standard</code> または<code>quality</code> に変更すると GiNZA NER による住所・人名・組織名の検出が有効になります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-94">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q6. MCP クライアントから接続できません</span>
-  </div>
-  <div class="slide-body">
-    <p>以下を確認してください。</p>
-    <ul>
-      <li>Cynovela 本体（<code>server.py</code>）が <code>http://127.0.0.1:8765</code> で起動済みか</li>
-      <li><code>CYNOVELA_TOKEN</code> 環境変数の値、トークンの有効性</li>
-      <li><code>CYNOVELA_MCP_PYTHON</code> で conda 環境の Python パスを指定済みか</li>
-      <li>対象 Collection が <code>ready</code> ステータスに到達済みか</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q6. MCP クライアントから接続できません</span>
+</div>
+<div class="slide-body">
+<p>以下を確認してください。</p>
+<ul>
+<li>Cynovela 本体（<code>server.py</code>）が<code>http://127.0.0.1:8765</code> で起動済みか</li>
+<li><code>CYNOVELA_TOKEN</code> 環境変数の値、トークンの有効性</li>
+<li><code>CYNOVELA_MCP_PYTHON</code> で conda 環境の Python パスを指定済みか</li>
+<li>対象 Collection が<code>ready</code> ステータスに到達済みか</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-95">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q7. インターネットに公開しても良いですか？</span>
-  </div>
-  <div class="slide-body">
-    <p>絶対に推奨しません。HTTPS 化されておらず、JWT 認証も未実装、ファイルアップロード制限も緩いため、インターネット直接公開は重大なリスクがあります。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q7. インターネットに公開しても良いですか？</span>
+</div>
+<div class="slide-body">
+<p>絶対に推奨しません。HTTPS 化されておらず、JWT 認証も未実装、ファイルアップロード制限も緩いため、インターネット直接公開は重大なリスクがあります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-96">
-  <div class="slide-header">
-    <span class="doc-name">完全マニュアル</span>
-    <span class="slide-title">Q8. データを完全に削除するには？</span>
-  </div>
-  <div class="slide-body">
-    <p>UI から Source / Workspace / Collection を削除すれば、SQLite と ChromaDB の両方が <code>_purge_chunks_for_*()</code> 系ヘルパー経由でクリーンアップされます。完全初期化したい場合は <code>~/.cynovela/</code> ディレクトリ全体を削除してください（バックアップは事前に取得してください）。</p>
-    <p style="margin-top:8px;color:var(--cyn-muted);font-size:13px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">完全マニュアル</span>
+<span class="slide-title">Q8. データを完全に削除するには？</span>
+</div>
+<div class="slide-body">
+<p>UI から Source / Workspace / Collection を削除すれば、SQLite と ChromaDB の両方が<code>_purge_chunks_for_*()</code> 系ヘルパー経由でクリーンアップされます。完全初期化したい場合は<code>~/.cynovela</code> ディレクトリ全体を削除してください（バックアップは事前に取得してください）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 96</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 96</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

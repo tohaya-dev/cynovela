@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PII Masking / pii-masking — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PII Masking / pii-masking — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --cyn-bg:           #f5f6f8;
@@ -180,66 +180,66 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Cynovela PII Masking</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Cynovela PII Masking</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">About this document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About this document</strong><br>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">About this document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About this document</strong><br>
       Cynovela is a completely unofficial learning tool, built by an individual in order to understand the concepts behind AI platform tooling by actually writing the code. It is not a commercial product and not an official implementation. Everything is implemented from scratch on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">1. Design principle: only masked text goes into ChromaDB</span>
-  </div>
-  <div class="slide-body">
-    <p>The basic policy against PII (Personally Identifiable Information: personal data and confidential internal information) is this: <strong>the vector DB (ChromaDB), which is broadly exposed as a search target, holds only masked text as a rule</strong>. The raw text is stored encrypted in a separate lane, and can only be retrieved by the administrator role.</p>
-    <p>With this design, the leak paths are narrowed even in the following situations.</p>
-    <ul>
-      <li>The path where a search hit is mixed into the LLM prompt → only masked text is passed</li>
-      <li>The path where the ChromaDB data is dumped or copied as is → masked only</li>
-      <li>The path where the DB file is physically carried away → the raw side is already encrypted with Fernet</li>
-    </ul>
-    <p>To achieve this, Cynovela uses a double defense of <strong>masking at ingest time (Tier1)</strong> and <strong>masking at answer time (Tier2)</strong>.</p>
-    <p><strong>Removed (2026-07-24)</strong>: the former exception "ingest without masking" (<code>collections.raw_only</code>) has been removed. Ingest always goes through masking, and there is only one set of vectors, the masked one. The columns for past data remain for preservation (see metadata-engine §6 for details).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">1. Design principle: only masked text goes into ChromaDB</span>
+</div>
+<div class="slide-body">
+<p>The basic policy against PII (Personally Identifiable Information: personal data and confidential internal information) is this:<strong>the vector DB (ChromaDB), which is broadly exposed as a search target, holds only masked text as a rule</strong>. The raw text is stored encrypted in a separate lane, and can only be retrieved by the administrator role.</p>
+<p>With this design, the leak paths are narrowed even in the following situations.</p>
+<ul>
+<li>The path where a search hit is mixed into the LLM prompt → only masked text is passed</li>
+<li>The path where the ChromaDB data is dumped or copied as is → masked only</li>
+<li>The path where the DB file is physically carried away → the raw side is already encrypted with Fernet</li>
+</ul>
+<p>To achieve this, Cynovela uses a double defense of<strong>masking at ingest time (Tier1)</strong> and<strong>masking at answer time (Tier2)</strong>.</p>
+<p><strong>Removed (2026-07-24)</strong>: the former exception "ingest without masking" (<code>collections.raw_only</code>) has been removed. Ingest always goes through masking, and there is only one set of vectors, the masked one. The columns for past data remain for preservation (see metadata-engine §6 for details).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">2. Tier1: masking at ingest time</span>
-  </div>
-  <div class="slide-body">
-    <h3>2.1 Role</h3>
-    <p>In the middle of Publish (the processing that pushes a collection into ChromaDB), a <strong>dual-row of "raw text" and "masked text"</strong> is generated for each chunk. Both are stored in the SQLite <code>chunks</code> table and in both ChromaDB collections.</p>
-    <h3>2.2 Implementation excerpt (rag.py:984-1075)</h3>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">2. Tier1: masking at ingest time</span>
+</div>
+<div class="slide-body">
+<h3>2.1 Role</h3>
+<p>In the middle of Publish (the processing that pushes a collection into ChromaDB), a<strong>dual-row of "raw text" and "masked text"</strong> is generated for each chunk. Both are stored in the SQLite<code>chunks</code> table and in both ChromaDB collections.</p>
+<h3>2.2 Implementation excerpt (rag.py:984-1075)</h3>
 <pre><code>pii_flag = 1 if pii_pat.search(chunk or "") else 0
 # §段1b: マスク済本文を生成 (context prefix 付き全文を対象)
 try:
@@ -251,48 +251,48 @@ _masked_doc_id = f"{doc_id}__masked"
 _meta_raw["tier"] = "raw"
 _meta_masked["tier"] = "masked"
 all_docs_masked.append(_masked_chunk or "")</code></pre>
-    <p><code>_mtws_publish</code> is an alias of <code>guardrail.mask_text_with_spans</code>, and it applies regular-expression based masking to each chunk.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<p><code>_mtws_publish</code> is an alias of<code>guardrail.mask_text_with_spans</code>, and it applies regular-expression based masking to each chunk.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">2. Tier1: storage destinations and behavior on failure</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>2.3 Storage destinations</h3>
-    <table>
-      <thead><tr><th>Storage</th><th>raw tier</th><th>masked tier</th></tr></thead>
-      <tbody>
-        <tr><td>SQLite <code>chunks</code></td><td><code>doc_id</code> row (<code>tier='raw'</code>)</td><td><code>doc_id + '__masked'</code> row (<code>tier='masked'</code>)</td></tr>
-        <tr><td>ChromaDB</td><td><code>{collection_id}__raw</code></td><td><code>{collection_id}__masked</code></td></tr>
-        <tr><td>Encryption</td><td>Fernet (<code>enc:</code> prefix)</td><td>No encryption (to keep search performance)</td></tr>
-      </tbody>
-    </table>
-    <h3>2.4 Behavior on failure</h3>
-    <p>Even if the masking raises an exception, Publish is not stopped: it is logged with <code>_log.warning</code>, and then the raw text is stored on the masked side as well. This design avoids the risk that "if ingest stops, the business stops".</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">2. Tier1: storage destinations and behavior on failure</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>2.3 Storage destinations</h3>
+<table>
+<thead><tr><th>Storage</th><th>raw tier</th><th>masked tier</th></tr></thead>
+<tbody>
+<tr><td>SQLite<code>chunks</code></td><td><code>doc_id</code> row (<code>tier='raw'</code>)</td><td><code>doc_id + '__masked'</code> row (<code>tier='masked'</code>)</td></tr>
+<tr><td>ChromaDB</td><td><code>{collection_id}__raw</code></td><td><code>{collection_id}__masked</code></td></tr>
+<tr><td>Encryption</td><td>Fernet (<code>enc:</code> prefix)</td><td>No encryption (to keep search performance)</td></tr>
+</tbody>
+</table>
+<h3>2.4 Behavior on failure</h3>
+<p>Even if the masking raises an exception, Publish is not stopped: it is logged with<code>_log.warning</code>, and then the raw text is stored on the masked side as well. This design avoids the risk that "if ingest stops, the business stops".</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">3. Tier2: masking at answer time</span>
-  </div>
-  <div class="slide-body">
-    <h3>3.1 Role</h3>
-    <p>An additional <strong>exit mask</strong> is applied to the answer text generated by the LLM, according to the role of the user. This makes sure that even if raw text somehow gets mixed into the context, it never reaches a user other than admin.</p>
-    <h3>3.2 Implementation (routers/chat.py:128-162)</h3>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">3. Tier2: masking at answer time</span>
+</div>
+<div class="slide-body">
+<h3>3.1 Role</h3>
+<p>An additional<strong>exit mask</strong> is applied to the answer text generated by the LLM, according to the role of the user. This makes sure that even if raw text somehow gets mixed into the context, it never reaches a user other than admin.</p>
+<h3>3.2 Implementation (routers/chat.py:128-162)</h3>
 <pre><code>def _mask_for_viewer(text: str, user: dict | None) -&gt; str:
     """M1: 利用者の保管庫 tier (raw/masked) に応じて
     LLM 生成出力に出口マスクを適用する。"""
@@ -310,48 +310,48 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
         return masked
     except Exception:
         return text</code></pre>
-    <p><code>_mask_for_viewer</code> is called at 4 places on the chat path (normal response / Compare A / Compare B / SSE path).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<p><code>_mask_for_viewer</code> is called at 4 places on the chat path (normal response / Compare A / Compare B / SSE path).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">3.3 Dispatch by role</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">3.3 Dispatch by role</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
 <pre><code>def tier_for_role(role: str) -&gt; str:
     """§段2: ロールに応じて保管庫の tier を決める。
     admin → 'raw'   (生本文を保管する管理者保管庫を引く)
     その他 → 'masked' (マスク済本文の一般保管庫を引く)
     """
     return "raw" if (role or "").strip() == "admin" else "masked"</code></pre>
-    <p><code>tier_for_role</code> decides both <strong>which ChromaDB store is queried</strong> (<code>{cid}__raw</code> or <code>{cid}__masked</code>) and <strong>whether the exit mask is applied or bypassed</strong>, so it works as a double defense.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<p><code>tier_for_role</code> decides both<strong>which ChromaDB store is queried</strong> (<code>{cid}__raw</code> or<code>{cid}__masked</code>) and<strong>whether the exit mask is applied or bypassed</strong>, so it works as a double defense.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">4. Fernet encryption</span>
-  </div>
-  <div class="slide-body">
-    <h3>4.1 Role</h3>
-    <p>Right before the raw tier text is stored into SQLite and ChromaDB, it is encrypted with Fernet (a symmetric-key encryption scheme: authenticated AES-128-CBC + HMAC) and stored with the prefix <code>enc:</code>. The implementation is idempotent (a string that already starts with <code>enc:</code> is not encrypted again), which avoids double encryption.</p>
-    <h3>4.2 Implementation</h3>
-    <ul>
-      <li><strong>Key management</strong>: <code>Fernet(_KEY)</code> is initialized at <code>config.py:62</code>. The key is passed through the <code>CYNOVELA_SECRET_KEY</code> environment variable. For production operation, setting this environment variable explicitly is recommended.</li>
-      <li><strong>Interface</strong>: <code>enc_raw(text)</code> / <code>dec_raw(text)</code> in <code>vault_enc.py</code> provide a thin wrapper.</li>
-    </ul>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">4. Fernet encryption</span>
+</div>
+<div class="slide-body">
+<h3>4.1 Role</h3>
+<p>Right before the raw tier text is stored into SQLite and ChromaDB, it is encrypted with Fernet (a symmetric-key encryption scheme: authenticated AES-128-CBC + HMAC) and stored with the prefix<code>enc:</code>. The implementation is idempotent (a string that already starts with<code>enc:</code> is not encrypted again), which avoids double encryption.</p>
+<h3>4.2 Implementation</h3>
+<ul>
+<li><strong>Key management</strong>:<code>Fernet(_KEY)</code> is initialized at<code>config.py:62</code>. The key is passed through the<code>CYNOVELA_SECRET_KEY</code> environment variable. For production operation, setting this environment variable explicitly is recommended.</li>
+<li><strong>Interface</strong>:<code>enc_raw(text)</code> /<code>dec_raw(text)</code> in<code>vault_enc.py</code> provide a thin wrapper.</li>
+</ul>
 <pre><code>ENC_PREFIX = "enc:"
 
 def enc_raw(text: str | None) -&gt; str:
@@ -359,242 +359,241 @@ def enc_raw(text: str | None) -&gt; str:
 
 def dec_raw(text: str | None) -&gt; str:
     """暗号化形式なら復号、それ以外 (masked / 旧平文) はそのまま素通し。"""</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">4. Where Fernet is applied, and migration</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>4.3 Where it is applied</h3>
-    <table>
-      <thead><tr><th>Path</th><th>Where</th><th>Target</th></tr></thead>
-      <tbody>
-        <tr><td>When writing into Chroma</td><td><code>rag.py:1285</code></td><td><code>enc_raw</code> applied in bulk to the <code>documents</code> array of the raw tier</td></tr>
-        <tr><td>When saving SQLite chunks</td><td><code>rag.py:1393</code></td><td><code>enc_raw</code> on the <code>content</code> of raw tier rows</td></tr>
-        <tr><td>When saving SQLite parent_chunks</td><td><code>rag.py:1131</code></td><td><code>enc_raw</code> on the raw tier of the parent</td></tr>
-      </tbody>
-    </table>
-    <p>The masked tier is not encrypted. This is to keep search performance (embedding computation and full-text search). Since the raw tier goes into the ChromaDB <code>documents</code> as an encrypted byte string, it has to be decrypted with <code>dec_raw</code> when it is retrieved.</p>
-    <h3>4.4 Migration of existing data</h3>
-    <p><code>tools/vault_enc_migrate.py</code> is provided as a tool that converts existing SQLite / ChromaDB data to the <code>enc:</code> format in bulk.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">4. Where Fernet is applied, and migration</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>4.3 Where it is applied</h3>
+<table>
+<thead><tr><th>Path</th><th>Where</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>When writing into Chroma</td><td><code>rag.py:1285</code></td><td><code>enc_raw</code> applied in bulk to the<code>documents</code> array of the raw tier</td></tr>
+<tr><td>When saving SQLite chunks</td><td><code>rag.py:1393</code></td><td><code>enc_raw</code> on the<code>content</code> of raw tier rows</td></tr>
+<tr><td>When saving SQLite parent_chunks</td><td><code>rag.py:1131</code></td><td><code>enc_raw</code> on the raw tier of the parent</td></tr>
+</tbody>
+</table>
+<p>The masked tier is not encrypted. This is to keep search performance (embedding computation and full-text search). Since the raw tier goes into the ChromaDB<code>documents</code> as an encrypted byte string, it has to be decrypted with<code>dec_raw</code> when it is retrieved.</p>
+<h3>4.4 Migration of existing data</h3>
+<p><code>tools/vault_enc_migrate.py</code> is provided as a tool that converts existing SQLite / ChromaDB data to the<code>enc:</code> format in bulk.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">5. What each role sees</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>Role</th><th>Store queried</th><th>Exit mask</th><th>What is visible as a result</th></tr></thead>
-      <tbody>
-        <tr><td><code>admin</code></td><td>raw tier (decrypted raw text)</td><td>Bypassed</td><td>Raw text</td></tr>
-        <tr><td><code>curator</code></td><td>masked tier</td><td>Applied</td><td>Masked text</td></tr>
-        <tr><td><code>viewer</code></td><td>masked tier</td><td>Applied</td><td>Masked text</td></tr>
-        <tr><td>Unauthenticated / unset</td><td>masked tier</td><td>Applied</td><td>Masked text</td></tr>
-      </tbody>
-    </table>
-    <p>Because of this, even when a misconfiguration leaves the role empty, <strong>the raw text is structurally out of reach</strong>.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">5. What each role sees</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>Role</th><th>Store queried</th><th>Exit mask</th><th>What is visible as a result</th></tr></thead>
+<tbody>
+<tr><td><code>admin</code></td><td>raw tier (decrypted raw text)</td><td>Bypassed</td><td>Raw text</td></tr>
+<tr><td><code>curator</code></td><td>masked tier</td><td>Applied</td><td>Masked text</td></tr>
+<tr><td><code>viewer</code></td><td>masked tier</td><td>Applied</td><td>Masked text</td></tr>
+<tr><td>Unauthenticated / unset</td><td>masked tier</td><td>Applied</td><td>Masked text</td></tr>
+</tbody>
+</table>
+<p>Because of this, even when a misconfiguration leaves the role empty,<strong>the raw text is structurally out of reach</strong>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">6. All PII categories (primary system)</span>
-  </div>
-  <div class="slide-body">
-    <h3>6.1 Primary system: guardrail.py (regular expression based)</h3>
-    <p>8 types are defined at <code>guardrail.py:137-153</code>.</p>
-    <table>
-      <thead><tr><th>entity_type</th><th>What is detected</th><th>Token after masking</th></tr></thead>
-      <tbody>
-        <tr><td><code>URL</code></td><td><code>https?://...</code></td><td><code>[MASKED:URL]</code></td></tr>
-        <tr><td><code>EMAIL</code></td><td>Email address</td><td><code>[MASKED:EMAIL]</code></td></tr>
-        <tr><td><code>PHONE_JP</code></td><td>Mobile phone number (070/080/090)</td><td><code>[MASKED:PHONE]</code></td></tr>
-        <tr><td><code>PHONE_LAND</code></td><td>Landline phone number</td><td><code>[MASKED:PHONE]</code></td></tr>
-        <tr><td><code>CREDIT</code></td><td>Credit card number (4-4-4-4)</td><td><code>[MASKED:CREDIT]</code></td></tr>
-        <tr><td><code>MYNUMBER</code></td><td>My Number (12 digits)</td><td><code>[MASKED:MYNUM]</code></td></tr>
-        <tr><td><code>PASSPORT</code></td><td>Passport number (2 letters + 7 digits)</td><td><code>[MASKED:PASSPORT]</code></td></tr>
-        <tr><td><code>IPV4</code></td><td>IPv4 address</td><td><code>[MASKED:IP]</code></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">6. All PII categories (primary system)</span>
+</div>
+<div class="slide-body">
+<h3>6.1 Primary system: guardrail.py (regular expression based)</h3>
+<p>8 types are defined at<code>guardrail.py:137-153</code>.</p>
+<table>
+<thead><tr><th>entity_type</th><th>What is detected</th><th>Token after masking</th></tr></thead>
+<tbody>
+<tr><td><code>URL</code></td><td><code>https?://...</code></td><td><code>[MASKED:URL]</code></td></tr>
+<tr><td><code>EMAIL</code></td><td>Email address</td><td><code>[MASKED:EMAIL]</code></td></tr>
+<tr><td><code>PHONE_JP</code></td><td>Mobile phone number (070/080/090)</td><td><code>[MASKED:PHONE]</code></td></tr>
+<tr><td><code>PHONE_LAND</code></td><td>Landline phone number</td><td><code>[MASKED:PHONE]</code></td></tr>
+<tr><td><code>CREDIT</code></td><td>Credit card number (4-4-4-4)</td><td><code>[MASKED:CREDIT]</code></td></tr>
+<tr><td><code>MYNUMBER</code></td><td>My Number (12 digits)</td><td><code>[MASKED:MYNUM]</code></td></tr>
+<tr><td><code>PASSPORT</code></td><td>Passport number (2 letters + 7 digits)</td><td><code>[MASKED:PASSPORT]</code></td></tr>
+<tr><td><code>IPV4</code></td><td>IPv4 address</td><td><code>[MASKED:IP]</code></td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-12">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">6. All PII categories (secondary system)</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>6.2 Secondary system: utils/metadata/pii.py (presidio + GiNZA)</h3>
-    <p>If presidio is available it is used, otherwise it falls back to regular expressions. Japanese NER is done with GiNZA for named entity extraction.</p>
-    <table>
-      <thead><tr><th>entity_type</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>EMAIL</code></td><td>Email address (regular expression)</td></tr>
-        <tr><td><code>PHONE_JP</code> / <code>PHONE_INTL</code></td><td>Japanese / international phone number</td></tr>
-        <tr><td><code>IP_ADDRESS</code></td><td>IP address</td></tr>
-        <tr><td><code>MY_NUMBER</code></td><td>My Number</td></tr>
-        <tr><td><code>CREDIT_CARD</code></td><td>Credit card number</td></tr>
-        <tr><td><code>INTERNAL_URL</code></td><td>Internal URL</td></tr>
-        <tr><td><code>EMAIL_ADDRESS</code> / <code>PHONE_NUMBER</code> / <code>DATE_TIME</code></td><td>Detected by presidio</td></tr>
-        <tr><td><code>PERSON_JP</code> / <code>ORG_JP</code> / <code>LOC_JP</code></td><td>Person, organization and place names detected by GiNZA</td></tr>
-        <tr><td><code>ADDRESS_JP</code></td><td>Japanese address rules</td></tr>
-      </tbody>
-    </table>
-    <p><code>{CREDIT_CARD, MY_NUMBER, SSN, PASSPORT, IBAN_CODE}</code> are defined as <code>HIGH_RISK_TYPES</code>, and are weighted heavily in the sensitivity score (0 to 100).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">6. All PII categories (secondary system)</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<h3>6.2 Secondary system: utils/metadata/pii.py (presidio + GiNZA)</h3>
+<p>If presidio is available it is used, otherwise it falls back to regular expressions. Japanese NER is done with GiNZA for named entity extraction.</p>
+<table>
+<thead><tr><th>entity_type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>EMAIL</code></td><td>Email address (regular expression)</td></tr>
+<tr><td><code>PHONE_JP</code> /<code>PHONE_INTL</code></td><td>Japanese / international phone number</td></tr>
+<tr><td><code>IP_ADDRESS</code></td><td>IP address</td></tr>
+<tr><td><code>MY_NUMBER</code></td><td>My Number</td></tr>
+<tr><td><code>CREDIT_CARD</code></td><td>Credit card number</td></tr>
+<tr><td><code>INTERNAL_URL</code></td><td>Internal URL</td></tr>
+<tr><td><code>EMAIL_ADDRESS</code> /<code>PHONE_NUMBER</code> /<code>DATE_TIME</code></td><td>Detected by presidio</td></tr>
+<tr><td><code>PERSON_JP</code> /<code>ORG_JP</code> /<code>LOC_JP</code></td><td>Person, organization and place names detected by GiNZA</td></tr>
+<tr><td><code>ADDRESS_JP</code></td><td>Japanese address rules</td></tr>
+</tbody>
+</table>
+<p><code>{CREDIT_CARD, MY_NUMBER, SSN, PASSPORT, IBAN_CODE}</code> are defined as<code>HIGH_RISK_TYPES</code>, and are weighted heavily in the sensitivity score (0 to 100).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-13">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">6.3 Types covered by the policy matrix</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <p>At <code>routers/policies.py:159</code>, the PII types that can be selected from a Workspace policy are narrowed down to the following 6.</p>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">6.3 Types covered by the policy matrix</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<p>At<code>routers/policies.py:159</code>, the PII types that can be selected from a Workspace policy are narrowed down to the following 6.</p>
 <pre><code>pii_types = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "IPV4"]</code></pre>
-    <p>URL and PASSPORT are detected, but they are not among the choices offered by the policy UI.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<p>URL and PASSPORT are detected, but they are not among the choices offered by the policy UI.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">7. Differences between pii_mode values</span>
-  </div>
-  <div class="slide-body">
-    <h3>7.1 How to configure</h3>
-    <p>It is configured with the <code>pii_mode</code> key of <code>cynovela.yaml</code>. The CLI argument (formerly <code>--pii-mode</code>) has been removed. To change it at runtime, it can be switched with <code>/api/settings/pii-mode</code> (PUT), admin only.</p>
-    <h3>7.2 Behavior of the 3 modes</h3>
-    <table>
-      <thead><tr><th>Value</th><th>Detection method</th><th>Speed</th><th>Accuracy</th><th>Main use</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>Regular expressions only</td><td>Fast</td><td>Low to medium</td><td>Bulk ingest, lightweight environments</td></tr>
-        <tr><td><code>standard</code> (default)</td><td>Regular expressions + GiNZA NER</td><td>Moderate</td><td>Medium to high</td><td>Default value, recommended</td></tr>
-        <tr><td><code>quality</code></td><td>Regular expressions + GiNZA NER + detailed filtering</td><td>Slow</td><td>High</td><td>Research and development, close inspection of sensitive information</td></tr>
-      </tbody>
-    </table>
-    <p>If an invalid value is given, it is reset to <code>standard</code> (<code>server.py:3135-3137</code>).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">7. Differences between pii_mode values</span>
+</div>
+<div class="slide-body">
+<h3>7.1 How to configure</h3>
+<p>It is configured with the<code>pii_mode</code> key of<code>cynovela.yaml</code>. The CLI argument (formerly<code>--pii-mode</code>) has been removed. To change it at runtime, it can be switched with<code>/api/settings/pii-mode</code> (PUT), admin only.</p>
+<h3>7.2 Behavior of the 3 modes</h3>
+<table>
+<thead><tr><th>Value</th><th>Detection method</th><th>Speed</th><th>Accuracy</th><th>Main use</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>Regular expressions only</td><td>Fast</td><td>Low to medium</td><td>Bulk ingest, lightweight environments</td></tr>
+<tr><td><code>standard</code> (default)</td><td>Regular expressions + GiNZA NER</td><td>Moderate</td><td>Medium to high</td><td>Default value, recommended</td></tr>
+<tr><td><code>quality</code></td><td>Regular expressions + GiNZA NER + detailed filtering</td><td>Slow</td><td>High</td><td>Research and development, close inspection of sensitive information</td></tr>
+</tbody>
+</table>
+<p>If an invalid value is given, it is reset to<code>standard</code> (<code>server.py:3135-3137</code>).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">7.3 Counting detections / 8. Migration from the old implementation</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>7.3 Counting detections</h3>
-    <p>PII detections are counted through the following 2 systems.</p>
-    <ul>
-      <li><strong><code>/api/guardrails/pii-detections</code> (GET)</strong>: counted from the <code>audit_logs</code> table (admin only)</li>
-      <li><strong><code>/api/pii-detections</code> (GET)</strong>: counted per document from the <code>chunks</code> table (P4-14, admin only)</li>
-    </ul>
-    <p>Both require the admin role, and <code>_require_admin(request)</code> is called at the head of the endpoint.</p>
-    <h3>8. Migration from the old implementation</h3>
-    <p>The old <code>utils/pii_detector.py</code> has been deleted, and the implementation has been consolidated into <code>utils/metadata/pii.py</code> (via Stage R6-fix / Phase 3-fix). <code>llm_judge_pi(text)</code> in the new implementation is a function that performs an additional judgment based on an LLM judge, and it was introduced in Stage R7 C-5.</p>
-    <blockquote>Last updated: 2026-05-26 / Alpha GA edition</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial, for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">7.3 Counting detections / 8. Migration from the old implementation</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>7.3 Counting detections</h3>
+<p>PII detections are counted through the following 2 systems.</p>
+<ul>
+<li><strong><code>/api/guardrails/pii-detections</code> (GET)</strong>: counted from the<code>audit_logs</code> table (admin only)</li>
+<li><strong><code>/api/pii-detections</code> (GET)</strong>: counted per document from the<code>chunks</code> table (P4-14, admin only)</li>
+</ul>
+<p>Both require the admin role, and<code>_require_admin(request)</code> is called at the head of the endpoint.</p>
+<h3>8. Migration from the old implementation</h3>
+<p>The old<code>utils/pii_detector.py</code> has been deleted, and the implementation has been consolidated into<code>utils/metadata/pii.py</code> (via Stage R6-fix / Phase 3-fix).<code>llm_judge_pi(text)</code> in the new implementation is a function that performs an additional judgment based on an LLM judge, and it was introduced in Stage R7 C-5.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial, for personal learning</span>
+</div>
 </div>
 
 
 <div class="slide cover" id="slide-16">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Cynovela PII マスキング</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Cynovela PII マスキング</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">1. 設計思想：マスク済みのみ ChromaDB へ</span>
-  </div>
-  <div class="slide-body">
-    <p>PII（Personally Identifiable Information：個人情報・社外秘情報）対策の基本方針は、<strong>「検索対象として広く露出するベクター DB（ChromaDB）には、原則としてマスク済みの本文だけを入れる」</strong>というものです。生本文（raw）は別系統で暗号化保管し、管理者ロールに限って引き出せるようにします。</p>
-    <p>この設計により、次のような状況でも漏えい経路を絞れます。</p>
-    <ul>
-      <li>検索ヒットして LLM プロンプトに混入する経路 → マスク済み本文のみが渡る</li>
-      <li>ChromaDB のデータをそのままダンプ・コピーされる経路 → マスク済みのみ</li>
-      <li>DB ファイルを物理的に持ち去られる経路 → raw 側は Fernet で暗号化済み</li>
-    </ul>
-    <p>これを実現するため、Cynovela は<strong>取込時マスキング（Tier1）</strong>と<strong>回答時マスキング（Tier2）</strong>の二重防御を採用しています。</p>
-    <p><strong>廃止（2026-07-24）</strong>: かつての例外「マスキングなし取り込み（<code>collections.raw_only</code>）」は廃止されました。取り込みは常にマスキングを経由し、ベクターはマスキング済みの一組のみです。過去データの列は保全のため残っています（詳細は metadata-engine §6）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">1. 設計思想：マスク済みのみ ChromaDB へ</span>
+</div>
+<div class="slide-body">
+<p>PII（Personally Identifiable Information：個人情報・社外秘情報）対策の基本方針は、<strong>「検索対象として広く露出するベクター DB（ChromaDB）には、原則としてマスク済みの本文だけを入れる」</strong>というものです。生本文（raw）は別系統で暗号化保管し、管理者ロールに限って引き出せるようにします。</p>
+<p>この設計により、次のような状況でも漏えい経路を絞れます。</p>
+<ul>
+<li>検索ヒットして LLM プロンプトに混入する経路 → マスク済み本文のみが渡る</li>
+<li>ChromaDB のデータをそのままダンプ・コピーされる経路 → マスク済みのみ</li>
+<li>DB ファイルを物理的に持ち去られる経路 → raw 側は Fernet で暗号化済み</li>
+</ul>
+<p>これを実現するため、Cynovela は<strong>取込時マスキング（Tier1）</strong>と<strong>回答時マスキング（Tier2）</strong>の二重防御を採用しています。</p>
+<p><strong>廃止（2026-07-24）</strong>: かつての例外「マスキングなし取り込み（<code>collections.raw_only</code>）」は廃止されました。取り込みは常にマスキングを経由し、ベクターはマスキング済みの一組のみです。過去データの列は保全のため残っています（詳細は metadata-engine §6）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">2. Tier1：取込時マスキング</span>
-  </div>
-  <div class="slide-body">
-    <h3>2.1 役割</h3>
-    <p>Publish（コレクションを ChromaDB に流し込む処理）の途中で、各 chunk について<strong>「生本文（raw）」と「マスク済み本文（masked）」の dual-row</strong> を生成します。両方が SQLite の <code>chunks</code> テーブルと ChromaDB の両 collection に保存されます。</p>
-    <h3>2.2 実装抜粋（rag.py:984-1075）</h3>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">2. Tier1：取込時マスキング</span>
+</div>
+<div class="slide-body">
+<h3>2.1 役割</h3>
+<p>Publish（コレクションを ChromaDB に流し込む処理）の途中で、各 chunk について<strong>「生本文（raw）」と「マスク済み本文（masked）」の dual-row</strong> を生成します。両方が SQLite の<code>chunks</code> テーブルと ChromaDB の両 collection に保存されます。</p>
+<h3>2.2 実装抜粋（rag.py:984-1075）</h3>
 <pre><code>pii_flag = 1 if pii_pat.search(chunk or "") else 0
 # §段1b: マスク済本文を生成 (context prefix 付き全文を対象)
 try:
@@ -606,48 +605,48 @@ _masked_doc_id = f"{doc_id}__masked"
 _meta_raw["tier"] = "raw"
 _meta_masked["tier"] = "masked"
 all_docs_masked.append(_masked_chunk or "")</code></pre>
-    <p><code>_mtws_publish</code> は <code>guardrail.mask_text_with_spans</code> のエイリアスで、正規表現ベースのマスクを各 chunk に適用します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p><code>_mtws_publish</code> は<code>guardrail.mask_text_with_spans</code> のエイリアスで、正規表現ベースのマスクを各 chunk に適用します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">2. Tier1：保管先と失敗時挙動</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>2.3 保管先</h3>
-    <table>
-      <thead><tr><th>保管先</th><th>raw tier</th><th>masked tier</th></tr></thead>
-      <tbody>
-        <tr><td>SQLite <code>chunks</code></td><td><code>doc_id</code> 行（<code>tier='raw'</code>）</td><td><code>doc_id + '__masked'</code> 行（<code>tier='masked'</code>）</td></tr>
-        <tr><td>ChromaDB</td><td><code>{collection_id}__raw</code></td><td><code>{collection_id}__masked</code></td></tr>
-        <tr><td>暗号化</td><td>Fernet（<code>enc:</code> プレフィックス）</td><td>暗号化なし（検索性能確保）</td></tr>
-      </tbody>
-    </table>
-    <h3>2.4 失敗時の挙動</h3>
-    <p>マスク処理に例外が出ても Publish は止めず、<code>_log.warning</code> でログに出してから raw 本文のまま masked 側にも保存します。これは「取込が止まると業務が止まる」リスクを避けるための設計です。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">2. Tier1：保管先と失敗時挙動</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>2.3 保管先</h3>
+<table>
+<thead><tr><th>保管先</th><th>raw tier</th><th>masked tier</th></tr></thead>
+<tbody>
+<tr><td>SQLite<code>chunks</code></td><td><code>doc_id</code> 行（<code>tier='raw'</code>）</td><td><code>doc_id + '__masked'</code> 行（<code>tier='masked'</code>）</td></tr>
+<tr><td>ChromaDB</td><td><code>{collection_id}__raw</code></td><td><code>{collection_id}__masked</code></td></tr>
+<tr><td>暗号化</td><td>Fernet（<code>enc:</code> プレフィックス）</td><td>暗号化なし（検索性能確保）</td></tr>
+</tbody>
+</table>
+<h3>2.4 失敗時の挙動</h3>
+<p>マスク処理に例外が出ても Publish は止めず、<code>_log.warning</code> でログに出してから raw 本文のまま masked 側にも保存します。これは「取込が止まると業務が止まる」リスクを避けるための設計です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">3. Tier2：回答時マスキング</span>
-  </div>
-  <div class="slide-body">
-    <h3>3.1 役割</h3>
-    <p>LLM が生成した回答テキストに対して、利用者のロールに応じてさらに<strong>出口マスク</strong>を適用します。これにより、何らかの理由で raw 本文が context に混入してしまっても、admin 以外の利用者には届かないようにします。</p>
-    <h3>3.2 実装（routers/chat.py:128-162）</h3>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">3. Tier2：回答時マスキング</span>
+</div>
+<div class="slide-body">
+<h3>3.1 役割</h3>
+<p>LLM が生成した回答テキストに対して、利用者のロールに応じてさらに<strong>出口マスク</strong>を適用します。これにより、何らかの理由で raw 本文が context に混入してしまっても、admin 以外の利用者には届かないようにします。</p>
+<h3>3.2 実装（routers/chat.py:128-162）</h3>
 <pre><code>def _mask_for_viewer(text: str, user: dict | None) -&gt; str:
     """M1: 利用者の保管庫 tier (raw/masked) に応じて
     LLM 生成出力に出口マスクを適用する。"""
@@ -665,48 +664,48 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
         return masked
     except Exception:
         return text</code></pre>
-    <p><code>_mask_for_viewer</code> は chat 経路 4 箇所（通常応答 / Compare A / Compare B / SSE 経路）で呼ばれます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p><code>_mask_for_viewer</code> は chat 経路 4 箇所（通常応答 / Compare A / Compare B / SSE 経路）で呼ばれます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">3.3 ロール別の振り分け</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">3.3 ロール別の振り分け</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
 <pre><code>def tier_for_role(role: str) -&gt; str:
     """§段2: ロールに応じて保管庫の tier を決める。
     admin → 'raw'   (生本文を保管する管理者保管庫を引く)
     その他 → 'masked' (マスク済本文の一般保管庫を引く)
     """
     return "raw" if (role or "").strip() == "admin" else "masked"</code></pre>
-    <p><code>tier_for_role</code> は、<strong>ChromaDB の引き先</strong>（<code>{cid}__raw</code> か <code>{cid}__masked</code> か）と、<strong>出口マスクを通すか素通しするか</strong>、の両方を決めるため、二重防御として機能します。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p><code>tier_for_role</code> は、<strong>ChromaDB の引き先</strong>（<code>{cid}__raw</code> か<code>{cid}__masked</code> か）と、<strong>出口マスクを通すか素通しするか</strong>、の両方を決めるため、二重防御として機能します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-23">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">4. Fernet 暗号化</span>
-  </div>
-  <div class="slide-body">
-    <h3>4.1 役割</h3>
-    <p>raw tier の本文を SQLite と ChromaDB に保存する直前に Fernet（対称鍵暗号方式の一つで、認証付きの AES-128-CBC + HMAC）で暗号化し、<code>enc:</code> というプレフィックス付きで保存します。冪等な実装（既に <code>enc:</code> で始まる文字列は再暗号化しない）になっており、二重暗号化を避けます。</p>
-    <h3>4.2 実装</h3>
-    <ul>
-      <li><strong>鍵管理</strong>: <code>config.py:62</code> で <code>Fernet(_KEY)</code> を初期化。<code>CYNOVELA_SECRET_KEY</code> 環境変数で鍵を渡します。本番運用では明示的にこの環境変数を設定することが推奨されています。</li>
-      <li><strong>インターフェース</strong>: <code>vault_enc.py</code> の <code>enc_raw(text)</code> / <code>dec_raw(text)</code> が薄いラッパーを提供します。</li>
-    </ul>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">4. Fernet 暗号化</span>
+</div>
+<div class="slide-body">
+<h3>4.1 役割</h3>
+<p>raw tier の本文を SQLite と ChromaDB に保存する直前に Fernet（対称鍵暗号方式の一つで、認証付きの AES-128-CBC + HMAC）で暗号化し、<code>enc:</code> というプレフィックス付きで保存します。冪等な実装（既に<code>enc:</code> で始まる文字列は再暗号化しない）になっており、二重暗号化を避けます。</p>
+<h3>4.2 実装</h3>
+<ul>
+<li><strong>鍵管理</strong>:<code>config.py:62</code> で<code>Fernet(_KEY)</code> を初期化。<code>CYNOVELA_SECRET_KEY</code> 環境変数で鍵を渡します。本番運用では明示的にこの環境変数を設定することが推奨されています。</li>
+<li><strong>インターフェース</strong>:<code>vault_enc.py</code> の<code>enc_raw(text)</code> /<code>dec_raw(text)</code> が薄いラッパーを提供します。</li>
+</ul>
 <pre><code>ENC_PREFIX = "enc:"
 
 def enc_raw(text: str | None) -&gt; str:
@@ -714,192 +713,191 @@ def enc_raw(text: str | None) -&gt; str:
 
 def dec_raw(text: str | None) -&gt; str:
     """暗号化形式なら復号、それ以外 (masked / 旧平文) はそのまま素通し。"""</code></pre>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-24">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">4. Fernet 適用箇所と移行</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>4.3 適用箇所</h3>
-    <table>
-      <thead><tr><th>経路</th><th>適用箇所</th><th>対象</th></tr></thead>
-      <tbody>
-        <tr><td>Chroma 投入時</td><td><code>rag.py:1285</code></td><td>raw tier の <code>documents</code> 配列に <code>enc_raw</code> を一括適用</td></tr>
-        <tr><td>SQLite chunks 保存時</td><td><code>rag.py:1393</code></td><td>raw tier 行の <code>content</code> を <code>enc_raw</code></td></tr>
-        <tr><td>SQLite parent_chunks 保存時</td><td><code>rag.py:1131</code></td><td>parent の raw tier に <code>enc_raw</code></td></tr>
-      </tbody>
-    </table>
-    <p>masked tier は暗号化しません。検索パフォーマンス（埋め込み計算や全文検索）を確保するためです。raw tier は ChromaDB の <code>documents</code> に暗号化済みのバイト列として入るため、引き出し時に <code>dec_raw</code> で復号する必要があります。</p>
-    <h3>4.4 既存データの移行</h3>
-    <p><code>tools/vault_enc_migrate.py</code> が既存の SQLite / ChromaDB データを一括で <code>enc:</code> 形式に揃えるツールとして用意されています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">4. Fernet 適用箇所と移行</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>4.3 適用箇所</h3>
+<table>
+<thead><tr><th>経路</th><th>適用箇所</th><th>対象</th></tr></thead>
+<tbody>
+<tr><td>Chroma 投入時</td><td><code>rag.py:1285</code></td><td>raw tier の<code>documents</code> 配列に<code>enc_raw</code> を一括適用</td></tr>
+<tr><td>SQLite chunks 保存時</td><td><code>rag.py:1393</code></td><td>raw tier 行の<code>content</code> を<code>enc_raw</code></td></tr>
+<tr><td>SQLite parent_chunks 保存時</td><td><code>rag.py:1131</code></td><td>parent の raw tier に<code>enc_raw</code></td></tr>
+</tbody>
+</table>
+<p>masked tier は暗号化しません。検索パフォーマンス（埋め込み計算や全文検索）を確保するためです。raw tier は ChromaDB の<code>documents</code> に暗号化済みのバイト列として入るため、引き出し時に<code>dec_raw</code> で復号する必要があります。</p>
+<h3>4.4 既存データの移行</h3>
+<p><code>tools/vault_enc_migrate.py</code> が既存の SQLite / ChromaDB データを一括で<code>enc:</code> 形式に揃えるツールとして用意されています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-25">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">5. ロール別の見え方</span>
-  </div>
-  <div class="slide-body">
-    <table>
-      <thead><tr><th>ロール</th><th>引き先保管庫</th><th>出口マスク</th><th>結果として見えるもの</th></tr></thead>
-      <tbody>
-        <tr><td><code>admin</code></td><td>raw tier（復号した生本文）</td><td>素通し</td><td>生本文</td></tr>
-        <tr><td><code>curator</code></td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
-        <tr><td><code>viewer</code></td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
-        <tr><td>未認証・未設定</td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
-      </tbody>
-    </table>
-    <p>これにより、設定ミスでロールが空になっていても、<strong>構造的に raw 本文には届きません</strong>。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">5. ロール別の見え方</span>
+</div>
+<div class="slide-body">
+<table>
+<thead><tr><th>ロール</th><th>引き先保管庫</th><th>出口マスク</th><th>結果として見えるもの</th></tr></thead>
+<tbody>
+<tr><td><code>admin</code></td><td>raw tier（復号した生本文）</td><td>素通し</td><td>生本文</td></tr>
+<tr><td><code>curator</code></td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
+<tr><td><code>viewer</code></td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
+<tr><td>未認証・未設定</td><td>masked tier</td><td>通す</td><td>マスク済み本文</td></tr>
+</tbody>
+</table>
+<p>これにより、設定ミスでロールが空になっていても、<strong>構造的に raw 本文には届きません</strong>。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-26">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">6. PII カテゴリ全件（一次系）</span>
-  </div>
-  <div class="slide-body">
-    <h3>6.1 一次系：guardrail.py（正規表現ベース）</h3>
-    <p><code>guardrail.py:137-153</code> で 8 種類を定義しています。</p>
-    <table>
-      <thead><tr><th>entity_type</th><th>検出対象</th><th>マスク後トークン</th></tr></thead>
-      <tbody>
-        <tr><td><code>URL</code></td><td><code>https?://...</code></td><td><code>[MASKED:URL]</code></td></tr>
-        <tr><td><code>EMAIL</code></td><td>メールアドレス</td><td><code>[MASKED:EMAIL]</code></td></tr>
-        <tr><td><code>PHONE_JP</code></td><td>携帯番号（070/080/090）</td><td><code>[MASKED:PHONE]</code></td></tr>
-        <tr><td><code>PHONE_LAND</code></td><td>固定電話番号</td><td><code>[MASKED:PHONE]</code></td></tr>
-        <tr><td><code>CREDIT</code></td><td>クレジットカード番号（4-4-4-4）</td><td><code>[MASKED:CREDIT]</code></td></tr>
-        <tr><td><code>MYNUMBER</code></td><td>マイナンバー（12 桁）</td><td><code>[MASKED:MYNUM]</code></td></tr>
-        <tr><td><code>PASSPORT</code></td><td>パスポート番号（英 2 + 数字 7）</td><td><code>[MASKED:PASSPORT]</code></td></tr>
-        <tr><td><code>IPV4</code></td><td>IPv4 アドレス</td><td><code>[MASKED:IP]</code></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">6. PII カテゴリ全件（一次系）</span>
+</div>
+<div class="slide-body">
+<h3>6.1 一次系：guardrail.py（正規表現ベース）</h3>
+<p><code>guardrail.py:137-153</code> で 8 種類を定義しています。</p>
+<table>
+<thead><tr><th>entity_type</th><th>検出対象</th><th>マスク後トークン</th></tr></thead>
+<tbody>
+<tr><td><code>URL</code></td><td><code>https?://...</code></td><td><code>[MASKED:URL]</code></td></tr>
+<tr><td><code>EMAIL</code></td><td>メールアドレス</td><td><code>[MASKED:EMAIL]</code></td></tr>
+<tr><td><code>PHONE_JP</code></td><td>携帯番号（070/080/090）</td><td><code>[MASKED:PHONE]</code></td></tr>
+<tr><td><code>PHONE_LAND</code></td><td>固定電話番号</td><td><code>[MASKED:PHONE]</code></td></tr>
+<tr><td><code>CREDIT</code></td><td>クレジットカード番号（4-4-4-4）</td><td><code>[MASKED:CREDIT]</code></td></tr>
+<tr><td><code>MYNUMBER</code></td><td>マイナンバー（12 桁）</td><td><code>[MASKED:MYNUM]</code></td></tr>
+<tr><td><code>PASSPORT</code></td><td>パスポート番号（英 2 + 数字 7）</td><td><code>[MASKED:PASSPORT]</code></td></tr>
+<tr><td><code>IPV4</code></td><td>IPv4 アドレス</td><td><code>[MASKED:IP]</code></td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-27">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">6. PII カテゴリ全件（二次系）</span>
-    <span class="continued">(2/3)</span>
-  </div>
-  <div class="slide-body">
-    <h3>6.2 二次系：utils/metadata/pii.py（presidio + GiNZA）</h3>
-    <p>presidio が利用可能なら presidio を使い、ダメなら正規表現フォールバック。日本語 NER は GiNZA で固有表現抽出を行います。</p>
-    <table>
-      <thead><tr><th>entity_type</th><th>説明</th></tr></thead>
-      <tbody>
-        <tr><td><code>EMAIL</code></td><td>メールアドレス（正規表現）</td></tr>
-        <tr><td><code>PHONE_JP</code> / <code>PHONE_INTL</code></td><td>日本／国際電話番号</td></tr>
-        <tr><td><code>IP_ADDRESS</code></td><td>IP アドレス</td></tr>
-        <tr><td><code>MY_NUMBER</code></td><td>マイナンバー</td></tr>
-        <tr><td><code>CREDIT_CARD</code></td><td>クレジットカード番号</td></tr>
-        <tr><td><code>INTERNAL_URL</code></td><td>内部 URL</td></tr>
-        <tr><td><code>EMAIL_ADDRESS</code> / <code>PHONE_NUMBER</code> / <code>DATE_TIME</code></td><td>presidio が検出</td></tr>
-        <tr><td><code>PERSON_JP</code> / <code>ORG_JP</code> / <code>LOC_JP</code></td><td>GiNZA が検出する人名・組織・地名</td></tr>
-        <tr><td><code>ADDRESS_JP</code></td><td>日本語住所ルール</td></tr>
-      </tbody>
-    </table>
-    <p><code>HIGH_RISK_TYPES</code> として <code>{CREDIT_CARD, MY_NUMBER, SSN, PASSPORT, IBAN_CODE}</code> が定義されており、感度スコア（0〜100）の計算で重く扱われます。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">6. PII カテゴリ全件（二次系）</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+<h3>6.2 二次系：utils/metadata/pii.py（presidio + GiNZA）</h3>
+<p>presidio が利用可能なら presidio を使い、ダメなら正規表現フォールバック。日本語 NER は GiNZA で固有表現抽出を行います。</p>
+<table>
+<thead><tr><th>entity_type</th><th>説明</th></tr></thead>
+<tbody>
+<tr><td><code>EMAIL</code></td><td>メールアドレス（正規表現）</td></tr>
+<tr><td><code>PHONE_JP</code> /<code>PHONE_INTL</code></td><td>日本／国際電話番号</td></tr>
+<tr><td><code>IP_ADDRESS</code></td><td>IP アドレス</td></tr>
+<tr><td><code>MY_NUMBER</code></td><td>マイナンバー</td></tr>
+<tr><td><code>CREDIT_CARD</code></td><td>クレジットカード番号</td></tr>
+<tr><td><code>INTERNAL_URL</code></td><td>内部 URL</td></tr>
+<tr><td><code>EMAIL_ADDRESS</code> /<code>PHONE_NUMBER</code> /<code>DATE_TIME</code></td><td>presidio が検出</td></tr>
+<tr><td><code>PERSON_JP</code> /<code>ORG_JP</code> /<code>LOC_JP</code></td><td>GiNZA が検出する人名・組織・地名</td></tr>
+<tr><td><code>ADDRESS_JP</code></td><td>日本語住所ルール</td></tr>
+</tbody>
+</table>
+<p><code>HIGH_RISK_TYPES</code> として<code>{CREDIT_CARD, MY_NUMBER, SSN, PASSPORT, IBAN_CODE}</code> が定義されており、感度スコア（0〜100）の計算で重く扱われます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-28">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">6.3 ポリシーマトリクス対象</span>
-    <span class="continued">(3/3)</span>
-  </div>
-  <div class="slide-body">
-    <p><code>routers/policies.py:159</code> で、Workspace ポリシーから選択可能な PII タイプは次の 6 種に絞られています。</p>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">6.3 ポリシーマトリクス対象</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+<p><code>routers/policies.py:159</code> で、Workspace ポリシーから選択可能な PII タイプは次の 6 種に絞られています。</p>
 <pre><code>pii_types = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "IPV4"]</code></pre>
-    <p>URL と PASSPORT は検出はされますがポリシー UI からの選択肢には入っていません。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<p>URL と PASSPORT は検出はされますがポリシー UI からの選択肢には入っていません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-29">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">7. pii_mode の違い</span>
-  </div>
-  <div class="slide-body">
-    <h3>7.1 設定方法</h3>
-    <p><code>cynovela.yaml</code> の <code>pii_mode</code> キーで設定します。CLI 引数（旧 <code>--pii-mode</code>）は廃止されました。実行時に変更したい場合は <code>/api/settings/pii-mode</code>（PUT）で切り替えられます（admin 限定）。</p>
-    <h3>7.2 3 モードの動作</h3>
-    <table>
-      <thead><tr><th>値</th><th>検出方式</th><th>速度</th><th>精度</th><th>主用途</th></tr></thead>
-      <tbody>
-        <tr><td><code>lite</code></td><td>正規表現のみ</td><td>高速</td><td>低〜中</td><td>大量取込・軽量環境</td></tr>
-        <tr><td><code>standard</code>（既定）</td><td>正規表現 + GiNZA NER</td><td>中庸</td><td>中〜高</td><td>既定値・推奨</td></tr>
-        <tr><td><code>quality</code></td><td>正規表現 + GiNZA NER + 詳細フィルタリング</td><td>低速</td><td>高</td><td>研究開発・機微情報の精査</td></tr>
-      </tbody>
-    </table>
-    <p>無効な値が与えられた場合は <code>standard</code> にリセットされます（<code>server.py:3135-3137</code>）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">7. pii_mode の違い</span>
+</div>
+<div class="slide-body">
+<h3>7.1 設定方法</h3>
+<p><code>cynovela.yaml</code> の<code>pii_mode</code> キーで設定します。CLI 引数（旧<code>--pii-mode</code>）は廃止されました。実行時に変更したい場合は<code>/api/settings/pii-mode</code>（PUT）で切り替えられます（admin 限定）。</p>
+<h3>7.2 3 モードの動作</h3>
+<table>
+<thead><tr><th>値</th><th>検出方式</th><th>速度</th><th>精度</th><th>主用途</th></tr></thead>
+<tbody>
+<tr><td><code>lite</code></td><td>正規表現のみ</td><td>高速</td><td>低〜中</td><td>大量取込・軽量環境</td></tr>
+<tr><td><code>standard</code>（既定）</td><td>正規表現 + GiNZA NER</td><td>中庸</td><td>中〜高</td><td>既定値・推奨</td></tr>
+<tr><td><code>quality</code></td><td>正規表現 + GiNZA NER + 詳細フィルタリング</td><td>低速</td><td>高</td><td>研究開発・機微情報の精査</td></tr>
+</tbody>
+</table>
+<p>無効な値が与えられた場合は<code>standard</code> にリセットされます（<code>server.py:3135-3137</code>）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-30">
-  <div class="slide-header">
-    <span class="doc-name">pii-masking</span>
-    <span class="slide-title">7.3 検出件数の集計 / 8. 旧実装移行</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h3>7.3 検出件数の集計</h3>
-    <p>PII 検出は次の 2 系統で集計されます。</p>
-    <ul>
-      <li><strong><code>/api/guardrails/pii-detections</code>（GET）</strong>: <code>audit_logs</code> テーブルから集計（admin 限定）</li>
-      <li><strong><code>/api/pii-detections</code>（GET）</strong>: <code>chunks</code> テーブルからドキュメント単位で集計（P4-14、admin 限定）</li>
-    </ul>
-    <p>両方とも admin ロール必須で、<code>_require_admin(request)</code> がエンドポイント先頭で呼ばれます。</p>
-    <h3>8. 旧実装からの移行</h3>
-    <p>旧 <code>utils/pii_detector.py</code> は削除され、実装は <code>utils/metadata/pii.py</code> に集約されました（Stage R6-fix / Phase 3-fix 経由）。新実装の <code>llm_judge_pi(text)</code> は LLM judge ベースで追加判定を行う関数で、Stage R7 C-5 で導入されました。</p>
-    <blockquote>最終更新: 2026-05-26 / Alpha GA 対応版</blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">pii-masking</span>
+<span class="slide-title">7.3 検出件数の集計 / 8. 旧実装移行</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h3>7.3 検出件数の集計</h3>
+<p>PII 検出は次の 2 系統で集計されます。</p>
+<ul>
+<li><strong><code>/api/guardrails/pii-detections</code>（GET）</strong>:<code>audit_logs</code> テーブルから集計（admin 限定）</li>
+<li><strong><code>/api/pii-detections</code>（GET）</strong>:<code>chunks</code> テーブルからドキュメント単位で集計（P4-14、admin 限定）</li>
+</ul>
+<p>両方とも admin ロール必須で、<code>_require_admin(request)</code> がエンドポイント先頭で呼ばれます。</p>
+<h3>8. 旧実装からの移行</h3>
+<p>旧<code>utils/pii_detector.py</code> は削除され、実装は<code>utils/metadata/pii.py</code> に集約されました（Stage R6-fix / Phase 3-fix 経由）。新実装の<code>llm_judge_pi(text)</code> は LLM judge ベースで追加判定を行う関数で、Stage R7 C-5 で導入されました。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 30</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 30</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

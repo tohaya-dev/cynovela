@@ -676,7 +676,7 @@ def migrate_db(conn) -> None:
         except Exception:
             pass
 
-    # release/v1.0.0-alpha: 既存ユーザー初期化時、固定 "admin" ではなく毎回ランダム値で hash。
+    # 既存ユーザー初期化時、固定 "admin" ではなく毎回ランダム値で hash。
     # 結果として password_hash が NULL でない既存行はそのまま、NULL の行のみ届かない
     # ランダムハッシュで初期化される (実質的にログイン不可)。
     # 本番投入時は CYNOVELA_ADMIN_INITIAL_PASSWORD env を設定して user-admin を別経路で seed する。
@@ -833,14 +833,14 @@ def list_file_hashes(conn, collection_id: str) -> list:
 
 
 def _rebase_relative_files(conn) -> int:
-    """dist-file-id-rebase-20260802 (DD-CYN-0020 U-7): 配布物由来の相対参照を実行時に作り直す。
+    """dist-file-id-rebase-20260802 (U-7): 配布物由来の相対参照を実行時に作り直す。
 
     配布用 demo.db を作る道具 (tools/build_clean_demo_db.py) は files.path 等を
     「./dummy-corpus/...」へ相対化するが、識別子 files.id はパッケージングの場 (mktemp の
     一時ステージ) の絶対パス由来のまま残る。走査 (_do_scan) の照合鍵は
     id = md5(source_id|NFC(絶対パス))[:16] だけなので、受け取り手の最初の再スキャンで
     同じ資料が新規行として二重登録され、旧行に「⚠️ 取り込みフォルダに実体が
-    見つかりません」が付いていた (DD-CYN-0020 U-7 陰性対照で実測)。展開先の絶対パスは
+    見つかりません」が付いていた (U-7 陰性対照で実測)。展開先の絶対パスは
     パッケージング時に知り得ないため、道具側では識別子を作り直せない (不成立を実証済み)。
     よって絶対パスが確定する唯一の時点 = 受け取り手の起動時に、ここで作り直す。
 
@@ -995,7 +995,7 @@ def init_db(demo: bool = False):
                 import secrets as _secrets
                 import logging as _logging
 
-                # DD-CYN-0067 G-2: 環境変数からは受け取らない。初期のパスワードの入手元は
+                # G-2: 環境変数からは受け取らない。初期のパスワードの入手元は
                 #   cynovela.yaml (auth.admin_initial_password) の 1 本だけである。
                 #   利用者名は仕様の既定値 cynovela に固定する (配布仕様書 §5-4)。
                 try:
@@ -1005,7 +1005,7 @@ def init_db(demo: bool = False):
                 except Exception:
                     _admin_password = None
                 _admin_username = "cynovela"
-                # DD-CYN-0067 G-1: 初回シードで作られる管理者には、値の入手元によらず
+                # G-1: 初回シードで作られる管理者には、値の入手元によらず
                 #   初回変更を求める印を立てる (配布仕様書 §5-4)。従来は yaml で明示指定した
                 #   場合に印を立てず、配布物の本番 (空) 側だけ印の無い管理者ができていた
                 #   (配布物は cynovela.yaml に初期のパスワードを書き込むため)。
@@ -1082,7 +1082,7 @@ def init_db(demo: bool = False):
         # と同じ「username か password_hash が未設定の初回のみ」条件で seed し、
         # 既に値がある行 (パスワード変更済み等) は触らない。
         #
-        # DD-CYN-0070 N-4 (追記277 277-2): このブロックは従来 `if demo:` の中に在り、
+        # N-4 (追記277 277-2): このブロックは従来 `if demo:` の中に在り、
         # 引数なし (本番) では閲覧者の資格情報が作られず、ガイドの値で入れなかった。
         # 配布仕様書 §5-4 は利用者を管理者と閲覧者の2つと定め、受け入れ項4 は
         # 「閲覧者で入れる」を合格条件とする。∴ demo 分岐の外へ移し、本番でも
@@ -1134,7 +1134,7 @@ def init_db(demo: bool = False):
             )
 
         if demo:
-            # bundled-data-20260731 (DD-CYN-0007 B1): 同梱デモの取り込み元は、配布物の中に
+            # bundled-data-20260731 (B1): 同梱デモの取り込み元は、配布物の中に
             # 置いたダミー資料 (dummy-corpus/) を指す。従来は ./sample_data と
             # ./sample_data/technical の 2 行を入れていたが、その保存先は配布物に同梱されて
             # おらず (tools/build-dist.sh がステージから落とす)、受け取り手の環境では
@@ -1151,7 +1151,7 @@ def init_db(demo: bool = False):
                     s,
                 )
 
-        # startup-cleanup-20260731 (DD-CYN-0007 B2): 過去シードの後片付けは、デモ起動でも
+        # startup-cleanup-20260731 (B2): 過去シードの後片付けは、デモ起動でも
         # 本番起動でも走らせる。従来はこの 2 つの try が `if demo:` の中にあったため、
         # いったん入った行が本番のデータベースに残り続けた (実測: 本流の cynovela.db に
         # ws-sales/ws-tech/ws-hr と src-tech/src-shared が残存していた)。配布物に
@@ -1159,7 +1159,7 @@ def init_db(demo: bool = False):
         # であるため、配る前に閉じる。
         try:
             # 実体の無い保存先を指す旧シードの取り込み元。src-hr は 2026 年前半に、
-            # src-tech/src-shared は DD-CYN-0007 で投入をやめた (保存先が配布物に無い)。
+            # src-tech/src-shared は で投入をやめた (保存先が配布物に無い)。
             for _src in ("src-hr", "src-tech", "src-shared"):
                 conn.execute("DELETE FROM workspace_sources WHERE source_id = ?", (_src,))
                 conn.execute("DELETE FROM files WHERE source_id = ?", (_src,))
@@ -1188,7 +1188,7 @@ def init_db(demo: bool = False):
 
         conn.commit()
 
-        # dist-file-id-rebase-20260802 (DD-CYN-0020 U-7): 配布物由来の相対参照
+        # dist-file-id-rebase-20260802 (U-7): 配布物由来の相対参照
         # (files.path が './' 始まり) を実行時の絶対パスへ付け替え、識別子を走査側と
         # 同じ規則で作り直す (デモ・本番共通。対象行が無ければ 0 件で素通り = 冪等)。
         # 上のシード類とは分けて自前のトランザクションで確定し、失敗時は rollback

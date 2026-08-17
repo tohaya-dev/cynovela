@@ -20,7 +20,7 @@ router = APIRouter(tags=["messages"])
 
 
 def _require_message_session_owner(request: Request, message_id: str, conn) -> dict:
-    """DD-CYN-0095 §3-A: メッセージの属する会話の「作った本人、または管理者」だけを通す。
+    """§3-A: メッセージの属する会話の「作った本人、または管理者」だけを通す。
 
     従来は役割だけで一律に管理者限定だった。メッセージが見つからないときは
     従来どおり呼び出し側の 404 に任せる (ここでは通す)。
@@ -40,7 +40,7 @@ def _require_message_session_owner(request: Request, message_id: str, conn) -> d
 async def save_feedback(message_id: str, request: Request):
     """RAG Chat の回答に 👍 / 👎 のフィードバックを保存する。
 
-    DD-CYN-0095 §3-A: 判定を「その会話を作った本人、または管理者」に統一する。
+    §3-A: 判定を「その会話を作った本人、または管理者」に統一する。
     """
     body = await parse_body_pydantic(request)
     rating = body.get("rating")
@@ -73,7 +73,7 @@ async def save_feedback(message_id: str, request: Request):
 def get_message(request: Request, message_id: str):
     """メッセージとそのRAG参照を取得する。
 
-    DD-CYN-0095 §3-A: 判定を「その会話を作った本人、または管理者」に統一する。
+    §3-A: 判定を「その会話を作った本人、または管理者」に統一する。
     """
     conn = get_db()
     try:

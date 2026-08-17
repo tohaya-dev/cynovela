@@ -44,7 +44,7 @@ All of them can be detected by tests with XFAIL strict=False, and are detected a
 
 ---
 
-## v11-beta (2026-05-10)
+##  (2026-05-10)
 
 ### Added
 - MCP server with 11 tools (Ollama + LM Studio support)
@@ -107,7 +107,7 @@ All of them can be detected by tests with XFAIL strict=False, and are detected a
 
 ---
 
-## v11-beta (2026-05-10)
+##  (2026-05-10)
 
 ### Added
 - MCP server with 11 tools (Ollama + LM Studio support)

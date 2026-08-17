@@ -144,7 +144,7 @@ Without this setting, the conda environment is not activated in the child proces
 
 ### 5-1. Bearer token
 
-The MCP server authenticates to the main Cynovela API with the `Authorization: Bearer <token>` header. The token is passed through an environment variable on the client side.
+The MCP server authenticates to the main Cynovela API with the `Authorization: Bearer<token>` header. The token is passed through an environment variable on the client side.
 
 - Authentication is the JWT issued by `POST /api/auth/login`. The old `Bearer demo-token-<user_id>` form has been abolished and is not accepted.
 - For production operation, introducing JWT authentication is required (it is not implemented at present).
@@ -170,7 +170,6 @@ Operations made through MCP are also recorded in the same audit log (the `audit_
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -315,7 +314,7 @@ export CYNOVELA_MCP_PYTHON=~/miniforge3/envs/cynovela/bin/python
 
 ### 5-1. ベアラートークン
 
-MCP サーバーは Cynovela 本体 API に対して `Authorization: Bearer <token>` ヘッダーで認証します。トークンはクライアント側の環境変数で渡します。
+MCP サーバーは Cynovela 本体 API に対して `Authorization: Bearer<token>` ヘッダーで認証します。トークンはクライアント側の環境変数で渡します。
 
 - 認証は `POST /api/auth/login` が発行する JWT です。旧 `Bearer demo-token-<user_id>` 形式は廃止済みで受理しません。
 - 本番運用では JWT 認証導入が必要です（現時点では未実装）。
@@ -341,4 +340,3 @@ MCP 経由の操作も本体と同じ監査ログ（`audit_logs` テーブル）
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

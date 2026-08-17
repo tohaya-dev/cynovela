@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """build_bundled_data.py — 配布物に同梱するインデックスとデータベースを「パッケージングの場で」作る。
 
-bundled-data-20260731 (DD-CYN-0007 B0):
+bundled-data-20260731 (B0):
   従来の tools/build-dist.sh は、同梱する store/db/demo.db と store/vector を
   **開発機の作業ツリーからそのまま複製**していた。作業ツリーの中身は開発の過程で
   溜まったもの (旧世代の資料・撤去したはずの作業場所・開発機の利用者名) を含むため、
@@ -63,12 +63,12 @@ def main() -> int:
         return 1
 
     # 保存先をステージの中へ固定する。
-    # DD-CYN-0069 M-2: 「server.py は setdefault で置くので、先に置けば勝つ」は
-    #   DD-CYN-0053 以後の現行と食い違う。server.py は import 時に cynovela.yaml の
+    # M-2: 「server.py は setdefault で置くので、先に置けば勝つ」は
+    #   以後の現行と食い違う。server.py は import 時に cynovela.yaml の
     #   paths と sys.argv の --demo の有無から保存先を決め、下の環境変数を無条件に
-    #   入れ直す (server.py の DD-CYN-0053 注記)。--demo が立っていないとインデックスが
+    #   入れ直す (server.py の 注記)。--demo が立っていないとインデックスが
     #   store/vector/default (引数なし側) へ作られ、同梱データ (store/db/demo.db =
-    #   --demo 側) と別の側に落ちる。DD-CYN-0068 の受け入れで、受け取り手の --demo
+    #   --demo 側) と別の側に落ちる。の受け入れで、受け取り手の --demo
     #   起動が空のインデックスを読み、出典つきの回答が返らないことが実測されている。
     #   ∴ server を読む前に sys.argv へ --demo を立て、インデックスをデモ側
     #   (store/vector/demo) へ作らせる。第1引数 (ステージ) は既に読み終えている。
@@ -93,12 +93,12 @@ def main() -> int:
     import server  # noqa: E402  (保存先を決めたあとに読む)
     from rag import publish_collection  # noqa: E402
 
-    # DD-CYN-0069 M-2 連動: パッケージングの埋め込みは、受け取り手と同じローカルの経路で行う。
+    # M-2 連動: パッケージングの埋め込みは、受け取り手と同じローカルの経路で行う。
     #   開発機の cynovela.yaml が外部の推論サーバ (external) を指していると、パッケージングは EF (embedding
     #   function) を注入せずにコレクションを作り、その設定がインデックスへ永続化される。
     #   受け取り手の実行時はローカル埋め込みで EF を注入するため、chroma 1.5 系の
     #   整合検査が「persisted: default vs new: sentence_transformer」で例外を出し、
-    #   照会は0件に握り潰され、公開のし直しは失敗する (DD-CYN-0069 §7 で実測)。
+    #   照会は0件に握り潰され、公開のし直しは失敗する (§7 で実測)。
     #   ここで既定 (= ローカル bge-m3) のプロバイダへ明示的に切り替え、
     #   受け取り手と同じ形でコレクションを作らせる。server.py には触れていない。
     import rag as _rag_mod  # noqa: E402
@@ -164,7 +164,7 @@ def main() -> int:
     cs, co = server._resolve_collection_chunking(COL_ID)
     print(f"[bundled] 刻み chunk_size={cs} chunk_overlap={co}")
     t0 = time.time()
-    # gui-fix-20260803 (DD-CYN-0022): publish_collection は塊の数を返す。
+    # gui-fix-20260803 (): publish_collection は塊の数を返す。
     #   ここはその戻り値を捨てて status だけを書いていたため、collections.chunk_count が
     #   作られたときの既定値 0 のまま残り、画面のコレクション一覧が 0 と出ていた
     #   (chunks 表には実体が入っているので「0 なのに引ける」状態だった)。

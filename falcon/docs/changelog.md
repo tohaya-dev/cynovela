@@ -27,9 +27,9 @@ This records the main changes to Cynovela in chronological order.
 - The lightweight form (the form that does not bundle the models) is distributed as **a single file**. At first startup you can choose to
   download the models (no communication starts until you choose).
 
-## Alpha GA (2026-05-26)
+##  ()
 
-Alpha GA is the milestone for "a state in which the core flows work end to end as a personal learning tool". After going through Stage 0 to Stage 6, the main features of guardrails, PII detection, RAG, and MCP integration became operational.
+ is the milestone for "a state in which the core flows work end to end as a personal learning tool". After going through Stage 0 to Stage 6, the main features of guardrails, PII detection, RAG, and MCP integration became operational.
 
 ### Stage 0: Startup foundation
 
@@ -145,7 +145,6 @@ Beta GA is a milestone under consideration whose goal is "a state that can withs
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -173,9 +172,9 @@ Cynovela の主要な変更内容を時系列で記録します。
 - 軽量版（モデルを同梱しない形）は **1つのファイル**で配る。初回の起動でモデルの
   ダウンロードを選べる（選ぶまで通信は始まらない）。
 
-## Alpha GA（2026-05-26）
+## （）
 
-Alpha GA は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。
+ は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。
 
 ### Stage 0: 起動基盤
 
@@ -291,4 +290,3 @@ Beta GA は「個人学習に加えて簡易な共同利用にも耐えうる状
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

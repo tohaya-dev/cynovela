@@ -48,7 +48,7 @@ def get_performance_stats(request: Request, days: int = 7):
     finally:
         conn.close()
 
-    # release/v1.0.0-alpha: CYNOVELA_DB / CYNOVELA_CHROMA env 経由でデータディレクトリを解決
+    # CYNOVELA_DB / CYNOVELA_CHROMA env 経由でデータディレクトリを解決
     sqlite_bytes = _disk_usage_bytes(_os.environ.get("CYNOVELA_DB", ""))
     chroma_bytes = _disk_usage_bytes(_os.environ.get("CYNOVELA_CHROMA", ""))
     try:

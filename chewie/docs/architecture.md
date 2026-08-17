@@ -78,7 +78,7 @@ A static UI whose entry point is `frontend/index.html`. It has screens such as t
 ### 2.2 Middleware Layer (IP Allowlist / Authentication)
 
 - **IP allowlist**: Works only when you pass `--allow-tailscale` (detected via `tailscale ip -4`) or `--allow-subnet` (any CIDR). **If you do not pass them, everything passes through.** When an allowlist is configured, HTTP 403 is returned to IPs that are not allowed. The default bind address is `0.0.0.0`; use `--local-only` to narrow it.
-- **Authentication**: Received in the form `Authorization: Bearer <token>`, and user information is resolved by `get_user_from_token()` in `core/auth.py`. The only accepted authentication is the JWT issued by `POST /api/auth/login` (the same applies when starting with `--demo`). The former `Bearer demo-token-{user_id}` has been removed and is not accepted.
+- **Authentication**: Received in the form `Authorization: Bearer<token>`, and user information is resolved by `get_user_from_token()` in `core/auth.py`. The only accepted authentication is the JWT issued by `POST /api/auth/login` (the same applies when starting with `--demo`). The former `Bearer demo-token-{user_id}` has been removed and is not accepted.
 
 ### 2.3 Router Layer (routers/)
 
@@ -244,7 +244,6 @@ In the `features` section of `cynovela.yaml` you can turn `metadata_engine`, `da
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -323,7 +322,7 @@ Last updated: 2026-05-26 / Alpha GA edition
 ### 2.2 ミドルウェア層（IP アローリスト・認証）
 
 - **IP アローリスト**: `--allow-tailscale`（`tailscale ip -4` 検出経由）または `--allow-subnet`（任意の CIDR）を渡したときだけ働きます。**渡さなければ全通過**です。許可を設定した場合、許可外 IP には HTTP 403 を返します。バインドアドレスの既定は `0.0.0.0` で、絞るのは `--local-only` です。
-- **認証**: `Authorization: Bearer <token>` 形式で受け取り、`core/auth.py` の `get_user_from_token()` でユーザ情報を解決します。認証は `POST /api/auth/login` が発行する JWT のみです（`--demo` 起動でも同じ）。かつての `Bearer demo-token-{user_id}` は廃止済みで受理しません。
+- **認証**: `Authorization: Bearer<token>` 形式で受け取り、`core/auth.py` の `get_user_from_token()` でユーザ情報を解決します。認証は `POST /api/auth/login` が発行する JWT のみです（`--demo` 起動でも同じ）。かつての `Bearer demo-token-{user_id}` は廃止済みで受理しません。
 
 ### 2.3 ルーター層（routers/）
 
@@ -489,4 +488,3 @@ uvicorn.run() で FastAPI 起動
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

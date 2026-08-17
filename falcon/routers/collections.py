@@ -393,7 +393,7 @@ def get_collection_publish_summary(request: Request, col_id: str):
                 _pm = json.loads(_plog["metadata_json"]) or {}
                 if _pm.get("collection_id") == col_id:
                     placeholder_only_files = list(_pm.get("placeholder_only_files") or [])
-                    # DD-CYN-0091 C: 飛ばしたファイルの一覧 (done イベント由来・additive)
+                    # C: 飛ばしたファイルの一覧 (done イベント由来・additive)
                     skipped_details = list(_pm.get("skipped_details") or [])
         except Exception:
             placeholder_only_files = []
@@ -435,7 +435,7 @@ def get_collection_publish_summary(request: Request, col_id: str):
         # vision-placeholder-warn-20260727 (additive・既存キー不変)
         "placeholder_only_count": len(placeholder_only_files),
         "placeholder_only_files": [os.path.basename(_f) for _f in placeholder_only_files[:50]],
-        # DD-CYN-0091 C (additive): 飛ばしたファイルの一覧 (ファイル名+理由)
+        # C (additive): 飛ばしたファイルの一覧 (ファイル名+理由)
         "skipped_details": skipped_details[:50],
     }
 
@@ -449,7 +449,7 @@ async def update_collection(col_id: str, request: Request):
         col = conn.execute("SELECT * FROM collections WHERE id = ?", (col_id,)).fetchone()
         if not col:
             raise HTTPException(404, "Collection not found")
-        # DD-CYN-0091 C: file_ids の付け替えだけは公開済み(ready/error)でも許す。
+        # C: file_ids の付け替えだけは公開済み(ready/error)でも許す。
         # クイックスタートが既存のまとまりを更新するとき、再スキャンで増減したファイルを
         # 紐づけ直してから再publishするためである。他の項目は従来どおり draft のみ。
         _non_file_keys = [k for k in body.keys() if k != "file_ids"]
@@ -640,7 +640,7 @@ def publish_diff(request: Request, col_id: str):
         conn.close()
 
 
-# DD-CYN-0091 B: dup-publish-guard-20260710 (同一ファイルの別コレクション重複publishの
+# B: dup-publish-guard-20260710 (同一ファイルの別コレクション重複publishの
 # 遮断) は撤去した。主キー (chunks.chunk_id) にまとまりの識別子を含めたため、同じ
 # ファイルが別のまとまりに在っても主キーはぶつからない。同一まとまりへの再publishは
 # 従来どおり file_hashes の差分で更新される。

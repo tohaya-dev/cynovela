@@ -1,7 +1,7 @@
 #!/bin/bash
 # Cynovela 停止スクリプト (コンテナで動かす形)
 #
-# entry-unify-20260802 (DD-CYN-0020 S-1):
+# entry-unify-20260802 (S-1):
 #   この系統はコンテナ (コンテナ) で動く1本道になったため、止める相手もコンテナです。
 #   従来ここに在ったホスト直起動用の停止処理 (store/server.pid を読んで kill する) は、
 #   止める相手がホストに居なくなったので撤去した。
@@ -10,8 +10,8 @@
 #   残るため、もう一度 ./launch.sh を実行すればそのまま続きから使えます。
 #
 # 使い方: bash stop.sh            設定 (cynovela.yaml の container.name) のコンテナを止める
-# DD-CYN-0053: 止める相手は設定ファイル1本から決まる。環境変数では受け取らない。
-# DD-CYN-0070 N-1 連動: 止めるときも、選ばれた実行ファイル (cynovela.yaml の
+# 止める相手は設定ファイル1本から決まる。環境変数では受け取らない。
+# N-1 連動: 止めるときも、選ばれた実行ファイル (cynovela.yaml の
 #   container.engine / engine_command) を使う。podman 決め打ちでは、Docker や
 #   自分で指定した実行ファイルで起こしたコンテナを止められない。
 #   Docker には `container exists` が無いため、存在の確認は inspect で行う。

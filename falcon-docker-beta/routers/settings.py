@@ -578,7 +578,7 @@ async def update_reranker_settings(request: Request):
             # ga-finish-20260727: 外部の推論サーバ (external/external_accelerator) への切替は埋め込みと
             # 同じ device キーで受ける (provider=external_accelerator も同義)。
             "device": body.get("device", ""),
-            "api_key": body.get("api_key", ""),  # DD-CYN-0067 G-2: env バックアップを撤去
+            "api_key": body.get("api_key", ""),  # G-2: env バックアップを撤去
             "top_n": int(body.get("top_n", 5) or 5),
         }
     }
@@ -637,7 +637,7 @@ async def update_classifier_settings(request: Request):
         "classifier": {
             "provider": body.get("provider", "rule_based"),
             "api_url": body.get("api_url", ""),
-            "api_key": body.get("api_key", ""),  # DD-CYN-0067 G-2: env バックアップを撤去
+            "api_key": body.get("api_key", ""),  # G-2: env バックアップを撤去
         }
     }
     _server._classifier = get_classifier_provider(cfg)
@@ -727,7 +727,7 @@ async def update_vector_store_settings(request: Request):
             "provider": provider,
             "path": body.get("path", ""),
             "qdrant_url": body.get("qdrant_url", "http://localhost:6333"),
-            "qdrant_api_key": body.get("qdrant_api_key", ""),  # DD-CYN-0067 G-2: env バックアップを撤去
+            "qdrant_api_key": body.get("qdrant_api_key", ""),  # G-2: env バックアップを撤去
         }
     }
     _server._vector_store = get_vector_store_provider(cfg)
@@ -742,7 +742,7 @@ def get_embedding_settings(request: Request):
     _require_admin(request)
     p = get_embedding_provider_current()
     cls_name = type(p).__name__
-    # DD-CYN-0020 U-4: モデル名の読み手は rag._current_embedding_model_name() に一本化した。
+    # U-4: モデル名の読み手は rag._current_embedding_model_name() に一本化した。
     #   ここで属性を直に読むと、外出し (openai_compat) の属性名の違いを各所で書き直すことになり、
     #   実際に画面の設定欄と開発者パネルで名前が食い違っていた。
     from rag import _current_embedding_model_name as _emb_model_name
@@ -792,7 +792,7 @@ async def update_embedding_settings(request: Request):
     provider = body.get("provider", "local")
     model = body.get("model", "") or ""
     base_url = body.get("base_url", "") or ""
-    api_key = body.get("api_key", "")  # DD-CYN-0067 G-2: env バックアップを撤去
+    api_key = body.get("api_key", "")  # G-2: env バックアップを撤去
     cfg = {
         "embedding": {
             "provider": provider,
@@ -803,7 +803,7 @@ async def update_embedding_settings(request: Request):
     }
     new_provider = get_embedding_provider(cfg)
     set_embedding_provider(new_provider)
-    # DD-CYN-0066 F-6: ここは差し替えた口を RAM に載せるだけで、どこにも書いていなかった。
+    # F-6: ここは差し替えた口を RAM に載せるだけで、どこにも書いていなかった。
     #   ∴ 画面から外の埋め込みの口を変えても、起動し直すと設定ファイルの値へ戻っていた。
     #   LLM の受け口 (update_llm_settings) と同じ書き方で settings 表へ残す。
     #   api_key は残さない (fix2-v4-A と同じ扱い。このセッションの RAM にだけ持つ)。
@@ -837,7 +837,7 @@ _EMBEDDING_RESTORED = False
 
 
 def _restore_embedding_from_db() -> None:
-    """DD-CYN-0066 F-6: 起動時に、画面で決めた埋め込みの口を settings 表から戻す。
+    """F-6: 起動時に、画面で決めた埋め込みの口を settings 表から戻す。
 
     埋め込みの口は rag.py の読み込み時に設定ファイル (CYNOVELA_CONFIG) から作られる。
     画面での変更をそこへ届ける道が無かったため、起動し直すたびに設定ファイルの値へ
@@ -869,7 +869,7 @@ def _restore_embedding_from_db() -> None:
             conn.close()
         saved = {r[0]: r[1] for r in rows}
 
-        # DD-CYN-0088 §6-A: 実行エンジンは設定ファイル (cynovela.yaml) の embedding の節とし、
+        # §6-A: 実行エンジンは設定ファイル (cynovela.yaml) の embedding の節とし、
         # バックアップの表は「画面で決めた分だけ」その上に重ねる。
         #   以前はこの3鍵だけで cfg を組み立て直していたため、設定ファイルにしか無い
         #   device の鍵が落ちていた。providers/embedding.py は device を先に見て

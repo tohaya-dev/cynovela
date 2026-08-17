@@ -1,4 +1,4 @@
-// workspace.js - Cynovela v13
+// workspace.js
 
 function _archivePath(type, id) {
   if (type === 'workspace')   return `/api/workspaces/${id}/archive`;

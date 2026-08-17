@@ -1,4 +1,4 @@
-// guardrails.js - Cynovela v13
+// guardrails.js
 
 function renderAiReadinessScore(summary, totalFiles, readyCol, piiCount) {
   const host = document.getElementById('ai-readiness-host');
@@ -142,7 +142,7 @@ async function renderGuardrails() {
       State.policies = pres;
     }
   } catch (e) {
-    // DD-CYN-0089 §6-B: 同上。
+    // §6-B: 同上。
     State.policies = [];
     if (typeof showToast === 'function') {
       showToast(lj(`Could not read the policies: ${(e && e.message) || ''}`,

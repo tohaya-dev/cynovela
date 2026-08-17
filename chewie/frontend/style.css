@@ -899,7 +899,7 @@ th { white-space: nowrap; }
   /* E-2: 右下表示に変更 (右上のヘッダーボタンと重ならないように)。
      column-reverse で新規トーストを下に追加 → 視覚的には最新が一番下に積まれる。 */
   position: fixed; bottom: 16px; right: 16px;
-  /* DD-CYN-0089 §6-A: 取り込みの可視化パネル (.iv-overlay, z-index 10001) と
+  /* §6-A: 取り込みの可視化パネル (.iv-overlay, z-index 10001) と
      受領書 (.p3-modal, z-index 10002) の前面へ出す。600 のままだと、取り込み中に
      出した失敗のトーストが暗幕の裏に描かれ、受け取り手からは見えなかった。
      トーストは pointer-events: none なので、前面に出しても操作を遮らない。 */
@@ -1569,7 +1569,7 @@ html, body { font-size: 17px; }
   line-height: 1.2 !important;
 }
 
-/* 時系列モードバー (将来の v12 用) */
+/* 時系列モードバー (将来の  用) */
 #page-chat > div[style*="background:#fffbeb"] {
   padding: 3px 16px !important;
 }
@@ -1578,7 +1578,7 @@ html, body { font-size: 17px; }
 .chat-messages { flex: 1 1 auto !important; min-height: 0 !important; }
 .chat-input-area { flex-shrink: 0 !important; padding: 8px 16px !important; }
 
-/* 時系列バー時系列バーの padding をさらに詰める (Temporal RAG用 v12) */
+/* 時系列バー時系列バーの padding をさらに詰める (Temporal RAG用 ) */
 #page-chat > div[style*="🕒 過去バージョン"] { padding: 2px 16px !important; }
 
 /* ===================================================================

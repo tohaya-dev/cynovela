@@ -201,7 +201,7 @@ class OpenAICompatibleEmbeddingProvider(EmbeddingProvider):
         if self.base_url.endswith("/v1"):
             self.base_url = self.base_url[: -len("/v1")]
         self.model = model
-        self.api_key = api_key or ""  # DD-CYN-0067 G-2: 鍵は設定/画面からのみ (env 読みを撤去)
+        self.api_key = api_key or ""  # G-2: 鍵は設定/画面からのみ (env 読みを撤去)
         # mas-trust-boundary-20260725: 口へ渡す本文が原文かマスキング済みかを常に明示する。
         # Cynovela のインデックス/検索経路が外へ出すのはマスキング済みのみ (masked-only 不可侵)。
         self.content_class = content_class or "masked"

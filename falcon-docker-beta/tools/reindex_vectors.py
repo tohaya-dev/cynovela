@@ -129,7 +129,7 @@ def _parse_chunk_id(cid: str):
     base = cid[:-len("__masked")] if masked else cid
     logical, _, ver = base.rpartition(":")
     parts = logical.split("#")
-    # DD-CYN-0091 B: 新形式 {collection_id}#{source_id}#{file_id}#cNNNNN と
+    # B: 新形式 {collection_id}#{source_id}#{file_id}#cNNNNN と
     # 旧形式 {source_id}#{file_id}#cNNNNN の両方を読む。親 id の再構成は実際の id から
     # 導いた接頭辞 (prefix) を使い、形式の差を吸収する。
     if len(parts) == 4 and parts[3].startswith("c"):

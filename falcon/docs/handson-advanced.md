@@ -200,7 +200,6 @@ MCP is the protocol for calling Cynovela's RAG search and workspace management t
 | MCP integration | Operating Cynovela from an external assistant with 11 tools |
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -401,4 +400,3 @@ MCP は、外部の AI アシスタントから Cynovela の RAG 検索やワー
 | MCP 連携 | 11 ツールで外部アシスタントから Cynovela 操作 |
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

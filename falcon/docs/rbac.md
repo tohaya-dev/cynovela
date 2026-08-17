@@ -127,7 +127,7 @@ Setting `features.acl_filter` to `false` makes it possible to skip the ACL filte
 
 ---
 
-## 6. Limitations as of Alpha GA
+## 6. Limitations as of
 
 - Authentication is only the JWT (JSON Web Token) issued by `/api/auth/login`. The simple token of the form `Bearer demo-token-{user_id}` was abolished on 2026-07-29, and is rejected with 401 even when started with `--demo`.
 - Because the implementation of the role checks is **spread over about 242 places**, unifying it (for example, consolidating it into a FastAPI Depends base) is a candidate for future cleanup.
@@ -135,7 +135,6 @@ Setting `features.acl_filter` to `false` makes it possible to skip the ACL filte
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -263,7 +262,7 @@ def tier_for_role(role: str) -> str:
 
 ---
 
-## 6. Alpha GA 時点の制限
+## 6. 制限
 
 - 認証は `/api/auth/login` が発行する JWT（JSON Web Token）のみです。`Bearer demo-token-{user_id}` 形式の簡易トークンは 2026-07-29 に廃止し、`--demo` 起動でも 401 で拒否します。
 <!-- BACKLOG: JWT 導入時のロール検査ヘルパーの変更点は未定義 -->
@@ -272,4 +271,3 @@ def tier_for_role(role: str) -> str:
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

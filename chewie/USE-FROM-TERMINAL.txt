@@ -10,7 +10,7 @@ Cynovela entry point — this is the only one the recipient runs.
   ./launch.sh --demo              Starts with the bundled dummy documents loaded.
   ./launch.sh --add               Shows a screen for choosing a folder to read, and adds it.
   ./launch.sh --list              Lists the folders that are currently added.
-  ./launch.sh --remove <名前>     Removes an added folder (the name is the one shown by --list).
+  ./launch.sh --remove<名前>     Removes an added folder (the name is the one shown by --list).
                                   * You can also add / see / remove them from the screen at
                                     設定 (Settings) → 取り込み元 (ingest sources).
 
@@ -22,7 +22,7 @@ Cynovela entry point — this is the only one the recipient runs.
                                   Decides in advance where python is prepared (used with --setup).
 
 ● Others
-  ./launch.sh --port <番号>       Changes the number it listens on (default 8765).
+  ./launch.sh --port<番号>       Changes the number it listens on (default 8765).
                                   With nothing attached, it chooses a free number itself.
   ./launch.sh --local-only        Limits listening to the inside of your own machine only.
   bash stop.sh                    Stops it.
@@ -51,7 +51,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
   ./launch.sh --demo              同梱のダミー資料が載った状態で起動します。
   ./launch.sh --add               読み込むフォルダを選ぶ画面を出して足します。
   ./launch.sh --list              いま足してあるフォルダを一覧で出します。
-  ./launch.sh --remove <名前>     足したフォルダを外します (名前は --list に出るもの)。
+  ./launch.sh --remove<名前>     足したフォルダを外します (名前は --list に出るもの)。
                                   ※ 画面でも 設定 → 取り込み元 から足す・見る・外せます。
 
 ● 入れる / 点検する
@@ -61,7 +61,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
                                   python を用意する場所を先に決めます (--setup と一緒に使います)。
 
 ● そのほか
-  ./launch.sh --port <番号>       待ち受ける番号を変えます (既定 8765)。
+  ./launch.sh --port<番号>       待ち受ける番号を変えます (既定 8765)。
                                   何も付けないときは、空いている番号を自分で選びます。
   ./launch.sh --local-only        待ち受けを自分のマシンの中だけに絞ります。
   bash stop.sh                    止めます。

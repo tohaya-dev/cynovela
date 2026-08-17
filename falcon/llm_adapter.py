@@ -27,7 +27,7 @@ def _norm_model(model: str) -> str:
 
 
 class ModelNotFoundError(RuntimeError):
-    """DD-CYN-0094 C: 指定されたモデルが受け皿に無い。名前と理由を画面まで運ぶ。"""
+    """C: 指定されたモデルが受け皿に無い。名前と理由を画面まで運ぶ。"""
 
     def __init__(self, model_id: str):
         self.model_id = model_id
@@ -37,7 +37,7 @@ class ModelNotFoundError(RuntimeError):
         )
 
 
-# DD-CYN-0094 C: 受け皿ごとのモデル不在応答の言い回し（LM Studio / Ollama / OpenRouter）。
+# C: 受け皿ごとのモデル不在応答の言い回し（LM Studio / Ollama / OpenRouter）。
 _MODEL_NOT_FOUND_HINTS = (
     "not found",
     "not_found",
@@ -58,7 +58,7 @@ def _maybe_raise_model_not_found(status_code: int, body_text: str, model_id: str
 
 
 def _raise_for_chat_status(r, model_id: str) -> None:
-    """DD-CYN-0094 C: モデル不在は名前つきで区別し、それ以外は従来どおり HTTP エラー。"""
+    """C: モデル不在は名前つきで区別し、それ以外は従来どおり HTTP エラー。"""
     if r.status_code >= 400:
         try:
             _body = r.text
@@ -145,7 +145,7 @@ class LMStudioAdapter:
         """チャット補完。max_tokensは渡さない（Reasoningモデル対応）。"""
         model_id = _norm_model(model_id)  # C-B2 20260729: 引数の "auto" も未指定扱い
         if not model_id:
-            model_id = _norm_model(self.model)  # DD-CYN-0094 B: 送る直前でも "auto" を倒す
+            model_id = _norm_model(self.model)  # B: 送る直前でも "auto" を倒す
         if not model_id:
             ok, mid = await self.has_loaded_model()
             if not ok:
@@ -163,7 +163,7 @@ class LMStudioAdapter:
                 f"{self.base_url}/v1/chat/completions",
                 json=payload,
             )
-            _raise_for_chat_status(r, model_id)  # DD-CYN-0094 C
+            _raise_for_chat_status(r, model_id)  # C
             return r.json()["choices"][0]["message"]["content"]
 
     async def chat_with_usage(
@@ -179,7 +179,7 @@ class LMStudioAdapter:
         """
         model_id = _norm_model(model_id)  # C-B2 20260729: 引数の "auto" も未指定扱い
         if not model_id:
-            model_id = _norm_model(self.model)  # DD-CYN-0094 B: 送る直前でも "auto" を倒す
+            model_id = _norm_model(self.model)  # B: 送る直前でも "auto" を倒す
         if not model_id:
             ok, mid = await self.has_loaded_model()
             if not ok:
@@ -201,7 +201,7 @@ class LMStudioAdapter:
                 f"{self.base_url}/v1/chat/completions",
                 json=payload,
             )
-            _raise_for_chat_status(r, model_id)  # DD-CYN-0094 C
+            _raise_for_chat_status(r, model_id)  # C
             data = r.json() or {}
             answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
             reasoning_content = data.get("choices", [{}])[0].get("message", {}).get("reasoning_content", "") or ""
@@ -385,7 +385,7 @@ class OpenAICompatibleAdapter:
         model_id: str = "",
         temperature: float = 0.1,
     ) -> str:
-        mid = _norm_model(model_id) or _norm_model(self.model)  # DD-CYN-0094 B: 送る直前でも "auto" を倒す
+        mid = _norm_model(model_id) or _norm_model(self.model)  # B: 送る直前でも "auto" を倒す
         if not mid:
             ok, mid = await self.has_loaded_model()
             if not ok:
@@ -403,7 +403,7 @@ class OpenAICompatibleAdapter:
                 headers=self._headers(),
                 json=payload,
             )
-            _raise_for_chat_status(r, mid)  # DD-CYN-0094 C
+            _raise_for_chat_status(r, mid)  # C
             return r.json()["choices"][0]["message"]["content"]
 
     async def chat_with_usage(
@@ -415,7 +415,7 @@ class OpenAICompatibleAdapter:
     ) -> tuple[str, str, dict]:
         """#09 Step C: OpenAI互換 — usage / finish_reason を返す。
         #06: params で top_p / top_k / max_tokens / repeat_penalty / seed を渡せる。"""
-        mid = _norm_model(model_id) or _norm_model(self.model)  # DD-CYN-0094 B: 送る直前でも "auto" を倒す
+        mid = _norm_model(model_id) or _norm_model(self.model)  # B: 送る直前でも "auto" を倒す
         if not mid:
             ok, mid = await self.has_loaded_model()
             if not ok:
@@ -442,7 +442,7 @@ class OpenAICompatibleAdapter:
                 headers=self._headers(),
                 json=payload,
             )
-            _raise_for_chat_status(r, mid)  # DD-CYN-0094 C
+            _raise_for_chat_status(r, mid)  # C
             data = r.json() or {}
             answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
             reasoning_content = data.get("choices", [{}])[0].get("message", {}).get("reasoning_content", "") or ""
@@ -457,7 +457,7 @@ class OpenAICompatibleAdapter:
         temperature: float = 0.1,
     ):
         """SSEストリーミング応答をAsyncGeneratorとして返す（将来UI用）。"""
-        mid = _norm_model(model_id) or _norm_model(self.model)  # DD-CYN-0094 B: 送る直前でも "auto" を倒す
+        mid = _norm_model(model_id) or _norm_model(self.model)  # B: 送る直前でも "auto" を倒す
         if not mid:
             ok, mid = await self.has_loaded_model()
             if not ok:
@@ -475,7 +475,7 @@ class OpenAICompatibleAdapter:
                 headers=self._headers(),
                 json=payload,
             ) as r:
-                if r.status_code >= 400:  # DD-CYN-0094 C
+                if r.status_code >= 400:  # C
                     _sbody = (await r.aread()).decode("utf-8", "replace")
                     _maybe_raise_model_not_found(r.status_code, _sbody, mid)
                 r.raise_for_status()

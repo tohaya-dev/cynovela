@@ -1,6 +1,6 @@
 # Cynovela Makefile (開発ツリー用)
 #
-# entry-unify-20260802 (DD-CYN-0020 S-4): 試験を回すターゲットを外した。
+# entry-unify-20260802 (S-4): 試験を回すターゲットを外した。
 #   1) 外したターゲット (test / test-cov / verify-live / snapshot / coverage / logs /
 #      test-one) は、いずれも scripts/run-tests-with-server.sh を呼んでいたが、
 #      このファイルは3系統のどのツリーにも存在せず、実行すれば必ず失敗していた。
@@ -10,7 +10,7 @@
 #
 # 開発ツリーで試験を回すときは、開発用の環境を有効にしてから直接:
 #   unset SSL_CERT_FILE && pytest tests/
-# DD-CYN-0067 G-2: 連続アクセスの制限を環境変数で切る口は撤去した (常に有効)
+# G-2: 連続アクセスの制限を環境変数で切る口は撤去した (常に有効)
 # (この環境変数は server.py が読む。入口スクリプト側の配線は持たない)。
 #
 # アプリの起動は make ではなく ./launch.sh を使うこと (受け取り手が叩く入口は1本)。

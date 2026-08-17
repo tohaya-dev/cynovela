@@ -26,7 +26,7 @@ def health():
     _demo = bool(_state.config.demo) if (_state.config is not None) else False
     return {
         "status": "ok",
-        # version-single-source-20260731 (DD-CYN-0007 B8): 版は core/version.py の 1 か所から読む。
+        # version-single-source-20260731 (B8): 版は core/version.py の 1 か所から読む。
         "version": APP_VERSION,
         "demo": _demo,
         "circuit_breaker": cb.status() if cb else None,

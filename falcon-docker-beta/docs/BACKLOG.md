@@ -4,7 +4,7 @@
 
 ## English
 
-Created: 2026-05-26
+Created:
 
 This file is a list of undecided items that were recorded as HTML comments (BACKLOG tags)
 while each Phase B document was being generated.
@@ -79,13 +79,12 @@ Total: 25 items
 - docs/spec-overview.md:118:<!-- BACKLOG: content_hash 比較の差分検出は仕様未確定 -->
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
 # 日本語
 
-作成日: 2026-05-26
+作成日:
 
 本ファイルは Phase B の各ドキュメント生成中に HTML コメント（BACKLOG タグ）として記録された未確定事項の一覧です。
 spec-raw に根拠が見つからないため断定を保留し、後日コード/設計確認のうえ追記する候補となります。
@@ -94,31 +93,31 @@ spec-raw に根拠が見つからないため断定を保留し、後日コー�
 
 ## ドキュメント別 BACKLOG 一覧
 
-- **answer-modes.md** (行103): 構造化回答テンプレート（JSON 出力固定、タグ強制など）の仕様は未定 
-- **answer-modes.md** (行132): confidence_threshold を踏まえた Abstention フォールバックの完全統合は未実装 
-- **architecture.md** (行186): ChromaDB レベルでの workspace 物理境界は Phase 3 引き継ぎの HIGH 優先度バグとして A-6 に挙がっており、現状は collection_id 単位での分離 
-- **api-reference.md** (行22): JWT 化後のトークン形式は未定 
-- **api-reference.md** (行194): 各エンドポイントの個別仕様（パス、メソッド、入出力スキーマ）の網羅はまだ整理途中 
-- **guardrails.md** (行55): Legal / Healthcare / Sales / Technical / Marketing の 5 カテゴリは旧 classifier.py に定義はあるが、現行のガードレールシードでは使われていない。GA 時点でこれらを有効化するのか・分類エンジンとの接続をどうするかは spec-raw に確認情報なし 
-- **faq.md** (行14): 参照元ツールの具体的機能との対照表は spec-raw に根拠なし。書かない。 
-- **faq.md** (行37): extract_text の対応拡張子一覧は spec-raw に列挙がない。確認後追記。 
-- **faq.md** (行97): それ以外のロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。 
-- **handson-advanced.md** (行46): A-6 仕様で「WS 分離: ChromaDB 物理境界なし」が Phase 3 引き継ぎ HIGH バグとして明示されています 
-- **handson-advanced.md** (行186): A-5 仕様に「MCP の conda 限定」の旨が known-limitations 候補として挙げられているが、原因の明示はなし 
-- **deployment.md** (行25): Windows / Linux / Docker 環境での動作確認状況は spec-raw に記載がないため未確認 
-- **deployment.md** (行26): GPU 利用時の詳細（CUDA バージョン、メモリ目安）は spec-raw に記載がないため未確認 
-- **known-limitations.md** (行81): MCP が conda 限定である技術的な理由は spec-raw に明示されていないため未確認 
-- **known-limitations.md** (行121): spec-raw には IP マスキングの挙動と admin tier の関係について明示的な記述がなく、原因は調査中。詳細条件・回避策は未確認 
-- **known-limitations.md** (行129): GUI 上での横断検索 UI / API の有無は spec-raw に記載がないため未確認 
-- **metadata-engine.md** (行208): content_hash 比較ベースの差分同期は仕様未確定 
-- **rag-pipeline.md** (行129): 「STRICT モード」相当の独立したプロンプト切替や、ガードレール強度を段階的に変える厳格度ダイヤルは spec-raw で確認できなかったため、ここではシステムプロンプトの 2 種類切替を「厳格度モード」として扱う 
-- **rag-pipeline.md** (行158): confidence_threshold は config に定義済みだが、実際の Abstention 除外ロジックは検索パイプラインに部分統合のみ。全段への統合状況は spec-raw に「パイプラインに部分統合」とだけあり、どの分岐で実際にハジくかまでは確認できなかった 
-- **security-design.md** (行62): WS 分離の物理境界化、越境チェックの強化は Phase 3 対応 
-- **security-design.md** (行128): docs/guardrails.md の存在は B-3 フェーズで生成予定 
-- **security-design.md** (行226): 間接プロンプトインジェクション専用検出の設計詳細は Phase 3 で確定 
-- **rbac.md** (行125): JWT 導入時のロール検査ヘルパーの変更点は未定義 
-- **spec-overview.md** (行118): content_hash 比較の差分検出は仕様未確定 
-- **spec-overview.md** (行124): 構造化回答テンプレートの導入可否は未定 
+- **answer-modes.md** (行103): 構造化回答テンプレート（JSON 出力固定、タグ強制など）の仕様は未定
+- **answer-modes.md** (行132): confidence_threshold を踏まえた Abstention フォールバックの完全統合は未実装
+- **architecture.md** (行186): ChromaDB レベルでの workspace 物理境界は Phase 3 引き継ぎの HIGH 優先度バグとして A-6 に挙がっており、現状は collection_id 単位での分離
+- **api-reference.md** (行22): JWT 化後のトークン形式は未定
+- **api-reference.md** (行194): 各エンドポイントの個別仕様（パス、メソッド、入出力スキーマ）の網羅はまだ整理途中
+- **guardrails.md** (行55): Legal / Healthcare / Sales / Technical / Marketing の 5 カテゴリは旧 classifier.py に定義はあるが、現行のガードレールシードでは使われていない。GA 時点でこれらを有効化するのか・分類エンジンとの接続をどうするかは spec-raw に確認情報なし
+- **faq.md** (行14): 参照元ツールの具体的機能との対照表は spec-raw に根拠なし。書かない。
+- **faq.md** (行37): extract_text の対応拡張子一覧は spec-raw に列挙がない。確認後追記。
+- **faq.md** (行97): それ以外のロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。
+- **handson-advanced.md** (行46): A-6 仕様で「WS 分離: ChromaDB 物理境界なし」が Phase 3 引き継ぎ HIGH バグとして明示されています
+- **handson-advanced.md** (行186): A-5 仕様に「MCP の conda 限定」の旨が known-limitations 候補として挙げられているが、原因の明示はなし
+- **deployment.md** (行25): Windows / Linux / Docker 環境での動作確認状況は spec-raw に記載がないため未確認
+- **deployment.md** (行26): GPU 利用時の詳細（CUDA バージョン、メモリ目安）は spec-raw に記載がないため未確認
+- **known-limitations.md** (行81): MCP が conda 限定である技術的な理由は spec-raw に明示されていないため未確認
+- **known-limitations.md** (行121): spec-raw には IP マスキングの挙動と admin tier の関係について明示的な記述がなく、原因は調査中。詳細条件・回避策は未確認
+- **known-limitations.md** (行129): GUI 上での横断検索 UI / API の有無は spec-raw に記載がないため未確認
+- **metadata-engine.md** (行208): content_hash 比較ベースの差分同期は仕様未確定
+- **rag-pipeline.md** (行129): 「STRICT モード」相当の独立したプロンプト切替や、ガードレール強度を段階的に変える厳格度ダイヤルは spec-raw で確認できなかったため、ここではシステムプロンプトの 2 種類切替を「厳格度モード」として扱う
+- **rag-pipeline.md** (行158): confidence_threshold は config に定義済みだが、実際の Abstention 除外ロジックは検索パイプラインに部分統合のみ。全段への統合状況は spec-raw に「パイプラインに部分統合」とだけあり、どの分岐で実際にハジくかまでは確認できなかった
+- **security-design.md** (行62): WS 分離の物理境界化、越境チェックの強化は Phase 3 対応
+- **security-design.md** (行128): docs/guardrails.md の存在は B-3 フェーズで生成予定
+- **security-design.md** (行226): 間接プロンプトインジェクション専用検出の設計詳細は Phase 3 で確定
+- **rbac.md** (行125): JWT 導入時のロール検査ヘルパーの変更点は未定義
+- **spec-overview.md** (行118): content_hash 比較の差分検出は仕様未確定
+- **spec-overview.md** (行124): 構造化回答テンプレートの導入可否は未定
 
 ## カテゴリ別
 
@@ -158,4 +157,3 @@ spec-raw に根拠が見つからないため断定を保留し、後日コー�
 - docs/spec-overview.md:118:<!-- BACKLOG: content_hash 比較の差分検出は仕様未確定 -->
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

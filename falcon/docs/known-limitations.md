@@ -405,7 +405,6 @@ In that case, restarting invalidates any issued passes (logging in again works).
   With a reasoning-type model, it will use up the tokens it needs for thinking.
 
 ---
-Last updated: 2026-07-31 / version 1.0.2
 
 ---
 
@@ -788,4 +787,3 @@ MCP のツールには `search_across_collections`（複数のコレクション
   思考する型のモデルで、考えるためのトークンを使い切ってしまいます。
 
 ---
-最終更新: 2026-07-31 / 版 1.0.2

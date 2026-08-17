@@ -13,7 +13,7 @@ ADMIN_USERNAME = os.environ.get("CYNOVELA_E2E_USERNAME", "cynovela")
 ADMIN_PASSWORD = os.environ.get("CYNOVELA_E2E_PASSWORD", "dummy-admin-pw-000")
 VIEWER_USERNAME = os.environ.get("CYNOVELA_E2E_VIEWER_USERNAME", "demo")
 VIEWER_PASSWORD = os.environ.get("CYNOVELA_E2E_VIEWER_PASSWORD", "dummy-viewer-pw-000")
-DB = os.path.expanduser("~/Projects/cynovela/cynovela/store/db/demo.db")
+DB = os.path.expanduser("~/Cynovela/store/db/demo.db")
 results = []
 
 
@@ -66,7 +66,7 @@ def g1_health():
     try:
         os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
         import chromadb
-        path = os.path.expanduser("~/Projects/cynovela/cynovela/store/vector/demo/chroma")
+        path = os.path.expanduser("~/Cynovela/store/vector/demo/chroma")
         client = chromadb.PersistentClient(path=path)
         cols = client.list_collections()
         assert len(cols) > 0, "Chroma collections=0件"
@@ -168,7 +168,7 @@ def g4_llm_url(h):
 
     name = "4-3_llm_adapter_helper_exists"
     try:
-        sys.path.insert(0, os.path.expanduser("~/Projects/cynovela/cynovela"))
+        sys.path.insert(0, os.path.expanduser("~/Cynovela"))
         from llm_adapter import _get_llm_base_url_from_config
         url = _get_llm_base_url_from_config()
         assert url, "helper が空文字を返す"

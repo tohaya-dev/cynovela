@@ -30,7 +30,7 @@ except ImportError:
 
 
 def _load_or_create_secret_key() -> str:
-    """金庫の鍵の解決順序 (DD-CYN-0067 G-2: 環境変数からは受け取らない):
+    """金庫の鍵の解決順序 (G-2: 環境変数からは受け取らない):
     1. 永続化ファイル <CYNOVELA_DATA_DIR>/secret.key を読み出す
     2. 無ければ新規生成して同パスへ書き込み + chmod 600
 
@@ -228,7 +228,7 @@ def load_cynovela_config(yaml_path: str = "cynovela.yaml") -> dict:
         except Exception as e:
             print(f"[config] cynovela.yaml の読み込みに失敗しました: {e}（デフォルト値で起動）")
 
-    # DD-CYN-0066 F-4: 設定ファイルを読んだ「あと」の環境変数による上書きを撤去した。
+    # F-4: 設定ファイルを読んだ「あと」の環境変数による上書きを撤去した。
     #
     #   従来はここに env_map (13 件) が在り、cynovela.yaml を読み終えたあとに
     #   CYNOVELA_LLM_BASE_URL / CYNOVELA_EMBEDDING_* / CYNOVELA_RAG_* / CYNOVELA_LOG_LEVEL
@@ -236,7 +236,7 @@ def load_cynovela_config(yaml_path: str = "cynovela.yaml") -> dict:
     #   マスキングの強さ・待ち受けの範囲・モデルの指定がガイドと食い違った。受け取り手には
     #   「書いたとおりに動かない」としか見えず、原因が設定ファイルの外に在るため辿れない。
     #
-    #   決めごとの保存先は cynovela.yaml 1 本である (DD-CYN-0053)。読む順は
+    #   決めごとの保存先は cynovela.yaml 1 本である ()。読む順は
     #   既定値 → 設定ファイル で終わりにし、そのあと誰も塗り替えない。
     #
     #   保存先そのもの (CYNOVELA_DATA_DIR / CYNOVELA_DB / CYNOVELA_CHROMA など) は

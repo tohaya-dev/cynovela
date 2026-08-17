@@ -1,4 +1,4 @@
-# DD-CYN-0053: 設定の置き場は このファイル1本だけとする。環境変数では受け取らない。
+# 設定の置き場は このファイル1本だけとする。環境変数では受け取らない。
 #   port  = ブラウザで開く番号。空いていないときは自動でずらす (起動時に知らせる)
 #   host  = 外部アクセス。0.0.0.0 は同じネットワークの他の端末からも開ける (既定)。
 #           127.0.0.1 にすると、この Mac の中からだけ開ける
@@ -9,7 +9,7 @@ server:
   cors_origins:
   - http://localhost:8765
   - http://127.0.0.1:8765
-# DD-CYN-0053: この形は入れ物 (コンテナ) の中で動くため、入れ物から見た「この Mac」は
+# この形は入れ物 (コンテナ) の中で動くため、入れ物から見た「この Mac」は
 #   host.containers.internal である。localhost にすると入れ物の中を指してしまい、
 #   回答を作る LLM に届かない (再ランク・埋め込みの base_url と同じ考え方)。
 llm:
@@ -81,11 +81,11 @@ classifier:
 pii_mode: standard
 # 初期 admin 認証。admin_initial_password を指定すると初回シードでその値を使う。
 # 未指定 (空) なら起動時にランダム生成し、平文を標準出力へ 1 回表示する。
-# DD-CYN-0067 G-1: どちらの場合も管理者には初回変更を求める印が立つ (配布仕様書 §5-4)。
-# DD-CYN-0067 G-2: 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
+# G-1: どちらの場合も管理者には初回変更を求める印が立つ (配布仕様書 §5-4)。
+# G-2: 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
 auth:
   admin_initial_password: 'Cynovela1!'
-  # DD-CYN-0070 N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) に
+  # N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) に
   #   案内 (STARTUP.md) と同じ値が書かれる。空のままだと初回起動時に乱数が使われる。
   viewer_initial_password: 'demo1234'
 vector_store:
@@ -141,7 +141,7 @@ execution:
   claude_api_key: ''
   multimodal: false
   vlm_model: ''
-# DD-CYN-0053: この形はコンテナ (入れ物) で動く。入れ物まわりの決めをここに置く。
+# この形はコンテナ (入れ物) で動く。入れ物まわりの決めをここに置く。
 #   name          = 入れ物の名前。同じ名前の入れ物が既にあるときは、消さずに止めて知らせる
 #   image         = 組み立てたものに付ける名札
 #   volume_prefix = データの保存領域の名前の頭 (例 cyn → cyn-db / cyn-vec / cyn-bk)
@@ -153,7 +153,7 @@ container:
   volume_prefix: cyn-falcon-a-20260809
   engine: podman
   engine_command: ''
-# DD-CYN-0074 Q-1: models_dir = 埋め込みモデルの置き場。
+# Q-1: models_dir = 埋め込みモデルの置き場。
 #   空なら、この配布物の中の store/models を使う (従来どおり)。
 #   models--BAAI--bge-m3 が入っているフォルダの場所を書くと、そこをそのまま使う。
 #   入れ物へ渡す元も同じこの1行を読むので、写し替えは要らない。

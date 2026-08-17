@@ -34,7 +34,7 @@ When you extract the package, it contains three files named **`Cynovela-start.co
 This form runs on top of **containers**.
 Therefore **Podman is required.** If it is not installed, please install it first.
 
-1. Get Podman Desktop from <https://podman.io/> and install it.
+1. Get Podman Desktop from<https://podman.io/> and install it.
 2. Open Podman Desktop and start it once, following the instructions on screen
    (if you use it from the Terminal, `podman machine init` and then `podman machine start`).
 3. After that, double-click `Cynovela-start.command`.
@@ -141,7 +141,7 @@ Note that by default it comes up in a state where it can also be opened from out
 この形は **コンテナ** の上で動きます。
 そのため、**Podman が必要です。** 入っていない場合は、先に入れてください。
 
-1. <https://podman.io/> から Podman Desktop を受け取って入れます。
+1.<https://podman.io/> から Podman Desktop を受け取って入れます。
 2. Podman Desktop を開き、画面の指示に従って一度起動します
    （ターミナルから使う場合は `podman machine init` のあと `podman machine start`）。
 3. そのあとで `Cynovela-start.command` をダブルクリックします。

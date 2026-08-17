@@ -295,7 +295,7 @@ class _CloudRerankerBase(RerankerProvider):
 
     def __init__(self, model: str = "", api_key: str = ""):
         self.model = model
-        self.api_key = api_key or ""  # DD-CYN-0067 G-2: 鍵は設定/画面からのみ (env 読みを撤去)
+        self.api_key = api_key or ""  # G-2: 鍵は設定/画面からのみ (env 読みを撤去)
 
     def _headers(self) -> dict:
         h = {"Content-Type": "application/json"}
@@ -407,7 +407,7 @@ class ExternalAcceleratorReranker(RerankerProvider):
             self.base_url = self.base_url[: -len("/v1")]
         self.model = model
         self.model_name = model
-        self.api_key = api_key or ""  # DD-CYN-0067 G-2: 鍵は設定/画面からのみ (env 読みを撤去)
+        self.api_key = api_key or ""  # G-2: 鍵は設定/画面からのみ (env 読みを撤去)
         # in-process 退避用 (遅延生成・一度だけ判定/ロード)
         self._local = None            # CrossEncoderReranker | None
         self._local_unavailable = False  # True = 重み無しを確認済み (毎回のロード試行を避ける)
@@ -542,7 +542,7 @@ class HttpReranker(RerankerProvider):
     def __init__(self, endpoint: str, model: str = "", api_key: str = ""):
         self.endpoint = (endpoint or "").rstrip("/")
         self.model = model
-        self.api_key = api_key or ""  # DD-CYN-0067 G-2: 鍵は設定/画面からのみ (env 読みを撤去)
+        self.api_key = api_key or ""  # G-2: 鍵は設定/画面からのみ (env 読みを撤去)
 
     def _headers(self) -> dict:
         h = {"Content-Type": "application/json"}

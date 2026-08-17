@@ -175,16 +175,16 @@ It is the same as what appears in `./launch.sh --help`.
 | `./launch.sh --setup` | Install what is required to run it (it stops after installing) |
 | `./launch.sh --check` | Without starting, check only the conditions for running and write them to 1 file |
 | `./launch.sh --add` | Bring up a screen for choosing a folder and add an ingest source |
-| `./launch.sh --add-path <パス>` | Specify a location and add an ingest source |
+| `./launch.sh --add-path<パス>` | Specify a location and add an ingest source |
 | `./launch.sh --list` | List the ingest sources you have added |
-| `./launch.sh --remove <名前>` | Remove an ingest source (the name is the one that appears in `--list`) |
-| `./launch.sh --ingest <パス>` | Add it and start up as it is |
-| `./launch.sh --port <番号>` | Change the number to open (default 8801) |
+| `./launch.sh --remove<名前>` | Remove an ingest source (the name is the one that appears in `--list`) |
+| `./launch.sh --ingest<パス>` | Add it and start up as it is |
+| `./launch.sh --port<番号>` | Change the number to open (default 8801) |
 | `./launch.sh --local-only` | Narrow the place it opens to inside your own machine only |
-| `./launch.sh --engine <値>` | Specify the executable to use for the container (a name or an absolute path). The setting with the same meaning: `engine:` under `container:` in `cynovela.yaml` |
-| `./launch.sh --engine-command <値>` | Replace the command used for startup itself (the default is empty). The setting with the same meaning: `engine_command:` under `container:` in `cynovela.yaml` |
-| `./launch.sh --sync-labels <トークン>` | Match the display names of the ingest sources to the running body |
-| `./launch.sh <モード>` | `text` / `lite` / `lite-en` (default `text`) |
+| `./launch.sh --engine<値>` | Specify the executable to use for the container (a name or an absolute path). The setting with the same meaning: `engine:` under `container:` in `cynovela.yaml` |
+| `./launch.sh --engine-command<値>` | Replace the command used for startup itself (the default is empty). The setting with the same meaning: `engine_command:` under `container:` in `cynovela.yaml` |
+| `./launch.sh --sync-labels<トークン>` | Match the display names of the ingest sources to the running body |
+| `./launch.sh<モード>` | `text` / `lite` / `lite-en` (default `text`) |
 | `bash stop.sh` | Stop it |
 
 When you type an option it does not know, it does not fall over silently; this list (the help) appears.
@@ -197,7 +197,7 @@ When you type an option it does not know, it does not fall over silently; this l
 |---|---|
 | "取り込み元がまだ1件もありません" (there is not a single ingest source yet) | Double-click `Cynovela-add-folder.command`, or add it from the terminal (section 3): `./launch.sh --add`. **Because this form runs in a container, you cannot add a folder by browsing from inside the screen** (the list and "外す" (remove) can be done on the screen at Settings → 📁 取り込み元) |
 | "初回パスワードの変更が必要です" (the first password must be changed) | Section 0. Change the password first |
-| "ポート 8801 を別のものが使っています" (something else is using port 8801) | Bring it up on another number: `./launch.sh --port <別の番号>` |
+| "ポート 8801 を別のものが使っています" (something else is using port 8801) | Bring it up on another number: `./launch.sh --port<別の番号>` |
 | "足りないものがあるので起動しません" (something is missing, so it will not start) | Run `./launch.sh --setup` |
 | The progress looks stopped | If the count is moving, it is progressing. The masking stage takes time |
 
@@ -381,16 +381,16 @@ bash stop.sh
 | `./launch.sh --setup` | 動かすのに要るものを入れる（入れたら止まる） |
 | `./launch.sh --check` | 起動せず、動く条件だけを調べて1本のファイルへ書く |
 | `./launch.sh --add` | フォルダを選ぶ画面を出して取り込み元を足す |
-| `./launch.sh --add-path <パス>` | 場所を指定して取り込み元を足す |
+| `./launch.sh --add-path<パス>` | 場所を指定して取り込み元を足す |
 | `./launch.sh --list` | 足してある取り込み元を一覧で出す |
-| `./launch.sh --remove <名前>` | 取り込み元を外す（名前は `--list` に出るもの） |
-| `./launch.sh --ingest <パス>` | 足して、そのまま起動する |
-| `./launch.sh --port <番号>` | 開く番号を変える（既定 8801） |
+| `./launch.sh --remove<名前>` | 取り込み元を外す（名前は `--list` に出るもの） |
+| `./launch.sh --ingest<パス>` | 足して、そのまま起動する |
+| `./launch.sh --port<番号>` | 開く番号を変える（既定 8801） |
 | `./launch.sh --local-only` | 開く先を自分のマシンの中だけに絞ります |
-| `./launch.sh --engine <値>` | コンテナに使う実行ファイルを指定する（名前または絶対パス）。同じ意味の設定: `cynovela.yaml` の `container:` の `engine:` |
-| `./launch.sh --engine-command <値>` | 起動に使うコマンドそのものを差し替える（既定は空）。同じ意味の設定: `cynovela.yaml` の `container:` の `engine_command:` |
-| `./launch.sh --sync-labels <トークン>` | 取り込み元の表示名を動いている本体へ合わせる |
-| `./launch.sh <モード>` | `text` / `lite` / `lite-en`（既定 `text`） |
+| `./launch.sh --engine<値>` | コンテナに使う実行ファイルを指定する（名前または絶対パス）。同じ意味の設定: `cynovela.yaml` の `container:` の `engine:` |
+| `./launch.sh --engine-command<値>` | 起動に使うコマンドそのものを差し替える（既定は空）。同じ意味の設定: `cynovela.yaml` の `container:` の `engine_command:` |
+| `./launch.sh --sync-labels<トークン>` | 取り込み元の表示名を動いている本体へ合わせる |
+| `./launch.sh<モード>` | `text` / `lite` / `lite-en`（既定 `text`） |
 | `bash stop.sh` | 止める |
 
 知らない指定を打ったときは、黙って落ちずにこの一覧（ヘルプ）が出ます。
@@ -403,7 +403,7 @@ bash stop.sh
 |---|---|
 | 「取り込み元がまだ1件もありません」 | `Cynovela-add-folder.command` のダブルクリック、またはターミナルから足します（3節）: `./launch.sh --add`。**この形はコンテナで動くため、画面の中からフォルダを辿って足すことはできません**（一覧と「外す」は画面の Settings → 📁 取り込み元 でできます） |
 | 「初回パスワードの変更が必要です」 | 0節。先にパスワードを変える |
-| 「ポート 8801 を別のものが使っています」 | 別の番号で上げる: `./launch.sh --port <別の番号>` |
+| 「ポート 8801 を別のものが使っています」 | 別の番号で上げる: `./launch.sh --port<別の番号>` |
 | 「足りないものがあるので起動しません」 | `./launch.sh --setup` を実行する |
 | 進み具合が止まって見える | 件数が動いていれば進んでいます。マスキングの段は時間がかかります |
 

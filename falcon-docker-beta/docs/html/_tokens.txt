@@ -2,7 +2,7 @@
 # このファイルの説明は日英併記です。
 # Cynovela UI Design Tokens
 # Extracted from / 抽出元: frontend/style.css, frontend/index.html
-# Extracted on / 抽出日: 2026-05-26
+# Extracted on / 抽出日:
 
 ## CSS variables (from :root of frontend/style.css, fixed values) / CSS変数（frontend/style.css :root より、確定値）
 --bg-base:            #f5f6f8     /* ページ背景 */

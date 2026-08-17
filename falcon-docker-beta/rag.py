@@ -177,7 +177,7 @@ def _make_embedding_version(model_name: str) -> str:
 
 
 def _make_logical_chunk_id(collection_id: str, source_id: str, file_id: str, chunk_no: int) -> str:
-    # DD-CYN-0091 B: 主キーの先頭にまとまり(コレクション)の識別子を置く。同じファイルが
+    # B: 主キーの先頭にまとまり(コレクション)の識別子を置く。同じファイルが
     # 別のまとまりに在っても主キーがぶつからない。区切りは既存の '#' に合わせる。
     return f"{collection_id}#{source_id}#{file_id}#c{chunk_no:05d}"
 
@@ -197,7 +197,7 @@ def _current_embedding_model_name() -> str:
     外出しの OpenAICompatibleEmbeddingProvider は属性 model に名前を持つ。
     TFIDF なら 'tfidf'、どれでもなければ起動時の既定名を返す。
 
-    DD-CYN-0020 U-4: 従来は model_name しか見ておらず、falcon の既定である外出し
+    U-4: 従来は model_name しか見ておらず、falcon の既定である外出し
     (openai_compat) では属性名が違うため必ず取り逃し、環境変数由来の固定値
     ('BAAI/bge-m3') へ落ちていた。画面へ返す側 (routers/settings.py の
     /api/settings/embedding) は model も見ていたため、同じ「いまのモデル名」が
@@ -211,7 +211,7 @@ def _current_embedding_model_name() -> str:
     cls = type(p).__name__
     if "TFIDF" in cls:
         return "tfidf"
-    # DD-CYN-0067 G-2: 実装の選択を環境変数 (CYNOVELA_EMBEDDING_BACKEND) から受ける口を
+    # G-2: 実装の選択を環境変数 (CYNOVELA_EMBEDDING_BACKEND) から受ける口を
     #   撤去した。立てる側は皆無で常に既定だった。入手元は設定ファイル 1 本にする。
     try:
         _cfg_model = ((_DTC2.get("embedding") or {}).get("model") or "").strip()
@@ -956,7 +956,7 @@ def split_chunks_with_offsets(text: str, chunk_size: int = 500, overlap: int = 5
 _CHROMA_EF_CACHE = None
 
 
-# ─── r1-model-missing-20260802 (DD-CYN-0020 R-1) ──────────────────────────
+# ─── r1-model-missing-20260802 (R-1) ──────────────────────────
 # 埋め込みモデルを読み込めなかったことの記録。
 #   例外だけでは画面に届かない経路がある: 検索はコレクションごとに except で握り潰して
 #   次へ進むため、モデルが無くても画面には「このワークスペースには該当する情報が
@@ -1014,7 +1014,7 @@ def _get_chroma_embedding_function():
     global _CHROMA_EF_CACHE
     if _CHROMA_EF_CACHE is not None:
         return _CHROMA_EF_CACHE
-    # DD-CYN-0067 G-2: 実装・モデルの指定を環境変数 (CYNOVELA_EMBEDDING_BACKEND /
+    # G-2: 実装・モデルの指定を環境変数 (CYNOVELA_EMBEDDING_BACKEND /
     #   CYNOVELA_EMBEDDING_MODEL) から受ける口を撤去した。入手元は設定ファイル
     #   (cynovela.yaml の embedding.model) の 1 本にする。
     from chromadb.utils import embedding_functions
@@ -1073,7 +1073,7 @@ def _get_chroma_embedding_function():
             _st_target = _cand
     except Exception:
         pass
-    # r1-model-missing-20260802 (DD-CYN-0020 R-1): モデルを読み込めないときに素の
+    # r1-model-missing-20260802 (R-1): モデルを読み込めないときに素の
     #   FileNotFoundError ("[Errno 2] No such file or directory") を投げていた。この文には
     #   ファイル名も保存先も入っておらず、画面に出ても受け取り手には何をすればよいか分からない。
     #   何が足りないか・どこを探したか・どこへ置けばよいかを含む文へ置き換える。
@@ -1122,7 +1122,7 @@ _EMBED_FALLBACK_STATE = {
 def get_embedding_fallback_state() -> dict:
     """外部の推論サーバからローカルへの退避状態のスナップショットを返す (UI 表示用)。
 
-    r1-model-missing-20260802 (DD-CYN-0020 R-1): モデルを読み込めなかった記録も同じ器に
+    r1-model-missing-20260802 (R-1): モデルを読み込めなかった記録も同じ器に
     載せる。受け口 (/api/settings/embedding) はこの辞書をそのまま返しているため、
     受け口側に手を入れずに画面へ届けられる。
     """
@@ -1198,14 +1198,14 @@ def _embed_texts_for_index(texts):
             except Exception:
                 _fb_target = "cpu"
             from datetime import datetime as _dt_fb
-            # r1-model-missing-20260802 (DD-CYN-0020 R-1): 退避先のローカルにモデルが
+            # r1-model-missing-20260802 (R-1): 退避先のローカルにモデルが
             #   在るかどうかまで見る。外部の推論サーバに届かず、手元にもモデルが無いときは、この
             #   あと必ず失敗する。画面から「外が落ちただけ」と「手元にも無い」を切り分け
             #   られるよう、退避の記録に持たせる。
             try:
                 _fb_model = _current_embedding_model_name()
             except Exception:
-                _fb_model = "BAAI/bge-m3"  # DD-CYN-0067 G-2: env の読み口を撤去 (既定値へ)
+                _fb_model = "BAAI/bge-m3"  # G-2: env の読み口を撤去 (既定値へ)
             _fb_folder = "models--" + str(_fb_model).replace("/", "--")
             _fb_local_missing = not os.path.isdir(
                 os.path.join(_RAG_APP_DIR, "store", "models", _fb_folder)
@@ -1310,9 +1310,9 @@ def _current_embedding_identity() -> dict:
                 return {"model": _models[0], "revision": _emb.get("revision", "unknown"), "source": "external"}
         except Exception:
             pass
-        # DD-CYN-0020 U-4: 口へ届かないときの名前も同じ読み手から取る (直書き・属性直読みをしない)。
+        # U-4: 口へ届かないときの名前も同じ読み手から取る (直書き・属性直読みをしない)。
         return {"model": _current_embedding_model_name(), "revision": "unknown", "source": "external_unreachable"}
-    # DD-CYN-0020 U-4: 中で計算する場合の名前も同じ読み手から取る。
+    # U-4: 中で計算する場合の名前も同じ読み手から取る。
     #   従来はここだけ cynovela.yaml を直に読み、読めなければ 'BAAI/bge-m3' を直書きしていたため、
     #   画面で切り替えた後 (設定は Provider にだけ反映される) の名前と食い違った。
     #   外へ出している場合の name は上の /capabilities の答え (相手の自己申告) をそのまま使う
@@ -1528,7 +1528,7 @@ def _mask_query_for_retrieval(query: str) -> str:
 def _parallel_mask_batch(texts: list, stop_event=None) -> tuple:
     """マスキング(NER+regex)を入力順を保って一括処理する。
 
-    DD-CYN-0032 B6: 中身は _parallel_mask_batch_iter へ移した。ここはその生成器を
+    B6: 中身は _parallel_mask_batch_iter へ移した。ここはその生成器を
     最後まで回して結果だけを返す薄い包みである（従来の呼び出し側から見た振る舞いは不変）。
 
     Returns: (results, stopped)  results = [(masked, spans), ...]（停止時は None）
@@ -1552,7 +1552,7 @@ def _parallel_mask_batch_iter(texts: list, stop_event=None):
     B: stop_event がセットされたら即停止。本関数は DB フラッシュ前の pre-pass で呼ばれるため、
        ここでの停止は raw/masked のどちらにも中途半端な書き込みを残さない（孤児ゼロ）。
 
-    DD-CYN-0032 B6: 従来はこれが yield を1つも持たない通常関数だったため、呼び出し元の
+    B6: 従来はこれが yield を1つも持たない通常関数だったため、呼び出し元の
       生成器 publish_collection_iter は本関数が戻るまで次の yield に到達できず、その間
       publish_jobs の行が1バイトも変わらなかった。画面側 (_pollPublishJob) は
       「進捗も message も 90 秒変わらない」を打ち切りの条件にしているため、マスキングに 90 秒
@@ -1584,7 +1584,7 @@ def _parallel_mask_batch_iter(texts: list, stop_event=None):
 
     def _serial_iter():
         _out = []
-        # DD-CYN-0032 B6: 逐次パスでも 8 件ごとに刻む（塊が 64 未満でも数十秒かかる資料がある）。
+        # B6: 逐次パスでも 8 件ごとに刻む（塊が 64 未満でも数十秒かかる資料がある）。
         yield ("tick", 0, n)
         for _i, _t in enumerate(texts):
             if stop_event is not None and stop_event.is_set():
@@ -1634,7 +1634,7 @@ def _parallel_mask_batch_iter(texts: list, stop_event=None):
         initializer=_mask_worker_init,
         initargs=(_mode,),
     )
-    # DD-CYN-0032 B6: 待ちの区切り (_cf.wait が戻るたび = 最大 _MASK_STOP_POLL_SEC 秒ごと) に
+    # B6: 待ちの区切り (_cf.wait が戻るたび = 最大 _MASK_STOP_POLL_SEC 秒ごと) に
     #   済んだ数を刻む。プールの起き上がり (spawn + NER モデル読込) の間も 0/n を刻み続けるので、
     #   その区間も画面から見て「動いている」ことが分かる。
     _fell_back = False
@@ -1948,7 +1948,7 @@ def _publish_collection_iter_impl(
         new_chunk_rows: list[dict] = []  # [{chunk_id, source_doc, char_count, content, pii_detected}]
         excluded_chunk_rows: list[dict] = []  # excluded=1 でchunks表に記録（内容なし）
         skipped_files = []
-        # DD-CYN-0091 C: 飛ばしたファイルを名前と理由つきで画面へ出すためのバックアップ (additive)
+        # C: 飛ばしたファイルを名前と理由つきで画面へ出すためのバックアップ (additive)
         skipped_details: list[dict] = []
         excluded_files = []
         # vision-placeholder-warn-20260727: 抽出結果がプレースホルダだけだったファイル。
@@ -2254,7 +2254,7 @@ def _publish_collection_iter_impl(
                     _mask_patch_types.append(_bp_types)
                 # masked-only §9-7: マスキングなし取り込み (raw_only) 分岐は廃止。常にマスキングを計算する。
                 # maskfix-boundary: マスキング入力は _mask_inputs (境界断片前倒し済)。raw 経路は _prefixed_chunks のまま。
-                # DD-CYN-0032 B6: 開始前の1回だけでなく、マスキングが進むたびに生存合図を出す。
+                # B6: 開始前の1回だけでなく、マスキングが進むたびに生存合図を出す。
                 #   従来は「マスキング処理中 N件」を1回出したきり、_parallel_mask_batch が戻るまで
                 #   何も出さなかった。画面はその無音を打ち切りの条件 (90秒) に当てて追うのをやめていた。
                 _child_mask_cache, _mask_stopped = None, False
@@ -2428,7 +2428,7 @@ def _publish_collection_iter_impl(
                     _parent_texts = ["\n".join(_parts) for _pid, _parts in _parent_items]
                     _parent_mask_inputs = ["\n".join(_grp_mask[_pid]) for _pid, _parts in _parent_items]
                     # masked-only §9-7: raw_only 分岐は廃止。parent のマスキングも常に計算する。
-                    # DD-CYN-0032 B6: 親側は生存合図が1つも無かった。ここでも刻んで出す。
+                    # B6: 親側は生存合図が1つも無かった。ここでも刻んで出す。
                     _parent_mask_cache, _pmask_stopped = None, False
                     for _mev in _parallel_mask_batch_iter(_parent_mask_inputs, stop_event):
                         if _mev[0] == "tick":
@@ -2703,7 +2703,7 @@ def _publish_collection_iter_impl(
             )
 
         # 孤立チャンク削除: 今回のPublishで見ていないファイル
-        # DD-CYN-0098: 後始末は「今回の公開で残した・入れ直した id」を消してはならない。
+        # 後始末は「今回の公開で残した・入れ直した id」を消してはならない。
         #   出荷時の file_hashes がビルド時の相対パス (./dummy-corpus/...) で記録されていると、
         #   実行時は絶対パスで照合するため全ファイルが「新規」扱いで入れ直され、その直後に
         #   旧パスの記録行が「今回見なかったファイル」としてここへ落ちる。chunk_id は内容由来で
@@ -2884,7 +2884,7 @@ def _publish_collection_iter_impl(
         "unchanged_count": retained_count,
         "missing_count": missing_retained_count,
         "skipped_count": len(skipped_files),
-        # DD-CYN-0091 C: 飛ばしたファイルの一覧 (ファイル名+理由・additive)
+        # C: 飛ばしたファイルの一覧 (ファイル名+理由・additive)
         "skipped_details": skipped_details[:50],
         "excluded_count": len(excluded_files),
         "pii_count": pii_count,
@@ -4236,7 +4236,7 @@ async def call_llm(
             if isinstance(
                 _e,
                 (
-                    _MNF,  # DD-CYN-0094 C: モデル不在は fallback で二重送出せず即時に上げる
+                    _MNF,  # C: モデル不在は fallback で二重送出せず即時に上げる
                     _httpx.ConnectError,
                     _httpx.ConnectTimeout,
                     _httpx.ReadTimeout,

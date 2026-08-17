@@ -78,7 +78,7 @@ class DataSyncService:
     async def _sync_source(self, source: dict) -> None:
         ds = FileSystemDataSource()
         discovered = await ds.discover(source["path"])
-        # 比較は v11 の files テーブルと照合する。
+        # 比較は  の files テーブルと照合する。
         # 現状は差分検出のログ出力のみ (実 publish 連携は後続)。
         # PORTABILITY FIX 20260527 Stage2 M14: db.get_db() を使う
         conn = get_db()

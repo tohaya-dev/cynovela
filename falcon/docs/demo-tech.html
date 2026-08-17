@@ -328,15 +328,15 @@
 <body>
 
 <header class="cyn-header">
-  <div class="title">Cyno<span class="brand-tap">vela</span> Technical Specification Demo / 技術仕様 デモ</div>
-  <div class="subtitle">Startup modes, architecture, API / MCP, and PII governance on a single screen<br>起動モード・アーキテクチャ・API/MCP・PII ガバナンスを 1 画面で確認できます</div>
+<div class="title">Cyno<span class="brand-tap">vela</span> Technical Specification Demo / 技術仕様 デモ</div>
+<div class="subtitle">Startup modes, architecture, API / MCP, and PII governance on a single screen<br>起動モード・アーキテクチャ・API/MCP・PII ガバナンスを 1 画面で確認できます</div>
 </header>
 
 <div class="tab-bar">
-  <button class="active" onclick="showTab(1)">Startup Modes / 起動モード</button>
-  <button onclick="showTab(2)">Architecture / アーキテクチャ</button>
-  <button onclick="showTab(3)">API / MCP</button>
-  <button onclick="showTab(4)">PII and Governance / PII とガバナンス</button>
+<button class="active" onclick="showTab(1)">Startup Modes / 起動モード</button>
+<button onclick="showTab(2)">Architecture / アーキテクチャ</button>
+<button onclick="showTab(3)">API / MCP</button>
+<button onclick="showTab(4)">PII and Governance / PII とガバナンス</button>
 </div>
 
 <main>
@@ -346,98 +346,98 @@
 <!-- ============================================== -->
 <div class="tab-panel active" id="tab-1">
 
-  <div class="panel-section">
-    <h2>Startup Command Generator / 起動コマンドジェネレーター</h2>
-    <p>Operating the selectors below assembles the <code>python server.py</code> startup command in real time. The notation follows the actual CLI argument implementation.<br>下記のセレクタを操作すると、リアルタイムで <code>python server.py</code> の起動コマンドが組み立てられます。CLI 引数の実装に基づいた表記です。</p>
+<div class="panel-section">
+<h2>Startup Command Generator / 起動コマンドジェネレーター</h2>
+<p>Operating the selectors below assembles the<code>python server.py</code> startup command in real time. The notation follows the actual CLI argument implementation.<br>下記のセレクタを操作すると、リアルタイムで<code>python server.py</code> の起動コマンドが組み立てられます。CLI 引数の実装に基づいた表記です。</p>
 
-    <div class="form-grid">
-      <div>
-        <label>--mode (startup mode)<br>--mode（起動モード）</label>
-        <select id="opt-mode" onchange="rebuildCmd()">
-          <option value="text" selected>text (text RAG, default) / text（テキスト RAG・既定）</option>
-          <option value="lite">lite (lightweight multilingual embedding) / lite（軽量 Embedding 多言語）</option>
-          <option value="lite-en">lite-en (lightweight, English-specialized) / lite-en（英語特化軽量）</option>
-        </select>
-        <div class="help-text" id="mode-detail">Uses BAAI/bge-m3 (about 2.3GB) for embedding. No GPU required; general purpose.<br>BAAI/bge-m3（約 2.3GB）を Embedding に使用。GPU 不要・汎用。</div>
-      </div>
-      <div>
-        <label>pii_mode (managed in cynovela.yaml)<br>pii_mode（cynovela.yaml で管理）</label>
-        <select id="opt-pii" onchange="rebuildCmd()">
-          <option value="lite">lite (regular expressions only, fast) / lite（正規表現のみ・高速）</option>
-          <option value="standard" selected>standard (Regex + GiNZA NER, default) / standard（Regex + GiNZA NER・既定）</option>
-          <option value="quality">quality (Regex + NER + detailed filter, high accuracy) / quality（Regex + NER + 詳細フィルタ・高精度）</option>
-        </select>
-        <div class="help-text" id="pii-detail">Managed with the <code>pii_mode</code> key in cynovela.yaml (the CLI argument has been removed).<br>cynovela.yaml の <code>pii_mode</code> キーで管理（CLI 引数は廃止済み）。</div>
-      </div>
-      <div>
-        <label>LLM connection (the removed --mock cannot be selected)<br>LLM 接続（撤去済みの --mock は選べません）</label>
-        <select id="opt-mock" onchange="rebuildCmd()">
-          <option value="">Disabled (real LLM connection) / 無効（実 LLM 接続）</option>
-        </select>
-        <div class="help-text">When enabled, it is forcibly fixed to TFIDFEmbedding + NoReranker.<br>有効時は TFIDFEmbedding + NoReranker に強制固定されます。</div>
-      </div>
-      <div>
-        <label>--demo (demo data)<br>--demo（デモデータ）</label>
-        <select id="opt-demo" onchange="rebuildCmd()">
-          <option value="">Disabled (clean DB) / 無効（クリーン DB）</option>
-          <option value="--demo" selected>Enabled (load demo data) / 有効（デモデータ投入）</option>
-        </select>
-        <div class="help-text">Uses a verification DB that is reset on every restart.<br>再起動ごとにリセットされる検証用 DB を使用します。</div>
-      </div>
-      <div>
-        <label>--lan / --allow-tailscale</label>
-        <select id="opt-net" onchange="rebuildCmd()">
-          <option value="">Default (127.0.0.1 only) / 既定（127.0.0.1 のみ）</option>
-          <option value="--lan">LAN exposure (host=0.0.0.0) / LAN 公開（host=0.0.0.0）</option>
-          <option value="--lan --allow-tailscale">LAN + Tailscale allowed / LAN + Tailscale 許可</option>
-        </select>
-        <div class="help-text">The default is loopback only. When exposing to the LAN, using a subnet allowlist together with it is recommended.<br>既定はループバックのみ。LAN 公開時はサブネットアローリスト併用を推奨します。</div>
-      </div>
-      <div>
-        <label>--lmstudio-url (LLM base URL)<br>--lmstudio-url（LLM ベース URL）</label>
-        <input type="text" id="opt-llm" value="http://localhost:1234" oninput="rebuildCmd()">
-        <div class="help-text">Any service that has an OpenAI-compatible <code>/v1</code> API can be specified (LM Studio / Ollama / vLLM, etc.).<br>OpenAI 互換 <code>/v1</code> API を持つ任意のサービスを指定可能（LM Studio / Ollama / vLLM 等）。</div>
-      </div>
-    </div>
+<div class="form-grid">
+<div>
+<label>--mode (startup mode)<br>--mode（起動モード）</label>
+<select id="opt-mode" onchange="rebuildCmd()">
+<option value="text" selected>text (text RAG, default) / text（テキスト RAG・既定）</option>
+<option value="lite">lite (lightweight multilingual embedding) / lite（軽量 Embedding 多言語）</option>
+<option value="lite-en">lite-en (lightweight, English-specialized) / lite-en（英語特化軽量）</option>
+</select>
+<div class="help-text" id="mode-detail">Uses BAAI/bge-m3 (about 2.3GB) for embedding. No GPU required; general purpose.<br>BAAI/bge-m3（約 2.3GB）を Embedding に使用。GPU 不要・汎用。</div>
+</div>
+<div>
+<label>pii_mode (managed in cynovela.yaml)<br>pii_mode（cynovela.yaml で管理）</label>
+<select id="opt-pii" onchange="rebuildCmd()">
+<option value="lite">lite (regular expressions only, fast) / lite（正規表現のみ・高速）</option>
+<option value="standard" selected>standard (Regex + GiNZA NER, default) / standard（Regex + GiNZA NER・既定）</option>
+<option value="quality">quality (Regex + NER + detailed filter, high accuracy) / quality（Regex + NER + 詳細フィルタ・高精度）</option>
+</select>
+<div class="help-text" id="pii-detail">Managed with the<code>pii_mode</code> key in cynovela.yaml (the CLI argument has been removed).<br>cynovela.yaml の<code>pii_mode</code> キーで管理（CLI 引数は廃止済み）。</div>
+</div>
+<div>
+<label>LLM connection (the removed --mock cannot be selected)<br>LLM 接続（撤去済みの --mock は選べません）</label>
+<select id="opt-mock" onchange="rebuildCmd()">
+<option value="">Disabled (real LLM connection) / 無効（実 LLM 接続）</option>
+</select>
+<div class="help-text">When enabled, it is forcibly fixed to TFIDFEmbedding + NoReranker.<br>有効時は TFIDFEmbedding + NoReranker に強制固定されます。</div>
+</div>
+<div>
+<label>--demo (demo data)<br>--demo（デモデータ）</label>
+<select id="opt-demo" onchange="rebuildCmd()">
+<option value="">Disabled (clean DB) / 無効（クリーン DB）</option>
+<option value="--demo" selected>Enabled (load demo data) / 有効（デモデータ投入）</option>
+</select>
+<div class="help-text">Uses a verification DB that is reset on every restart.<br>再起動ごとにリセットされる検証用 DB を使用します。</div>
+</div>
+<div>
+<label>--lan / --allow-tailscale</label>
+<select id="opt-net" onchange="rebuildCmd()">
+<option value="">Default (127.0.0.1 only) / 既定（127.0.0.1 のみ）</option>
+<option value="--lan">LAN exposure (host=0.0.0.0) / LAN 公開（host=0.0.0.0）</option>
+<option value="--lan --allow-tailscale">LAN + Tailscale allowed / LAN + Tailscale 許可</option>
+</select>
+<div class="help-text">The default is loopback only. When exposing to the LAN, using a subnet allowlist together with it is recommended.<br>既定はループバックのみ。LAN 公開時はサブネットアローリスト併用を推奨します。</div>
+</div>
+<div>
+<label>--lmstudio-url (LLM base URL)<br>--lmstudio-url（LLM ベース URL）</label>
+<input type="text" id="opt-llm" value="http://localhost:1234" oninput="rebuildCmd()">
+<div class="help-text">Any service that has an OpenAI-compatible<code>/v1</code> API can be specified (LM Studio / Ollama / vLLM, etc.).<br>OpenAI 互換<code>/v1</code> API を持つ任意のサービスを指定可能（LM Studio / Ollama / vLLM 等）。</div>
+</div>
+</div>
 
-    <h3>Generated Startup Command / 生成された起動コマンド</h3>
-    <div class="code-block" id="generated-cmd"><span class="cmd">python server.py</span></div>
-  </div>
+<h3>Generated Startup Command / 生成された起動コマンド</h3>
+<div class="code-block" id="generated-cmd"><span class="cmd">python server.py</span></div>
+</div>
 
-  <div class="panel-section">
-    <h2>Required Models by --mode / --mode 別 必須モデル一覧</h2>
-    <p>Based on the <code>_MODE_MODELS</code> definition in <code>server.py</code>. When the preflight check detects a missing model, you can choose between downloading it from HuggingFace and falling back to an alternative mode.<br><code>server.py</code> 内の <code>_MODE_MODELS</code> 定義に基づきます。preflight チェックで不足モデルが検出されると、HuggingFace からのダウンロードか代替モードへの降格が選択できます。</p>
-    <table>
-      <thead>
-        <tr><th>mode</th><th>Embedding</th><th>Reranker</th><th>Size / サイズ</th><th>Recommended environment / 推奨環境</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><span class="badge text">text</span></td><td><code>BAAI/bge-m3</code></td><td>Selected with YAML <code>reranker.provider</code><br>YAML <code>reranker.provider</code> で選択</td><td>About 2.3 GB / 約 2.3 GB</td><td>General purpose / 汎用</td></tr>
-        <tr><td><span class="badge lite">lite</span></td><td>Switching is <strong>not wired up</strong>, so BAAI/bge-m3 is actually used (the behavior is the same as text; only the displayed name changes)<br>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
-        <tr><td><span class="badge lite">lite-en</span></td><td>Switching is <strong>not wired up</strong>, so BAAI/bge-m3 is actually used (the behavior is the same as text; only the displayed name changes)<br>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
-      </tbody>
-    </table>
+<div class="panel-section">
+<h2>Required Models by --mode / --mode 別 必須モデル一覧</h2>
+<p>Based on the<code>_MODE_MODELS</code> definition in<code>server.py</code>. When the preflight check detects a missing model, you can choose between downloading it from HuggingFace and falling back to an alternative mode.<br><code>server.py</code> 内の<code>_MODE_MODELS</code> 定義に基づきます。preflight チェックで不足モデルが検出されると、HuggingFace からのダウンロードか代替モードへの降格が選択できます。</p>
+<table>
+<thead>
+<tr><th>mode</th><th>Embedding</th><th>Reranker</th><th>Size / サイズ</th><th>Recommended environment / 推奨環境</th></tr>
+</thead>
+<tbody>
+<tr><td><span class="badge text">text</span></td><td><code>BAAI/bge-m3</code></td><td>Selected with YAML<code>reranker.provider</code><br>YAML<code>reranker.provider</code> で選択</td><td>About 2.3 GB / 約 2.3 GB</td><td>General purpose / 汎用</td></tr>
+<tr><td><span class="badge lite">lite</span></td><td>Switching is<strong>not wired up</strong>, so BAAI/bge-m3 is actually used (the behavior is the same as text; only the displayed name changes)<br>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td><span class="badge lite">lite-en</span></td><td>Switching is<strong>not wired up</strong>, so BAAI/bge-m3 is actually used (the behavior is the same as text; only the displayed name changes)<br>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
 
-    <h3>Key Environment Variables / 主要な環境変数</h3>
-    <table>
-      <thead>
-        <tr><th>Environment variable / 環境変数</th><th>Purpose / 用途</th><th>Default / デフォルト</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><code>CYNOVELA_DB</code></td><td>Overrides the SQLite DB path<br>SQLite DB パス上書き</td><td><code>~/.cynovela/db/cynovela.db</code></td></tr>
-        <tr><td><code>CYNOVELA_CHROMA</code></td><td>Overrides the ChromaDB directory<br>ChromaDB ディレクトリ上書き</td><td><code>~/.cynovela/vector/default/chroma</code></td></tr>
-        <tr><td><code>CYNOVELA_SECRET_KEY</code></td><td>Fernet encryption key (recommended in production)<br>Fernet 暗号鍵（本番推奨）</td><td>Generated automatically when unset<br>未設定時は自動生成</td></tr>
-        <tr><td><em>(no environment variable) / （環境変数なし）</em></td><td>The LLM API key is entered in the settings UI (kept for this session only, never saved)<br>LLM API キーは設定UIで入力（このセッションのみ保持・保存しない）</td><td>—</td></tr>
-        <tr><td><code>CYNOVELA_NONINTERACTIVE</code></td><td>Skips the preflight model check (startup is aborted when a model is missing)<br>preflight モデル確認をスキップ（不足時は起動中止）</td><td>—</td></tr>
-        <tr><td><code>CYNOVELA_DISABLE_RATE_LIMIT</code></td><td>Disables the SlowAPI rate limit<br>SlowAPI レートリミット無効化</td><td>—</td></tr>
-      </tbody>
-    </table>
+<h3>Key Environment Variables / 主要な環境変数</h3>
+<table>
+<thead>
+<tr><th>Environment variable / 環境変数</th><th>Purpose / 用途</th><th>Default / デフォルト</th></tr>
+</thead>
+<tbody>
+<tr><td><code>CYNOVELA_DB</code></td><td>Overrides the SQLite DB path<br>SQLite DB パス上書き</td><td><code>~/.cynovela/db/cynovela.db</code></td></tr>
+<tr><td><code>CYNOVELA_CHROMA</code></td><td>Overrides the ChromaDB directory<br>ChromaDB ディレクトリ上書き</td><td><code>~/.cynovela/vector/default/chroma</code></td></tr>
+<tr><td><code>CYNOVELA_SECRET_KEY</code></td><td>Fernet encryption key (recommended in production)<br>Fernet 暗号鍵（本番推奨）</td><td>Generated automatically when unset<br>未設定時は自動生成</td></tr>
+<tr><td><em>(no environment variable) / （環境変数なし）</em></td><td>The LLM API key is entered in the settings UI (kept for this session only, never saved)<br>LLM API キーは設定UIで入力（このセッションのみ保持・保存しない）</td><td>—</td></tr>
+<tr><td><code>CYNOVELA_NONINTERACTIVE</code></td><td>Skips the preflight model check (startup is aborted when a model is missing)<br>preflight モデル確認をスキップ（不足時は起動中止）</td><td>—</td></tr>
+<tr><td><code>CYNOVELA_DISABLE_RATE_LIMIT</code></td><td>Disables the SlowAPI rate limit<br>SlowAPI レートリミット無効化</td><td>—</td></tr>
+</tbody>
+</table>
 
-    <div class="warning-box">
-      <strong>Alpha GA known limitations:</strong> Runtime changes to the Embedding / Reranker settings are not persisted to the YAML (they return to the defaults on restart). The MLX Embedding / Reranker, the Qdrant VectorStore, and the LanceDB backend are skeletons only and raise <code>NotImplementedError</code>.<br>
-      <strong>Alpha GA 既知制限:</strong> Embedding / Reranker 設定の実行時変更は YAML に永続化されません（再起動でデフォルトに戻ります）。MLX Embedding / Reranker、Qdrant VectorStore、LanceDB バックエンドは骨格のみで <code>NotImplementedError</code> が発生します。
-    </div>
-  </div>
+<div class="warning-box">
+<strong> known limitations:</strong> Runtime changes to the Embedding / Reranker settings are not persisted to the YAML (they return to the defaults on restart). The MLX Embedding / Reranker, the Qdrant VectorStore, and the LanceDB backend are skeletons only and raise<code>NotImplementedError</code>.<br>
+<strong>既知の制限:</strong> Embedding / Reranker 設定の実行時変更は YAML に永続化されません（再起動でデフォルトに戻ります）。MLX Embedding / Reranker、Qdrant VectorStore、LanceDB バックエンドは骨格のみで<code>NotImplementedError</code> が発生します。
+</div>
+</div>
 </div>
 
 <!-- ============================================== -->
@@ -445,183 +445,183 @@
 <!-- ============================================== -->
 <div class="tab-panel" id="tab-2">
 
-  <div class="panel-section">
-    <h2>Component Architecture / コンポーネント構成</h2>
-    <p>Centered on FastAPI, this architecture combines the Provider abstraction (LLM / Embedding / Reranker / VectorStore / Classifier) with the Guardrail, RAG, and audit layers.<br>FastAPI を中心に、Provider 抽象化（LLM / Embedding / Reranker / VectorStore / Classifier）と Guardrail / RAG / 監査の各レイヤを組み合わせる構成です。</p>
-    <svg class="diagram" width="900" height="430" viewBox="0 0 900 430" role="img" aria-label="Component architecture diagram / コンポーネント構成図">
-      <defs>
-        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
-        </marker>
-      </defs>
+<div class="panel-section">
+<h2>Component Architecture / コンポーネント構成</h2>
+<p>Centered on FastAPI, this architecture combines the Provider abstraction (LLM / Embedding / Reranker / VectorStore / Classifier) with the Guardrail, RAG, and audit layers.<br>FastAPI を中心に、Provider 抽象化（LLM / Embedding / Reranker / VectorStore / Classifier）と Guardrail / RAG / 監査の各レイヤを組み合わせる構成です。</p>
+<svg class="diagram" width="900" height="430" viewBox="0 0 900 430" role="img" aria-label="Component architecture diagram / コンポーネント構成図">
+<defs>
+<marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+<polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
+</marker>
+</defs>
 
-      <!-- Frontend -->
-      <rect x="20"  y="20" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="120" y="46" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Frontend (HTML/JS)</text>
-      <text x="120" y="66" text-anchor="middle" font-size="11" fill="#3a4f68">Workspace / Collection / Chat UI</text>
+<!-- Frontend -->
+<rect x="20"  y="20" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="120" y="46" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Frontend (HTML/JS)</text>
+<text x="120" y="66" text-anchor="middle" font-size="11" fill="#3a4f68">Workspace / Collection / Chat UI</text>
 
-      <!-- MCP Client -->
-      <rect x="240" y="20" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="340" y="34" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP Client</text>
-      <text x="340" y="50" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP クライアント</text>
-      <text x="340" y="64" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / custom tools</text>
-      <text x="340" y="76" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / 独自ツール</text>
+<!-- MCP Client -->
+<rect x="240" y="20" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="340" y="34" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP Client</text>
+<text x="340" y="50" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP クライアント</text>
+<text x="340" y="64" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / custom tools</text>
+<text x="340" y="76" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / 独自ツール</text>
 
-      <line x1="120" y1="80" x2="120" y2="115" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
-      <line x1="340" y1="80" x2="340" y2="115" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="120" y1="80" x2="120" y2="115" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="340" y1="80" x2="340" y2="115" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
 
-      <!-- FastAPI -->
-      <rect x="20" y="120" width="500" height="80" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="270" y="142" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="700">FastAPI Server (server.py)</text>
-      <text x="270" y="160" text-anchor="middle" font-size="11" fill="#3a4f68">36 routers / RBAC middleware / IP allowlist</text>
-      <text x="270" y="174" text-anchor="middle" font-size="11" fill="#3a4f68">36 routers / RBAC ミドルウェア / IP アローリスト</text>
-      <text x="270" y="190" text-anchor="middle" font-size="11" fill="#3a4f68">routers/: chat, workspaces, collections, sources, auth, guardrails, ...</text>
+<!-- FastAPI -->
+<rect x="20" y="120" width="500" height="80" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+<text x="270" y="142" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="700">FastAPI Server (server.py)</text>
+<text x="270" y="160" text-anchor="middle" font-size="11" fill="#3a4f68">36 routers / RBAC middleware / IP allowlist</text>
+<text x="270" y="174" text-anchor="middle" font-size="11" fill="#3a4f68">36 routers / RBAC ミドルウェア / IP アローリスト</text>
+<text x="270" y="190" text-anchor="middle" font-size="11" fill="#3a4f68">routers/: chat, workspaces, collections, sources, auth, guardrails, ...</text>
 
-      <!-- MCP Server -->
-      <rect x="540" y="120" width="180" height="80" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="630" y="146" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP Server</text>
-      <text x="630" y="166" text-anchor="middle" font-size="11" fill="#3a4f68">11 tools</text>
-      <text x="630" y="184" text-anchor="middle" font-size="11" fill="#3a4f68">(mcp_server.py)</text>
+<!-- MCP Server -->
+<rect x="540" y="120" width="180" height="80" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="630" y="146" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">MCP Server</text>
+<text x="630" y="166" text-anchor="middle" font-size="11" fill="#3a4f68">11 tools</text>
+<text x="630" y="184" text-anchor="middle" font-size="11" fill="#3a4f68">(mcp_server.py)</text>
 
-      <line x1="120" y1="200" x2="120" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
-      <line x1="340" y1="200" x2="340" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
-      <line x1="585" y1="200" x2="585" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
-      <line x1="630" y1="200" x2="630" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="120" y1="200" x2="120" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="340" y1="200" x2="340" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="585" y1="200" x2="585" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="630" y1="200" x2="630" y2="235" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
 
-      <!-- RAG / Guardrail / Providers -->
-      <rect x="20"  y="240" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="120" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">RAG (rag.py)</text>
-      <text x="120" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">BM25 + Vector / Reranker</text>
+<!-- RAG / Guardrail / Providers -->
+<rect x="20"  y="240" width="200" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="120" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">RAG (rag.py)</text>
+<text x="120" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">BM25 + Vector / Reranker</text>
 
-      <rect x="240" y="240" width="200" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="340" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="700">Guardrail / PII</text>
-      <text x="340" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">Dual-Tier / Fernet / Injection</text>
+<rect x="240" y="240" width="200" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+<text x="340" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="700">Guardrail / PII</text>
+<text x="340" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">Dual-Tier / Fernet / Injection</text>
 
-      <rect x="460" y="240" width="250" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="585" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Providers</text>
-      <text x="585" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">LLM / Embedding / Reranker / VectorStore</text>
+<rect x="460" y="240" width="250" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="585" y="266" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Providers</text>
+<text x="585" y="286" text-anchor="middle" font-size="11" fill="#3a4f68">LLM / Embedding / Reranker / VectorStore</text>
 
-      <line x1="120" y1="300" x2="120" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
-      <line x1="340" y1="300" x2="340" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
-      <line x1="585" y1="300" x2="585" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="120" y1="300" x2="120" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="340" y1="300" x2="340" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="585" y1="300" x2="585" y2="335" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr)"/>
 
-      <!-- Storage row -->
-      <rect x="20"  y="340" width="200" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="120" y="368" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">SQLite (db.py)</text>
-      <text x="120" y="388" text-anchor="middle" font-size="11" fill="#3a4f68">workspaces / chunks / audit_logs</text>
+<!-- Storage row -->
+<rect x="20"  y="340" width="200" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="120" y="368" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">SQLite (db.py)</text>
+<text x="120" y="388" text-anchor="middle" font-size="11" fill="#3a4f68">workspaces / chunks / audit_logs</text>
 
-      <rect x="240" y="340" width="200" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="340" y="368" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">ChromaDB</text>
-      <text x="340" y="388" text-anchor="middle" font-size="11" fill="#3a4f68">{cid}__raw / {cid}__masked</text>
+<rect x="240" y="340" width="200" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="340" y="368" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">ChromaDB</text>
+<text x="340" y="388" text-anchor="middle" font-size="11" fill="#3a4f68">{cid}__raw / {cid}__masked</text>
 
-      <rect x="460" y="340" width="250" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="585" y="364" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">External LLM</text>
-      <text x="585" y="384" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / Ollama / OpenAI-compatible</text>
-      <text x="585" y="398" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / Ollama / OpenAI 互換</text>
-    </svg>
+<rect x="460" y="340" width="250" height="70" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="585" y="364" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">External LLM</text>
+<text x="585" y="384" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / Ollama / OpenAI-compatible</text>
+<text x="585" y="398" text-anchor="middle" font-size="11" fill="#3a4f68">LM Studio / Ollama / OpenAI 互換</text>
+</svg>
 
-    <div class="info-box">
-      <strong>Decision logic:</strong> The critical components (FastAPI Server / Guardrail) are highlighted in the warning color. Provider wiring is done by <code>_wire_providers_for_mode()</code> in the priority order <code>yaml.reranker.provider</code> then legacy (<code>--mock</code> has been removed).<br>
-      <strong>判定ロジック:</strong> 重要コンポーネント（FastAPI Server / Guardrail）は警告色で強調しています。Provider 配線は <code>_wire_providers_for_mode()</code> が <code>yaml.reranker.provider</code> → legacy の優先順で行います（<code>--mock</code> は撤去済み）。
-    </div>
-  </div>
+<div class="info-box">
+<strong>Decision logic:</strong> The critical components (FastAPI Server / Guardrail) are highlighted in the warning color. Provider wiring is done by<code>_wire_providers_for_mode()</code> in the priority order<code>yaml.reranker.provider</code> then legacy (<code>--mock</code> has been removed).<br>
+<strong>判定ロジック:</strong> 重要コンポーネント（FastAPI Server / Guardrail）は警告色で強調しています。Provider 配線は<code>_wire_providers_for_mode()</code> が<code>yaml.reranker.provider</code> → legacy の優先順で行います（<code>--mock</code> は撤去済み）。
+</div>
+</div>
 
-  <div class="panel-section">
-    <h2>RAG Pipeline Flow / RAG パイプラインフロー</h2>
-    <p>This visualizes the seven stages from receiving the query to returning the answer. Hybrid fusion merges the rankings with RRF (k=60).<br>クエリ受信から回答返却までの 7 段階を可視化します。Hybrid 統合は RRF（k=60）で順位融合します。</p>
+<div class="panel-section">
+<h2>RAG Pipeline Flow / RAG パイプラインフロー</h2>
+<p>This visualizes the seven stages from receiving the query to returning the answer. Hybrid fusion merges the rankings with RRF (k=60).<br>クエリ受信から回答返却までの 7 段階を可視化します。Hybrid 統合は RRF（k=60）で順位融合します。</p>
 
-    <svg class="diagram" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="RAG pipeline flow / RAG パイプラインフロー">
-      <defs>
-        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
-        </marker>
-      </defs>
+<svg class="diagram" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="RAG pipeline flow / RAG パイプラインフロー">
+<defs>
+<marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+<polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
+</marker>
+</defs>
 
-      <!-- Query -->
-      <rect x="10"  y="110" width="115" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="67"  y="128" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Query</text>
-      <text x="67"  y="142" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">クエリ</text>
-      <text x="67"  y="155" text-anchor="middle" font-size="10" fill="#3a4f68">Injection check</text>
-      <text x="67"  y="166" text-anchor="middle" font-size="10" fill="#3a4f68">Injection 検査</text>
+<!-- Query -->
+<rect x="10"  y="110" width="115" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="67"  y="128" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Query</text>
+<text x="67"  y="142" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">クエリ</text>
+<text x="67"  y="155" text-anchor="middle" font-size="10" fill="#3a4f68">Injection check</text>
+<text x="67"  y="166" text-anchor="middle" font-size="10" fill="#3a4f68">Injection 検査</text>
 
-      <line x1="125" y1="140" x2="148" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<line x1="125" y1="140" x2="148" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
 
-      <!-- Embedding -->
-      <rect x="148" y="110" width="120" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="208" y="128" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Embedding</text>
-      <text x="208" y="142" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">埋め込み</text>
-      <text x="208" y="158" text-anchor="middle" font-size="10" fill="#3a4f68">BAAI/bge-m3</text>
+<!-- Embedding -->
+<rect x="148" y="110" width="120" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+<text x="208" y="128" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Embedding</text>
+<text x="208" y="142" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">埋め込み</text>
+<text x="208" y="158" text-anchor="middle" font-size="10" fill="#3a4f68">BAAI/bge-m3</text>
 
-      <line x1="268" y1="140" x2="290" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<line x1="268" y1="140" x2="290" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
 
-      <!-- Vector -->
-      <rect x="290" y="60" width="130" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="355" y="78" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Vector search</text>
-      <text x="355" y="92" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Vector 検索</text>
-      <text x="355" y="108" text-anchor="middle" font-size="10" fill="#3a4f68">ChromaDB + MMR</text>
+<!-- Vector -->
+<rect x="290" y="60" width="130" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="355" y="78" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Vector search</text>
+<text x="355" y="92" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Vector 検索</text>
+<text x="355" y="108" text-anchor="middle" font-size="10" fill="#3a4f68">ChromaDB + MMR</text>
 
-      <!-- BM25 -->
-      <rect x="290" y="160" width="130" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="355" y="178" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">BM25 search</text>
-      <text x="355" y="192" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">BM25 検索</text>
-      <text x="355" y="205" text-anchor="middle" font-size="10" fill="#3a4f68">fugashi tokenization</text>
-      <text x="355" y="216" text-anchor="middle" font-size="10" fill="#3a4f68">fugashi トークン化</text>
+<!-- BM25 -->
+<rect x="290" y="160" width="130" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="355" y="178" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">BM25 search</text>
+<text x="355" y="192" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">BM25 検索</text>
+<text x="355" y="205" text-anchor="middle" font-size="10" fill="#3a4f68">fugashi tokenization</text>
+<text x="355" y="216" text-anchor="middle" font-size="10" fill="#3a4f68">fugashi トークン化</text>
 
-      <line x1="420" y1="90"  x2="445" y2="125" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
-      <line x1="420" y1="190" x2="445" y2="155" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<line x1="420" y1="90"  x2="445" y2="125" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<line x1="420" y1="190" x2="445" y2="155" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
 
-      <!-- Hybrid RRF -->
-      <rect x="445" y="110" width="120" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="505" y="128" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Hybrid fusion</text>
-      <text x="505" y="142" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Hybrid 統合</text>
-      <text x="505" y="158" text-anchor="middle" font-size="10" fill="#3a4f68">RRF (k=60)</text>
+<!-- Hybrid RRF -->
+<rect x="445" y="110" width="120" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+<text x="505" y="128" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Hybrid fusion</text>
+<text x="505" y="142" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Hybrid 統合</text>
+<text x="505" y="158" text-anchor="middle" font-size="10" fill="#3a4f68">RRF (k=60)</text>
 
-      <line x1="565" y1="140" x2="588" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<line x1="565" y1="140" x2="588" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
 
-      <!-- Reranker -->
-      <rect x="588" y="110" width="120" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="648" y="129" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Reranker</text>
-      <text x="648" y="144" text-anchor="middle" font-size="10" fill="#3a4f68">CrossEncoder /</text>
-      <text x="648" y="156" text-anchor="middle" font-size="10" fill="#3a4f68">FlashRank, etc.</text>
-      <text x="648" y="167" text-anchor="middle" font-size="10" fill="#3a4f68">FlashRank 等</text>
+<!-- Reranker -->
+<rect x="588" y="110" width="120" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="648" y="129" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">Reranker</text>
+<text x="648" y="144" text-anchor="middle" font-size="10" fill="#3a4f68">CrossEncoder</text>
+<text x="648" y="156" text-anchor="middle" font-size="10" fill="#3a4f68">FlashRank, etc.</text>
+<text x="648" y="167" text-anchor="middle" font-size="10" fill="#3a4f68">FlashRank 等</text>
 
-      <line x1="708" y1="140" x2="730" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<line x1="708" y1="140" x2="730" y2="140" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
 
-      <!-- LLM -->
-      <rect x="730" y="110" width="135" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="797" y="125" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">LLM generation</text>
-      <text x="797" y="139" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">LLM 生成</text>
-      <text x="797" y="152" text-anchor="middle" font-size="10" fill="#3a4f68">LM Studio / Ollama</text>
-      <text x="797" y="164" text-anchor="middle" font-size="10" fill="#3a4f68">/v1/chat/completions</text>
+<!-- LLM -->
+<rect x="730" y="110" width="135" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="797" y="125" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">LLM generation</text>
+<text x="797" y="139" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="600">LLM 生成</text>
+<text x="797" y="152" text-anchor="middle" font-size="10" fill="#3a4f68">LM Studio / Ollama</text>
+<text x="797" y="164" text-anchor="middle" font-size="10" fill="#3a4f68">/v1/chat/completions</text>
 
-      <!-- Output guardrail -->
-      <line x1="797" y1="170" x2="797" y2="215" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
-      <rect x="640" y="215" width="270" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="775" y="232" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Guardrail (exit)</text>
-      <text x="775" y="246" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">ガードレール（出口）</text>
-      <text x="775" y="259" text-anchor="middle" font-size="10" fill="#3a4f68">_mask_for_viewer / Exfil check</text>
-      <text x="775" y="270" text-anchor="middle" font-size="10" fill="#3a4f68">_mask_for_viewer / Exfil 検査</text>
+<!-- Output guardrail -->
+<line x1="797" y1="170" x2="797" y2="215" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<rect x="640" y="215" width="270" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+<text x="775" y="232" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Guardrail (exit)</text>
+<text x="775" y="246" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">ガードレール（出口）</text>
+<text x="775" y="259" text-anchor="middle" font-size="10" fill="#3a4f68">_mask_for_viewer / Exfil check</text>
+<text x="775" y="270" text-anchor="middle" font-size="10" fill="#3a4f68">_mask_for_viewer / Exfil 検査</text>
 
-      <line x1="640" y1="245" x2="195" y2="245" stroke="#0078d4" stroke-width="1.5"/>
-      <line x1="195" y1="245" x2="170" y2="245" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
+<line x1="640" y1="245" x2="195" y2="245" stroke="#0078d4" stroke-width="1.5"/>
+<line x1="195" y1="245" x2="170" y2="245" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr2)"/>
 
-      <rect x="40" y="215" width="130" height="60" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
-      <text x="105" y="232" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Answer returned</text>
-      <text x="105" y="246" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">回答返却</text>
-      <text x="105" y="259" text-anchor="middle" font-size="10" fill="#3a4f68">Citations + scores</text>
-      <text x="105" y="270" text-anchor="middle" font-size="10" fill="#3a4f68">引用 + スコア</text>
-    </svg>
+<rect x="40" y="215" width="130" height="60" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+<text x="105" y="232" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Answer returned</text>
+<text x="105" y="246" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">回答返却</text>
+<text x="105" y="259" text-anchor="middle" font-size="10" fill="#3a4f68">Citations + scores</text>
+<text x="105" y="270" text-anchor="middle" font-size="10" fill="#3a4f68">引用 + スコア</text>
+</svg>
 
-    <div class="info-box">
-      <strong>Note:</strong> When Adaptive RAG (complexity score &ge; 2.0) starts, it enters an Agentic loop and performs up to three iterative searches using CRAG / Multi-Query / HyDE. The abstention decision uses the Vector cosine score (threshold 0.50) rather than RRF.<br>
-      <strong>補足:</strong> Adaptive RAG（complexity score ≥ 2.0）が起動すると Agentic ループに入り、CRAG / Multi-Query / HyDE を活用して最大 3 回の反復検索が行われます。Abstention 判定は RRF ではなく Vector cosine スコア（しきい値 0.50）で行います。
-    </div>
+<div class="info-box">
+<strong>Note:</strong> When Adaptive RAG (complexity score &ge; 2.0) starts, it enters an Agentic loop and performs up to three iterative searches using CRAG / Multi-Query / HyDE. The abstention decision uses the Vector cosine score (threshold 0.50) rather than RRF.<br>
+<strong>補足:</strong> Adaptive RAG（complexity score ≥ 2.0）が起動すると Agentic ループに入り、CRAG / Multi-Query / HyDE を活用して最大 3 回の反復検索が行われます。Abstention 判定は RRF ではなく Vector cosine スコア（しきい値 0.50）で行います。
+</div>
 
-    <div class="warning-box">
-      <strong>Alpha GA known limitations:</strong> The structured answer template is not implemented, and free-form answers are the standard. The low-confidence fallback (threshold=0.50) is configured, but automatic switching when a search returns zero hits is not fully integrated.<br>
-      <strong>Alpha GA 既知制限:</strong> 構造化回答テンプレートは未実装で、自由形式回答が標準です。低信頼度フォールバック（threshold=0.50）は設定済みですが、検索 0 件時の自動切替は完全には統合されていません。
-    </div>
-  </div>
+<div class="warning-box">
+<strong> known limitations:</strong> The structured answer template is not implemented, and free-form answers are the standard. The low-confidence fallback (threshold=0.50) is configured, but automatic switching when a search returns zero hits is not fully integrated.<br>
+<strong>既知の制限:</strong> 構造化回答テンプレートは未実装で、自由形式回答が標準です。低信頼度フォールバック（threshold=0.50）は設定済みですが、検索 0 件時の自動切替は完全には統合されていません。
+</div>
+</div>
 </div>
 
 <!-- ============================================== -->
@@ -629,97 +629,97 @@
 <!-- ============================================== -->
 <div class="tab-panel" id="tab-3">
 
-  <div class="panel-section">
-    <h2>Main Endpoint Categories / 主なエンドポイントカテゴリ</h2>
-    <p>36 routers are placed under FastAPI. Role checking is centralized in the RBAC helpers (<code>_require_admin</code> / <code>_require_authenticated</code> / <code>_require_role</code> / <code>_require_admin_or_self</code>).<br>FastAPI 配下に 36 のルーターが配置されています。RBAC ヘルパー（<code>_require_admin</code> / <code>_require_authenticated</code> / <code>_require_role</code> / <code>_require_admin_or_self</code>）でロール検査を一元化しています。</p>
-    <table>
-      <thead>
-        <tr><th>Category / カテゴリ</th><th>Main endpoints / 主なエンドポイント</th><th>Authorization / 認可</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Authentication / 認証</td><td><code>/api/auth/login</code>, <code>/api/auth/users</code></td><td><span class="badge admin">admin</span> required (users management) / 必須（users 管理）</td></tr>
-        <tr><td>Workspaces / ワークスペース</td><td><code>/api/workspaces</code>, <code>/api/workspaces/{id}</code></td><td>Depends on the role / role による</td></tr>
-        <tr><td>Collections / コレクション</td><td><code>/api/collections</code>, <code>/api/collections/{id}/publish</code></td><td><span class="badge curator">curator+</span></td></tr>
-        <tr><td>Sources / ソース</td><td><code>/api/sources</code>, <code>/api/sources/{id}/scan</code></td><td><span class="badge curator">curator+</span></td></tr>
-        <tr><td>RAG chat / RAG チャット</td><td><code>/api/chat</code>, <code>/api/chat/stream</code></td><td>Authenticated / 認証済</td></tr>
-        <tr><td>Guardrails / ガードレール</td><td><code>/api/guardrails/pii-detections</code>, <code>/api/guardrails/blocked-topics</code></td><td><span class="badge admin">admin</span> required / 必須</td></tr>
-        <tr><td>Policies / ポリシー</td><td><code>/api/policies</code></td><td><span class="badge admin">admin</span> required / 必須</td></tr>
-        <tr><td>Audit / 監査</td><td><code>/api/audit_logs</code></td><td><span class="badge admin">admin</span> required (modification and deletion prohibited) / 必須（変更・削除禁止）</td></tr>
-        <tr><td>Settings / 設定</td><td><code>/api/settings/pii-mode</code>, <code>/api/settings/embedding</code></td><td><span class="badge admin">admin</span> required / 必須</td></tr>
-        <tr><td>Health / ヘルス</td><td><code>/api/health</code></td><td>Anyone / 誰でも</td></tr>
-        <tr><td>MCP</td><td><code>/api/mcp/*</code></td><td>Authenticated / 認証済</td></tr>
-      </tbody>
-    </table>
+<div class="panel-section">
+<h2>Main Endpoint Categories / 主なエンドポイントカテゴリ</h2>
+<p>36 routers are placed under FastAPI. Role checking is centralized in the RBAC helpers (<code>_require_admin</code> /<code>_require_authenticated</code> /<code>_require_role</code> /<code>_require_admin_or_self</code>).<br>FastAPI 配下に 36 のルーターが配置されています。RBAC ヘルパー（<code>_require_admin</code> /<code>_require_authenticated</code> /<code>_require_role</code> /<code>_require_admin_or_self</code>）でロール検査を一元化しています。</p>
+<table>
+<thead>
+<tr><th>Category / カテゴリ</th><th>Main endpoints / 主なエンドポイント</th><th>Authorization / 認可</th></tr>
+</thead>
+<tbody>
+<tr><td>Authentication / 認証</td><td><code>/api/auth/login</code>,<code>/api/auth/users</code></td><td><span class="badge admin">admin</span> required (users management) / 必須（users 管理）</td></tr>
+<tr><td>Workspaces / ワークスペース</td><td><code>/api/workspaces</code>,<code>/api/workspaces/{id}</code></td><td>Depends on the role / role による</td></tr>
+<tr><td>Collections / コレクション</td><td><code>/api/collections</code>,<code>/api/collections/{id}/publish</code></td><td><span class="badge curator">curator+</span></td></tr>
+<tr><td>Sources / ソース</td><td><code>/api/sources</code>,<code>/api/sources/{id}/scan</code></td><td><span class="badge curator">curator+</span></td></tr>
+<tr><td>RAG chat / RAG チャット</td><td><code>/api/chat</code>,<code>/api/chat/stream</code></td><td>Authenticated / 認証済</td></tr>
+<tr><td>Guardrails / ガードレール</td><td><code>/api/guardrails/pii-detections</code>,<code>/api/guardrails/blocked-topics</code></td><td><span class="badge admin">admin</span> required / 必須</td></tr>
+<tr><td>Policies / ポリシー</td><td><code>/api/policies</code></td><td><span class="badge admin">admin</span> required / 必須</td></tr>
+<tr><td>Audit / 監査</td><td><code>/api/audit_logs</code></td><td><span class="badge admin">admin</span> required (modification and deletion prohibited) / 必須（変更・削除禁止）</td></tr>
+<tr><td>Settings / 設定</td><td><code>/api/settings/pii-mode</code>,<code>/api/settings/embedding</code></td><td><span class="badge admin">admin</span> required / 必須</td></tr>
+<tr><td>Health / ヘルス</td><td><code>/api/health</code></td><td>Anyone / 誰でも</td></tr>
+<tr><td>MCP</td><td><code>/api/mcp/*</code></td><td>Authenticated / 認証済</td></tr>
+</tbody>
+</table>
 
-    <h3>RBAC Helper Functions / RBAC ヘルパー関数</h3>
-    <table>
-      <thead><tr><th>Function / 関数</th><th>What is checked / 検査内容</th></tr></thead>
-      <tbody>
-        <tr><td><code>_require_admin(request)</code></td><td>403 unless <code>role == 'admin'</code><br><code>role == 'admin'</code> でなければ 403</td></tr>
-        <tr><td><code>_require_authenticated(request)</code></td><td>Any role is accepted as long as the request is authenticated<br>認証済であれば role 不問</td></tr>
-        <tr><td><code>_require_role(request, allowed)</code></td><td>Checks whether the role matches <code>allowed_roles</code><br><code>allowed_roles</code> に role が合致するか検査</td></tr>
-        <tr><td><code>_require_admin_or_self(request, user_id)</code></td><td>admin, or a match with the user's own user_id<br>admin または本人 user_id 一致</td></tr>
-      </tbody>
-    </table>
-  </div>
+<h3>RBAC Helper Functions / RBAC ヘルパー関数</h3>
+<table>
+<thead><tr><th>Function / 関数</th><th>What is checked / 検査内容</th></tr></thead>
+<tbody>
+<tr><td><code>_require_admin(request)</code></td><td>403 unless<code>role == 'admin'</code><br><code>role == 'admin'</code> でなければ 403</td></tr>
+<tr><td><code>_require_authenticated(request)</code></td><td>Any role is accepted as long as the request is authenticated<br>認証済であれば role 不問</td></tr>
+<tr><td><code>_require_role(request, allowed)</code></td><td>Checks whether the role matches<code>allowed_roles</code><br><code>allowed_roles</code> に role が合致するか検査</td></tr>
+<tr><td><code>_require_admin_or_self(request, user_id)</code></td><td>admin, or a match with the user's own user_id<br>admin または本人 user_id 一致</td></tr>
+</tbody>
+</table>
+</div>
 
-  <div class="panel-section">
-    <h2>MCP Tool List (11 in total) / MCP ツール一覧（全 11 件）</h2>
-    <p>Extracted from the definitions on lines 15-173 of <code>mcp_server.py</code>. There are three categories: RAG search, information retrieval, and management.<br><code>mcp_server.py</code> 行 15-173 の定義から抽出。RAG 検索系・情報取得系・管理系の 3 カテゴリです。</p>
+<div class="panel-section">
+<h2>MCP Tool List (11 in total) / MCP ツール一覧（全 11 件）</h2>
+<p>Extracted from the definitions on lines 15-173 of<code>mcp_server.py</code>. There are three categories: RAG search, information retrieval, and management.<br><code>mcp_server.py</code> 行 15-173 の定義から抽出。RAG 検索系・情報取得系・管理系の 3 カテゴリです。</p>
 
-    <h3>RAG search tools (4) / RAG 検索系（4）</h3>
-    <table>
-      <thead><tr><th>Tool / ツール</th><th>Required arguments / 必須引数</th><th>Description / 説明</th></tr></thead>
-      <tbody>
-        <tr><td><code>search_collection</code></td><td>query, workspace_id, collection_id</td><td>RAG search over a single collection<br>単一コレクションの RAG 検索</td></tr>
-        <tr><td><code>search_across_collections</code></td><td>query, workspace_id, collection_ids</td><td>Search across multiple collections<br>複数コレクション横断検索</td></tr>
-        <tr><td><code>rag_with_role</code></td><td>query, workspace_id, collection_id, style_role</td><td>Switches the answer style per role<br>ロール別回答スタイル切替</td></tr>
-        <tr><td><code>rag_general</code></td><td>query, workspace_id</td><td>No RAG; LLM general knowledge only<br>RAG なし・LLM 一般知識のみ</td></tr>
-      </tbody>
-    </table>
+<h3>RAG search tools (4) / RAG 検索系（4）</h3>
+<table>
+<thead><tr><th>Tool / ツール</th><th>Required arguments / 必須引数</th><th>Description / 説明</th></tr></thead>
+<tbody>
+<tr><td><code>search_collection</code></td><td>query, workspace_id, collection_id</td><td>RAG search over a single collection<br>単一コレクションの RAG 検索</td></tr>
+<tr><td><code>search_across_collections</code></td><td>query, workspace_id, collection_ids</td><td>Search across multiple collections<br>複数コレクション横断検索</td></tr>
+<tr><td><code>rag_with_role</code></td><td>query, workspace_id, collection_id, style_role</td><td>Switches the answer style per role<br>ロール別回答スタイル切替</td></tr>
+<tr><td><code>rag_general</code></td><td>query, workspace_id</td><td>No RAG; LLM general knowledge only<br>RAG なし・LLM 一般知識のみ</td></tr>
+</tbody>
+</table>
 
-    <h3>Information retrieval tools (4) / 情報取得系（4）</h3>
-    <table>
-      <thead><tr><th>Tool / ツール</th><th>Required arguments / 必須引数</th><th>Description / 説明</th></tr></thead>
-      <tbody>
-        <tr><td><code>list_workspaces</code></td><td>—</td><td>List of workspaces and collections<br>ワークスペースとコレクション一覧</td></tr>
-        <tr><td><code>get_workspace_info</code></td><td>workspace_id</td><td>Workspace details<br>ワークスペース詳細</td></tr>
-        <tr><td><code>get_collection_info</code></td><td>workspace_id, collection_id</td><td>Collection details<br>コレクション詳細</td></tr>
-        <tr><td><code>get_audit_logs</code></td><td>workspace_id</td><td>Audit logs (limit defaults to 10, maximum 50)<br>監査ログ（limit 既定 10、上限 50）</td></tr>
-      </tbody>
-    </table>
+<h3>Information retrieval tools (4) / 情報取得系（4）</h3>
+<table>
+<thead><tr><th>Tool / ツール</th><th>Required arguments / 必須引数</th><th>Description / 説明</th></tr></thead>
+<tbody>
+<tr><td><code>list_workspaces</code></td><td>—</td><td>List of workspaces and collections<br>ワークスペースとコレクション一覧</td></tr>
+<tr><td><code>get_workspace_info</code></td><td>workspace_id</td><td>Workspace details<br>ワークスペース詳細</td></tr>
+<tr><td><code>get_collection_info</code></td><td>workspace_id, collection_id</td><td>Collection details<br>コレクション詳細</td></tr>
+<tr><td><code>get_audit_logs</code></td><td>workspace_id</td><td>Audit logs (limit defaults to 10, maximum 50)<br>監査ログ（limit 既定 10、上限 50）</td></tr>
+</tbody>
+</table>
 
-    <h3>Management tools (3) / 管理系（3）</h3>
-    <table>
-      <thead><tr><th>Tool / ツール</th><th>Required arguments / 必須引数</th><th>Description / 説明</th></tr></thead>
-      <tbody>
-        <tr><td><code>list_sources</code></td><td>workspace_id</td><td>List of sources (file path, status, count)<br>ソース一覧（ファイルパス・状態・件数）</td></tr>
-        <tr><td><code>publish_collection</code></td><td>collection_id</td><td>Publishes a collection<br>コレクション公開</td></tr>
-        <tr><td><code>create_workspace</code></td><td>name</td><td>Creates a workspace<br>ワークスペース作成</td></tr>
-      </tbody>
-    </table>
+<h3>Management tools (3) / 管理系（3）</h3>
+<table>
+<thead><tr><th>Tool / ツール</th><th>Required arguments / 必須引数</th><th>Description / 説明</th></tr></thead>
+<tbody>
+<tr><td><code>list_sources</code></td><td>workspace_id</td><td>List of sources (file path, status, count)<br>ソース一覧（ファイルパス・状態・件数）</td></tr>
+<tr><td><code>publish_collection</code></td><td>collection_id</td><td>Publishes a collection<br>コレクション公開</td></tr>
+<tr><td><code>create_workspace</code></td><td>name</td><td>Creates a workspace<br>ワークスペース作成</td></tr>
+</tbody>
+</table>
 
-    <h3>MCP Client Configuration Example / MCP クライアント設定例</h3>
-    <div class="code-block"><span class="comment"># MCP configuration JSON for LM Studio and similar clients / LM Studio 等の MCP 設定 JSON</span>
+<h3>MCP Client Configuration Example / MCP クライアント設定例</h3>
+<div class="code-block"><span class="comment"># MCP configuration JSON for LM Studio and similar clients / LM Studio 等の MCP 設定 JSON</span>
 {
-  <span class="val">"mcpServers"</span>: {
-    <span class="val">"cynovela"</span>: {
-      <span class="val">"command"</span>: <span class="val">"/path/to/python"</span>,
-      <span class="val">"args"</span>: [<span class="val">"mcp_server.py"</span>],
-      <span class="val">"env"</span>: {
-        <span class="val">"CYNOVELA_BASE_URL"</span>: <span class="val">"http://127.0.0.1:8765"</span>,
-        <span class="val">"CYNOVELA_TOKEN"</span>: <span class="val">"&lt;認証トークン&gt;"</span>,
-        <span class="val">"CYNOVELA_MCP_PYTHON"</span>: <span class="val">"~/miniforge3/envs/cynovela/bin/python"</span>
+<span class="val">"mcpServers"</span>: {
+<span class="val">"cynovela"</span>: {
+<span class="val">"command"</span>:<span class="val">"/path/to/python"</span>,
+<span class="val">"args"</span>: [<span class="val">"mcp_server.py"</span>],
+<span class="val">"env"</span>: {
+<span class="val">"CYNOVELA_BASE_URL"</span>:<span class="val">"http://127.0.0.1:8765"</span>,
+<span class="val">"CYNOVELA_TOKEN"</span>:<span class="val">"&lt;認証トークン&gt;"</span>,
+<span class="val">"CYNOVELA_MCP_PYTHON"</span>:<span class="val">"~/miniforge3/envs/cynovela/bin/python"</span>
       }
     }
   }
 }</div>
 
-    <div class="warning-box">
-      <strong>Alpha GA known limitations:</strong> Authentication accepts only the JWT issued by <code>POST /api/auth/login</code> (the same applies to a <code>--demo</code> startup). The old <code>Bearer demo-token-&lt;user_id&gt;</code> form was removed on 2026-07-29.<br>
-      <strong>Alpha GA 既知制限:</strong> 認証は <code>POST /api/auth/login</code> が発行する JWT のみです（<code>--demo</code> 起動でも同じ）。旧 <code>Bearer demo-token-&lt;user_id&gt;</code> 形式は 2026-07-29 に廃止しました。
-    </div>
-  </div>
+<div class="warning-box">
+<strong> known limitations:</strong> Authentication accepts only the JWT issued by<code>POST /api/auth/login</code> (the same applies to a<code>--demo</code> startup). The old<code>Bearer demo-token-&lt;user_id&gt;</code> form was removed on 2026-07-29.<br>
+<strong>既知の制限:</strong> 認証は<code>POST /api/auth/login</code> が発行する JWT のみです（<code>--demo</code> 起動でも同じ）。旧<code>Bearer demo-token-&lt;user_id&gt;</code> 形式は 2026-07-29 に廃止しました。
+</div>
+</div>
 </div>
 
 <!-- ============================================== -->
@@ -727,207 +727,206 @@
 <!-- ============================================== -->
 <div class="tab-panel" id="tab-4">
 
-  <div class="panel-section">
-    <h2>Dual-Tier Storage Design / Dual-Tier 保管設計</h2>
-    <p>The same document is stored separately in two lines: "raw" (original text, Fernet-encrypted) and "masked". At publish time, <code>_mtws_publish</code> = <code>guardrail.mask_text_with_spans</code> generates both tiers.<br>同じ文書を「raw（生本文・Fernet 暗号化）」と「masked（マスク済）」の 2 系統に分離して保管します。Publish 時に <code>_mtws_publish</code> = <code>guardrail.mask_text_with_spans</code> が両 tier を生成します。</p>
+<div class="panel-section">
+<h2>Dual-Tier Storage Design / Dual-Tier 保管設計</h2>
+<p>The same document is stored separately in two lines: "raw" (original text, Fernet-encrypted) and "masked". At publish time,<code>_mtws_publish</code> =<code>guardrail.mask_text_with_spans</code> generates both tiers.<br>同じ文書を「raw（生本文・Fernet 暗号化）」と「masked（マスク済）」の 2 系統に分離して保管します。Publish 時に<code>_mtws_publish</code> =<code>guardrail.mask_text_with_spans</code> が両 tier を生成します。</p>
 
-    <svg class="diagram" width="900" height="320" viewBox="0 0 900 320" role="img" aria-label="Dual-Tier storage design / Dual-Tier 保管設計">
-      <defs>
-        <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
-        </marker>
-      </defs>
+<svg class="diagram" width="900" height="320" viewBox="0 0 900 320" role="img" aria-label="Dual-Tier storage design / Dual-Tier 保管設計">
+<defs>
+<marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+<polygon points="0 0, 8 4, 0 8" fill="#0078d4"/>
+</marker>
+</defs>
 
-      <!-- Source -->
-      <rect x="20"  y="130" width="150" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
-      <text x="95"  y="152" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Source file</text>
-      <text x="95"  y="168" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">原文ファイル</text>
-      <text x="95"  y="183" text-anchor="middle" font-size="11" fill="#3a4f68">PDF / Word / Excel</text>
+<!-- Source -->
+<rect x="20"  y="130" width="150" height="60" rx="8" fill="#e6f3fc" stroke="#0078d4" stroke-width="1.5"/>
+<text x="95"  y="152" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">Source file</text>
+<text x="95"  y="168" text-anchor="middle" font-size="14" fill="#0f1923" font-weight="600">原文ファイル</text>
+<text x="95"  y="183" text-anchor="middle" font-size="11" fill="#3a4f68">PDF / Word / Excel</text>
 
-      <line x1="170" y1="160" x2="195" y2="160" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+<line x1="170" y1="160" x2="195" y2="160" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
 
-      <!-- Publish hub -->
-      <rect x="195" y="130" width="170" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
-      <text x="280" y="146" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Publish-time processing</text>
-      <text x="280" y="160" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Publish 時処理</text>
-      <text x="280" y="174" text-anchor="middle" font-size="10" fill="#3a4f68">_mtws_publish</text>
-      <text x="280" y="186" text-anchor="middle" font-size="10" fill="#3a4f68">(mask_text_with_spans)</text>
+<!-- Publish hub -->
+<rect x="195" y="130" width="170" height="60" rx="8" fill="#fef9ec" stroke="#b45309" stroke-width="1.5"/>
+<text x="280" y="146" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Publish-time processing</text>
+<text x="280" y="160" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">Publish 時処理</text>
+<text x="280" y="174" text-anchor="middle" font-size="10" fill="#3a4f68">_mtws_publish</text>
+<text x="280" y="186" text-anchor="middle" font-size="10" fill="#3a4f68">(mask_text_with_spans)</text>
 
-      <line x1="365" y1="150" x2="395" y2="80" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
-      <line x1="365" y1="170" x2="395" y2="250" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+<line x1="365" y1="150" x2="395" y2="80" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+<line x1="365" y1="170" x2="395" y2="250" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
 
-      <!-- Raw branch -->
-      <rect x="395" y="30" width="180" height="80" rx="8" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
-      <text x="485" y="48" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">raw (original text)</text>
-      <text x="485" y="62" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">raw（生本文）</text>
-      <text x="485" y="76" text-anchor="middle" font-size="10" fill="#3a4f68">Fernet encryption (enc:...)</text>
-      <text x="485" y="88" text-anchor="middle" font-size="10" fill="#3a4f68">Fernet 暗号化（enc:...）</text>
-      <text x="485" y="100" text-anchor="middle" font-size="10" fill="#3a4f68">tier='raw'</text>
+<!-- Raw branch -->
+<rect x="395" y="30" width="180" height="80" rx="8" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
+<text x="485" y="48" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">raw (original text)</text>
+<text x="485" y="62" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">raw（生本文）</text>
+<text x="485" y="76" text-anchor="middle" font-size="10" fill="#3a4f68">Fernet encryption (enc:...)</text>
+<text x="485" y="88" text-anchor="middle" font-size="10" fill="#3a4f68">Fernet 暗号化（enc:...）</text>
+<text x="485" y="100" text-anchor="middle" font-size="10" fill="#3a4f68">tier='raw'</text>
 
-      <line x1="575" y1="70" x2="600" y2="70" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+<line x1="575" y1="70" x2="600" y2="70" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
 
-      <rect x="600" y="20" width="280" height="100" rx="8" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
-      <text x="740" y="34" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">admin role</text>
-      <text x="740" y="48" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">admin ロール</text>
-      <text x="740" y="62" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; refers to the {cid}__raw collection</text>
-      <text x="740" y="74" text-anchor="middle" font-size="11" fill="#3a4f68">→ {cid}__raw コレクション参照</text>
-      <text x="740" y="86" text-anchor="middle" font-size="11" fill="#3a4f68">→ SQLite chunks(tier='raw')</text>
-      <text x="740" y="98" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; _mask_for_viewer passes it through</text>
-      <text x="740" y="110" text-anchor="middle" font-size="11" fill="#3a4f68">→ _mask_for_viewer は素通し</text>
+<rect x="600" y="20" width="280" height="100" rx="8" fill="#fef2f2" stroke="#c0392b" stroke-width="1.5"/>
+<text x="740" y="34" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">admin role</text>
+<text x="740" y="48" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">admin ロール</text>
+<text x="740" y="62" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; refers to the {cid}__raw collection</text>
+<text x="740" y="74" text-anchor="middle" font-size="11" fill="#3a4f68">→ {cid}__raw コレクション参照</text>
+<text x="740" y="86" text-anchor="middle" font-size="11" fill="#3a4f68">→ SQLite chunks(tier='raw')</text>
+<text x="740" y="98" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; _mask_for_viewer passes it through</text>
+<text x="740" y="110" text-anchor="middle" font-size="11" fill="#3a4f68">→ _mask_for_viewer は素通し</text>
 
-      <!-- Masked branch -->
-      <rect x="395" y="210" width="180" height="80" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
-      <text x="485" y="228" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">masked (masking applied)</text>
-      <text x="485" y="242" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">masked（マスキング済）</text>
-      <text x="485" y="256" text-anchor="middle" font-size="10" fill="#3a4f68">tokens such as [MASKED:EMAIL]</text>
-      <text x="485" y="268" text-anchor="middle" font-size="10" fill="#3a4f68">[MASKED:EMAIL] 等のトークン</text>
-      <text x="485" y="280" text-anchor="middle" font-size="10" fill="#3a4f68">tier='masked'</text>
+<!-- Masked branch -->
+<rect x="395" y="210" width="180" height="80" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+<text x="485" y="228" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">masked (masking applied)</text>
+<text x="485" y="242" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">masked（マスキング済）</text>
+<text x="485" y="256" text-anchor="middle" font-size="10" fill="#3a4f68">tokens such as [MASKED:EMAIL]</text>
+<text x="485" y="268" text-anchor="middle" font-size="10" fill="#3a4f68">[MASKED:EMAIL] 等のトークン</text>
+<text x="485" y="280" text-anchor="middle" font-size="10" fill="#3a4f68">tier='masked'</text>
 
-      <line x1="575" y1="250" x2="600" y2="250" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
+<line x1="575" y1="250" x2="600" y2="250" stroke="#0078d4" stroke-width="1.5" marker-end="url(#arr3)"/>
 
-      <rect x="600" y="200" width="280" height="100" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
-      <text x="740" y="214" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">curator / viewer roles</text>
-      <text x="740" y="228" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">curator / viewer ロール</text>
-      <text x="740" y="242" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; refers to the {cid}__masked collection</text>
-      <text x="740" y="254" text-anchor="middle" font-size="11" fill="#3a4f68">→ {cid}__masked コレクション参照</text>
-      <text x="740" y="266" text-anchor="middle" font-size="11" fill="#3a4f68">→ SQLite chunks(tier='masked')</text>
-      <text x="740" y="278" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; _mask_for_viewer forces masking</text>
-      <text x="740" y="290" text-anchor="middle" font-size="11" fill="#3a4f68">→ _mask_for_viewer 強制マスク</text>
-    </svg>
+<rect x="600" y="200" width="280" height="100" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
+<text x="740" y="214" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">curator / viewer roles</text>
+<text x="740" y="228" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">curator / viewer ロール</text>
+<text x="740" y="242" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; refers to the {cid}__masked collection</text>
+<text x="740" y="254" text-anchor="middle" font-size="11" fill="#3a4f68">→ {cid}__masked コレクション参照</text>
+<text x="740" y="266" text-anchor="middle" font-size="11" fill="#3a4f68">→ SQLite chunks(tier='masked')</text>
+<text x="740" y="278" text-anchor="middle" font-size="11" fill="#3a4f68">&rarr; _mask_for_viewer forces masking</text>
+<text x="740" y="290" text-anchor="middle" font-size="11" fill="#3a4f68">→ _mask_for_viewer 強制マスク</text>
+</svg>
 
-    <div class="info-box">
-      <strong>Decision logic:</strong> <code>tier_for_role(role)</code> returns <code>'raw'</code> when <code>role == 'admin'</code> and <code>'masked'</code> otherwise, routing to the corresponding vault. <code>vault_enc.enc_raw</code> / <code>dec_raw</code> provide an idempotent interface using the <code>enc:</code> prefix.<br>
-      <strong>判定ロジック:</strong> <code>tier_for_role(role)</code> が <code>role == 'admin'</code> なら <code>'raw'</code> を、それ以外なら <code>'masked'</code> を返し、対応する保管庫へルーティングします。<code>vault_enc.enc_raw</code> / <code>dec_raw</code> が <code>enc:</code> プレフィックス付きの冪等なインターフェースを提供します。
-    </div>
-  </div>
+<div class="info-box">
+<strong>Decision logic:</strong><code>tier_for_role(role)</code> returns<code>'raw'</code> when<code>role == 'admin'</code> and<code>'masked'</code> otherwise, routing to the corresponding vault.<code>vault_enc.enc_raw</code> /<code>dec_raw</code> provide an idempotent interface using the<code>enc:</code> prefix.<br>
+<strong>判定ロジック:</strong><code>tier_for_role(role)</code> が<code>role == 'admin'</code> なら<code>'raw'</code> を、それ以外なら<code>'masked'</code> を返し、対応する保管庫へルーティングします。<code>vault_enc.enc_raw</code> /<code>dec_raw</code> が<code>enc:</code> プレフィックス付きの冪等なインターフェースを提供します。
+</div>
+</div>
 
-  <div class="panel-section">
-    <h2>Permissions by RBAC Role / RBAC ロール別 権限表</h2>
-    <p>DB constraint: <code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code>. Three roles in total.<br>DB 制約: <code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code>。計 3 種です。</p>
-    <table>
-      <thead>
-        <tr><th>Role / ロール</th><th>Vault tier / 保管庫 tier</th><th>Exit masking / 出口マスク</th><th>Main permissions / 主な権限</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="badge admin">admin</span></td>
-          <td><code>raw</code></td>
-          <td>Pass-through / 素通し</td>
-          <td>All APIs / users / policies / audit_logs / settings / pii-detections<br>全 API / users / policies / audit_logs / settings / pii-detections</td>
-        </tr>
-        <tr>
-          <td><span class="badge curator">curator</span></td>
-          <td><code>masked</code></td>
-          <td>Forced masking / 強制マスク</td>
-          <td>Collection editing / source addition / publish<br>コレクション編集 / ソース追加 / publish</td>
-        </tr>
-        <tr>
-          <td><span class="badge viewer">viewer</span></td>
-          <td><code>masked</code></td>
-          <td>Forced masking / 強制マスク</td>
-          <td>RAG search / viewing only<br>RAG 検索 / 閲覧のみ</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="panel-section">
+<h2>Permissions by RBAC Role / RBAC ロール別 権限表</h2>
+<p>DB constraint:<code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code>. Three roles in total.<br>DB 制約:<code>role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))</code>。計 3 種です。</p>
+<table>
+<thead>
+<tr><th>Role / ロール</th><th>Vault tier / 保管庫 tier</th><th>Exit masking / 出口マスク</th><th>Main permissions / 主な権限</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="badge admin">admin</span></td>
+<td><code>raw</code></td>
+<td>Pass-through / 素通し</td>
+<td>All APIs / users / policies / audit_logs / settings / pii-detections<br>全 API / users / policies / audit_logs / settings / pii-detections</td>
+</tr>
+<tr>
+<td><span class="badge curator">curator</span></td>
+<td><code>masked</code></td>
+<td>Forced masking / 強制マスク</td>
+<td>Collection editing / source addition / publish<br>コレクション編集 / ソース追加 / publish</td>
+</tr>
+<tr>
+<td><span class="badge viewer">viewer</span></td>
+<td><code>masked</code></td>
+<td>Forced masking / 強制マスク</td>
+<td>RAG search / viewing only<br>RAG 検索 / 閲覧のみ</td>
+</tr>
+</tbody>
+</table>
+</div>
 
-  <div class="panel-section">
-    <h2>Guardrail Categories and Actions / ガードレール カテゴリとアクション</h2>
+<div class="panel-section">
+<h2>Guardrail Categories and Actions / ガードレール カテゴリとアクション</h2>
 
-    <h3>Actions (4 types) / アクション（4 種）</h3>
-    <p>Authoritative definition: <code>valid_actions</code> in <code>routers/policies.py:201</code>.<br>権威定義: <code>routers/policies.py:201</code> の <code>valid_actions</code>。</p>
-    <table>
-      <thead><tr><th>Action / アクション</th><th>Behavior / 動作</th></tr></thead>
-      <tbody>
-        <tr><td><code>mask</code></td><td>Replaces the matched part with a mask token<br>該当箇所をマスクトークンに置換</td></tr>
-        <tr><td><code>exclude_from_rag</code></td><td>Excludes it from the RAG search targets<br>RAG 検索対象から除外</td></tr>
-        <tr><td><code>log_only</code></td><td>Records the detection only (processing continues)<br>検出のみ記録（処理は通す）</td></tr>
-        <tr><td><code>allow</code></td><td>Allowed (explicitly whitelisted)<br>許可（明示的にホワイトリスト化）</td></tr>
-      </tbody>
-    </table>
+<h3>Actions (4 types) / アクション（4 種）</h3>
+<p>Authoritative definition:<code>valid_actions</code> in<code>routers/policies.py:201</code>.<br>権威定義:<code>routers/policies.py:201</code> の<code>valid_actions</code>。</p>
+<table>
+<thead><tr><th>Action / アクション</th><th>Behavior / 動作</th></tr></thead>
+<tbody>
+<tr><td><code>mask</code></td><td>Replaces the matched part with a mask token<br>該当箇所をマスクトークンに置換</td></tr>
+<tr><td><code>exclude_from_rag</code></td><td>Excludes it from the RAG search targets<br>RAG 検索対象から除外</td></tr>
+<tr><td><code>log_only</code></td><td>Records the detection only (processing continues)<br>検出のみ記録（処理は通す）</td></tr>
+<tr><td><code>allow</code></td><td>Allowed (explicitly whitelisted)<br>許可（明示的にホワイトリスト化）</td></tr>
+</tbody>
+</table>
 
-    <h3>Classification Classes and Seed Policies / 分類クラスと seed ポリシー</h3>
-    <p>Three kinds of policies are registered in the initial seed (<code>db.py</code> L851-870).<br>初期 seed には 3 種類のポリシーが登録されます（<code>db.py</code> L851-870）。</p>
-    <table>
-      <thead><tr><th>policy_id</th><th>Name / 名称</th><th>Definition (excerpt) / 定義（抜粋）</th></tr></thead>
-      <tbody>
-        <tr><td><code>pol-pii</code></td><td>PII protection policy<br>PII 保護ポリシー</td><td>PII → mask, Financial → exclude_from_rag</td></tr>
-        <tr><td><code>pol-strict</code></td><td>Strict control policy<br>厳格管理ポリシー</td><td>PII → mask, Financial → exclude_from_rag, HR → exclude_from_rag</td></tr>
-        <tr><td><code>pol-log</code></td><td>Log-only policy<br>ログのみポリシー</td><td>PII → log_only, Financial → log_only</td></tr>
-      </tbody>
-    </table>
+<h3>Classification Classes and Seed Policies / 分類クラスと seed ポリシー</h3>
+<p>Three kinds of policies are registered in the initial seed (<code>db.py</code> L851-870).<br>初期 seed には 3 種類のポリシーが登録されます（<code>db.py</code> L851-870）。</p>
+<table>
+<thead><tr><th>policy_id</th><th>Name / 名称</th><th>Definition (excerpt) / 定義（抜粋）</th></tr></thead>
+<tbody>
+<tr><td><code>pol-pii</code></td><td>PII protection policy<br>PII 保護ポリシー</td><td>PII → mask, Financial → exclude_from_rag</td></tr>
+<tr><td><code>pol-strict</code></td><td>Strict control policy<br>厳格管理ポリシー</td><td>PII → mask, Financial → exclude_from_rag, HR → exclude_from_rag</td></tr>
+<tr><td><code>pol-log</code></td><td>Log-only policy<br>ログのみポリシー</td><td>PII → log_only, Financial → log_only</td></tr>
+</tbody>
+</table>
 
-    <h3>PII Entity Types (primary, 8 regular expressions) / PII エンティティ種別（一次・正規表現 8 種）</h3>
-    <p>Defined in <code>guardrail.py:137-153</code>.<br><code>guardrail.py:137-153</code> の定義。</p>
-    <table>
-      <thead><tr><th>entity_type</th><th>Mask token / マスクトークン</th><th>Example / 例</th></tr></thead>
-      <tbody>
-        <tr><td><code>URL</code></td><td><code>[MASKED:URL]</code></td><td>https://example.com/private</td></tr>
-        <tr><td><code>EMAIL</code></td><td><code>[MASKED:EMAIL]</code></td><td>sample@example.local</td></tr>
-        <tr><td><code>PHONE_JP</code></td><td><code>[MASKED:PHONE]</code></td><td>090-1234-5678</td></tr>
-        <tr><td><code>PHONE_LAND</code></td><td><code>[MASKED:PHONE]</code></td><td>03-1234-5678</td></tr>
-        <tr><td><code>CREDIT</code></td><td><code>[MASKED:CREDIT]</code></td><td>4111-1111-1111-1111</td></tr>
-        <tr><td><code>MYNUMBER</code></td><td><code>[MASKED:MYNUM]</code></td><td>1234-5678-9012</td></tr>
-        <tr><td><code>PASSPORT</code></td><td><code>[MASKED:PASSPORT]</code></td><td>AB1234567</td></tr>
-        <tr><td><code>IPV4</code></td><td><code>[MASKED:IP]</code></td><td>192.168.1.1</td></tr>
-      </tbody>
-    </table>
+<h3>PII Entity Types (primary, 8 regular expressions) / PII エンティティ種別（一次・正規表現 8 種）</h3>
+<p>Defined in<code>guardrail.py:137-153</code>.<br><code>guardrail.py:137-153</code> の定義。</p>
+<table>
+<thead><tr><th>entity_type</th><th>Mask token / マスクトークン</th><th>Example / 例</th></tr></thead>
+<tbody>
+<tr><td><code>URL</code></td><td><code>[MASKED:URL]</code></td><td>https://example.com/private</td></tr>
+<tr><td><code>EMAIL</code></td><td><code>[MASKED:EMAIL]</code></td><td>sample@example.local</td></tr>
+<tr><td><code>PHONE_JP</code></td><td><code>[MASKED:PHONE]</code></td><td>090-1234-5678</td></tr>
+<tr><td><code>PHONE_LAND</code></td><td><code>[MASKED:PHONE]</code></td><td>03-1234-5678</td></tr>
+<tr><td><code>CREDIT</code></td><td><code>[MASKED:CREDIT]</code></td><td>4111-1111-1111-1111</td></tr>
+<tr><td><code>MYNUMBER</code></td><td><code>[MASKED:MYNUM]</code></td><td>1234-5678-9012</td></tr>
+<tr><td><code>PASSPORT</code></td><td><code>[MASKED:PASSPORT]</code></td><td>AB1234567</td></tr>
+<tr><td><code>IPV4</code></td><td><code>[MASKED:IP]</code></td><td>192.168.1.1</td></tr>
+</tbody>
+</table>
 
-    <h3>Secondary (Presidio + GiNZA NER) Supported Entities / 二次（Presidio + GiNZA NER）対応エンティティ</h3>
-    <p>When <code>pii_mode</code> is <span class="badge standard">standard</span> or <span class="badge quality">quality</span>, <code>utils/metadata/pii.py</code> also detects the following.<br><code>pii_mode</code> が <span class="badge standard">standard</span> または <span class="badge quality">quality</span> のとき、<code>utils/metadata/pii.py</code> が以下も検出します。</p>
-    <table>
-      <thead><tr><th>Category / カテゴリ</th><th>entity_type</th></tr></thead>
-      <tbody>
-        <tr><td>Person / 人物</td><td><code>PERSON_JP</code></td></tr>
-        <tr><td>Organization / 組織</td><td><code>ORG_JP</code></td></tr>
-        <tr><td>Place name / 地名</td><td><code>LOC_JP</code></td></tr>
-        <tr><td>Address / 住所</td><td><code>ADDRESS_JP</code></td></tr>
-        <tr><td>Email / メール</td><td><code>EMAIL_ADDRESS</code></td></tr>
-        <tr><td>Phone number / 電話番号</td><td><code>PHONE_NUMBER</code></td></tr>
-        <tr><td>Date and time / 日時</td><td><code>DATE_TIME</code></td></tr>
-        <tr><td>Internal URL / 内部 URL</td><td><code>INTERNAL_URL</code></td></tr>
-      </tbody>
-    </table>
-  </div>
+<h3>Secondary (Presidio + GiNZA NER) Supported Entities / 二次（Presidio + GiNZA NER）対応エンティティ</h3>
+<p>When<code>pii_mode</code> is<span class="badge standard">standard</span> or<span class="badge quality">quality</span>,<code>utils/metadata/pii.py</code> also detects the following.<br><code>pii_mode</code> が<span class="badge standard">standard</span> または<span class="badge quality">quality</span> のとき、<code>utils/metadata/pii.py</code> が以下も検出します。</p>
+<table>
+<thead><tr><th>Category / カテゴリ</th><th>entity_type</th></tr></thead>
+<tbody>
+<tr><td>Person / 人物</td><td><code>PERSON_JP</code></td></tr>
+<tr><td>Organization / 組織</td><td><code>ORG_JP</code></td></tr>
+<tr><td>Place name / 地名</td><td><code>LOC_JP</code></td></tr>
+<tr><td>Address / 住所</td><td><code>ADDRESS_JP</code></td></tr>
+<tr><td>Email / メール</td><td><code>EMAIL_ADDRESS</code></td></tr>
+<tr><td>Phone number / 電話番号</td><td><code>PHONE_NUMBER</code></td></tr>
+<tr><td>Date and time / 日時</td><td><code>DATE_TIME</code></td></tr>
+<tr><td>Internal URL / 内部 URL</td><td><code>INTERNAL_URL</code></td></tr>
+</tbody>
+</table>
+</div>
 
-  <div class="panel-section">
-    <h2>Three-Layer Prompt Injection Defense / プロンプトインジェクション 3 層防御</h2>
-    <p>The three-layer pipeline in <code>routers/chat.py</code> inspects the input, retrieval, and output stages. On detection, <code>PROMPT_INJECTION_BLOCKED</code> is recorded in <code>audit_logs</code>.<br><code>routers/chat.py</code> の 3 層パイプラインで、入力・取得・出力の各段階を検査します。検出時は <code>audit_logs</code> に <code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
-    <table>
-      <thead><tr><th>Layer / 層</th><th>Function / 関数</th><th>Behavior / 動作</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>Input inspection / 入力検査</td>
-          <td><code>detect_prompt_injection</code></td>
-          <td>Detects 14 English and Japanese patterns &rarr; blocks with HTTP 400<br>14 種の英日パターンを検出 → HTTP 400 で遮断</td>
-        </tr>
-        <tr>
-          <td>Post-retrieval inspection / Retrieval 後検査</td>
-          <td><code>filter_poisoned_chunks</code></td>
-          <td>Excludes the matching chunks before the context is built<br>context 構築前に該当チャンクを除外</td>
-        </tr>
-        <tr>
-          <td>Output inspection / 出力検査</td>
-          <td><code>detect_output_exfiltration</code></td>
-          <td>Detects <code>HACKED</code> / <code>PWNED</code> / <code>SECRET-ALPHA-TOKEN</code> / <code>[SYSTEM OVERRIDE]</code> in the LLM response<br>LLM 応答中の <code>HACKED</code> / <code>PWNED</code> / <code>SECRET-ALPHA-TOKEN</code> / <code>[SYSTEM OVERRIDE]</code> を検知</td>
-        </tr>
-      </tbody>
-    </table>
+<div class="panel-section">
+<h2>Three-Layer Prompt Injection Defense / プロンプトインジェクション 3 層防御</h2>
+<p>The three-layer pipeline in<code>routers/chat.py</code> inspects the input, retrieval, and output stages. On detection,<code>PROMPT_INJECTION_BLOCKED</code> is recorded in<code>audit_logs</code>.<br><code>routers/chat.py</code> の 3 層パイプラインで、入力・取得・出力の各段階を検査します。検出時は<code>audit_logs</code> に<code>PROMPT_INJECTION_BLOCKED</code> を記録します。</p>
+<table>
+<thead><tr><th>Layer / 層</th><th>Function / 関数</th><th>Behavior / 動作</th></tr></thead>
+<tbody>
+<tr>
+<td>Input inspection / 入力検査</td>
+<td><code>detect_prompt_injection</code></td>
+<td>Detects 14 English and Japanese patterns &rarr; blocks with HTTP 400<br>14 種の英日パターンを検出 → HTTP 400 で遮断</td>
+</tr>
+<tr>
+<td>Post-retrieval inspection / Retrieval 後検査</td>
+<td><code>filter_poisoned_chunks</code></td>
+<td>Excludes the matching chunks before the context is built<br>context 構築前に該当チャンクを除外</td>
+</tr>
+<tr>
+<td>Output inspection / 出力検査</td>
+<td><code>detect_output_exfiltration</code></td>
+<td>Detects<code>HACKED</code> /<code>PWNED</code> /<code>SECRET-ALPHA-TOKEN</code> /<code>[SYSTEM OVERRIDE]</code> in the LLM response<br>LLM 応答中の<code>HACKED</code> /<code>PWNED</code> /<code>SECRET-ALPHA-TOKEN</code> /<code>[SYSTEM OVERRIDE]</code> を検知</td>
+</tr>
+</tbody>
+</table>
 
-    <div class="danger-box">
-      <strong>Alpha GA known limitations:</strong> Complete detection of indirect prompt injection (instructions planted inside ingested documents) is planned for Phase 3. At present it relies on the pattern matching in <code>filter_poisoned_chunks</code>.<br>
-      <strong>Alpha GA 既知制限:</strong> 間接プロンプトインジェクション（取り込んだ文書内に仕込まれた指示）の完全検出は Phase 3 で対応予定です。現状は <code>filter_poisoned_chunks</code> のパターンマッチに依存しています。
-    </div>
-  </div>
+<div class="danger-box">
+<strong> known limitations:</strong> Complete detection of indirect prompt injection (instructions planted inside ingested documents) is planned for Phase 3. At present it relies on the pattern matching in<code>filter_poisoned_chunks</code>.<br>
+<strong>既知の制限:</strong> 間接プロンプトインジェクション（取り込んだ文書内に仕込まれた指示）の完全検出は Phase 3 で対応予定です。現状は<code>filter_poisoned_chunks</code> のパターンマッチに依存しています。
+</div>
+</div>
 </div>
 
 </main>
 
 <footer class="cyn-footer">
-  <p><strong>Disclaimer / 免責</strong></p>
-  <p>Cynovela is a completely unofficial learning tool that an individual built in order to understand the concepts of AI platform tools hands-on. It is not a commercial product and contains no source code or official implementation from any referenced product.<br>Cynovela は AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。商用製品ではなく、参照元のソースコード・公式実装は一切含みません。</p>
-  <p>All command examples and setting values in this demo are based on Cynovela's own implementation and do not represent the official position of any particular referenced product.<br>本デモのコマンド例・設定値はすべて Cynovela 自身の実装に基づくものであり、特定の参照元の公式見解を一切代表しません。</p>
-  <p style="margin-top: 8px;">Last updated: 2026-05-26 / Alpha GA edition<br>最終更新: 2026-05-26 / Alpha GA 対応版</p>
+<p><strong>Disclaimer / 免責</strong></p>
+<p>Cynovela is a completely unofficial learning tool that an individual built in order to understand the concepts of AI platform tools hands-on. It is not a commercial product and contains no source code or official implementation from any referenced product.<br>Cynovela は AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。商用製品ではなく、参照元のソースコード・公式実装は一切含みません。</p>
+<p>All command examples and setting values in this demo are based on Cynovela's own implementation and do not represent the official position of any particular referenced product.<br>本デモのコマンド例・設定値はすべて Cynovela 自身の実装に基づくものであり、特定の参照元の公式見解を一切代表しません。</p>
 </footer>
 
 <script>
@@ -945,7 +944,7 @@
   };
 
   function showTab(n) {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i<= 4; i++) {
       const p = document.getElementById('tab-' + i);
       if (p) p.classList.toggle('active', i === n);
     }
@@ -957,7 +956,7 @@
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
+      .replace(</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
@@ -974,7 +973,7 @@
     document.getElementById('pii-detail').textContent  = PII_DETAILS[pii]  || '';
 
     const parts = ['<span class="cmd">python server.py</span>'];
-    parts.push('<span class="flag">--mode</span> <span class="val">' + escapeHtml(mode) + '</span>');
+    parts.push('<span class="flag">--mode</span><span class="val">' + escapeHtml(mode) + '</span>');
     if (demo) parts.push('<span class="flag">' + escapeHtml(demo) + '</span>');
     if (mock) parts.push('<span class="flag">' + escapeHtml(mock) + '</span>');
     if (net) {
@@ -983,7 +982,7 @@
       });
     }
     if (!mock && llm) {
-      parts.push('<span class="flag">--lmstudio-url</span> <span class="val">' + escapeHtml(llm) + '</span>');
+      parts.push('<span class="flag">--lmstudio-url</span><span class="val">' + escapeHtml(llm) + '</span>');
     }
 
     let cmd = parts.join(' ');

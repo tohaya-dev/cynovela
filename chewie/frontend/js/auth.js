@@ -1,4 +1,4 @@
-// auth.js - Cynovela v13
+// auth.js
 
 async function doLoginByPassword() {
   const username = $('login-username').value.trim();

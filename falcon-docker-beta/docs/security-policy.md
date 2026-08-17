@@ -11,7 +11,7 @@
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
 > It does not represent the official position of any company or product.
 
-Cynovela is a learning tool, and it does not meet the security requirements of production operation. This document organizes the explicit disclaimers, the known limitations as of Alpha GA, and the ways of use that are not recommended.
+Cynovela is a learning tool, and it does not meet the security requirements of production operation. This document organizes the explicit disclaimers, the known limitations as of , and the ways of use that are not recommended.
 
 ---
 
@@ -35,7 +35,7 @@ The behavior of features, API signatures, the database schema and setting keys m
 
 ---
 
-## 2. Known limitations as of Alpha GA
+## 2. Known limitations as of
 
 ### 2-1. Authentication and authorization
 
@@ -168,7 +168,6 @@ Cynovela is a personal project, and has no formal vulnerability report contact. 
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -181,7 +180,7 @@ Last updated: 2026-05-26 / Alpha GA edition
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
 
-Cynovela は学習用ツールであり、本番運用のセキュリティ要件を満たすものではありません。本ドキュメントでは明示的な免責、Alpha GA 時点での既知制限、推奨しない使用方法を整理します。
+Cynovela は学習用ツールであり、本番運用のセキュリティ要件を満たすものではありません。本ドキュメントでは明示的な免責、現時点での既知制限、推奨しない使用方法を整理します。
 
 ---
 
@@ -205,7 +204,7 @@ Cynovela の挙動・実装・ドキュメントは、参照元のいかなる�
 
 ---
 
-## 2. Alpha GA 時点の既知制限
+## 2. 既知の制限
 
 ### 2-1. 認証・認可
 
@@ -338,4 +337,3 @@ Cynovela は個人プロジェクトであり、正式な脆弱性報告窓口�
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

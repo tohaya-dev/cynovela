@@ -19,7 +19,7 @@ router = APIRouter(tags=["sessions"])
 def get_session(request: Request, session_id: str):
     """セッションのメッセージ一覧を返す。
 
-    DD-CYN-0095 §3-A: 判定を「その会話を作った本人、または管理者」に統一する
+    §3-A: 判定を「その会話を作った本人、または管理者」に統一する
     (従来は役割だけで一律に管理者限定だった)。他人の会話は従来どおり 403。
     """
     from core.auth import _require_authenticated, require_session_owner
@@ -141,7 +141,7 @@ async def create_session(request: Request):
 def delete_session(request: Request, session_id: str):
     """セッション + 関連メッセージ + RAG参照 を削除する。
 
-    DD-CYN-0095 §3-A: 判定を「その会話を作った本人、または管理者」に統一する。
+    §3-A: 判定を「その会話を作った本人、または管理者」に統一する。
     """
     from core.auth import _require_authenticated, require_session_owner
 
@@ -171,7 +171,7 @@ def delete_session(request: Request, session_id: str):
 def get_session_messages(request: Request, session_id: str):
     """セッション内のメッセージ一覧 (created_at 昇順)。
 
-    DD-CYN-0020 U-3: 一覧の口 (GET /api/sessions) は閲覧者にも「自分の分だけ」を返すのに、
+    U-3: 一覧の口 (GET /api/sessions) は閲覧者にも「自分の分だけ」を返すのに、
     中身を返すこの口だけが無条件に管理者を要求していた。画面の会話記録一覧の「開く」は
     この口を呼ぶため、閲覧者は自分の記録すら開けず 403 になっていた。
     判定を所有権へ変える: 自分のものなら閲覧者も可・他人のものは管理者のみ

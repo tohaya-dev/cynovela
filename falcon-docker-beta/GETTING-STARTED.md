@@ -44,8 +44,8 @@ What to check when it does not work:
 
 ```bash
 cd ~/Downloads                      # tar.gz を置いた場所へ
-tar -xzf <配布物名>.tar.gz
-cd <展開してできたフォルダ>            # 名前は cynovela- で始まります (ls で確認できます)
+tar -xzf<配布物名>.tar.gz
+cd<展開してできたフォルダ>            # 名前は cynovela- で始まります (ls で確認できます)
 ls launch.sh # このファイルが見えれば展開できています
 ```
 
@@ -219,7 +219,7 @@ From a terminal, do it like this.
 
 # 今どれが登録されているか見る／消す
 ./launch.sh --list
-./launch.sh --remove <一覧に出た名前>
+./launch.sh --remove<一覧に出た名前>
 ```
 
 **You can also remove them from the screen** (Settings → 📁 取り込み元 → 「外す」). The list is on the same screen.
@@ -325,8 +325,8 @@ podman machine start
 
 ```bash
 cd ~/Downloads                      # tar.gz を置いた場所へ
-tar -xzf <配布物名>.tar.gz
-cd <展開してできたフォルダ>            # 名前は cynovela- で始まります (ls で確認できます)
+tar -xzf<配布物名>.tar.gz
+cd<展開してできたフォルダ>            # 名前は cynovela- で始まります (ls で確認できます)
 ls launch.sh # このファイルが見えれば展開できています
 ```
 
@@ -500,7 +500,7 @@ Cynovela は資料を探すところまでを担当し、**文章の生成は同
 
 # 今どれが登録されているか見る／消す
 ./launch.sh --list
-./launch.sh --remove <一覧に出た名前>
+./launch.sh --remove<一覧に出た名前>
 ```
 
 **外すのは画面からもできます**（Settings → 📁 取り込み元 → 「外す」）。一覧も同じ画面で見られます。

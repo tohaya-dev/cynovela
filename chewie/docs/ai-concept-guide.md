@@ -146,7 +146,6 @@ Cynovela is a re-implementation, using only OSS and for an individual's learning
 For the formal specification and features of the referenced AI platform tool, please refer to the official documentation of its provider.
 
 ---
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -293,4 +292,3 @@ Cynovela は、参照元の AI 基盤ツールが解こうとしているコン�
 参照元の AI 基盤ツールの正式な仕様や機能については、その提供元の公式ドキュメントを参照してください。
 
 ---
-最終更新: 2026-05-26 / Alpha GA 対応版

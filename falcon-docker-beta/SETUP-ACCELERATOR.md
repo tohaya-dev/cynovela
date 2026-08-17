@@ -39,7 +39,7 @@ This is the procedure for bringing it up without using the startup script.
 
 ```bash
 # ホスト側 (コンテナの外) で。まず、この配布物のフォルダへ移動します。
-cd <この配布物のフォルダ>
+cd<この配布物のフォルダ>
 
 # (1) 外部の推論サーバを動かす場所を、この配布物の中に作る。どちらか一方を選びます。
 #     conda を使う場合 (共有の環境ではなく、場所を指定して作ります)
@@ -167,7 +167,7 @@ The image intake path is only defined for future use and is still unimplemented 
 
 ```bash
 # ホスト側 (コンテナの外) で。まず、この配布物のフォルダへ移動します。
-cd <この配布物のフォルダ>
+cd<この配布物のフォルダ>
 
 # (1) 外部の推論サーバを動かす場所を、この配布物の中に作る。どちらか一方を選びます。
 #     conda を使う場合 (共有の環境ではなく、場所を指定して作ります)

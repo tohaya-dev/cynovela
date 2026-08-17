@@ -563,7 +563,6 @@ If you delete a Source / Workspace / Collection from the UI, both SQLite and Chr
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -1127,4 +1126,3 @@ UI から Source / Workspace / Collection を削除すれば、SQLite と Chroma
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

@@ -1,4 +1,4 @@
-// main.js - Cynovela v13
+// main.js
 
 function bi(en, ja) {
   return '<span class="en">' + en + '</span><span class="ja">' + ja + '</span>';
@@ -759,7 +759,7 @@ async function _fbLoad(path) {
   // multi-ingest-roots-20260728: path 省略時は「起動時に渡されたルートの一覧」= 仮想の最上位
   // (current_path は "")。表示は写像を通し、最上位では「取り込み元」と示す。
   const _atVirtualTop = !data.current_path;
-  // gui-fix-20260803 (DD-CYN-0022): bi() は <span class="en">…</span><span class="ja">…</span> を
+  // gui-fix-20260803 (): bi() は <span class="en">…</span><span class="ja">…</span> を
   //   返す HTML 文字列で、textContent へ入れると印がそのまま字として出る。
   //   同じ関数の下 (選択ボタン) と _displaySourcePath() が使っている lj() は素の文字列を返す。
   //   見出しだけが bi() だったので lj() へ揃える。言語の切り替えの仕組みは足していない。
@@ -1783,7 +1783,7 @@ async function openQuickStartModal() {
       <div style="margin-top:6px;">
         <button class="btn btn-sm" onclick="qsScanFolder()">${bi('📋 Scan (breakdown preview)','📋 スキャン (内訳プレビュー)')}</button>
       </div>
-      <!-- DD-CYN-0094 D -->
+      <!-- D -->
       <div style="margin-top:4px;font-size:12px;color:#64748b;">${lj('If a folder is not in the list, run ./launch.sh --add-path &lt;folder path&gt; in Terminal to register it; it becomes selectable on this screen right away.', '一覧に無いフォルダは、ターミナルで ./launch.sh --add-path &lt;フォルダのパス&gt; を実行して取り込み元に登録すると、この画面からすぐ選べるようになります。')}</div>
 
       <div id="qs-preview-host" style="margin-top:12px;"></div>

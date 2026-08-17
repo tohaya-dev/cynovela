@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FAQ / よくある質問（FAQ） — Cynovela</title>
-  <style>
-/* Cynovela Slide Base CSS — generated 2026-05-26 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ / よくある質問（FAQ） — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
 /* ダークモード禁止: @media prefers-color-scheme は一切書かない */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -198,458 +198,456 @@ a:hover { text-decoration: underline; }
   .slide { display: flex !important; position: relative;
     width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
 }
-  </style>
+</style>
 </head>
 <body>
 <!-- Bilingual deck: the English slides come first, then the same slides in 日本語. / 日英併記のスライドです。英語が先、日本語が後ろです。 -->
 <div class="slide-deck" id="deck">
 
 <div class="slide cover active" id="slide-1">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">Frequently Asked Questions (FAQ)</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / Unofficial, for personal learning</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">Frequently Asked Questions (FAQ)</div>
+<div class="cover-sub">Cynovela — Unofficial, for personal learning</div>
 </div>
 
 <div class="slide" id="slide-2">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">About this document</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>About this document</strong><br>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">About this document</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>About this document</strong><br>
       Cynovela is a completely unofficial learning tool, built so that an individual could understand the concepts of an AI platform tool by working with their own hands. It is not a commercial product and not an official implementation. The implementation is entirely original, and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-3">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q1. What is the difference from the referenced AI platform tool</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela is a learning project that re-implements, using only OSS and so that an individual could understand it by working with their own hands, the concept that the referenced AI platform tool tries to solve (a RAG platform that safely connects in-house documents to a local LLM).</p>
-    <p>The implementation is entirely original, and there is no compatibility with the referenced tool in the source code, the API specification, or the data model. Commercial features, support, and an SLA are not provided.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q1. What is the difference from the referenced AI platform tool</span>
+</div>
+<div class="slide-body">
+<p>Cynovela is a learning project that re-implements, using only OSS and so that an individual could understand it by working with their own hands, the concept that the referenced AI platform tool tries to solve (a RAG platform that safely connects in-house documents to a local LLM).</p>
+<p>The implementation is entirely original, and there is no compatibility with the referenced tool in the source code, the API specification, or the data model. Commercial features, support, and an SLA are not provided.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-4">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q2. What does it mean that the data does not go outside</span>
-  </div>
-  <div class="slide-body">
-    <p>In the default configuration of Cynovela, all of the following are completed in the local environment (a FastAPI server bound to 127.0.0.1).</p>
-    <ul>
-      <li><strong>Document body text</strong>: Stored in SQLite (<code>~/.cynovela/db/cynovela.db</code> and so on) and ChromaDB (<code>~/.cynovela/vector/default/chroma</code> and so on) (A-1).</li>
-      <li><strong>Embedding generation</strong>: In the default mode, BGE-M3 is run locally (A-1 <code>_MODE_MODELS</code>).</li>
-      <li><strong>LLM inference</strong>: Sent with the OpenAI-compatible /v1 API to the local LLM specified by <code>--lmstudio-url</code> (default <code>http://localhost:1234</code>) (A-1, A-5).</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q2. What does it mean that the data does not go outside</span>
+</div>
+<div class="slide-body">
+<p>In the default configuration of Cynovela, all of the following are completed in the local environment (a FastAPI server bound to 127.0.0.1).</p>
+<ul>
+<li><strong>Document body text</strong>: Stored in SQLite (<code>~/.cynovela/db/cynovela.db</code> and so on) and ChromaDB (<code>~/.cynovela/vector/default/chroma</code> and so on) (A-1).</li>
+<li><strong>Embedding generation</strong>: In the default mode, BGE-M3 is run locally (A-1<code>_MODE_MODELS</code>).</li>
+<li><strong>LLM inference</strong>: Sent with the OpenAI-compatible /v1 API to the local LLM specified by<code>--lmstudio-url</code> (default<code>http://localhost:1234</code>) (A-1, A-5).</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-5">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q2. What does it mean that the data does not go outside</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p>External transmission can occur only in the following cases, and all of them require an explicit setting.</p>
-    <ul>
-      <li>When you allow access from other hosts with <code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code> (A-5).</li>
-      <li>When you set <code>reranker.provider</code> to an external API such as <code>cohere</code> / <code>jina</code> / <code>voyage</code> (the A-1 <code>reranker</code> section).</li>
-      <li>When you set <code>execution.llm_provider</code> to <code>openrouter</code> / <code>claude_api</code> (the A-1 <code>execution</code> section).</li>
-    </ul>
-    <p>By default, the IP allowlist middleware rejects access from anything other than loopback with 403 (A-5).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q2. What does it mean that the data does not go outside</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p>External transmission can occur only in the following cases, and all of them require an explicit setting.</p>
+<ul>
+<li>When you allow access from other hosts with<code>--lan</code> /<code>--allow-tailscale</code> /<code>--allow-subnet</code> (A-5).</li>
+<li>When you set<code>reranker.provider</code> to an external API such as<code>cohere</code> /<code>jina</code> /<code>voyage</code> (the A-1<code>reranker</code> section).</li>
+<li>When you set<code>execution.llm_provider</code> to<code>openrouter</code> /<code>claude_api</code> (the A-1<code>execution</code> section).</li>
+</ul>
+<p>By default, the IP allowlist middleware rejects access from anything other than loopback with 403 (A-5).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-6">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q3. What file types can be used</span>
-  </div>
-  <div class="slide-body">
-    <p><code>extract_text()</code> in <code>rag.py</code> is in charge of text extraction (A-3 line 431).</p>
-    <p>For images, an extraction path via OCR (<code>_extract_image_text()</code>, A-3 line 375) is provided, and in the <code>multimedia</code> preset there is a description of support for a mix of images and Office files (the A-3 preset table).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q3. What file types can be used</span>
+</div>
+<div class="slide-body">
+<p><code>extract_text()</code> in<code>rag.py</code> is in charge of text extraction (A-3 line 431).</p>
+<p>For images, an extraction path via OCR (<code>_extract_image_text()</code>, A-3 line 375) is provided, and in the<code>multimedia</code> preset there is a description of support for a mix of images and Office files (the A-3 preset table).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-7">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q4. How much spec is required</span>
-  </div>
-  <div class="slide-body">
-    <p>In every startup mode (<code>--mode</code>), the required models are the same (the switch is not wired, A-1).</p>
-    <table>
-      <thead><tr><th>Mode</th><th>Embedding model</th><th>Size</th><th>Recommended environment</th></tr></thead>
-      <tbody>
-        <tr><td><code>text</code> (default)</td><td>BAAI/bge-m3</td><td>About 2.3GB</td><td>No GPU needed, general purpose</td></tr>
-        <tr><td><code>lite</code></td><td>The switch is <strong>not wired</strong> = it is actually BAAI/bge-m3 (the behavior is the same as text; only the display name changes)</td><td>—</td><td>—</td></tr>
-        <tr><td><code>lite-en</code></td><td>The switch is <strong>not wired</strong> = it is actually BAAI/bge-m3 (the behavior is the same as text; only the display name changes)</td><td>—</td><td>—</td></tr>
-      </tbody>
-    </table>
-    <p>The requirements on the LLM side are needed separately (the <code>--mock</code> option that used to exist, meaning to run without calling an LLM, has been removed). The verification of this repository is done on a MacBook Pro M4 Max 128GB.</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q4. How much spec is required</span>
+</div>
+<div class="slide-body">
+<p>In every startup mode (<code>--mode</code>), the required models are the same (the switch is not wired, A-1).</p>
+<table>
+<thead><tr><th>Mode</th><th>Embedding model</th><th>Size</th><th>Recommended environment</th></tr></thead>
+<tbody>
+<tr><td><code>text</code> (default)</td><td>BAAI/bge-m3</td><td>About 2.3GB</td><td>No GPU needed, general purpose</td></tr>
+<tr><td><code>lite</code></td><td>The switch is<strong>not wired</strong> = it is actually BAAI/bge-m3 (the behavior is the same as text; only the display name changes)</td><td>—</td><td>—</td></tr>
+<tr><td><code>lite-en</code></td><td>The switch is<strong>not wired</strong> = it is actually BAAI/bge-m3 (the behavior is the same as text; only the display name changes)</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+<p>The requirements on the LLM side are needed separately (the<code>--mock</code> option that used to exist, meaning to run without calling an LLM, has been removed). The verification of this repository is done on a MacBook Pro M4 Max 128GB.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-8">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q5. How are documents containing personal information handled</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela handles PII (Personally Identifiable Information) in two stages (A-2).</p>
-    <h4>Tier1 (masking at ingest time)</h4>
-    <p>At Publish time, <code>_mtws_publish</code> (= <code>guardrail.mask_text_with_spans</code>) in <code>rag.py</code> runs and produces both <code>tier="raw"</code> (the raw body text) and <code>tier="masked"</code> (masked) from each chunk. Two collections, <code>{cid}__raw</code> / <code>{cid}__masked</code>, are also created in ChromaDB, and both are stored in the SQLite <code>chunks</code> table as well, with a <code>__masked</code> suffix (A-2 §6).</p>
-    <h4>Tier2 (masking at answer time)</h4>
-    <p><code>_mask_for_viewer</code> runs on the chat answer's LLM output, and for roles other than <code>admin</code> masking is forcibly applied (A-2 §7, <code>routers/chat.py:128-162</code>). The collection the search draws from is also switched by role with <code>tier_for_role(role)</code> (<code>rag.py:1726</code>).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q5. How are documents containing personal information handled</span>
+</div>
+<div class="slide-body">
+<p>Cynovela handles PII (Personally Identifiable Information) in two stages (A-2).</p>
+<h4>Tier1 (masking at ingest time)</h4>
+<p>At Publish time,<code>_mtws_publish</code> (=<code>guardrail.mask_text_with_spans</code>) in<code>rag.py</code> runs and produces both<code>tier="raw"</code> (the raw body text) and<code>tier="masked"</code> (masked) from each chunk. Two collections,<code>{cid}__raw</code> /<code>{cid}__masked</code>, are also created in ChromaDB, and both are stored in the SQLite<code>chunks</code> table as well, with a<code>__masked</code> suffix (A-2 §6).</p>
+<h4>Tier2 (masking at answer time)</h4>
+<p><code>_mask_for_viewer</code> runs on the chat answer's LLM output, and for roles other than<code>admin</code> masking is forcibly applied (A-2 §7,<code>routers/chat.py:128-162</code>). The collection the search draws from is also switched by role with<code>tier_for_role(role)</code> (<code>rag.py:1726</code>).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-9">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q5. How are documents containing personal information handled</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>PII types that are detected</h4>
-    <p>The primary system (regular expressions) has 8 types: URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4. The secondary system (presidio + GiNZA) additionally detects PERSON_JP / ORG_JP / LOC_JP / ADDRESS_JP / DATE_TIME and others (A-2 §4).</p>
-    <h4>Vault encryption</h4>
-    <p>The body text of the <code>raw</code> tier goes through <code>vault_enc.enc_raw()</code> and is encrypted with Fernet before being stored in SQLite / ChromaDB (A-2 §8). The <code>masked</code> side is not encrypted, for search performance (double defense is unnecessary).</p>
-    <h4>PII detection mode</h4>
-    <p>With the <code>pii_mode</code> key in <code>cynovela.yaml</code> you can choose from <code>lite</code> (regular expressions only) / <code>standard</code> (default, Regex + GiNZA NER) / <code>quality</code> (all features) (A-1 §3).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q5. How are documents containing personal information handled</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>PII types that are detected</h4>
+<p>The primary system (regular expressions) has 8 types: URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4. The secondary system (presidio + GiNZA) additionally detects PERSON_JP / ORG_JP / LOC_JP / ADDRESS_JP / DATE_TIME and others (A-2 §4).</p>
+<h4>Vault encryption</h4>
+<p>The body text of the<code>raw</code> tier goes through<code>vault_enc.enc_raw()</code> and is encrypted with Fernet before being stored in SQLite / ChromaDB (A-2 §8). The<code>masked</code> side is not encrypted, for search performance (double defense is unnecessary).</p>
+<h4>PII detection mode</h4>
+<p>With the<code>pii_mode</code> key in<code>cynovela.yaml</code> you can choose from<code>lite</code> (regular expressions only) /<code>standard</code> (default, Regex + GiNZA NER) /<code>quality</code> (all features) (A-1 §3).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-10">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q6. Are there features that do not work</span>
-  </div>
-  <div class="slide-body">
-    <p>Written honestly. Skeleton features (interface only, whose substance throws <code>NotImplementedError</code>) exist as follows (A-6 §1).</p>
-    <table>
-      <thead><tr><th>Feature</th><th>File</th><th>State</th></tr></thead>
-      <tbody>
-        <tr><td>MLX Embedding</td><td><code>providers/embedding.py:105</code></td><td>Planned for future implementation</td></tr>
-        <tr><td>MLX Reranker</td><td><code>providers/reranker.py:216</code></td><td>Planned for future implementation</td></tr>
-        <tr><td>Qdrant VectorStore</td><td><code>providers/vector_store.py:260-272</code></td><td>Skeleton only (add / search / delete / export / import are all unimplemented)</td></tr>
-        <tr><td>LanceDB backend</td><td><code>providers/vector_store.py</code></td><td>Rejected when the package is not installed</td></tr>
-        <tr><td>GraphRAG strategy</td><td><code>services/rag_strategies.py:116</code></td><td>Planned for future implementation</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q6. Are there features that do not work</span>
+</div>
+<div class="slide-body">
+<p>Written honestly. Skeleton features (interface only, whose substance throws<code>NotImplementedError</code>) exist as follows (A-6 §1).</p>
+<table>
+<thead><tr><th>Feature</th><th>File</th><th>State</th></tr></thead>
+<tbody>
+<tr><td>MLX Embedding</td><td><code>providers/embedding.py:105</code></td><td>Planned for future implementation</td></tr>
+<tr><td>MLX Reranker</td><td><code>providers/reranker.py:216</code></td><td>Planned for future implementation</td></tr>
+<tr><td>Qdrant VectorStore</td><td><code>providers/vector_store.py:260-272</code></td><td>Skeleton only (add / search / delete / export / import are all unimplemented)</td></tr>
+<tr><td>LanceDB backend</td><td><code>providers/vector_store.py</code></td><td>Rejected when the package is not installed</td></tr>
+<tr><td>GraphRAG strategy</td><td><code>services/rag_strategies.py:116</code></td><td>Planned for future implementation</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-11">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q6. Are there features that do not work</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>Features that were explicitly abolished (A-6 §2)</h4>
-    <ul>
-      <li>The <code>/chat-popup</code> route (returns 410 Gone)</li>
-      <li>Login with <code>user_id</code> alone (returns 401, changed to require <code>username/password</code>)</li>
-      <li>The unauthenticated allowance in demo mode for <code>/api/auth/users</code> (changed to require <code>admin</code> authentication)</li>
-    </ul>
-    <h4>Features that are defined as settings but whose integration into the search pipeline is partial (A-3 §6, §11)</h4>
-    <ul>
-      <li><code>confidence_threshold</code> (default 0.50) is defined in config, but the logic to exclude low-confidence results is not integrated.</li>
-      <li>Structured answer templates (JSON format, forced tags, and so on) are unimplemented. Answers are free-form.</li>
-    </ul>
-    <p>Authentication is enforced even on a <code>--demo</code> start (the fixed token in the <code>Bearer demo-token-&lt;user_id&gt;</code> form was abolished on 2026-07-29).</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q6. Are there features that do not work</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>Features that were explicitly abolished (A-6 §2)</h4>
+<ul>
+<li>The<code>/chat-popup</code> route (returns 410 Gone)</li>
+<li>Login with<code>user_id</code> alone (returns 401, changed to require<code>username/password</code>)</li>
+<li>The unauthenticated allowance in demo mode for<code>/api/auth/users</code> (changed to require<code>admin</code> authentication)</li>
+</ul>
+<h4>Features that are defined as settings but whose integration into the search pipeline is partial (A-3 §6, §11)</h4>
+<ul>
+<li><code>confidence_threshold</code> (default 0.50) is defined in config, but the logic to exclude low-confidence results is not integrated.</li>
+<li>Structured answer templates (JSON format, forced tags, and so on) are unimplemented. Answers are free-form.</li>
+</ul>
+<p>Authentication is enforced even on a<code>--demo</code> start (the fixed token in the<code>Bearer demo-token-&lt;user_id&gt;</code> form was abolished on 2026-07-29).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide" id="slide-12">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q7. What is the direction from here</span>
-  </div>
-  <div class="slide-body">
-    <p>Improving RAG quality, JWT authentication, and publishing MCP are the main roadmap items. For details, see the BACKLOG.</p>
-    <p style="margin-top:24px; color:var(--cyn-muted); font-size:14px;">Last updated: 2026-05-26 / Alpha GA edition</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>Unofficial / for personal learning / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q7. What is the direction from here</span>
+</div>
+<div class="slide-body">
+<p>Improving RAG quality, JWT authentication, and publishing MCP are the main roadmap items. For details, see the BACKLOG.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>Unofficial / for personal learning</span>
+</div>
 </div>
 
 <div class="slide cover" id="slide-13">
-  <div class="cover-brand">📊 Cynovela</div>
-  <div class="cover-title">よくある質問（FAQ）</div>
-  <div class="cover-sub">Cynovela Alpha GA — 2026-05-26 / 非公式・個人学習目的</div>
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">よくある質問（FAQ）</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
 </div>
 
 <div class="slide" id="slide-14">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">このドキュメントについて</span>
-  </div>
-  <div class="slide-body">
-    <blockquote>
-      <strong>このドキュメントについて</strong><br>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">このドキュメントについて</span>
+</div>
+<div class="slide-body">
+<blockquote>
+<strong>このドキュメントについて</strong><br>
       Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM という OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。
-    </blockquote>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+</blockquote>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-15">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q1. 参照元の AI 基盤ツールとの違いは何ですか</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は、参照元の AI 基盤ツールが解こうとしているコンセプト（社内ドキュメントを安全にローカル LLM へつなぐ RAG 基盤）を、個人が手を動かして理解するために OSS だけで再実装した学習用プロジェクトです。</p>
-    <p>実装はすべてオリジナルで、ソースコード・API 仕様・データモデルに参照元との互換性はありません。商用機能・サポート・SLA は提供しません。</p>
-    <!-- BACKLOG: 参照元ツールの具体的機能との対照表は spec-raw に根拠なし。書かない。 -->
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q1. 参照元の AI 基盤ツールとの違いは何ですか</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は、参照元の AI 基盤ツールが解こうとしているコンセプト（社内ドキュメントを安全にローカル LLM へつなぐ RAG 基盤）を、個人が手を動かして理解するために OSS だけで再実装した学習用プロジェクトです。</p>
+<p>実装はすべてオリジナルで、ソースコード・API 仕様・データモデルに参照元との互換性はありません。商用機能・サポート・SLA は提供しません。</p>
+<!-- BACKLOG: 参照元ツールの具体的機能との対照表は spec-raw に根拠なし。書かない。 -->
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-16">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q2. データが外に出ないとはどういう意味ですか</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela の既定構成では、以下のすべてがローカル環境（127.0.0.1 にバインドされた FastAPI サーバー）で完結します。</p>
-    <ul>
-      <li><strong>文書本文</strong>: SQLite（<code>~/.cynovela/db/cynovela.db</code> 等）と ChromaDB（<code>~/.cynovela/vector/default/chroma</code> 等）に保存（A-1）。</li>
-      <li><strong>Embedding 生成</strong>: 既定モードでは BGE-M3 をローカルで実行（A-1 <code>_MODE_MODELS</code>）。</li>
-      <li><strong>LLM 推論</strong>: <code>--lmstudio-url</code>（既定 <code>http://localhost:1234</code>）で指定したローカル LLM に対して OpenAI 互換 /v1 API で送信（A-1, A-5）。</li>
-    </ul>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q2. データが外に出ないとはどういう意味ですか</span>
+</div>
+<div class="slide-body">
+<p>Cynovela の既定構成では、以下のすべてがローカル環境（127.0.0.1 にバインドされた FastAPI サーバー）で完結します。</p>
+<ul>
+<li><strong>文書本文</strong>: SQLite（<code>~/.cynovela/db/cynovela.db</code> 等）と ChromaDB（<code>~/.cynovela/vector/default/chroma</code> 等）に保存（A-1）。</li>
+<li><strong>Embedding 生成</strong>: 既定モードでは BGE-M3 をローカルで実行（A-1<code>_MODE_MODELS</code>）。</li>
+<li><strong>LLM 推論</strong>:<code>--lmstudio-url</code>（既定<code>http://localhost:1234</code>）で指定したローカル LLM に対して OpenAI 互換 /v1 API で送信（A-1, A-5）。</li>
+</ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-17">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q2. データが外に出ないとはどういう意味ですか</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <p>外部送信が発生し得るのは以下の場合のみで、いずれも明示的な設定が必要です。</p>
-    <ul>
-      <li><code>--lan</code> / <code>--allow-tailscale</code> / <code>--allow-subnet</code> で他ホストからのアクセスを許可した場合（A-5）。</li>
-      <li><code>reranker.provider</code> を <code>cohere</code> / <code>jina</code> / <code>voyage</code> などの外部 API に設定した場合（A-1 <code>reranker</code> セクション）。</li>
-      <li><code>execution.llm_provider</code> を <code>openrouter</code> / <code>claude_api</code> に設定した場合（A-1 <code>execution</code> セクション）。</li>
-    </ul>
-    <p>既定では IP アローリストミドルウェアにより loopback 以外からのアクセスは 403 で拒否されます（A-5）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q2. データが外に出ないとはどういう意味ですか</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<p>外部送信が発生し得るのは以下の場合のみで、いずれも明示的な設定が必要です。</p>
+<ul>
+<li><code>--lan</code> /<code>--allow-tailscale</code> /<code>--allow-subnet</code> で他ホストからのアクセスを許可した場合（A-5）。</li>
+<li><code>reranker.provider</code> を<code>cohere</code> /<code>jina</code> /<code>voyage</code> などの外部 API に設定した場合（A-1<code>reranker</code> セクション）。</li>
+<li><code>execution.llm_provider</code> を<code>openrouter</code> /<code>claude_api</code> に設定した場合（A-1<code>execution</code> セクション）。</li>
+</ul>
+<p>既定では IP アローリストミドルウェアにより loopback 以外からのアクセスは 403 で拒否されます（A-5）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-18">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q3. 使えるファイル種別は何ですか</span>
-  </div>
-  <div class="slide-body">
-    <p><code>rag.py</code> の <code>extract_text()</code> がテキスト抽出を担当します（A-3 行 431）。</p>
-    <p>画像については OCR による抽出経路（<code>_extract_image_text()</code>、A-3 行 375）が用意されており、<code>multimedia</code> プリセットでは画像・Office 混在に対応する記述があります（A-3 プリセット表）。</p>
-    <!-- BACKLOG: extract_text の対応拡張子一覧は spec-raw に列挙がない。確認後追記。 -->
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q3. 使えるファイル種別は何ですか</span>
+</div>
+<div class="slide-body">
+<p><code>rag.py</code> の<code>extract_text()</code> がテキスト抽出を担当します（A-3 行 431）。</p>
+<p>画像については OCR による抽出経路（<code>_extract_image_text()</code>、A-3 行 375）が用意されており、<code>multimedia</code> プリセットでは画像・Office 混在に対応する記述があります（A-3 プリセット表）。</p>
+<!-- BACKLOG: extract_text の対応拡張子一覧は spec-raw に列挙がない。確認後追記。 -->
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-19">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q4. スペック要件はどれくらい必要ですか</span>
-  </div>
-  <div class="slide-body">
-    <p>どの起動モード（<code>--mode</code>）でも、必要なモデルは同じです（切替は未配線・A-1）。</p>
-    <table>
-      <thead><tr><th>モード</th><th>Embedding モデル</th><th>サイズ</th><th>推奨環境</th></tr></thead>
-      <tbody>
-        <tr><td><code>text</code>（既定）</td><td>BAAI/bge-m3</td><td>約 2.3GB</td><td>GPU 不要・汎用</td></tr>
-        <tr><td><code>lite</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
-        <tr><td><code>lite-en</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
-      </tbody>
-    </table>
-    <p>LLM 側の要件は別途必要です（以前あった <code>--mock</code>＝LLM を呼ばずに動かす指定は撤去済みです）。本リポジトリの検証は MacBook Pro M4 Max 128GB で行っています。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q4. スペック要件はどれくらい必要ですか</span>
+</div>
+<div class="slide-body">
+<p>どの起動モード（<code>--mode</code>）でも、必要なモデルは同じです（切替は未配線・A-1）。</p>
+<table>
+<thead><tr><th>モード</th><th>Embedding モデル</th><th>サイズ</th><th>推奨環境</th></tr></thead>
+<tbody>
+<tr><td><code>text</code>（既定）</td><td>BAAI/bge-m3</td><td>約 2.3GB</td><td>GPU 不要・汎用</td></tr>
+<tr><td><code>lite</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
+<tr><td><code>lite-en</code></td><td>切替は<strong>未配線</strong>＝実際は BAAI/bge-m3（動作は text と同じ・表示名が変わるだけです）</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+<p>LLM 側の要件は別途必要です（以前あった<code>--mock</code>＝LLM を呼ばずに動かす指定は撤去済みです）。本リポジトリの検証は MacBook Pro M4 Max 128GB で行っています。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-20">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q5. 個人情報が入った文書はどう扱われますか</span>
-  </div>
-  <div class="slide-body">
-    <p>Cynovela は二段構えで PII（Personally Identifiable Information: 個人情報）を扱います（A-2）。</p>
-    <h4>Tier1（取込時マスキング）</h4>
-    <p>Publish のタイミングで <code>rag.py</code> の <code>_mtws_publish</code>（= <code>guardrail.mask_text_with_spans</code>）が走り、各チャンクから <code>tier="raw"</code>（生本文）と <code>tier="masked"</code>（マスク済み）の両系統を生成します。ChromaDB にも <code>{cid}__raw</code> / <code>{cid}__masked</code> の 2 つの Collection が作られ、SQLite の <code>chunks</code> テーブルにも <code>__masked</code> サフィックス付きで両方保存されます（A-2 §6）。</p>
-    <h4>Tier2（回答時マスキング）</h4>
-    <p>チャットの回答 LLM 出力に対して <code>_mask_for_viewer</code> が動き、<code>admin</code> 以外のロールでは強制的にマスクを適用します（A-2 §7、<code>routers/chat.py:128-162</code>）。検索の引き先 Collection も <code>tier_for_role(role)</code> でロール別に切り替わります（<code>rag.py:1726</code>）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q5. 個人情報が入った文書はどう扱われますか</span>
+</div>
+<div class="slide-body">
+<p>Cynovela は二段構えで PII（Personally Identifiable Information: 個人情報）を扱います（A-2）。</p>
+<h4>Tier1（取込時マスキング）</h4>
+<p>Publish のタイミングで<code>rag.py</code> の<code>_mtws_publish</code>（=<code>guardrail.mask_text_with_spans</code>）が走り、各チャンクから<code>tier="raw"</code>（生本文）と<code>tier="masked"</code>（マスク済み）の両系統を生成します。ChromaDB にも<code>{cid}__raw</code> /<code>{cid}__masked</code> の 2 つの Collection が作られ、SQLite の<code>chunks</code> テーブルにも<code>__masked</code> サフィックス付きで両方保存されます（A-2 §6）。</p>
+<h4>Tier2（回答時マスキング）</h4>
+<p>チャットの回答 LLM 出力に対して<code>_mask_for_viewer</code> が動き、<code>admin</code> 以外のロールでは強制的にマスクを適用します（A-2 §7、<code>routers/chat.py:128-162</code>）。検索の引き先 Collection も<code>tier_for_role(role)</code> でロール別に切り替わります（<code>rag.py:1726</code>）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-21">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q5. 個人情報が入った文書はどう扱われますか</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>検出される PII 種別</h4>
-    <p>一次系（正規表現）は URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4 の 8 種類。二次系（presidio + GiNZA）でさらに PERSON_JP / ORG_JP / LOC_JP / ADDRESS_JP / DATE_TIME などを追加検出します（A-2 §4）。</p>
-    <h4>保管庫暗号化</h4>
-    <p><code>raw</code> tier の本文は <code>vault_enc.enc_raw()</code> を経由して Fernet で暗号化されてから SQLite / ChromaDB に保存されます（A-2 §8）。<code>masked</code> 側は検索性能のため暗号化しません（二重防御不要）。</p>
-    <h4>PII 検出モード</h4>
-    <p><code>cynovela.yaml</code> の <code>pii_mode</code> キーで <code>lite</code>（正規表現のみ）/ <code>standard</code>（既定、Regex + GiNZA NER）/ <code>quality</code>（全機能）から選べます（A-1 §3）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q5. 個人情報が入った文書はどう扱われますか</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>検出される PII 種別</h4>
+<p>一次系（正規表現）は URL / EMAIL / PHONE_JP / PHONE_LAND / CREDIT / MYNUMBER / PASSPORT / IPV4 の 8 種類。二次系（presidio + GiNZA）でさらに PERSON_JP / ORG_JP / LOC_JP / ADDRESS_JP / DATE_TIME などを追加検出します（A-2 §4）。</p>
+<h4>保管庫暗号化</h4>
+<p><code>raw</code> tier の本文は<code>vault_enc.enc_raw()</code> を経由して Fernet で暗号化されてから SQLite / ChromaDB に保存されます（A-2 §8）。<code>masked</code> 側は検索性能のため暗号化しません（二重防御不要）。</p>
+<h4>PII 検出モード</h4>
+<p><code>cynovela.yaml</code> の<code>pii_mode</code> キーで<code>lite</code>（正規表現のみ）/<code>standard</code>（既定、Regex + GiNZA NER）/<code>quality</code>（全機能）から選べます（A-1 §3）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-22">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q6. 動かない機能はありますか</span>
-  </div>
-  <div class="slide-body">
-    <p>正直に書きます。スケルトン（インターフェイスのみで実体は <code>NotImplementedError</code> を投げる）の機能が以下に存在します（A-6 §1）。</p>
-    <table>
-      <thead><tr><th>機能</th><th>ファイル</th><th>状態</th></tr></thead>
-      <tbody>
-        <tr><td>MLX Embedding</td><td><code>providers/embedding.py:105</code></td><td>将来実装予定</td></tr>
-        <tr><td>MLX Reranker</td><td><code>providers/reranker.py:216</code></td><td>将来実装予定</td></tr>
-        <tr><td>Qdrant VectorStore</td><td><code>providers/vector_store.py:260-272</code></td><td>骨格のみ（add / search / delete / export / import すべて未実装）</td></tr>
-        <tr><td>LanceDB バックエンド</td><td><code>providers/vector_store.py</code></td><td>パッケージ未導入時に拒否</td></tr>
-        <tr><td>GraphRAG 戦略</td><td><code>services/rag_strategies.py:116</code></td><td>将来実装予定</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q6. 動かない機能はありますか</span>
+</div>
+<div class="slide-body">
+<p>正直に書きます。スケルトン（インターフェイスのみで実体は<code>NotImplementedError</code> を投げる）の機能が以下に存在します（A-6 §1）。</p>
+<table>
+<thead><tr><th>機能</th><th>ファイル</th><th>状態</th></tr></thead>
+<tbody>
+<tr><td>MLX Embedding</td><td><code>providers/embedding.py:105</code></td><td>将来実装予定</td></tr>
+<tr><td>MLX Reranker</td><td><code>providers/reranker.py:216</code></td><td>将来実装予定</td></tr>
+<tr><td>Qdrant VectorStore</td><td><code>providers/vector_store.py:260-272</code></td><td>骨格のみ（add / search / delete / export / import すべて未実装）</td></tr>
+<tr><td>LanceDB バックエンド</td><td><code>providers/vector_store.py</code></td><td>パッケージ未導入時に拒否</td></tr>
+<tr><td>GraphRAG 戦略</td><td><code>services/rag_strategies.py:116</code></td><td>将来実装予定</td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-23">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q6. 動かない機能はありますか</span>
-    <span class="continued">(2/2)</span>
-  </div>
-  <div class="slide-body">
-    <h4>明示的に廃止された機能（A-6 §2）</h4>
-    <ul>
-      <li><code>/chat-popup</code> ルート（410 Gone を返却）</li>
-      <li><code>user_id</code> 単独ログイン（401 を返却、<code>username/password</code> 必須に変更）</li>
-      <li><code>/api/auth/users</code> のデモモード未認証許可（<code>admin</code> 認証必須に変更）</li>
-    </ul>
-    <h4>設定としては定義されているが、検索パイプラインへの統合が部分的な機能（A-3 §6, §11）</h4>
-    <ul>
-      <li><code>confidence_threshold</code>（既定 0.50）は config に定義済みだが、低信頼度結果の除外ロジックは未統合。</li>
-      <li>構造化回答テンプレート（JSON 形式・タグ強制など）は未実装。回答は自由形式。</li>
-    </ul>
-    <p>認証強制は <code>--demo</code> 起動でも掛かります（<code>Bearer demo-token-&lt;user_id&gt;</code> 形式の固定トークンは 2026-07-29 に廃止）。</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q6. 動かない機能はありますか</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+<h4>明示的に廃止された機能（A-6 §2）</h4>
+<ul>
+<li><code>/chat-popup</code> ルート（410 Gone を返却）</li>
+<li><code>user_id</code> 単独ログイン（401 を返却、<code>username/password</code> 必須に変更）</li>
+<li><code>/api/auth/users</code> のデモモード未認証許可（<code>admin</code> 認証必須に変更）</li>
+</ul>
+<h4>設定としては定義されているが、検索パイプラインへの統合が部分的な機能（A-3 §6, §11）</h4>
+<ul>
+<li><code>confidence_threshold</code>（既定 0.50）は config に定義済みだが、低信頼度結果の除外ロジックは未統合。</li>
+<li>構造化回答テンプレート（JSON 形式・タグ強制など）は未実装。回答は自由形式。</li>
+</ul>
+<p>認証強制は<code>--demo</code> 起動でも掛かります（<code>Bearer demo-token-&lt;user_id&gt;</code> 形式の固定トークンは 2026-07-29 に廃止）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 <div class="slide" id="slide-24">
-  <div class="slide-header">
-    <span class="doc-name">FAQ</span>
-    <span class="slide-title">Q7. 今後の方向性は何ですか</span>
-  </div>
-  <div class="slide-body">
-    <p>RAG 品質の向上、JWT 認証、MCP 公開などが主要なロードマップ項目です。詳細は BACKLOG を参照してください。</p>
-    <!-- BACKLOG: ロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。 -->
-    <p style="margin-top:24px; color:var(--cyn-muted); font-size:14px;">最終更新: 2026-05-26 / Alpha GA 対応版</p>
-  </div>
-  <div class="slide-footer">
-    <span class="brand">Cyno<span class="accent">vela</span></span>
-    <span>非公式・個人学習目的 / Alpha GA</span>
-  </div>
+<div class="slide-header">
+<span class="doc-name">FAQ</span>
+<span class="slide-title">Q7. 今後の方向性は何ですか</span>
+</div>
+<div class="slide-body">
+<p>RAG 品質の向上、JWT 認証、MCP 公開などが主要なロードマップ項目です。詳細は BACKLOG を参照してください。</p>
+<!-- BACKLOG: ロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。 -->
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
 </div>
 
 </div>
 <nav class="nav-bar">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
-  <span id="slide-counter">1 / 24</span>
-  <button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
+<button id="btn-prev" onclick="navigate(-1)">← Prev / 前へ</button>
+<span id="slide-counter">1 / 24</span>
+<button id="btn-next" onclick="navigate(1)">Next / 次へ →</button>
 </nav>
 <script>
 let current = 0;

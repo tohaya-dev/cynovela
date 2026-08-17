@@ -45,8 +45,8 @@ If something does not work, check the following:
 
 ```bash
 cd ~/Downloads                      # Go to where you put the tar.gz
-tar -xzf <配布物名>.tar.gz
-cd <展開してできたフォルダ>            # The name starts with cynovela- (you can check it with ls)
+tar -xzf<配布物名>.tar.gz
+cd<展開してできたフォルダ>            # The name starts with cynovela- (you can check it with ls)
 ls launch.sh # If you can see this file, the package extracted correctly
 ```
 
@@ -239,7 +239,7 @@ From the Terminal, do it as follows.
 
 # See which folders are registered now / remove one
 ./launch.sh --list
-./launch.sh --remove <一覧に出た名前>
+./launch.sh --remove<一覧に出た名前>
 ```
 
 **You can also remove them from the screen** (Settings → 📁 取り込み元 → "外す"). The list is visible on the same screen.
@@ -345,8 +345,8 @@ podman machine start
 
 ```bash
 cd ~/Downloads                      # tar.gz を置いた場所へ
-tar -xzf <配布物名>.tar.gz
-cd <展開してできたフォルダ>            # 名前は cynovela- で始まります (ls で確認できます)
+tar -xzf<配布物名>.tar.gz
+cd<展開してできたフォルダ>            # 名前は cynovela- で始まります (ls で確認できます)
 ls launch.sh # このファイルが見えれば展開できています
 ```
 
@@ -537,7 +537,7 @@ Python（3.12 系）はその最初の一度で配布物の中に用意されま
 
 # 今どれが登録されているか見る／消す
 ./launch.sh --list
-./launch.sh --remove <一覧に出た名前>
+./launch.sh --remove<一覧に出た名前>
 ```
 
 **外すのは画面からもできます**（Settings → 📁 取り込み元 → 「外す」）。一覧も同じ画面で見られます。

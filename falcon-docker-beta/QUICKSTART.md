@@ -28,7 +28,7 @@ and **`Cynovela-add-folder.command`**. These 3 are the only ones you touch.
 This form runs on top of a **container**.
 For that reason, **Podman is required.** If it is not installed, install it first.
 
-1. Get Podman Desktop from <https://podman.io/> and install it.
+1. Get Podman Desktop from<https://podman.io/> and install it.
 2. Open Podman Desktop and start it once by following the on-screen instructions
    (to use it from a terminal, run `podman machine init` and then `podman machine start`).
 3. After that, double-click `Cynovela-start.command`.
@@ -149,7 +149,7 @@ the same network). When you want to limit it to your own machine only, add `--lo
 この形は **コンテナ** の上で動きます。
 そのため、**Podman が必要です。** 入っていない場合は、先に入れてください。
 
-1. <https://podman.io/> から Podman Desktop を受け取って入れます。
+1.<https://podman.io/> から Podman Desktop を受け取って入れます。
 2. Podman Desktop を開き、画面の指示に従って一度起動します
    （ターミナルから使う場合は `podman machine init` のあと `podman machine start`）。
 3. そのあとで `Cynovela-start.command` をダブルクリックします。

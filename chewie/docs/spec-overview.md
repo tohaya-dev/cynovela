@@ -12,7 +12,7 @@
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
 > It does not represent the official position of any company or product.
 
-This document organizes the features confirmed as of Cynovela Alpha GA and the known limitations, so that they can be seen at a glance. For detailed specifications and the reasoning behind the design, see each individual document.
+This document organizes the features confirmed as of Cynovela  and the known limitations, so that they can be seen at a glance. For detailed specifications and the reasoning behind the design, see each individual document.
 
 ---
 
@@ -94,7 +94,7 @@ For details, see `docs/api-reference.md`.
 
 ---
 
-## 3. Known limitations (as of Alpha GA)
+## 3. Known limitations
 
 ### 3.1 Features that are only an abstract base or whose implementation stays a skeleton
 
@@ -143,7 +143,6 @@ The priority topics toward Beta GA, as read from the CHANGELOG, are as follows.
 
 ---
 
-Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
@@ -156,7 +155,7 @@ Last updated: 2026-05-26 / Alpha GA edition
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
 
-このドキュメントは、Cynovela Alpha GA 時点で確認済みの機能と既知制限を一望できるように整理したものです。詳細な仕様や設計の根拠は各個別ドキュメントを参照してください。
+このドキュメントは、現時点で確認済みの機能と既知制限を一望できるように整理したものです。詳細な仕様や設計の根拠は各個別ドキュメントを参照してください。
 
 ---
 
@@ -238,7 +237,7 @@ Last updated: 2026-05-26 / Alpha GA edition
 
 ---
 
-## 3. 既知制限（Alpha GA 時点）
+## 3. 既知の制限
 
 ### 3.1 抽象基底のみ・実装が骨格に留まる機能
 
@@ -289,4 +288,3 @@ CHANGELOG から読み取れる、Beta GA に向けた重点課題は次のと�
 
 ---
 
-最終更新: 2026-05-26 / Alpha GA 対応版

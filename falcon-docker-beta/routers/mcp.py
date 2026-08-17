@@ -23,7 +23,7 @@ def mcp_config(request: Request):
     py_path = os.environ.get("CYNOVELA_MCP_PYTHON") or sys.executable or "python"
     server_path = os.path.join(repo_root, "mcp_server.py")
     # fixall-B5 20260602: ポート 8765 のリテラル直書きを撤去。
-    # DD-CYN-0053: 受け渡しを環境変数からやめた。server.py が起動時に入れる値を最優先、
+    # 受け渡しを環境変数からやめた。server.py が起動時に入れる値を最優先、
     # 無ければ現リクエストの port、最後に既定 8765 を使う。
     from core import runtime as _runtime
     _port = _runtime.SERVER_PORT or (request.url.port if request.url.port else None) or 8765

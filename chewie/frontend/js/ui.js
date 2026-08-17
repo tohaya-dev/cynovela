@@ -1,4 +1,4 @@
-// ui.js - Cynovela v13
+// ui.js
 
 function showToast(msg, type = 'info') {
   const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
@@ -432,7 +432,7 @@ async function startPublishStream(colId) {
       return;
     }
   } catch (e) {
-    // U-8 (DD-CYN-0020): 差分が取れないときは「変更が無い」とも「ある」とも言えない。
+    // U-8 (): 差分が取れないときは「変更が無い」とも「ある」とも言えない。
     //   判断できないので素通しで公開へ進ませず、失敗の中身を画面に出して止める
     //   (フェイルクローズ)。以前はここを黙って通していた。
     console.warn('publish-diff check failed (blocking):', e);
@@ -660,11 +660,11 @@ async function qsExecute(folder, preset, mode, policyId, policyLabel, qualityLab
   const ts = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
   const wsName = `Quick_${ts}`;
   const colName = `Quick_${ts}_collection`;
-  // DD-CYN-0089 §6-A: 失敗したときに、どの資料の可視化パネルを閉じればよいかを
+  // §6-A: 失敗したときに、どの資料の可視化パネルを閉じればよいかを
   //   catch から知るためのバックアップ。col は try の中の const なので catch からは見えない。
   let _qsColId = null;
   try {
-    // DD-CYN-0091 A: 作業場所には、その時点で在る閲覧者(viewer)の役割の利用者を全員含める。
+    // A: 作業場所には、その時点で在る閲覧者(viewer)の役割の利用者を全員含める。
     //   管理者が画面から作る道 (openWsModal) は user_ids を明示で渡すため、その既定は変わらない。
     let _qsUserIds = ['user-admin'];
     try {
@@ -675,7 +675,7 @@ async function qsExecute(folder, preset, mode, policyId, policyLabel, qualityLab
       _qsUserIds = Array.from(new Set(['user-admin', ..._viewerIds]));
     } catch (e) { console.warn('quickstart: viewer list fetch failed (continuing with admin only):', e); }
 
-    // DD-CYN-0091 C: 同じ取り込み元 (source.path) に既にまとまりが在るなら、新しく作らず
+    // C: 同じ取り込み元 (source.path) に既にまとまりが在るなら、新しく作らず
     //   そのまとまりを更新する。照合は取り込み元の識別子 (path) で行う。名前や時刻では照合しない。
     //   複数見つかったときは最も新しいものを更新する (§16-7)。
     let ws = null, src = null, col = null, _qsReused = false;
@@ -777,7 +777,7 @@ async function qsExecute(folder, preset, mode, policyId, policyLabel, qualityLab
       onFail: () => { navigate('collections'); },
     });
   } catch (e) {
-    // DD-CYN-0089 §6-A: ここが showToast だけだったため、次の2つが同時に起きていた。
+    // §6-A: ここが showToast だけだったため、次の2つが同時に起きていた。
     //   1. 可視化パネル (.iv-overlay) が「準備中…」のまま残る。押したのに何も
     //      起きていないように見える。公開の開始が拒否された場合、サーバは job の行を
     //      作らないので、後から /api/jobs/{id} を引いて追い直す道も無い。

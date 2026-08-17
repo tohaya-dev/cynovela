@@ -270,7 +270,7 @@ def _mask_for_viewer(text: str, user: dict | None) -> str:
       - tier_for_role(role) == "raw"    → 素通し (= admin・素側保管庫の利用者)
       - tier_for_role(role) == "masked" → マスク (= viewer/未設定・伏せ側保管庫)
 
-    設計正本 (pageId 36694ef8-ac04-811c-9194-ce7d73a85098):
+    設計正本 ():
       管理者階層 (素側保管庫) は raw 本文をそのまま読む。一般階層 (伏せ側保管庫)
       はマスキング済み本文しか読まない。本関数は LLM 生成出力 (自己 prompt の echo・
       捂造 PII 形式) に対する出口防御で、振り分けと同じ tier 判定に従う。
@@ -1189,7 +1189,7 @@ async def chat(request: Request):
             {"role": "user", "content": query},
         ]
         try:
-            # DD-CYN-0094 A: 空を渡さず、本回答と同じ源 (settings) から宛先とモデルを渡す
+            # A: 空を渡さず、本回答と同じ源 (settings) から宛先とモデルを渡す
             from core.llm import _resolve_active_llm as _resolve_g
             _ep_g, _mdl_g = _resolve_g()
             general_answer, _ = await _guarded_call_llm(
@@ -1213,7 +1213,7 @@ async def chat(request: Request):
             logger.exception(f"general mode LLM failed: {e}")
             from llm_adapter import ModelNotFoundError as _MNF_g
             if isinstance(e, _MNF_g):
-                general_answer = str(e)  # DD-CYN-0094 C: 理由と名前を画面に出す
+                general_answer = str(e)  # C: 理由と名前を画面に出す
             else:
                 general_answer = "LLMへの接続に失敗しました。しばらくしてから再度お試しください。"
         return {
@@ -1345,7 +1345,7 @@ async def chat(request: Request):
         _tier = _effective_send_tier(user_role, _send_ep)
         # mock ('localhost') 等 URL でない値は従来どおり yaml フォールバックに委ねる
         _aux_ep = _send_ep if (_send_ep or "").startswith("http") else ""
-        # DD-CYN-0094 A: 補助3機能 (HyDE / Multi-Query / CRAG) も本回答と同じ源 (settings) の
+        # A: 補助3機能 (HyDE / Multi-Query / CRAG) も本回答と同じ源 (settings) の
         # モデル名で動かす。"auto"/空は未指定として受け皿側の従来挙動に委ねる。
         from core.llm import _resolve_active_llm as _resolve_aux
         _, _aux_model_raw = _resolve_aux()
@@ -1380,14 +1380,14 @@ async def chat(request: Request):
             from rag import generate_hyde_text
 
             # ga-finish-20260727 (Part2-1): チャット経路が解決済みの実効宛先を渡す
-            _search_q = await generate_hyde_text(query, endpoint=_aux_ep, model_id=_aux_model)  # DD-CYN-0094 A
+            _search_q = await generate_hyde_text(query, endpoint=_aux_ep, model_id=_aux_model)  # A
         else:
             _search_q = query
 
         if _mq_on and _mq_n > 1:
             from rag import expand_query_variants, rag_retrieve_multi
 
-            _variants = await expand_query_variants(_search_q, n=_mq_n, endpoint=_aux_ep, model_id=_aux_model)  # DD-CYN-0094 A
+            _variants = await expand_query_variants(_search_q, n=_mq_n, endpoint=_aux_ep, model_id=_aux_model)  # A
             hits, vector_elapsed, full_contents = await rag_retrieve_multi(
                 _variants,
                 workspace_id,
@@ -1530,7 +1530,7 @@ async def chat(request: Request):
                 for h in hits[:3]
             )
             # ga-finish-20260727 (Part2-1): チャット経路が解決済みの実効宛先を渡す
-            _verdict = await crag_evaluate(query, _ctx_preview, endpoint=_aux_ep, model_id=_aux_model)  # DD-CYN-0094 A
+            _verdict = await crag_evaluate(query, _ctx_preview, endpoint=_aux_ep, model_id=_aux_model)  # A
             crag_verdict_for_log = _verdict.get("verdict")
             if _verdict.get("verdict") in ("PARTIAL", "NG"):
                 _follow_q = _verdict.get("keywords") or _verdict.get("improved_query") or ""
@@ -1779,7 +1779,7 @@ async def chat(request: Request):
         model_id_display = ""
         from llm_adapter import ModelNotFoundError as _MNF_m
         if isinstance(e, _MNF_m):
-            answer = str(e)  # DD-CYN-0094 C: 理由と名前を画面に出す（汎用文言で覆わない）
+            answer = str(e)  # C: 理由と名前を画面に出す（汎用文言で覆わない）
         elif _is_timeout:
             answer = "回答の生成に時間がかかり、タイムアウトしました。参照ドキュメント数を減らすか、しばらくしてから再度お試しください。"
         else:
@@ -2443,7 +2443,7 @@ async def generate_followups(request: Request):
     provider3way-suggestq-20260629: 生成後、取得済み previews(コーパス)と内容が重なる
     候補だけに絞る (コーパスが答えを持たない候補=空振りを提示しない)。
 
-    DD-CYN-0020 U-9: 受け口を閲覧者にも通す (従来は冒頭で _require_admin=403 だったため、
+    U-9: 受け口を閲覧者にも通す (従来は冒頭で _require_admin=403 だったため、
     閲覧者には次の質問候補が無表示・無告知で消えていた)。閲覧者へ返す候補は「閲覧者が
     見てよい範囲」だけから作る: LLM へ送る回答断片・プレビューを出口マスク
     (_mask_for_viewer) に通し、生成された候補も返す直前にもう一度通す。素側保管庫の
@@ -2461,7 +2461,7 @@ async def generate_followups(request: Request):
     #   候補のコーパス照合に使う (空なら従来どおりフィルタ無し)。
     previews = body.get("previews") or []
     if not answer or len(answer) < 20:
-        # DD-CYN-0095 §3-C: 材料 (answer) が渡されなかった・短すぎるときは、黙って空を
+        # §3-C: 材料 (answer) が渡されなかった・短すぎるときは、黙って空を
         #   返さず、その会話 (session_id) の直近のやり取りからサーバ側で材料を補う。
         #   会話の所有権は本回答と同じ判定 (本人または管理者) に通す。
         _fu_sid = (body.get("session_id") or "").strip()
@@ -2489,11 +2489,11 @@ async def generate_followups(request: Request):
             # 補えないときだけ空にし、理由を返す
             return {"followups": [], "reason": "answer_too_short"}
 
-    # DD-CYN-0020 U-9: 伏せ側保管庫の利用者には、マスキング後の本文だけを材料にする。
+    # U-9: 伏せ側保管庫の利用者には、マスキング後の本文だけを材料にする。
     answer = _mask_for_viewer(answer, user)
     previews = [_mask_for_viewer(str(p or ""), user) for p in previews]
 
-    # DD-CYN-0095 §3-B: 非ローカル宛 (OpenRouter 等) でも候補生成を諦めない。ただし外へ
+    # §3-B: 非ローカル宛 (OpenRouter 等) でも候補生成を諦めない。ただし外へ
     #   出す材料は、本回答の外部送出と同じ判定 (_effective_send_tier が非ローカル宛を
     #   masked に強制する) と同じ部品 (guardrail.mask_text_with_spans) でマスキングを掛けた
     #   あとのものに限る。∴ 外へ出る文字は本回答で既に出ているものを超えない。
@@ -2521,11 +2521,11 @@ async def generate_followups(request: Request):
         {"role": "system", "content": "あなたは質問生成AIです。指定されたJSON形式のみで回答してください。"},
         {"role": "user", "content": user_msg},
     ]
-    # DD-CYN-0095 §3-B: 旧 egress-guard (非ローカル宛は送らず空返し) はここに在ったが、
+    # §3-B: 旧 egress-guard (非ローカル宛は送らず空返し) はここに在ったが、
     #   上の「マスキングを掛けてから送る」形に置き換えた (prompt を組む前にマスキングを済ませる)。
     try:
         adapter = get_current_adapter()
-        # DD-CYN-0094 A: 空を渡さず、本回答と同じ源 (settings) から宛先とモデルを渡す
+        # A: 空を渡さず、本回答と同じ源 (settings) から宛先とモデルを渡す
         from core.llm import _resolve_active_llm as _resolve_fu
         _fu_ep2, _fu_model = _resolve_fu()
         result, _ = await _guarded_call_llm(messages, _fu_ep2, _fu_model, 0.3, adapter)
@@ -2534,7 +2534,7 @@ async def generate_followups(request: Request):
     except Exception as e:
         from llm_adapter import ModelNotFoundError as _MNF_f
         if isinstance(e, _MNF_f):
-            # DD-CYN-0094 C: 本回答側と同じ理由 (モデル名つき) を画面へ運ぶ
+            # C: 本回答側と同じ理由 (モデル名つき) を画面へ運ぶ
             return {"followups": [], "error": str(e), "reason": "model_not_found"}
         logger.exception(f"followups LLM call failed: {e}")
         return {"followups": [], "error": "internal error", "reason": "llm_call_failed"}
@@ -2551,11 +2551,11 @@ async def generate_followups(request: Request):
         _generated = len(questions)
         # コーパス照合: コーパス(previews＋根拠付き回答)に根拠が無い候補(空振り)を落とす。
         questions = _filter_followups_by_corpus(questions, previews, answer)
-        # DD-CYN-0020 U-9: 返す直前にも出口マスクを通す (伏せ側保管庫の利用者へ、生成物に
+        # U-9: 返す直前にも出口マスクを通す (伏せ側保管庫の利用者へ、生成物に
         #   混じった PII 形式が素で出ないようにする defense in depth)。
         questions = [_mask_for_viewer(q, user) for q in questions][:3]
         if not questions:
-            # DD-CYN-0020 U-9: 0 枚の理由を返す。生成が 0 件だったのか、コーパス照合で
+            # U-9: 0 枚の理由を返す。生成が 0 件だったのか、コーパス照合で
             #   全部落ちたのかを画面が区別して出せるようにする (黙って消さない)。
             return {
                 "followups": [],
@@ -2638,7 +2638,7 @@ async def chat_stream(workspace_id: str, request: Request):
                 # fix-security-batch-v2 (2026-05-28) Sub-2F-1: SSE 経路の access_levels を
                 # 同期経路と同じロジックに統一する。
                 #
-                # two-entries-align-20260731 (DD-CYN-0007 B9): 上の注記は「統一する」と
+                # two-entries-align-20260731 (B9): 上の注記は「統一する」と
                 #   書いていたのに、直下のコードが同期経路とずれていた。同じ利用者が
                 #   同じ質問をしても、画面の歯車にあるストリーミングの入切だけで
                 #   internal の資料が見えたり見えなかったりしていた。同期経路と揃える。
@@ -2654,7 +2654,7 @@ async def chat_stream(workspace_id: str, request: Request):
                 ).fetchall()
                 collection_ids = [c["id"] for c in cols]
 
-                # two-entries-align-20260731 (DD-CYN-0007 B9): 検索できるコレクションが
+                # two-entries-align-20260731 (B9): 検索できるコレクションが
                 #   1 件も無いときのガイドを同期経路と揃える。従来は SSE 経路だけ早期返しが
                 #   無く、理由の説明が無いまま 0 件で流れていた (受け取り手からは
                 #   「質問しても何も出ない」に見える)。
@@ -2763,7 +2763,7 @@ async def chat_stream(workspace_id: str, request: Request):
             )
             _tier_sse = _effective_send_tier(user_role, _sse_send_ep)
             _sse_aux_ep = _sse_send_ep if (_sse_send_ep or "").startswith("http") else ""
-            # DD-CYN-0094 A: SSE 経路の補助3機能も本回答と同じ源 (settings) のモデル名で動かす
+            # A: SSE 経路の補助3機能も本回答と同じ源 (settings) のモデル名で動かす
             from core.llm import _resolve_active_llm as _resolve_sse_aux
             _, _sse_aux_model_raw = _resolve_sse_aux()
             _sse_aux_model = "" if (_sse_aux_model_raw or "") in ("", "auto") else _sse_aux_model_raw
@@ -2791,14 +2791,14 @@ async def chat_stream(workspace_id: str, request: Request):
             if _sse_hyde_on:
                 from rag import generate_hyde_text as _sse_hyde
 
-                _sse_search_q = await _sse_hyde(effective_query, endpoint=_sse_aux_ep, model_id=_sse_aux_model)  # DD-CYN-0094 A
+                _sse_search_q = await _sse_hyde(effective_query, endpoint=_sse_aux_ep, model_id=_sse_aux_model)  # A
             else:
                 _sse_search_q = effective_query
 
             if _sse_mq_on and _sse_mq_n > 1:
                 from rag import expand_query_variants as _sse_eqv, rag_retrieve_multi as _sse_rrm
 
-                _sse_variants = await _sse_eqv(_sse_search_q, n=_sse_mq_n, endpoint=_sse_aux_ep, model_id=_sse_aux_model)  # DD-CYN-0094 A
+                _sse_variants = await _sse_eqv(_sse_search_q, n=_sse_mq_n, endpoint=_sse_aux_ep, model_id=_sse_aux_model)  # A
                 hits, vec_elapsed, full_contents = await _sse_rrm(
                     _sse_variants,
                     workspace_id,
@@ -2933,7 +2933,7 @@ async def chat_stream(workspace_id: str, request: Request):
                     (full_contents.get(getattr(h, "chunk_id", ""), getattr(h, "content_preview", "")) or "")[:300]
                     for h in hits[:3]
                 )
-                _sse_verdict = await _sse_crag(effective_query, _sse_ctx_preview, endpoint=_sse_aux_ep, model_id=_sse_aux_model)  # DD-CYN-0094 A
+                _sse_verdict = await _sse_crag(effective_query, _sse_ctx_preview, endpoint=_sse_aux_ep, model_id=_sse_aux_model)  # A
                 if _sse_verdict.get("verdict") in ("PARTIAL", "NG"):
                     _sse_follow_q = _sse_verdict.get("keywords") or _sse_verdict.get("improved_query") or ""
                     if _sse_follow_q.strip():
@@ -3111,7 +3111,7 @@ async def chat_stream(workspace_id: str, request: Request):
                 logger.exception(f"LLM stream failed ({'timeout' if _is_timeout else 'connection'}): {e}")
                 from llm_adapter import ModelNotFoundError as _MNF_s
                 if isinstance(e, _MNF_s):
-                    answer = str(e)  # DD-CYN-0094 C: 理由と名前を画面に出す（汎用文言で覆わない）
+                    answer = str(e)  # C: 理由と名前を画面に出す（汎用文言で覆わない）
                 elif _is_timeout:
                     answer = "回答の生成に時間がかかり、タイムアウトしました。参照ドキュメント数を減らすか、しばらくしてから再度お試しください。"
                 else:
@@ -3323,7 +3323,7 @@ def full_export_workspace(request: Request, workspace_id: str):
 
         # ベクターデータをコレクション毎に JSONL で書き込む
         chroma = _get_chroma()
-        # DD-CYN-0020 U-4: 書き出す埋め込みモデル名を直書きしない。いまのモデル名の読み手は
+        # U-4: 書き出す埋め込みモデル名を直書きしない。いまのモデル名の読み手は
         #   rag._current_embedding_model_name() の 1 か所 (画面の設定欄・開発者パネルと同じ入手元)。
         #   従来は実際に何で埋め込んだかに関わらず "BAAI/bge-m3" と書いていたため、
         #   外出しの埋め込みや別モデルへ切り替えた後の書き出し物が事実と食い違っていた。
@@ -3444,7 +3444,7 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
     # フルエクスポートZIPか判定
     include_vectors = bool(meta.get("include_vectors"))
     if include_vectors:
-        # DD-CYN-0020 U-4: 読み込み側の判定も同じ読み手を基準にする (書き出しと同一コミットで揃える)。
+        # U-4: 読み込み側の判定も同じ読み手を基準にする (書き出しと同一コミットで揃える)。
         #   後方互換: 旧い書き出し物は、実際に何で埋め込んだかに関わらず必ず "BAAI/bge-m3" と
         #   書いていた。その値は従来どおり受け入れる (受け入れる範囲を狭めない)。
         from rag import _current_embedding_model_name as _emb_model_name

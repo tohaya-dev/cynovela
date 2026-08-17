@@ -466,7 +466,7 @@ def _call_tool(name: str, args: dict) -> str:
         # ── publish_collection ──────────────────
         elif name == "publish_collection":
             col_id = args["collection_id"]
-            # DD-CYN-0095 §6-6-2: Publish は埋め込みの計算を伴い 120 秒を超えることがある
+            # §6-6-2: Publish は埋め込みの計算を伴い 120 秒を超えることがある
             #   (ホスト直起動で実測)。答えが返らないまま期限切れになっていたため長くする。
             r = requests.post(f"{BASE}/api/collections/{col_id}/publish", headers=h, json={}, timeout=600)
             r.raise_for_status()

@@ -176,9 +176,9 @@ filterwarnings = [
 ]
 
 [project]
-name = "cynovela-v13-verify"
+name = "cynovela--verify"
 version = "0.0.0"
-description = "Cynovela v13 verification project (internal)"
+description = "Cynovela verification project (internal)"
 requires-python = ">=3.12"  # fixall-B2 20260602: environment.yml が python=3.12.13 を固定。検証runtimeは3.12系
 
 [project.optional-dependencies]

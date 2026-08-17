@@ -67,7 +67,7 @@ class APIClassifier(ClassifierProvider):
 
     def __init__(self, api_url: str = "", api_key: str = ""):
         self.api_url = (api_url or "").rstrip("/")
-        self.api_key = api_key or ""  # DD-CYN-0067 G-2: 鍵は設定/画面からのみ (env 読みを撤去)
+        self.api_key = api_key or ""  # G-2: 鍵は設定/画面からのみ (env 読みを撤去)
 
     def _headers(self) -> dict:
         h = {"Content-Type": "application/json"}
