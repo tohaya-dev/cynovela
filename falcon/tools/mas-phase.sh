@@ -211,7 +211,7 @@ mas_phase_apply() {
         skip)
             echo ""
             echo "[外部の推論サーバ] 使わずに進みます。埋め込みはコンテナの中の CPU で行われます。"
-            echo "         あとで立てたいときは SETUP-ACCELERATOR.md を見てください。"
+            echo "         あとで立てたいときは docs/SETUP-ACCELERATOR.md を見てください。"
             return 0
             ;;
         use-env)
@@ -256,7 +256,7 @@ mas_phase_apply() {
             ;;
     esac
 
-    # 立てる (SETUP-ACCELERATOR.md の手順どおり)
+    # 立てる (docs/SETUP-ACCELERATOR.md の手順どおり)
     echo ""
     echo "[外部の推論サーバ] 立てます: $py mas/mas_server.py --preload"
     echo "         記録はこのファイルへ書きます: $MAS_LOG"
@@ -301,7 +301,7 @@ mas_report_missing() {
     echo "     - $MAS_REQ に書いた4件"
     echo "     - 埋め込みモデル bge-m3 の保存先: $WRAP_DIR/store/models"
     echo ""
-    echo "   手で立てる手順は SETUP-ACCELERATOR.md に書いてあります。"
+    echo "   手で立てる手順は docs/SETUP-ACCELERATOR.md に書いてあります。"
     echo "   外部の推論サーバを使わずに進めたいときは、もう一度このファイルを叩いて 4) を選んでください。"
     echo ""
 }

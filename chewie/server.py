@@ -3077,7 +3077,7 @@ def _preflight_model_check(args) -> bool:
             logger.error("[Cynovela] 次のどちらかで進められます:")
             logger.error("[Cynovela]   A) ネットワーク接続を確かめて、もう一度起動する")
             logger.error(
-                f"[Cynovela]   B) SETUP-ACCELERATOR.md の手順でモデルを {save_dir} へ置いてから起動する"
+                f"[Cynovela]   B) docs/SETUP-ACCELERATOR.md の手順でモデルを {save_dir} へ置いてから起動する"
             )
             # 失敗を exit 2 で知らせる (包み・自動実行が失敗を検出できるように)
             sys.exit(2)

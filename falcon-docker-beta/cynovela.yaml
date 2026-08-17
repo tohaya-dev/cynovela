@@ -86,7 +86,7 @@ pii_mode: standard
 auth:
   admin_initial_password: 'Cynovela1!'
   # N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) に
-  #   案内 (STARTUP.md) と同じ値が書かれる。空のままだと初回起動時に乱数が使われる。
+  #   案内 (docs/STARTUP.md) と同じ値が書かれる。空のままだと初回起動時に乱数が使われる。
   viewer_initial_password: 'demo1234'
 vector_store:
   provider: chromadb

@@ -13,7 +13,7 @@
 > It does not represent the official position of any company or product.
 
 This document describes what Cynovela **cannot** do. Explanations of what it can do are in
-`README.md` and `QUICKSTART.md`. Only the things that will disappoint you if you expect them
+`README.md` and `quickstart.md`. Only the things that will disappoint you if you expect them
 are written here.
 
 The version is `1.0.2` (`APP_VERSION` in `core/version.py` is the only source, and
@@ -418,7 +418,7 @@ In that case, restarting invalidates any issued passes (logging in again works).
 > 会社・製品の公式見解を一切代表しません。
 
 この文書は、Cynovela に **できないこと** を書いたものです。できることの説明は
-`README.md` と `QUICKSTART.md` にあります。ここには、期待すると外れることだけを書きます。
+`README.md` と `quickstart.md` にあります。ここには、期待すると外れることだけを書きます。
 
 版は `1.0.2` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。

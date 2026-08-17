@@ -6,7 +6,7 @@
 
 This is the shortest procedure from starting Cynovela for the first time to sending your first RAG question. The target is version `1.0.2` (working directory `<the folder where the package was extracted>`).
 
-> For an even shorter startup note, see [STARTUP.md](../STARTUP.md).
+> For an even shorter startup note, see [STARTUP.md](STARTUP.md).
 
 ---
 
@@ -196,7 +196,7 @@ For anything else, see [faq.md](faq.md).
 
 Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.0.2`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
 
-> さらに短い起動メモは [STARTUP.md](../STARTUP.md) を参照してください。
+> さらに短い起動メモは [STARTUP.md](STARTUP.md) を参照してください。
 
 ---
 

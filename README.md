@@ -56,8 +56,8 @@ The docker-beta package is a single file named
    first sign-in.
 Every guide inside the packages is bilingual: English first, Japanese after.
 If this is your first time, start from `HAJIMETE.md`
-([falcon](falcon/HAJIMETE.md) / [chewie](chewie/HAJIMETE.md) /
-[falcon-docker-beta](falcon-docker-beta/HAJIMETE.md)), then `STARTUP.md`.
+([falcon](falcon/docs/HAJIMETE.md) / [chewie](chewie/docs/HAJIMETE.md) /
+[falcon-docker-beta](falcon-docker-beta/docs/HAJIMETE.md)), then `STARTUP.md`.
 ## What it does not do
 - **Masking is not complete.** It applies pattern-based replacement before text
   leaves the machine, but it does not catch everything. Known gaps include names

@@ -231,7 +231,7 @@ on runCheckFlow(repo)
 	end if
 end runCheckFlow
 
--- 使う前のご注意 (免責5点。中身は NOTICE.md を読み込む)
+-- 使う前のご注意 (免責5点。中身は README.md を読み込む)
 on noticeDialog(repo)
 	set t to runCore(repo, "doc notice")
 	display dialog t buttons {"キャンセル", "読みました"} default button "読みました" with title "使う前のご注意"

@@ -127,7 +127,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://localhost:8765   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初のパスワードは同梱の STARTUP.md の「ログイン」の節にあります。
+             最初のパスワードは同梱の docs/STARTUP.md の「ログイン」の節にあります。
              管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 
@@ -384,7 +384,7 @@ _ask_model_if_missing() {
             _sel="$(osascript -e 'POSIX path of (choose folder with prompt "bge-m3 が入っているフォルダを選んでください")' 2>/dev/null || true)"
             if [ -n "$_sel" ]; then
                 echo "  → 選ばれた場所: $_sel"
-                echo "     この場所を読ませるには SETUP-ACCELERATOR.md の手順で"
+                echo "     この場所を読ませるには docs/SETUP-ACCELERATOR.md の手順で"
                 echo "     $MODEL_DIR/snapshots/<版>/ へ置いてください。"
             else
                 echo "  → 選ばれませんでした。いちばん軽い設定で始めます。"
@@ -956,9 +956,9 @@ run_probe() {
         #   ダウンロードに失敗したときは本体が exit 2 と進め方の名指しで知らせる。
         #   (旧 F-1 の blocker は、本体が入力の終わりで黙って落ちていた頃の塞ぎ)
         if [ ! -t 0 ] || [ "$NO_PROMPT" = "1" ]; then
-            add_warning "埋め込みモデル bge-m3 が手元にありません。この起動の仕方では確認を出せないため、起動の中でダウンロードを試みます (インターネットにつなぎます)。先に自分で置く場合は SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
+            add_warning "埋め込みモデル bge-m3 が手元にありません。この起動の仕方では確認を出せないため、起動の中でダウンロードを試みます (インターネットにつなぎます)。先に自分で置く場合は docs/SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
         else
-            add_warning "埋め込みモデル bge-m3 が手元にありません。このまま起動すると、ダウンロードするかどうかの確認が出ます。先に自分で置く場合は SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
+            add_warning "埋め込みモデル bge-m3 が手元にありません。このまま起動すると、ダウンロードするかどうかの確認が出ます。先に自分で置く場合は docs/SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
         fi
     fi
 
@@ -1330,7 +1330,7 @@ print_next_steps() {
     echo "  ■ 入り方"
     echo "      管理者の利用者名: cynovela"
     echo "      閲覧者の利用者名: demo"
-    echo "      最初のパスワードは、同梱の STARTUP.md の「ログイン」の節に書いてあります。"
+    echo "      最初のパスワードは、同梱の docs/STARTUP.md の「ログイン」の節に書いてあります。"
     echo "      (この画面には印字しません。別便で受け取るファイルはありません。)"
     echo "      管理者は初回にパスワードの変更を求められます。"
     echo ""

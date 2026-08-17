@@ -143,7 +143,7 @@ fi
 # bundled-config-20260731: モデル保存先が無いまま podman へ渡すと、bind 元不在で
 #   'Error: statfs ... no such file or directory' という素の失敗になり、受け取り手には
 #   何をすればよいか分からない。軽量版は store/models を同梱しないため必ずここに当たる。
-#   先に自分で検出して、SETUP-ACCELERATOR.md の手順を名指しで示す。
+#   先に自分で検出して、docs/SETUP-ACCELERATOR.md の手順を名指しで示す。
 if [ ! -d "$MODEL_ROOT" ]; then
   echo "[models] 埋め込みモデルの保存先がありません: $MODEL_ROOT" >&2
   echo "[models] この配布物はモデルを同梱していません。次のどちらかで進められます。" >&2
@@ -151,7 +151,7 @@ if [ ! -d "$MODEL_ROOT" ]; then
   echo "[models]      ※ ダウンロード元とネットの具合によっては失敗することがあります。" >&2
   echo "[models]   B) 持っているフォルダをつなぐ: cynovela.yaml の paths: の models_dir: に" >&2
   echo "[models]      models--BAAI--bge-m3 が入っているフォルダの場所を書く" >&2
-  echo "[models] 保存先の形は SETUP-ACCELERATOR.md の手順に合わせてください。" >&2
+  echo "[models] 保存先の形は docs/SETUP-ACCELERATOR.md の手順に合わせてください。" >&2
   exit 2
 fi
 

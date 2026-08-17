@@ -13,7 +13,7 @@
 > It does not represent the official position of any company or product.
 
 This document describes what Cynovela **cannot** do. An explanation of what it can do is
-in `README.md` and `QUICKSTART.md`. Here we only write the things that will not meet your expectations.
+in `README.md` and `quickstart.md`. Here we only write the things that will not meet your expectations.
 
 The version is `` (`APP_VERSION` in `core/version.py` is the only source of this
 value, and `GET /api/health` and `/docs` read it from there).
@@ -412,7 +412,7 @@ issued become invalid after a restart (logging in again works).
 > 会社・製品の公式見解を一切代表しません。
 
 この文書は、Cynovela に **できないこと** を書いたものです。できることの説明は
-`README.md` と `QUICKSTART.md` にあります。ここには、期待すると外れることだけを書きます。
+`README.md` と `quickstart.md` にあります。ここには、期待すると外れることだけを書きます。
 
 版は `` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。

@@ -4,7 +4,7 @@
 
 ## English
 
-If this is your first time, please start with QUICKSTART.md.
+If this is your first time, please start with quickstart.md.
 
 This guide is written so that you can get all the way to the end with only the 2 items you received.
 
@@ -285,7 +285,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 
 # 日本語
 
-はじめて使う方は QUICKSTART.md からどうぞ。
+はじめて使う方は quickstart.md からどうぞ。
 
 受け取ったもの 2 点だけで、最後まで進められるようにした手引きです。
 

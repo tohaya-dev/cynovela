@@ -6,7 +6,7 @@
 
 Cynovela Startup and Operations Guide.
 
-If this is your first time, please start with QUICKSTART.md.
+If this is your first time, please start with quickstart.md.
 
 ## Everyday startup procedure
 
@@ -204,7 +204,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 
 # 日本語
 
-はじめて使う方は QUICKSTART.md からどうぞ。
+はじめて使う方は quickstart.md からどうぞ。
 
 ## 日常の起動手順
 

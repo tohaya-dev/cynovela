@@ -4,7 +4,7 @@
 
 ## English
 
-If this is your first time, please start from QUICKSTART.md.
+If this is your first time, please start from quickstart.md.
 
 ## Everyday startup steps
 
@@ -214,7 +214,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 
 # 日本語
 
-はじめて使う方は QUICKSTART.md からどうぞ。
+はじめて使う方は quickstart.md からどうぞ。
 
 ## 日常の起動手順
 

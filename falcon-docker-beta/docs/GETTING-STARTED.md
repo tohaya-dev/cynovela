@@ -4,7 +4,7 @@
 
 ## English
 
-If this is your first time, please start with QUICKSTART.md.
+If this is your first time, please start with quickstart.md.
 
 This is a guide written so that you can go all the way through with only the 2 things you received.
 
@@ -284,7 +284,7 @@ podman stop cynovela-all-in-one
 
 # 日本語
 
-はじめて使う方は QUICKSTART.md からどうぞ。
+はじめて使う方は quickstart.md からどうぞ。
 
 受け取ったもの 2 点だけで、最後まで進められるようにした手引きです。
 

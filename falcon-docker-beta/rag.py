@@ -1085,7 +1085,7 @@ def _get_chroma_embedding_function():
             device=_ef_device,
         )
     except Exception as _e:
-        _msg = _embedding_model_missing_message(model_name, _store_models, _hf_folder, cache_dir, _e, "SETUP-ACCELERATOR.md")
+        _msg = _embedding_model_missing_message(model_name, _store_models, _hf_folder, cache_dir, _e, "docs/SETUP-ACCELERATOR.md")
         _note_embedding_model_load_error(model_name, os.path.join(_store_models, _hf_folder), _msg)
         _log.error(_msg)
         raise RuntimeError(_msg) from _e

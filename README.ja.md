@@ -51,8 +51,8 @@
    管理者は最初のログインでパスワードの変更を求められます。
 配布物の中の手引きは、すべて英語と日本語の併記です（英語が先・日本語が後ろ）。
 はじめての方は `HAJIMETE.md`
-（[falcon](falcon/HAJIMETE.md) ／ [chewie](chewie/HAJIMETE.md) ／
-[falcon-docker-beta](falcon-docker-beta/HAJIMETE.md)）から読み、そのあと `STARTUP.md` へ進んでください。
+（[falcon](falcon/docs/HAJIMETE.md) ／ [chewie](chewie/docs/HAJIMETE.md) ／
+[falcon-docker-beta](falcon-docker-beta/docs/HAJIMETE.md)）から読み、そのあと `STARTUP.md` へ進んでください。
 ## できないこと
 - **マスキングは完全ではありません。** 外へ出す前に型に合わせた置き換えを行いますが、
   取りこぼしは起こります。分かっているものだけでも、ふりがなの氏名、住所の番地
