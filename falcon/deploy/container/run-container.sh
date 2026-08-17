@@ -312,7 +312,7 @@ if true; then
       echo "[roots] mount: /app/ingest/dummy-corpus <- $REPO/dummy-corpus (:ro)"
     else
       DEFAULT_INGEST_USED=0
-      echo "[roots] 取り込み元が1件もありません。画面の 設定 → 取り込み元、または"
+      echo "[roots] 取り込み元が1件もありません。画面の 設定 → 検索の対象フォルダ、または"
       echo "[roots] ./launch.sh --add で足してください"
     fi
   fi

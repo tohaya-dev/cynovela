@@ -4,37 +4,68 @@
 
 ## 1.0.3 (2026-08-17)
 
-A documentation release. **Nothing in the program changes**, and nothing about
-your ingested material, settings or keys changes. If you are on 1.0.2, you only
-need this if you want the English documentation.
+A fix and usability release. Nothing about your ingested material, settings or
+keys changes — a 1.0.2 installation can be replaced in place.
 
 ### What changed
 
-**1. Every bundled document is now bilingual**
+**1. Files added after the first publish now reach the search (fix)**
 
-Until 1.0.2, only the README was in English; everything else — the startup
-guide, the getting-started guide, the reference documents under `docs/`, the
-slide decks — was Japanese only. All of it now carries English as well, with
-**English first and Japanese after**, and a link at the top of each file that
-jumps to the Japanese half.
+When you added a file to a folder that was already ingested and rescanned it,
+the screen said it was detected — but the file never appeared in search or in
+answers, and the re-publish button said "no changes since the last publish".
+The cause: newly found files were never attached to any collection. The
+collections screen now shows a notice — "This collection does not include N
+new file(s)" — with an **Add** button, and the re-publish button now states
+this as its reason. After adding, press Publish as usual. Nothing is attached
+or published automatically: you decide what the tool may read.
 
-**2. `HOW-TO-ASSEMBLE.md` is now in the repository**
+**2. Start-up now always asks about your search folders**
 
-The guide for joining the split all-in-one packages used to exist only as a
-release attachment. It is now kept in the repository as well, in both
-languages, so you can read it before downloading anything.
+`--demo` used to skip the folder question entirely, and then the screen asked
+you to add folders — a contradiction. Demo start now asks one question ("add
+your own folder too?"). A first-time guide now appears once: in the terminal
+just before that question, and in the app as a short four-page tour after the
+first sign-in. It explains what will happen, how to connect a language model
+(LM Studio or Ollama, both running inside your Mac), what to ask first, and
+that a local model can take about 30 seconds before it starts answering.
+`--no-prompt` still asks nothing and shows nothing.
 
-**3. The README now links to the first-time guide**
+**3. The chat workspace list updates without reloading the browser (fix)**
 
-`README.md` and `README.ja.md` link to `HAJIMETE.md` and to
-`HOW-TO-ASSEMBLE.md`, so the cover page leads to both.
+A newly published workspace now appears in the chat selector as soon as you
+enter the chat screen.
+
+**4. Initial passwords are no longer written in any file (security)**
+
+The initial passwords are gone from the repository and from the documents.
+The package prints the sign-in name and password on the screen at the first
+start only, and you are asked to change it at the first sign-in.
+
+**5. Certificate problems on inspected networks are now visible (fix)**
+
+When conda or pip fail behind a company network that replaces certificates,
+the raw output is now shown together with concrete instructions for pointing
+conda/pip at the company CA. Certificate environment variables
+(`SSL_CERT_FILE` and friends) are only dropped when they point at files that
+do not exist — a real company certificate is left alone.
+
+**6. Documents**
+
+- Every bundled document is bilingual, **English first and Japanese after**,
+  with a link at the top that jumps to the Japanese half.
+- The "before you start" notice lives in `docs/NOTICE.md`, and the launcher
+  reads it from there.
+- `HOW-TO-ASSEMBLE.md` is kept in the repository, so you can read it before
+  downloading anything.
+- `START-HERE.md` explains the three ways to add search folders.
+- Wording: screens and guides now consistently say "search folders"
+  (検索の対象フォルダ).
 
 ### What has not changed
 
-- The screens, the operations, and the API are unchanged
 - Ingested documents, settings, and keys work as they are
 - The masking mechanism and the permission mechanism are unchanged
-- The Japanese text of every document is unchanged; it only moved down the page
 
 ## 1.0.2 (2026-08-17)
 
@@ -152,36 +183,65 @@ from the old folder into the new one before starting.
 
 ## 1.0.3 (2026-08-17)
 
-ドキュメントだけの版です。**プログラムは何も変わりません。** 取り込んだ資料・
-設定・鍵も変わりません。1.0.2 をお使いの方は、英語のドキュメントが要るとき
-だけ入れ替えてください。
+不具合の修正と使い勝手の版です。取り込んだ資料・設定・鍵は何も変わりません。
+1.0.2 をお使いの方は、そのまま入れ替えてお使いいただけます。
 
 ### 変えたこと
 
-**1. 同梱のドキュメントを全て日英併記にしました**
+**1. あとから足したファイルが検索に載るようになりました（修正）**
 
-1.0.2 までは英語があるのは README だけで、起動の手引きも、はじめての方への
-ガイドも、`docs/` の下の資料も、スライドも日本語だけでした。これらすべてに
-英語を足し、**英語が先・日本語が後ろ**に並べました。各ファイルの冒頭には
-日本語の節へ飛ぶリンクを置いてあります。
+取り込み済みのフォルダにファイルを1つ足して再スキャンすると、画面は
+「検知した」と出すのに、そのファイルは検索にも回答にも出てこず、再 Publish の
+ボタンは「前回の Publish から変更がありません」と言って押せませんでした。
+原因は、見つかった新しいファイルがどのコレクションにも紐づけられないこと
+でした。コレクションの一覧に「このコレクションに入っていない新しいファイルが
+N 件あります」の知らせと **追加する** ボタンを出し、再 Publish のボタンも
+この理由を言うようにしました。追加したら、これまでどおり Publish を押して
+ください。勝手に追加も公開もしません。何を読むかは、あなたが決めます。
 
-**2. `HOW-TO-ASSEMBLE.md` をリポジトリに置きました**
+**2. 起動のとき、検索の対象フォルダを必ず聞くようにしました**
 
-分割した全部入りをつなぐ手引きは、これまでリリースの添付ファイルとしてしか
-ありませんでした。リポジトリにも日英併記で置いたので、ダウンロードする前に
-読めます。
+これまで `--demo` を付けるとフォルダの問いが丸ごと飛ばされ、そのあと画面で
+「足してください」と促される矛盾がありました。デモ起動でも1問だけ
+（「自分のフォルダも足しますか？」）聞きます。あわせて「はじめての方へ」の
+案内を初回だけ出します。ターミナルでは問いの直前に、画面では初回ログインの
+あとに4枚で、これから進む順番・言語モデルのつなぎ方（LM Studio / Ollama。
+どちらも Mac の中で動きます）・最初に試す質問・Mac の中の言語モデルは応答
+まで 30 秒ほどかかることを説明します。`--no-prompt` のときは今までどおり
+何も聞かず、何も出しません。
 
-**3. 表紙から、はじめての方へのガイドへ行けるようにしました**
+**3. チャットのワークスペース一覧が、ブラウザを更新しなくても最新になります（修正）**
 
-`README.md`・`README.ja.md` から `HAJIMETE.md` と `HOW-TO-ASSEMBLE.md` へ
-リンクを張りました。
+新しく公開したワークスペースが、チャット画面へ入り直すだけで選択肢に出ます。
+
+**4. 最初のパスワードを、どのファイルにも書かないようにしました（セキュリティ）**
+
+リポジトリとドキュメントから初期パスワードの平文を消しました。配布物は
+はじめて起動したときだけ、ログインの名前とパスワードを画面に出します。
+最初のログインで変更を求められます。
+
+**5. 証明書で止まる問題を、見えるようにしました（修正）**
+
+会社のネットワークで証明書が差し替わって conda / pip が失敗したとき、
+生の出力と、会社の証明書を conda / pip に教える具体的な手順を出します。
+証明書の環境変数（`SSL_CERT_FILE` など）は、指し先が実在しないものだけを
+外します。実在する会社の証明書はそのまま使われます。
+
+**6. ドキュメント**
+
+- 同梱のドキュメントは全て日英併記です。**英語が先・日本語が後ろ**で、
+  冒頭に日本語の節へ飛ぶリンクがあります。
+- 「使う前のご注意」は `docs/NOTICE.md` に置き、起動の画面もそこから
+  読みます。
+- `HOW-TO-ASSEMBLE.md` をリポジトリに置いたので、ダウンロードする前に
+  読めます。
+- `START-HERE.md` に、検索の対象フォルダの足し方を3通り書きました。
+- 画面と手引きの言い回しを「検索の対象フォルダ」にそろえました。
 
 ### 変えていないこと
 
-- 画面・操作・API は変わりません
 - 取り込んだ資料、設定、鍵はそのまま使えます
 - マスキングの仕組み、権限の仕組みは変わりません
-- 各ドキュメントの日本語の本文は書き換えていません。位置が後ろへ移っただけです
 
 ## 1.0.2 (2026-08-17)
 

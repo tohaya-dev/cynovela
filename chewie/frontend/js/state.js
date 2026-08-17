@@ -3728,20 +3728,23 @@ window._frtOpenAddFolder = function () {
 window._frtCopySample = function () {
   const text = document.getElementById('frt-sample-q')?.textContent || '資料の概要を教えてください';
   const done = () => showToast(lj('Copied.', 'コピーしました。'), 'success');
+  // clipboard API が無い・拒否された、どちらのときも textarea 経由の退避コピーへ倒す。
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      done();
+    } catch {}
+  };
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done, () => {});
+      navigator.clipboard.writeText(text).then(done, fallback);
       return;
     }
   } catch {}
-  // http などで clipboard API が使えないときの退避
-  try {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    ta.remove();
-    done();
-  } catch {}
+  fallback();
 };
