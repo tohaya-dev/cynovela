@@ -830,7 +830,7 @@ function _pickFolderFiles() {
   tmp.click();
 }
 
-// fix-llm-endpoint-unify-20260618: フォルダ窓の「表示専用」名札写像。
+// fix-llm-endpoint-unify-20260618: フォルダウィンドウの「表示専用」名札写像。
 // /app/ingest はコンテナ内部名なので Mac の取り込みフォルダ ~/Cynovela と分かる表示に置換する。
 // 注意: 表示文字列のみ。実 currentPath / 送信パス / 上へ遷移 / 選択値 / 403 境界には一切影響しない。
 function _ingestBoxLabel(p) {

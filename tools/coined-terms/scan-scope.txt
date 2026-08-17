@@ -16,7 +16,9 @@
 # 区間を閉じる (両端を含めて外す)。1ファイル内に同じ形の区間が複数あってよい。
 #
 # 対象の配布物: falcon / chewie / falcon-docker-beta の3つ + リポジトリ直下の *.md
-# 対象の拡張子: .md .txt .html .sh .py .command
+# 対象の拡張子: .md .txt .html .sh .py .command .js
+#   .js は frontend/js/ のみ。同じ画面の文言が html と js に分かれており、
+#   片方だけ見ると1つの画面で用語が割れたまま素通りするため (DD-CYN-0122 で実際に起きた)。
 # 対象の考え方: 「当機が書いた文章」と「受け取り手の画面に出る文言」だけ。
 #
 # hansolo/ は決定 §61 により走査対象に入れない (GitHub 公開絶対禁止のため
@@ -49,6 +51,7 @@ include	falcon/docs/*.html
 include	falcon/docs/html/*.html
 include	falcon/docs/html/*.md
 include	falcon/frontend/*.html
+include	falcon/frontend/js/*.js
 include	falcon/mas/*.py
 include	falcon/migrations/*.py
 include	falcon/providers/*.py
@@ -77,6 +80,7 @@ include	chewie/docs/*.html
 include	chewie/docs/html/*.html
 include	chewie/docs/html/*.md
 include	chewie/frontend/*.html
+include	chewie/frontend/js/*.js
 include	chewie/mas/*.py
 include	chewie/migrations/*.py
 include	chewie/providers/*.py
@@ -106,6 +110,7 @@ include	falcon-docker-beta/docs/*.html
 include	falcon-docker-beta/docs/html/*.html
 include	falcon-docker-beta/docs/html/*.md
 include	falcon-docker-beta/frontend/*.html
+include	falcon-docker-beta/frontend/js/*.js
 include	falcon-docker-beta/mas/*.py
 include	falcon-docker-beta/migrations/*.py
 include	falcon-docker-beta/providers/*.py
