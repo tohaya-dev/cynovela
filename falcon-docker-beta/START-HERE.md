@@ -67,7 +67,7 @@ This package is the **container build (Docker, in-development beta)**.
 
 | ファイル | 何が書いてあるか |
 |---|---|
-| `docs/HAJIMETE.md` | いちばんやさしい案内。開いてから最初の答えが返るまで |
+| `docs/HAJIMETE.md` | いちばんやさしいガイド。開いてから最初の答えが返るまで |
 | `docs/GETTING-STARTED.md` | 同じ範囲をより詳しく、順を追って |
 | `docs/quickstart.md` | 急ぐ方向けの短い手順 |
 | `docs/STARTUP.md` | 起動の形・ポート・ログイン・起動しないときの対処 |

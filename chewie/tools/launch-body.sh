@@ -1023,16 +1023,57 @@ count_env_deps() {
     grep -cE '^[[:space:]]+- ' "$ENV_FILE" 2>/dev/null || printf '0'
 }
 
+# 直前の run_with_progress の生の出力を置く場所。失敗したときに読む。
+RUN_RAW_LOG=""
+
+# ── 失敗したときに、生の出力と対処を画面へ出す ──────────────────────
+#   「--verbose を付けてもう一度」では、原因が画面に残らないまま終わる。
+print_run_failure() {
+    local what="$1"
+    echo "❌ $what"
+    if [ -n "${RUN_RAW_LOG:-}" ] && [ -s "$RUN_RAW_LOG" ]; then
+        echo "   出力の末尾を出します。"
+        echo "   全文はこちら: $RUN_RAW_LOG"
+        echo "   ────────────────"
+        tail -n 40 "$RUN_RAW_LOG" | sed 's/^/   /'
+        echo "   ────────────────"
+        if grep -qE 'CERTIFICATE_VERIFY_FAILED|unable to get local issuer certificate|SSLError|SSLCertVerificationError' "$RUN_RAW_LOG"; then
+            echo ""
+            echo "   The certificate check failed."
+            echo "   On a company or school network, traffic is sometimes inspected and the"
+            echo "   certificate is replaced. Try this:"
+            echo "     security find-certificate -a -p /Library/Keychains/System.keychain > ~/corp-ca.pem"
+            echo "     conda config --set ssl_verify ~/corp-ca.pem"
+            echo "     (for pip) pip config set global.cert ~/corp-ca.pem"
+            echo "   Then run this launcher again."
+            echo ""
+            echo "   証明書の確認で失敗しています。"
+            echo "   会社や学校のネットワークでは、通信の中身を検査するために"
+            echo "   証明書が差し替わることがあります。"
+            echo "   対処:"
+            echo "     security find-certificate -a -p /Library/Keychains/System.keychain > ~/corp-ca.pem"
+            echo "     conda config --set ssl_verify ~/corp-ca.pem"
+            echo "     （pip の場合）pip config set global.cert ~/corp-ca.pem"
+            echo "   そのうえで、もう一度この起動ファイルを実行してください。"
+        fi
+    else
+        echo "   素の出力を見るには --verbose を付けてください。"
+    fi
+}
+
 run_with_progress() {
     local total="$1"; shift
     local rc=0
+    #   生の出力は必ず取っておく。加工した表示だけを残して捨てると、
+    #   失敗したときに原因が画面にも記録にも残らない。
+    RUN_RAW_LOG="$(mktemp -t cynovela-run)"
     if [ "$VERBOSE" = "1" ] || [ ! -t 1 ]; then
-        # 画面が出せない・素の出力が要る場合は、そのまま流す。
-        "$@"
-        return $?
+        # 画面が出せない・素の出力が要る場合は、そのまま流す (記録も取る)。
+        "$@" 2>&1 | tee "$RUN_RAW_LOG"
+        return "${PIPESTATUS[0]}"
     fi
     local n=0 line name mark
-    "$@" 2>&1 | {
+    "$@" 2>&1 | tee "$RUN_RAW_LOG" | {
         # 付随して入るもの (依存の依存) があるため、実際に入る数は
         # 指定の数より多くなる。∴ 数え上げが指定の数を超えたら、
         # 分母を出すのをやめて「N 件目」に切り替える。
@@ -1041,6 +1082,10 @@ run_with_progress() {
             case "$line" in
                 "Downloading and Extracting Packages"*|"Collecting package metadata"*)
                     # conda の見出し行。部品名ではないので数えない。
+                    ;;
+                *conda.notices.fetch*|*"Request error <"*)
+                    # お知らせの取得の失敗。環境の作成は止まらないので画面に出さない。
+                    # (生の記録には残す。原因を追うときに要る。)
                     ;;
                 Collecting*|"Requirement already satisfied:"*|"Building wheel for"*)
                     name="${line#Collecting }"
@@ -1189,7 +1234,7 @@ setup_conda() {
     # -n で environment.yml の中の名前 (cynovela) を必ず上書きする。
     # これを付けないと共有の環境の名前で作られてしまう。
     if ! run_with_progress "$total" "$CONDA_BIN" env create -f "$ENV_FILE" -n "$dist" --yes; then
-        echo "❌ conda 環境を作れませんでした。素の出力を見るには --verbose を付けてください。"
+        print_run_failure "conda 環境を作れませんでした。 / Could not create the conda environment."
         exit 1
     fi
     echo "  作りました: conda 環境 '$dist'"
@@ -1279,7 +1324,7 @@ install_requirements() {
     echo "  付随して入るものがあるため、実際に入る数はこれより多くなります。"
     run_with_progress "$total" "$PY" -m pip install --upgrade pip || true
     if ! run_with_progress "$total" "$PY" -m pip install -r "$REQ_FILE"; then
-        echo "❌ 部品を入れられませんでした。素の出力を見るには --verbose を付けてください。"
+        print_run_failure "部品を入れられませんでした。 / Could not install the dependencies."
         exit 1
     fi
     echo "  入れ終わりました。"
@@ -1317,6 +1362,34 @@ do_setup() {
 #   入れ終わったときと、起動したときの両方で出す。
 #   パスワードの実値はここへ印字しない。同梱のバックアップの場所を示す。
 # ------------------------------------------------------------
+# ── はじめてのログインのガイド ────────────────────────────────
+#   平文のパスワードを配布物の文書に置くのをやめ、初回の起動だけ画面に出す。
+#   出すか出さないかの判定は「データベースのファイルがまだ無いこと」1つだけ。
+#   値は同梱の cynovela.yaml から読む (新しい設定は増やさない)。
+#   db.py には触らない。認証の動きは変えていない。表示だけである。
+print_first_login() {
+    local _db _pw _dir
+    _dir="${DATA_DIR:-$SCRIPT_DIR/store}"
+    if printf '%s' "${PART_ARGS[*]:-}$*" | grep -q -- '--demo'; then
+        _db="$_dir/db/demo.db"
+    else
+        _db="$_dir/db/cynovela.db"
+    fi
+    [ -f "$_db" ] && return 0          # 2回目からは出さない
+    _pw="$(conf_get auth admin_initial_password 2>/dev/null || true)"
+    [ -n "$_pw" ] || return 0          # 値が無ければ黙る (乱数が使われる)
+    echo ""
+    echo "  ────────────────────────────────────────────────"
+    echo "    First login / はじめてのログイン"
+    echo "      Open / ひらく          : http://localhost:$PORT"
+    echo "      User name / ユーザー名 : cynovela"
+    echo "      Password / パスワード  : $_pw"
+    echo "    You will be asked to change it on the first sign-in."
+    echo "    最初のログインで変更を求められます。"
+    echo "    Shown only this once. / この表示が出るのは初回だけです。"
+    echo "  ────────────────────────────────────────────────"
+}
+
 print_next_steps() {
     local where="${1:-setup}"
     echo ""
@@ -1330,10 +1403,11 @@ print_next_steps() {
     echo "  ■ 入り方"
     echo "      管理者の利用者名: cynovela"
     echo "      閲覧者の利用者名: demo"
-    echo "      最初のパスワードは、同梱の docs/STARTUP.md の「ログイン」の節に書いてあります。"
-    echo "      (この画面には印字しません。別便で受け取るファイルはありません。)"
+    echo "      最初のパスワードは、はじめて起動したときにこの画面へ出ます。"
+    echo "      (2回目からは出ません。別便で受け取るファイルはありません。)"
     echo "      管理者は初回にパスワードの変更を求められます。"
     echo ""
+    print_first_login
     echo "  ■ 気をつけること"
     echo "      1. 起動すると、この配布物の中身が書き換わります。"
     echo "         (記録・鍵・記録のコンテナが $SCRIPT_DIR/store の下に作られます)"
@@ -1403,10 +1477,17 @@ start_app() {
 #   本編の頭で 1 度だけ外し、以後どの道 (--setup / --check / 起動) でも同じ状態にする。
 #   falcon 側はダウンロードの直前で同じことをしており、順序はもともと正しい。
 _drop_stale_ssl_cert_file() {
-    if [ -n "${SSL_CERT_FILE:-}" ]; then
-        echo "[cert] SSL_CERT_FILE を外します (指し先: $SSL_CERT_FILE)"
-        unset SSL_CERT_FILE
-    fi
+    #   指し先が実在しないものだけを外す。実在するものは外さない。
+    #   会社の証明書を指している場合、外すと逆に通信ができなくなる。
+    local v p
+    for v in SSL_CERT_FILE REQUESTS_CA_BUNDLE CURL_CA_BUNDLE; do
+        eval "p=\${$v:-}"
+        [ -n "$p" ] || continue
+        if [ ! -f "$p" ]; then
+            echo "[cert] $v を外します (指し先が在りません: $p)"
+            unset "$v"
+        fi
+    done
 }
 _drop_stale_ssl_cert_file
 

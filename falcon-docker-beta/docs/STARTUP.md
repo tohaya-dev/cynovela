@@ -94,10 +94,9 @@ You can pass any number of ingest sources (root folders of documents) at startup
 ## Login (default user names and initial passwords)
 
 The default user names are **administrator `cynovela`** / **viewer `demo`** (not `admin`).
-The initial passwords are as follows.
-
-- Administrator: user name `cynovela` / password: `Cynovela1!`
-- Viewer: user name `demo` / password: `demo1234`
+**The initial passwords are printed on the screen the first time you start it.**
+They are not written in this file, so that a copy of the documentation cannot
+be used to sign in. Look at the terminal window that opens on the first start.
 
 The administrator is asked to change the password at the first login. After changing it, please log in with the new value.
 The viewer can be used as is. **After you receive this, please change the administrator password first.**
@@ -303,10 +302,9 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 ## ログイン（既定の利用者名と初期パスワード）
 
 既定の利用者名は **管理者 `cynovela`** / **閲覧者 `demo`** です（`admin` ではありません）。
-初期パスワードは次のとおりです。
-
-- 管理者: ユーザー名 `cynovela` / パスワード: `Cynovela1!`
-- 閲覧者: ユーザー名 `demo` / パスワード: `demo1234`
+**初期パスワードは、はじめて起動したときに画面に出ます。**
+この文書には書いていません。文書のコピーだけでログインできてしまうのを避けるためです。
+初回の起動で開くターミナルの画面をご覧ください。
 
 管理者は初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。
 閲覧者はそのまま使えます。**受け取ったあと、最初に管理者のパスワードを変えてください。**

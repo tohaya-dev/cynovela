@@ -84,10 +84,10 @@ pii_mode: standard
 # G-1: どちらの場合も管理者には初回変更を求める印が立つ (配布仕様書 §5-4)。
 # G-2: 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
 auth:
-  admin_initial_password: 'Cynovela1!'
+  admin_initial_password: ''
   # N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) に
   #   案内 (docs/STARTUP.md) と同じ値が書かれる。空のままだと初回起動時に乱数が使われる。
-  viewer_initial_password: 'demo1234'
+  viewer_initial_password: ''
 vector_store:
   provider: chromadb
   path: ''

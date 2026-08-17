@@ -847,6 +847,34 @@ do_setup() {
 #   この形態はコンテナを裏で動かすため、本体が出すガイドは受け取り手の画面へ
 #   届かない。∴ この入口が出さないと、止め方も入り方も画面に出ない。
 # ------------------------------------------------------------
+# ── はじめてのログインのガイド ────────────────────────────────
+#   平文のパスワードを配布物の文書に置くのをやめ、初回の起動だけ画面に出す。
+#   出すか出さないかの判定は「データベースのファイルがまだ無いこと」1つだけ。
+#   値は同梱の cynovela.yaml から読む (新しい設定は増やさない)。
+#   db.py には触らない。認証の動きは変えていない。表示だけである。
+print_first_login() {
+    local _db _pw _dir
+    _dir="${DATA_DIR:-$SCRIPT_DIR/store}"
+    if printf '%s' "${PART_ARGS[*]:-}$*" | grep -q -- '--demo'; then
+        _db="$_dir/db/demo.db"
+    else
+        _db="$_dir/db/cynovela.db"
+    fi
+    [ -f "$_db" ] && return 0          # 2回目からは出さない
+    _pw="$(conf_get auth admin_initial_password 2>/dev/null || true)"
+    [ -n "$_pw" ] || return 0          # 値が無ければ黙る (乱数が使われる)
+    echo ""
+    echo "  ────────────────────────────────────────────────"
+    echo "    First login / はじめてのログイン"
+    echo "      Open / ひらく          : http://localhost:$HOSTPORT"
+    echo "      User name / ユーザー名 : cynovela"
+    echo "      Password / パスワード  : $_pw"
+    echo "    You will be asked to change it on the first sign-in."
+    echo "    最初のログインで変更を求められます。"
+    echo "    Shown only this once. / この表示が出るのは初回だけです。"
+    echo "  ────────────────────────────────────────────────"
+}
+
 print_next_steps() {
     local where="${1:-setup}"
     echo ""
@@ -860,10 +888,11 @@ print_next_steps() {
     echo "  ■ 入り方"
     echo "      管理者の利用者名: cynovela"
     echo "      閲覧者の利用者名: demo"
-    echo "      最初のパスワードは、同梱の docs/STARTUP.md の「ログイン」の節に書いてあります。"
-    echo "      (この画面には印字しません。別便で受け取るファイルはありません。)"
+    echo "      最初のパスワードは、はじめて起動したときにこの画面へ出ます。"
+    echo "      (2回目からは出ません。別便で受け取るファイルはありません。)"
     echo "      管理者は初回にパスワードの変更を求められます。"
     echo ""
+    print_first_login
     echo "  ■ 気をつけること"
     echo "      1. 起動すると、この配布物の中身が書き換わります。"
     echo "         (記録・鍵・記録のコンテナが $SCRIPT_DIR/store と $SCRIPT_DIR/keys の下に"

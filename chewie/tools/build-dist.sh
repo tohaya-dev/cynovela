@@ -555,44 +555,10 @@ open(path, "w", encoding="utf-8").write(new)
 print("[dist] 同梱の設定に閲覧者の初期のパスワードを書いた (cynovela.yaml auth.viewer_initial_password)")
 PYYAML
 
-# ガイド (docs/STARTUP.md) のマーカーを、実際の値の書かれた2行へ置き換える。
-python - "$STAGE/$NAME/STARTUP.md" "$ADMIN_PW" "$VIEWER_PW" <<'PYDOC'
-import sys
-path, apw, vpw = sys.argv[1], sys.argv[2], sys.argv[3]
-# (版7): マーカーが在るとき (雛形のまま) と、既に値の2行へ置き換わって
-#   commit されているときの両方で通す。旧式はマーカーだけを狙い、置き換え済みの
-#   docs/STARTUP.md では 0 個となってパッケージングがフェイルクローズで止まっていた (実測 20260817)。
-#   パッケージングは「元が何であれ、正本の2行に揃える」のが正しい。
-import re as _re
-MARK = "<!-- dist:initial-credentials -->"
-NEWLINES = [
-    "- 管理者: ユーザー名 `cynovela` / パスワード: `%s`" % apw,
-    "- 閲覧者: ユーザー名 `demo` / パスワード: `%s`" % vpw,
-]
-lines = open(path, encoding="utf-8").read().split("\n")
-idx = [i for i, ln in enumerate(lines) if MARK in ln]
-if len(idx) == 1:
-    # マーカーの在る行を丸ごと差し替える (マーカーだけ消すと、本流での読みやすさのために
-    # 同じ行へ添えた説明が配布物側に残ってしまうため)
-    lines[idx[0]: idx[0] + 1] = NEWLINES
-    print("[dist] ガイドのマーカーを実際の値へ置き換えた (docs/STARTUP.md)")
-elif len(idx) == 0:
-    a_re = _re.compile(r"^- 管理者: ユーザー名 `[^`]*` / パスワード: `[^`]*`\s*$")
-    v_re = _re.compile(r"^- 閲覧者: ユーザー名 `[^`]*` / パスワード: `[^`]*`\s*$")
-    a_idx = [i for i, ln in enumerate(lines) if a_re.match(ln)]
-    v_idx = [i for i, ln in enumerate(lines) if v_re.match(ln)]
-    if len(a_idx) != 1 or len(v_idx) != 1:
-        print("[dist] docs/STARTUP.md にマーカーも、置き換え済みの2行も見つからない "
-              "(マーカー %d 個 / 管理者行 %d 個 / 閲覧者行 %d 個)" % (len(idx), len(a_idx), len(v_idx)))
-        sys.exit(1)
-    lines[a_idx[0]] = NEWLINES[0]
-    lines[v_idx[0]] = NEWLINES[1]
-    print("[dist] ガイドの既存の2行を正本の値へ揃えた (docs/STARTUP.md)")
-else:
-    print("[dist] docs/STARTUP.md のマーカーが %d 個 (1 個であること)" % len(idx))
-    sys.exit(1)
-open(path, "w", encoding="utf-8").write("\n".join(lines))
-PYDOC
+# パスワードは docs/STARTUP.md に書かない (画面に出す形へ変えた)。
+#   以前はここでガイドの平文の2行を実際の値へ置き換えていたが、平文を持たせない
+#   ことにしたため、その処理を外した。値は上の cynovela.yaml へ書くだけで足り、
+#   受け取り手には launch.sh が初回起動時に画面へ出す。
 
 if [ "$MODELS_LINKED" = "1" ]; then
   rm -f "$STAGE/$NAME/store/models"
