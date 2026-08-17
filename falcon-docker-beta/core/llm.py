@@ -23,7 +23,7 @@ def default_llm_endpoint() -> str:
     環境変数は一切参照しない (スタンドアロンの localhost を壊さない)。
     DD-CYN-0105 F-c: ゲートウェイ名は実行形態で異なる。/run/.containerenv を置くのは
     podman (host.containers.internal)、/.dockerenv を置くのは docker
-    (host.docker.internal)。podman の枝の値もスタンドアロンの localhost も変えていない。
+    (host.docker.internal)。podman の分岐の値もスタンドアロンの localhost も変えていない。
     """
     if _osp.exists("/run/.containerenv"):
         host = "host.containers.internal"

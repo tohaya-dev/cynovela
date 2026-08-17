@@ -1,8 +1,11 @@
 # Third-Party Notices
 
+A list of the third-party components included in this package, generated
+mechanically from the actual environment.
+
 この配布物に含まれる第三者の部品の一覧です。実環境から機械で作成しています。
 
-## コンテナイメージ内の Python 部品
+## Python packages in the container image / コンテナイメージ内の Python 部品
 
 - accelerate 1.14.0 — Apache
 - aiohappyeyeballs 2.7.1 — PSF-2.0
@@ -227,10 +230,10 @@
 
 ## 同梱モデル
 
-- BAAI/bge-m3 — 出どころ: Hugging Face (BAAI/bge-m3) — ライセンス: mit（同梱 README.md の license 行から機械抽出）
-- BAAI/bge-reranker-v2-m3 — 出どころ: Hugging Face (BAAI/bge-reranker-v2-m3) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
-- sentence-transformers/paraphrase-MiniLM-L3-v2 — 出どころ: Hugging Face (sentence-transformers/paraphrase-MiniLM-L3-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
-- sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 — 出どころ: Hugging Face (sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
+- BAAI/bge-m3 — 入手元: Hugging Face (BAAI/bge-m3) — ライセンス: mit（同梱 README.md の license 行から機械抽出）
+- BAAI/bge-reranker-v2-m3 — 入手元: Hugging Face (BAAI/bge-reranker-v2-m3) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
+- sentence-transformers/paraphrase-MiniLM-L3-v2 — 入手元: Hugging Face (sentence-transformers/paraphrase-MiniLM-L3-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
+- sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 — 入手元: Hugging Face (sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) — ライセンス: 採れなかった（同梱ファイルに license 記載なし）
 
 ---
 件数: Python の部品 217 件・同梱モデル 4 件

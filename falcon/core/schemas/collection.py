@@ -19,7 +19,7 @@ class CreateCollectionBody(BaseModel):
     access_level: str = "public"
     allowed_roles: list[str] = Field(default_factory=lambda: ["admin", "viewer"])
     rag_strategy: str = "hybrid_bm25"
-    # ga-finish-P4 (rawmode-receptor-close-20260727): raw_mode は伏字を迂回する受け口として
+    # ga-finish-P4 (rawmode-receptor-close-20260727): raw_mode はマスキングを迂回する受け口として
     # 廃止。入力スキーマからも外す (受理すると 400)。raw_only も同様に廃止済み。
     classification_filter: list[str] = Field(default_factory=list)
 

@@ -1,21 +1,21 @@
-"""Mac Accelerator Service (MAS) — 外の口。
+"""Mac Accelerator Service (MAS) — 外部の推論サーバ。
 
 同一 Mac のホスト側ネイティブで動く推論の口。コンテナ (falcon / hansolo worker) や
 ホスト直アプリ (chewie) から HTTP で呼ばれ、Apple GPU (Metal / MPS) に届かせる。
 信頼境界は Mac の中から出ない設計だが、口自体は「同一マシン内にいること」を
 作り込まない (呼び先は呼ぶ側の設定で決まる)。複数 Mac にまたがる配置は外部送出に
-なるため、渡すものが原文か伏字済みかを常に明示的に受け取る (content_class)。
+なるため、渡すものが原文かマスキング済みかを常に明示的に受け取る (content_class)。
 
 提供する口 (ga-finish-20260727):
   GET  /health          — 生存とデバイス・モデル常駐状態
   GET  /capabilities    — 相手の能力の問い合わせ (embeddings / rerank / images)
   GET  /metrics         — 工程別の基本計測
   POST /v1/embeddings   — OpenAI 互換 + content_class 必須。バッチ可
-  POST /v1/rerank       — 再ランク (content_class 必須・埋め込みの窓と同じ作り)
+  POST /v1/rerank       — 再ランク (content_class 必須・埋め込みのエンドポイントと同じ作り)
   POST /v1/images/embeddings — 将来の口 (未実装を明示して返す)
 
 設定は mas.yaml のみ (環境変数は使わない・増やさない)。
-モデルは本流と同じ置き場 (store/models) を読み取り専用で参照し、新規ダウンロードは
+モデルは本流と同じ保存先 (store/models) を読み取り専用で参照し、新規ダウンロードは
 行わない。モデルは常駐させ、同じモデルを二度読まない。
 起動: python mas/mas_server.py [--config mas/mas.yaml]
 """
@@ -38,7 +38,7 @@ _REPO_ROOT = os.path.dirname(_APP_DIR)
 
 _DEFAULT_CONFIG = {
     "server": {"host": "127.0.0.1", "port": 18850},
-    # models.*.path が '' のときは store/models (本流と同じ置き場) の HF キャッシュ形式から解決する。
+    # models.*.path が '' のときは store/models (本流と同じ保存先) の HF キャッシュ形式から解決する。
     "models": {
         "embedding": {"name": "BAAI/bge-m3", "path": ""},
         "reranker": {"name": "BAAI/bge-reranker-v2-m3", "path": ""},
@@ -49,7 +49,7 @@ _DEFAULT_CONFIG = {
     # ANE (Core ML) 経路はベータ。既定オフで並べるところまで (正式統合は hansolo 側)。
     "ane": {"enabled": False, "rerank_mlpackage": ""},
     # 同一 Mac 内では raw も受けられるが、複数 Mac にまたがる配置 (=外部送出) では
-    # 伏字済みのみ受ける不変条件に合わせて false にすること。
+    # マスキング済みのみ受ける不変条件に合わせて false にすること。
     "policy": {"allow_raw_content": True},
 }
 
@@ -166,7 +166,7 @@ class MasState:
 
     def ensure_reranker_model(self):
         """ga-finish-20260727: 再ランクモデルの常駐。埋め込み (ensure_embedding_model) と同じ作り。
-        共有置き場 (store/models) の既存重みのみ使い、新規ダウンロードは行わない。装置は MPS
+        共有保存先 (store/models) の既存重みのみ使い、新規ダウンロードは行わない。装置は MPS
         (resolve_device の auto = MPS が使えれば MPS)。"""
         if self.rr_model is not None:
             return self.rr_model
@@ -213,7 +213,7 @@ def create_app(cfg: dict) -> FastAPI:
     def capabilities():
         emb_cfg = (cfg.get("models") or {}).get("embedding") or {}
         ane_cfg = cfg.get("ane") or {}
-        # §9-4: 埋め込みの識別 (名前+版) を返し、呼び側の索引整合チェックに使わせる。
+        # §9-4: 埋め込みの識別 (名前+版) を返し、呼び側のインデックス整合チェックに使わせる。
         # 版 = HF キャッシュの snapshot ディレクトリ名 (実体の commit hash)。
         _emb_name = emb_cfg.get("name") or "BAAI/bge-m3"
         _emb_dir = _resolve_model_dir(_emb_name, emb_cfg.get("path") or "")
@@ -264,15 +264,15 @@ def create_app(cfg: dict) -> FastAPI:
         max_texts = int((cfg.get("batch") or {}).get("max_texts") or 512)
         if len(texts) > max_texts:
             raise HTTPException(413, f"バッチ上限 {max_texts} 件を超過 ({len(texts)} 件)")
-        # 信頼境界: 渡された本文が原文か伏字済みかを明示的に受け取る。
+        # 信頼境界: 渡された本文が原文かマスキング済みかを明示的に受け取る。
         content_class = body.get("content_class")
         if content_class not in ("masked", "raw"):
             raise HTTPException(
                 400,
-                "content_class は必須 ('masked' | 'raw')。渡す本文が伏字済みか原文かを明示すること。",
+                "content_class は必須 ('masked' | 'raw')。渡す本文がマスキング済みか原文かを明示すること。",
             )
         if content_class == "raw" and not (cfg.get("policy") or {}).get("allow_raw_content", True):
-            raise HTTPException(403, "この口は raw (原文) を受けない設定 (伏字済みのみ)")
+            raise HTTPException(403, "この口は raw (原文) を受けない設定 (マスキング済みのみ)")
         try:
             model = state.ensure_embedding_model()
         except Exception as e:
@@ -304,8 +304,8 @@ def create_app(cfg: dict) -> FastAPI:
 
     @app.post("/v1/rerank")
     async def rerank(request: Request):
-        # ga-finish-20260727: 再ランクの実装。埋め込みの窓 (/v1/embeddings) と同じ作りに揃える:
-        #   - content_class 必須 (信頼境界: 渡す本文が伏字済みか原文かを常に明示)
+        # ga-finish-20260727: 再ランクの実装。埋め込みのエンドポイント (/v1/embeddings) と同じ作りに揃える:
+        #   - content_class 必須 (信頼境界: 渡す本文がマスキング済みか原文かを常に明示)
         #   - バッチ上限は batch.max_texts を documents 件数に適用
         #   - モデルは store/models の既存重みを一度だけ読み常駐 (新規ダウンロードなし)
         # 応答形は呼び側 (providers/reranker.py の results=[{index, relevance_score}] 解釈) に合わせる。
@@ -332,11 +332,11 @@ def create_app(cfg: dict) -> FastAPI:
             state.metrics["rerank_requests_rejected"] += 1
             raise HTTPException(
                 400,
-                "content_class は必須 ('masked' | 'raw')。渡す本文が伏字済みか原文かを明示すること。",
+                "content_class は必須 ('masked' | 'raw')。渡す本文がマスキング済みか原文かを明示すること。",
             )
         if content_class == "raw" and not (cfg.get("policy") or {}).get("allow_raw_content", True):
             state.metrics["rerank_requests_rejected"] += 1
-            raise HTTPException(403, "この口は raw (原文) を受けない設定 (伏字済みのみ)")
+            raise HTTPException(403, "この口は raw (原文) を受けない設定 (マスキング済みのみ)")
         try:
             model = state.ensure_reranker_model()
         except Exception as e:
@@ -378,7 +378,7 @@ def create_app(cfg: dict) -> FastAPI:
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Mac Accelerator Service (外の口)")
+    ap = argparse.ArgumentParser(description="Mac Accelerator Service (外部の推論サーバ)")
     ap.add_argument("--config", default=os.path.join(_APP_DIR, "mas.yaml"))
     ap.add_argument("--port", type=int, default=None, help="mas.yaml の server.port を上書き")
     ap.add_argument("--host", default=None, help="mas.yaml の server.host を上書き")

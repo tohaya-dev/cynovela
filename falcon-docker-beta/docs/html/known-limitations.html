@@ -222,7 +222,7 @@ a:hover { text-decoration: underline; }
       会社・製品の公式見解を一切代表しません。
     </blockquote>
     <p>この文書は、Cynovela に <strong>できないこと</strong> を書いたものです。できることの説明は <code>README.md</code> と <code>QUICKSTART.md</code> にあります。ここには、期待すると外れることだけを書きます。</p>
-    <p>版は <code>1.0.0-alpha</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の出どころで、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
+    <p>版は <code>1.0.0-alpha</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -233,11 +233,11 @@ a:hover { text-decoration: underline; }
 <div class="slide" id="slide-3">
   <div class="slide-header">
     <span class="doc-name">このツールにできないこと</span>
-    <span class="slide-title">1. 伏字でできないこと</span>
+    <span class="slide-title">1. マスキングでできないこと</span>
     <span class="continued">(1/7)</span>
   </div>
   <div class="slide-body">
-    <p><strong>この節がいちばん重い節です。</strong> 伏字は「個人情報を隠す仕組み」ですが、隠せる範囲にははっきりした限界があります。<strong>伏字が当たったからといって、資料の中の個人情報がすべて消えたわけではありません。</strong> 隠しきれないものが必ず残ります。</p>
+    <p><strong>この節がいちばん重い節です。</strong> マスキングは「個人情報を隠す仕組み」ですが、隠せる範囲にははっきりした限界があります。<strong>マスキングが当たったからといって、資料の中の個人情報がすべて消えたわけではありません。</strong> 隠しきれないものが必ず残ります。</p>
     <h3>1.1 決まった形をした 13 種類しか、規則では取れない</h3>
     <p><code>guardrail.py</code> の <code>PII_PATTERNS</code> に書かれている種別は、次の 13 種類だけです。</p>
     <table>
@@ -252,8 +252,8 @@ a:hover { text-decoration: underline; }
         <tr><td><code>IPV4</code></td><td>IPv4 アドレス</td><td></td><td></td></tr>
       </tbody>
     </table>
-    <p>これ以外のものは、規則では 1 件も伏字になりません。たとえば社員番号・顧客番号・契約番号・口座番号（IBAN 以外）・車両番号・保険証番号などは、対象外です。</p>
-    <p>規則は「形」で当てています。形が崩れていれば当たりません。逆に、形が偶然一致した無関係な数字は伏字になります。</p>
+    <p>これ以外のものは、規則では 1 件もマスキングされません。たとえば社員番号・顧客番号・契約番号・口座番号（IBAN 以外）・車両番号・保険証番号などは、対象外です。</p>
+    <p>規則は「形」で当てています。形が崩れていれば当たりません。逆に、形が偶然一致した無関係な数字はマスキングされます。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -268,17 +268,17 @@ a:hover { text-decoration: underline; }
     <span class="continued">(2/7)</span>
   </div>
   <div class="slide-body">
-    <h3>1.2 氏名と住所は言語解析まかせ。<code>lite</code> にすると一切伏字にならない</h3>
+    <h3>1.2 氏名と住所は言語解析まかせ。<code>lite</code> にすると一切マスキングされない</h3>
     <p>氏名と住所は、上の 13 種類には入っていません。形が決まっていないので規則では取れず、言語解析（NER）の側で扱っています。</p>
     <ul>
       <li>設定は <code>cynovela.yaml</code> の <code>pii_mode</code> です。既定は <code>standard</code> です。</li>
       <li><code>standard</code> のときだけ、<code>PERSON_JP</code>（氏名）と <code>ADDRESS_JP</code>（住所）が働きます。</li>
-      <li><strong><code>pii_mode</code> を <code>lite</code> にすると、氏名も住所も一切伏字になりません。</strong> <code>lite</code> は正規表現だけで判定する道へ切り替わり、氏名・住所の認識器はそもそも組み立てられません（<code>utils/metadata/pii.py</code> の <code>get_active_recognizers()</code> と <code>detect_pii()</code>）。</li>
+      <li><strong><code>pii_mode</code> を <code>lite</code> にすると、氏名も住所も一切マスキングされません。</strong> <code>lite</code> は正規表現だけで判定する道へ切り替わり、氏名・住所の認識器はそもそも組み立てられません（<code>utils/metadata/pii.py</code> の <code>get_active_recognizers()</code> と <code>detect_pii()</code>）。</li>
     </ul>
     <p>氏名の判定は、姓名として登録のある語しか当たりません。珍しい姓名、外国人名のカタカナ表記、あだ名、役職と一体になった書き方などは取りこぼします。住所も、都道府県から始まる書き方と郵便番号の形しか見ておらず、「本社ビル 3 階」「◯◯支店」のような書き方は住所として扱いません。</p>
     <h3>1.3 組織名と地名は、名前だけあって中身がない</h3>
     <p><code>get_active_recognizers()</code> は <code>ORG_JP</code>（組織名）と <code>LOC_JP</code>（地名）も返します。名前は返りますが、<strong>それを供給する認識器は 1 つも登録されていません</strong>（ツリー全体で、この 2 つの語はこの 1 行にしか出てきません）。</p>
-    <p><strong>つまり組織名も地名も伏字になりません。</strong> 一覧に名前があるからといって、働いていると思わないでください。</p>
+    <p><strong>つまり組織名も地名もマスキングされません。</strong> 一覧に名前があるからといって、働いていると思わないでください。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -296,7 +296,7 @@ a:hover { text-decoration: underline; }
     <h3>1.4 言語モデルが入っていないと、<code>standard</code> でも規則だけに退行する</h3>
     <p>氏名・住所の判定には spaCy / GiNZA の言語モデルが要ります。これが入っていない環境では、<code>pii_mode</code> が <code>standard</code> のままでも、判定は正規表現だけに退行します。起動時に <code>launch.sh</code> が存在を確かめ、無ければ次の警告を出します。</p>
     <pre>⚠️  spaCy モデル '...' が未導入です (standard PII が regex フォールバックします)。'pip install -r requirements.txt' を実行してください。</pre>
-    <p><strong>この警告が出ているときは、氏名も住所も伏字になっていません。</strong> 起動は止まらないので、警告を読み飛ばすと、伏字が効いているつもりのまま使ってしまいます。</p>
+    <p><strong>この警告が出ているときは、氏名も住所もマスキングされていません。</strong> 起動は止まらないので、警告を読み飛ばすと、マスキングが効いているつもりのまま使ってしまいます。</p>
     <h3>1.5 パスワードと API キーは、空白・日本語・改行で切れる</h3>
     <p><code>PASSWORD</code> と <code>APIKEY</code> の規則は、値の部分を ASCII の図形文字だけで拾います（<code>guardrail.py</code> に「値は ASCII 図形文字 <code>[!-~]</code> のみ（空白・CJK で必ず切れる）」と明記してあります）。このため、次のものは取れません。</p>
     <ul>
@@ -315,22 +315,22 @@ a:hover { text-decoration: underline; }
 <div class="slide" id="slide-6">
   <div class="slide-header">
     <span class="doc-name">このツールにできないこと</span>
-    <span class="slide-title">1.6 PDF の空白が伏字を逃れる</span>
+    <span class="slide-title">1.6 PDF の空白がマスキングを逃れる</span>
     <span class="continued">(4/7)</span>
   </div>
   <div class="slide-body">
     <p>PDF は文字の並びではなく、文字を置く位置の情報として組まれています。そこから文字を取り出すとき、元の見た目には無かった空白が語の途中に入ることがあります。</p>
-    <p>伏字の規則は文字の並びを見ているので、空白が 1 個入るだけで当たらなくなります。電子メールアドレスの場合、次のようになります。</p>
+    <p>マスキングの規則は文字の並びを見ているので、空白が 1 個入るだけで当たらなくなります。電子メールアドレスの場合、次のようになります。</p>
     <table>
       <thead><tr><th>取り出された文字列</th><th>結果</th></tr></thead>
       <tbody>
-        <tr><td><code>taro.yamada@example.co.jp</code></td><td>伏字になる</td></tr>
-        <tr><td><code>taro.yamada @example.co.jp</code></td><td><strong>伏字にならない</strong>（<code>@</code> の前で切れる）</td></tr>
-        <tr><td><code>taro.yamada@ example.co.jp</code></td><td><strong>伏字にならない</strong>（<code>@</code> の後ろで切れる）</td></tr>
-        <tr><td><code>taro. yamada@example.co.jp</code></td><td><code>yamada@example.co.jp</code> の部分だけが伏字になり、<code>taro.</code> は残る</td></tr>
+        <tr><td><code>taro.yamada@example.co.jp</code></td><td>マスキングされる</td></tr>
+        <tr><td><code>taro.yamada @example.co.jp</code></td><td><strong>マスキングされない</strong>（<code>@</code> の前で切れる）</td></tr>
+        <tr><td><code>taro.yamada@ example.co.jp</code></td><td><strong>マスキングされない</strong>（<code>@</code> の後ろで切れる）</td></tr>
+        <tr><td><code>taro. yamada@example.co.jp</code></td><td><code>yamada@example.co.jp</code> の部分だけがマスキングされ、<code>taro.</code> は残る</td></tr>
       </tbody>
     </table>
-    <p>同じことは電話番号・カード番号など、他の種別でも起こり得ます。<strong>PDF を取り込んだときは、伏字が当たっているかどうかを目で確かめてください。</strong> 取り込み後のチャンク一覧から実際の本文を見られます。</p>
+    <p>同じことは電話番号・カード番号など、他の種別でも起こり得ます。<strong>PDF を取り込んだときは、マスキングが当たっているかどうかを目で確かめてください。</strong> 取り込み後のチャンク一覧から実際の本文を見られます。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -345,13 +345,13 @@ a:hover { text-decoration: underline; }
     <span class="continued">(5/7)</span>
   </div>
   <div class="slide-body">
-    <p>役割が <code>admin</code> のときは、伏字前の原文を見られる設計です（<code>rag.py</code> の <code>tier_for_role</code>）。ただし、次の 3 つの場合は管理者でも伏字済みのものしか出ません。</p>
+    <p>役割が <code>admin</code> のときは、マスキング前の原文を見られる設計です（<code>rag.py</code> の <code>tier_for_role</code>）。ただし、次の 3 つの場合は管理者でもマスキング済みのものしか出ません。</p>
     <ol>
-      <li><strong>回答用 LLM の宛先が外部を向いているとき。</strong> <code>routers/chat.py</code> の <code>_effective_send_tier</code> は、送り先が自マシン内・コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらず伏字済みへ落とします。宛先を判定できないときも伏字済みに倒します。</li>
-      <li><strong>金庫（暗号化された保管）の鍵が合わないとき。</strong> 原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行は伏字済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
-      <li><strong>質問文そのもの。</strong> 質問文への伏字は役割で分けていません。管理者が質問文に IP アドレスを書いても、その IP は伏字になってから検索と LLM へ渡ります。</li>
+      <li><strong>回答用 LLM の宛先が外部を向いているとき。</strong> <code>routers/chat.py</code> の <code>_effective_send_tier</code> は、送り先が自マシン内・コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらずマスキング済みへ落とします。宛先を判定できないときもマスキング済みに倒します。</li>
+      <li><strong>金庫（暗号化された保管）の鍵が合わないとき。</strong> 原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行はマスキング済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
+      <li><strong>質問文そのもの。</strong> 質問文へのマスキングは役割で分けていません。管理者が質問文に IP アドレスを書いても、その IP はマスキングされてから検索と LLM へ渡ります。</li>
     </ol>
-    <p>以前の版のこの文書には「管理者でも IP が伏字になる（調査中）」と書いてありましたが、上の 3 つが理由です。不具合ではありません。</p>
+    <p>以前の版のこの文書には「管理者でも IP がマスキングされる（調査中）」と書いてありましたが、上の 3 つが理由です。不具合ではありません。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -386,7 +386,7 @@ a:hover { text-decoration: underline; }
       <li>音声・動画: <code>.mp3</code> <code>.wav</code> <code>.m4a</code> <code>.mp4</code> <code>.mov</code> など</li>
       <li>画像の一部: <code>.tif</code> <code>.tiff</code> <code>.bmp</code> <code>.svg</code>／書庫の一部: <code>.7z</code> <code>.rar</code> <code>.tar</code> <code>.gz</code></li>
     </ul>
-    <p>そのほか: <strong>zip の入れ子は 1 段だけです</strong>（zip の中の zip は開きません）。<strong>画像は既定では本文を読みません</strong>（既定は <code>filename_only</code>＝ファイル名だけを索引に入れる。画像の中の文字は読みません）。スキャンしただけの PDF は文字が 1 つも取れません（OCR は入っていません）。暗号化された PDF や壊れた文書は「読めない/空」として飛ばされます。</p>
+    <p>そのほか: <strong>zip の入れ子は 1 段だけです</strong>（zip の中の zip は開きません）。<strong>画像は既定では本文を読みません</strong>（既定は <code>filename_only</code>＝ファイル名だけをインデックスに入れる。画像の中の文字は読みません）。スキャンしただけの PDF は文字が 1 つも取れません（OCR は入っていません）。暗号化された PDF や壊れた文書は「読めない/空」として飛ばされます。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -403,12 +403,12 @@ a:hover { text-decoration: underline; }
   <div class="slide-body">
     <h3>3. 音声で話しかけること</h3>
     <ul>
-      <li>旧来の経路 <code>/api/transcribe</code> は<strong>もう繋がっていません</strong>。<code>server.py</code> で <code>include_router</code> を外してあります（伏字前の文字起こしがそのまま返る穴だったため、あえて外したものです）。</li>
+      <li>旧来の経路 <code>/api/transcribe</code> は<strong>もう繋がっていません</strong>。<code>server.py</code> で <code>include_router</code> を外してあります（マスキング前の文字起こしがそのまま返る穴だったため、あえて外したものです）。</li>
       <li>音声の機能は撤去済みです。この配布物に音声からの文字起こしはありません。</li>
     </ul>
     <h3>4. 資料をアップロードする受け口はない</h3>
     <p>画面やAPIからファイルを送りつける受け口は<strong>撤去済み</strong>です（<code>routers/sources.py</code> の冒頭に「アップロード保存先 <code>_uploads_root</code> と <code>/api/sources/upload</code> を撤去した。取り込みは取り込みフォルダ経由に一本化する」とあります）。</p>
-    <p>資料は、あらかじめ決めた<strong>取り込みフォルダに置いてから</strong>画面で選びます。アプリの中に資料の写しを作る場所はもうありません。</p>
+    <p>資料は、あらかじめ決めた<strong>取り込みフォルダに置いてから</strong>画面で選びます。アプリの中に資料のコピーを作る場所はもうありません。</p>
   </div>
   <div class="slide-footer">
     <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -426,9 +426,9 @@ a:hover { text-decoration: underline; }
     <ul>
       <li><strong>CRAG の下読み。</strong> 検索結果が質問に足りているかを LLM に下読みさせる処理は、宛先が自マシン内でないとき、および<strong>宛先を判定できないとき</strong>は実行しません（<code>rag.py</code>）。実行しない場合は「検索結果をそのまま採用」に落ちます。画面には <code>[CRAG] 非ローカル宛のため下読みをスキップします</code> と出ます。</li>
       <li><strong>会話の要約と、回答からの手がかり抽出。</strong> どちらも同じ判定を使い、外部宛（判定不能を含む）では送らずに空を返します（<code>routers/chat.py</code>）。</li>
-      <li><strong>役割による原文送出。</strong> 宛先が外部なら、管理者であっても伏字済みのものだけを送ります（<code>_effective_send_tier</code>）。</li>
-      <li><strong>伏字が失敗したら止まる。</strong> 質問文・回答のいずれも、伏字処理が例外で落ちた場合は 503 を返して処理を打ち切ります。伏字前のものを代わりに返すことはしません（<code>routers/chat.py</code>）。</li>
-      <li><strong>伏字なし取り込みと外部埋め込みの組み合わせは拒否します。</strong> 古い版で作られた「伏字なし」のコレクションは、外部の埋め込みを有効にしている間は公開（publish）できません（<code>rag.py</code>）。</li>
+      <li><strong>役割による原文送出。</strong> 宛先が外部なら、管理者であってもマスキング済みのものだけを送ります（<code>_effective_send_tier</code>）。</li>
+      <li><strong>マスキングが失敗したら止まる。</strong> 質問文・回答のいずれも、マスキング処理が例外で落ちた場合は 503 を返して処理を打ち切ります。マスキング前のものを代わりに返すことはしません（<code>routers/chat.py</code>）。</li>
+      <li><strong>マスキングなし取り込みと外部埋め込みの組み合わせは拒否します。</strong> 古い版で作られた「マスキングなし」のコレクションは、外部の埋め込みを有効にしている間は公開（publish）できません（<code>rag.py</code>）。</li>
     </ul>
   </div>
   <div class="slide-footer">
@@ -447,7 +447,7 @@ a:hover { text-decoration: underline; }
       <li><strong>公開（Publish）は同時に 2 件までです。</strong> 3 件目は 5 秒待って空きが出なければ失敗として返します（<code>server.py</code>。画面には「他のPublishが多すぎます。少し待ってから再試行してください。」と出ます）。</li>
       <li><strong>LLM の同時実行は既定で 3 件までです</strong>（<code>cynovela.yaml</code> の <code>llm.max_concurrent</code>。<code>server.py</code> がこの値でセマフォを作ります）。4 件目は前の呼び出しが終わるまで待ちます。</li>
       <li><strong>保管は単一の SQLite ファイルです</strong>（WAL 方式）。書き込みが重なる場面では待ちが発生します。何十人も同時に取り込みを回す使い方は想定していません。</li>
-      <li>ベクター索引（ChromaDB）も同じマシンのファイルです。複数のプロセスから同じ索引を書き換えないでください。</li>
+      <li>ベクターインデックス（ChromaDB）も同じマシンのファイルです。複数のプロセスから同じインデックスを書き換えないでください。</li>
     </ul>
   </div>
   <div class="slide-footer">
@@ -464,7 +464,7 @@ a:hover { text-decoration: underline; }
   <div class="slide-body">
     <p>詳しい手順は <code>SETUP-ACCELERATOR.md</code> にあります。要点だけ書きます。</p>
     <ul>
-      <li><strong>埋め込みモデルは、版（snapshot）まで一致していなければなりません。</strong> <code>BAAI/bge-m3</code> の snapshot 版まで揃える必要があります。<strong>版が違うとベクトルの数値が変わり、同梱済みの索引と混ざって検索順位が壊れます。</strong> 版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるか索引を全部作り直してください。</li>
+      <li><strong>埋め込みモデルは、版（snapshot）まで一致していなければなりません。</strong> <code>BAAI/bge-m3</code> の snapshot 版まで揃える必要があります。<strong>版が違うとベクトルの数値が変わり、同梱済みのインデックスと混ざって検索順位が壊れます。</strong> 版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるかインデックスを全部作り直してください。</li>
       <li><strong>軽量版（AIモデルを含みません。約 2.4 MB）はモデルを同梱していません。</strong> モデルを置かないまま起動用スクリプトを実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。取得しない場合は、<strong>起動する前に止まります</strong>。</li>
       <li><strong><code>host.containers.internal</code> はコンテナの外では名前解決できません。</strong> ホスト側で直接起動する場合は <code>127.0.0.1</code> に書き換えてください（コンテナ版の配布物は、この 1 語だけは自動で読み替えます。別のホスト名や IP を書いた場合は読み替えず、書いたとおりに使います）。</li>
       <li><strong>外部アクセラレータの画像の受け口は未実装です。</strong> 呼ぶと 501 を返します。</li>
@@ -523,7 +523,7 @@ a:hover { text-decoration: underline; }
       <li><code>--demo</code> を付けると、同梱のダミー資料が載ったデモのデータベースで起動します（<code>store/db/demo.db</code> と <code>store/vector/demo/chroma</code>）。</li>
       <li>何も付けなければ本番で、<strong>空のデータベース</strong>で起動します（<code>store/db/cynovela.db</code> と <code>store/vector/default/chroma</code>）。</li>
       <li><strong>どちらも再起動で消えません。</strong> 起動のたびに初期化されることはありません。消したい場合は自分でファイルを消してください。</li>
-      <li>同梱の索引とデータベースは、配布物を作るときに<strong>配布物の中の <code>dummy-corpus/</code> だけ</strong>から作っています。作った側の作業用の資料は 1 件も入っていません。実際に何が何件入っているかは、配布物の <code>BUNDLED-DATA.md</code> に書き出してあります。</li>
+      <li>同梱のインデックスとデータベースは、配布物を作るときに<strong>配布物の中の <code>dummy-corpus/</code> だけ</strong>から作っています。作った側の作業用の資料は 1 件も入っていません。実際に何が何件入っているかは、配布物の <code>BUNDLED-DATA.md</code> に書き出してあります。</li>
     </ul>
   </div>
   <div class="slide-footer">
@@ -582,7 +582,7 @@ a:hover { text-decoration: underline; }
     <p>通行証は <code>POST /api/auth/login</code> が発行する JWT です。署名鍵は<strong>配布物には入っていません</strong>。受け取った側で初回起動時に暗号乱数から自動生成し、<code>store/db/jwt/secret.key</code> に保存します（<code>config.py</code> の <code>_load_or_create_jwt_signing_key</code>）。配布物を作るときに、この鍵は必ず落とします（共有すると、よそで発行された通行証が通ってしまうためです）。鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります（再起動すると発行済みの通行証は無効になり、再ログインで通ります）。</p>
     <h3>落とし穴</h3>
     <ul>
-      <li>ChromaDB の <code>PersistentClient</code> は、間違ったパスを渡してもエラーになりません。空のデータベースを黙って作ります。<strong>検索が 0 件になったときは、まず索引の場所が合っているかを疑ってください。</strong></li>
+      <li>ChromaDB の <code>PersistentClient</code> は、間違ったパスを渡してもエラーになりません。空のデータベースを黙って作ります。<strong>検索が 0 件になったときは、まずインデックスの場所が合っているかを疑ってください。</strong></li>
       <li>LM Studio の API に <code>max_tokens</code> を渡さないでください。思考する型のモデルで、考えるためのトークンを使い切ってしまいます。</li>
     </ul>
     <p style="color: var(--cyn-muted); font-size: 12px; margin-top: 8px;">最終更新: 2026-07-31 / 版 1.0.0-alpha</p>

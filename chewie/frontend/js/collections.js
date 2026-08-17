@@ -76,9 +76,9 @@ function deleteCollection(id) {
 function showPublishSummaryCard(data) {
   // SSE done event: {chunk_count, pii_count, excluded_count, elapsed_seconds, file_count, classification_summary, collection_id, ...}
   const chunks   = parseInt(data.chunk_count || 0, 10);
-  // ga-close-v3 PartX: 伏字件数は数え直さない。サーバの唯一の口 publish-summary の
-  //   pii_count (= 伏字が当たった塊数) をそのまま出す。以前は内訳(pii_labels)を画面で
-  //   足し合わせて別の単位(伏字の総件数)を「PII検出」として出していたため、同じ資料でも
+  // ga-close-v3 PartX: マスキング件数は数え直さない。サーバの唯一の口 publish-summary の
+  //   pii_count (= マスキングが当たった塊数) をそのまま出す。以前は内訳(pii_labels)を画面で
+  //   足し合わせて別の単位(マスキングの総件数)を「PII検出」として出していたため、同じ資料でも
   //   画面ごとに数が食い違っていた。
   const pii      = parseInt(data.pii_count || 0, 10);
   const piiTotal = pii;
@@ -125,8 +125,8 @@ function showPublishSummaryCard(data) {
       </div>
       <div style="font-size:15px;color:#475569;line-height:1.8;">
         ${bi('① Load: ingested','① 読み込み:')} ${fileCnt > 0 ? `${fileCnt}${bi(' files',' ファイル')}` : bi('target files','対象ファイル')}${bi('','を取り込み')}<br>
-        ${bi('② Guardrail masking: detected and masked personal information','② ガードレール伏字: 個人情報を検出してマスキング')}${_piiLabels ? '' : bi(' (breakdown shown from next Publish onward)','（内訳は次回 Publish 以降に表示）')}<br>
-        ${bi('③ Conversion for search: indexed','③ 検索用への変換:')} ${chunks} ${bi('chunks','チャンクを索引化')}${excluded > 0 ? bi(` (${excluded} excluded by policy)`,`（ポリシーで ${excluded} 件除外）`) : ''}
+        ${bi('② Guardrail masking: detected and masked personal information','② ガードレールマスキング: 個人情報を検出してマスキング')}${_piiLabels ? '' : bi(' (breakdown shown from next Publish onward)','（内訳は次回 Publish 以降に表示）')}<br>
+        ${bi('③ Conversion for search: indexed','③ 検索用への変換:')} ${chunks} ${bi('chunks','チャンクをインデックス化')}${excluded > 0 ? bi(` (${excluded} excluded by policy)`,`（ポリシーで ${excluded} 件除外）`) : ''}
       </div>
       ${_labelRows ? `
         <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
@@ -185,7 +185,7 @@ function showPublishSummaryCard(data) {
           <div style="font-weight:700;margin-bottom:6px;">
             ⚠ ${bi(`${phCount} file(s) were indexed without their contents.`,`${phCount} ファイルは中身が取り込まれていません。`)}
           </div>
-          ${bi('The image processing mode is none / filename_only, so only the file names entered the index. Set it to lm_studio / caption in Settings and publish again.','画像処理モードが none / filename_only のため、ファイル名だけが索引に入りました。設定の画像処理モードを lm_studio / caption にして取り込み直してください。')}
+          ${bi('The image processing mode is none / filename_only, so only the file names entered the index. Set it to lm_studio / caption in Settings and publish again.','画像処理モードが none / filename_only のため、ファイル名だけがインデックスに入りました。設定の画像処理モードを lm_studio / caption にして取り込み直してください。')}
           ${phFiles.length ? `<div style="margin-top:8px;font-family:monospace;font-size:14px;
                         background:#fff;border:1px solid #fecaca;border-radius:4px;padding:8px;
                         white-space:pre-wrap;word-break:break-all;">${phFiles.map(f => escapeHtml(String(f))).join('<br>')}</div>` : ''}
@@ -251,15 +251,15 @@ async function renderDashboardRow1(summary, collections) {
   const chunks = summary.total_chunks || 0;
   const vecChunks = summary.vectorized_chunks || chunks;
   // ga-close-v3 PartX: pii_unreviewed_count は DEPRECATED (サーバ側で
-  //   pii_detections_total の写し = 「レビュー」という実体が無い)。読むのをやめ、
-  //   実測値2つ (伏字が当たった塊数 / 伏字の総件数) だけを使う。
+  //   pii_detections_total のコピー = 「レビュー」という実体が無い)。読むのをやめ、
+  //   実測値2つ (マスキングが当たった塊数 / マスキングの総件数) だけを使う。
   const piiTotal = summary.pii_detections_total || 0;
   const maskedSpans = summary.masked_spans_total || 0;
   const wsWithoutPolicy = summary.ws_without_policy_count || summary.ws_without_policy || 0;
   const totalWs = summary.total_workspaces || summary.workspaces || 1;
   const vectorRate = chunks > 0 ? Math.round((vecChunks / chunks) * 100) : 0;
   // ga-close-v3 PartX: 「対処率」は測っていないので計算できない。実際に測れているのは
-  //   「伏字が当たった塊があるのに伏字スパンが1件も記録されていない」= 伏字が効いていない、
+  //   「マスキングが当たった塊があるのにマスキングスパンが1件も記録されていない」= マスキングが効いていない、
   //   という失敗形の有無。これを保護の点にする (検出0なら満点)。
   const piiScore = piiTotal > 0 ? (maskedSpans > 0 ? 100 : 0) : 100;
   const policyScore = totalWs > 0 ? Math.round((1 - wsWithoutPolicy / totalWs) * 100) : 100;
@@ -360,8 +360,8 @@ async function renderDashboardRow1(summary, collections) {
       <div style="font-size:13px;font-weight:600;color:#f59e0b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">${bi('PII detected','PII 検出')}</div>
       <div style="font-size:28px;font-weight:600;color:#f59e0b;line-height:1.1;">${piiTotal.toLocaleString()}</div>
       <div style="font-size:11px;color:#9ca3af;margin-bottom:8px;">${bi('chunks containing personal information','個人情報を含む塊')}</div>
-      <div style="font-size:11px;color:#6b7280;">${bi('Masked items (total)','伏字の総件数')} ${maskedSpans.toLocaleString()}${bi('',' 件')}</div>
-      ${piiTotal > 0 && maskedSpans === 0 ? `<div style="margin-top:8px;"><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#fef3c7;color:#92400e;">⚠ ${bi('Detected but nothing was masked','検出はあるが伏字が0件')}</span></div>` : ''}
+      <div style="font-size:11px;color:#6b7280;">${bi('Masked items (total)','マスキングの総件数')} ${maskedSpans.toLocaleString()}${bi('',' 件')}</div>
+      ${piiTotal > 0 && maskedSpans === 0 ? `<div style="margin-top:8px;"><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:#fef3c7;color:#92400e;">⚠ ${bi('Detected but nothing was masked','検出はあるがマスキングが0件')}</span></div>` : ''}
     </div>
 
     <!-- カード4: Guardrail -->

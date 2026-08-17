@@ -52,7 +52,7 @@ function _renderPager({ key, page, limit, total }) {
 // modelchat-ui-v3-20260628 (spec2/5): API キー入力欄をブラウザのパスワードマネージャ対象から外す。
 //   type=password を廃止し CSS(.apikey-mask-input = -webkit-text-security)で視覚マスク。これにより
 //   ブラウザ/OS の資格情報ストアへ鍵が保存・自動補完されず端末ローカルに残らない。さらに自動補完で
-//   幻の「点(●)」が入り「未設定」表示と矛盾する事象も根絶する。id は不変(参照互換維持)。
+//   幻の「点(●)」が入り「未設定」表示と矛盾する事象もルート絶する。id は不変(参照互換維持)。
 function _apiKeyMaskedInputHtml(inputId, ph) {
   return '<input type="text" id="' + inputId + '" class="form-input apikey-mask-input"'
     + ' placeholder="' + ph + '" autocomplete="off" autocorrect="off" autocapitalize="off"'
@@ -712,7 +712,7 @@ function onClsProviderChange() {
 
 function onRrProviderChange() {
   const p = $('rr-provider').value;
-  // ga-finish-20260727: 外の口 (external_accelerator) も Base URL を使う
+  // ga-finish-20260727: 外部の推論サーバ (external_accelerator) も Base URL を使う
   const needsBase = (p === 'ollama' || p === 'openai_compat' || p === 'external_accelerator');
   const needsKey = ['cohere','jina','voyage','openai_compat'].includes(p);
   $('rr-base-url-row').style.display = needsBase ? '' : 'none';
@@ -756,7 +756,7 @@ async function _fbLoad(path) {
     return;
   }
   _folderBrowserState.currentPath = data.current_path;
-  // multi-ingest-roots-20260728: path 省略時は「起動時に渡された根の一覧」= 仮想の最上位
+  // multi-ingest-roots-20260728: path 省略時は「起動時に渡されたルートの一覧」= 仮想の最上位
   // (current_path は "")。表示は写像を通し、最上位では「取り込み元」と示す。
   const _atVirtualTop = !data.current_path;
   // gui-fix-20260803 (DD-CYN-0022): bi() は <span class="en">…</span><span class="ja">…</span> を
@@ -778,7 +778,7 @@ async function _fbLoad(path) {
       ? lj('✅ Select this folder (choose a source first)', '✅ このフォルダを選択（先に取り込み元を開いてください）')
       : lj(`✅ Select this folder (${seg})`, `✅ このフォルダ（${seg}）を選択`);
   }
-  // multi-ingest-roots-20260728: 根が1件も無い (no_roots) ときは追加手順を案内する。
+  // multi-ingest-roots-20260728: ルートが1件も無い (no_roots) ときは追加手順を示す。
   if (data.no_roots) {
     listEl.innerHTML = irNoRootsHtml();
     return;

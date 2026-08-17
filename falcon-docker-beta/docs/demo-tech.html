@@ -747,7 +747,7 @@
 
       <!-- Masked branch -->
       <rect x="395" y="220" width="180" height="60" rx="8" fill="#eaf7f0" stroke="#0e8a4a" stroke-width="1.5"/>
-      <text x="485" y="245" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">masked（伏字済）</text>
+      <text x="485" y="245" text-anchor="middle" font-size="13" fill="#0f1923" font-weight="700">masked（マスキング済）</text>
       <text x="485" y="263" text-anchor="middle" font-size="10" fill="#3a4f68">[MASKED:EMAIL] 等のトークン</text>
       <text x="485" y="275" text-anchor="middle" font-size="10" fill="#3a4f68">tier='masked'</text>
 
@@ -761,7 +761,7 @@
     </svg>
 
     <div class="info-box">
-      <strong>判定ロジック:</strong> <code>tier_for_role(role)</code> が <code>role == 'admin'</code> なら <code>'raw'</code> を、それ以外なら <code>'masked'</code> を返し、対応する保管庫へルーティングします。<code>vault_enc.enc_raw</code> / <code>dec_raw</code> が <code>enc:</code> プレフィックス付きの冪等な窓口を提供します。
+      <strong>判定ロジック:</strong> <code>tier_for_role(role)</code> が <code>role == 'admin'</code> なら <code>'raw'</code> を、それ以外なら <code>'masked'</code> を返し、対応する保管庫へルーティングします。<code>vault_enc.enc_raw</code> / <code>dec_raw</code> が <code>enc:</code> プレフィックス付きの冪等なインターフェースを提供します。
     </div>
   </div>
 

@@ -4,9 +4,9 @@
 //   決定 3-4 に従い、足すときはフォルダを辿って選ばせる。フルパスの手入力欄は作らない。
 //   同時に複数は選ばせない (選べるのは「いま開いているフォルダ」1件だけ)。
 //
-//   入れ物 (コンテナ) で動く形態では、画面から受け取り手の機械のフォルダを辿れないため、
+//   コンテナ (コンテナ) で動く形態では、画面から受け取り手の機械のフォルダを辿れないため、
 //   受け口が can_add_from_screen: false を返す。その場合も「足す」の押し口は消さず (決定 31-1)、
-//   押すとターミナルへ貼る1行 (コピーできる) と Cynovela-add-folder.command の案内を出す。
+//   押すとターミナルへ貼る1行 (コピーできる) と Cynovela-add-folder.command のガイドを出す。
 
 let _irState = { current: '', parent: null, home: '', canAdd: false, restartNeeded: false, addLine: '' };
 
@@ -158,10 +158,10 @@ async function irAddCurrent() {
   }
 }
 
-// DD-CYN-0071 P-1 (決定 31-1): 入れ物で動く形で「取り込み元を足す」を押したときの案内。
+// DD-CYN-0071 P-1 (決定 31-1): コンテナで動く形で「取り込み元を足す」を押したときのガイド。
 //   弾いて終わらせない。ターミナルへ貼る1行をコピーできる形で出し、
 //   Cynovela-add-folder.command でも同じことができる旨を添える。
-//   can_add_from_screen が true の形態 (この Mac で直接動く形) ではこの案内は出さない。
+//   can_add_from_screen が true の形態 (この Mac で直接動く形) ではこのガイドは出さない。
 function irOpenTerminalGuide() {
   document.getElementById('ir-add-guide-modal')?.remove();
   const line = _irState.addLine || './launch.sh --add';
@@ -186,7 +186,7 @@ function irOpenTerminalGuide() {
   document.body.appendChild(m);
 }
 
-// 貼る1行を控え (クリップボード) へ写す。LAN 越しの http では navigator.clipboard が
+// 貼る1行をバックアップ (クリップボード) へ写す。LAN 越しの http では navigator.clipboard が
 // 使えない (secure context でない) ため、選択とコピーの命令で写す道も持つ。
 async function irCopyAddLine() {
   const line = _irState.addLine || './launch.sh --add';
@@ -231,7 +231,7 @@ function irRemoveRoot(name) {
   );
 }
 
-// DD-CYN-0032 B4: 取り込み元が0件のときに、フォルダ選びの画面から足す道へ渡す案内。
+// DD-CYN-0032 B4: 取り込み元が0件のときに、フォルダ選びの画面から足す道へ渡すガイド。
 //   「登録されていません」で終わらせず、押せる道を1つ出す。
 function irNoRootsHtml() {
   return `<div style="padding:16px;text-align:center;">

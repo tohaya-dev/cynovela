@@ -35,8 +35,8 @@ class AppConfig:
 # import server した場合は None のまま（意図的）。
 config: Optional[AppConfig] = None  # 起動設定
 adapter: Optional[Any] = None  # LLM adapter (_adapter)
-# multi-ingest-roots-20260728: 取り込み元の根 (store/ingest-roots.json の内容)。
-# __main__ ブロックで控えファイルと --ingest 引数から確定する。
+# multi-ingest-roots-20260728: 取り込み元のルート (store/ingest-roots.json の内容)。
+# __main__ ブロックでバックアップファイルと --ingest 引数から確定する。
 # 各要素は {"name": 中の名前, "host_path": Mac 側の実際の場所, "label": 画面に出す名前}。
 # routers/files.py (/api/browse) が境界判定に、routers/settings.py が画面向け公開に参照する。
 ingest_roots: List[dict] = []

@@ -1,9 +1,9 @@
 #!/bin/bash
 # Cynovela の読み込むフォルダを足す入口 (DD-CYN-0071・決定 31-2)
 #   ダブルクリックするとターミナルが開き、フォルダを選ぶ画面が出ます。
-#   選ぶ画面と控えへの書き込みは ./launch.sh --add (tools/launch-body.sh) の
-#   既にある道をそのまま使い、このファイルは結果を案内へ直すだけの薄い層です。
-#   このファイルは起動しません。控えに書くだけです (決定 7-1・起動の種類は増えない)。
+#   選ぶ画面とバックアップへの書き込みは ./launch.sh --add (tools/launch-body.sh) の
+#   既にある道をそのまま使い、このファイルは結果をガイドへ直すだけの薄い層です。
+#   このファイルは起動しません。バックアップに書くだけです (決定 7-1・起動の種類は増えない)。
 #   起動は Cynovela-start.command、停止は Cynovela-stop.command をダブルクリックしてください。
 set -u
 cd "$(dirname "$0")"
@@ -14,12 +14,12 @@ CONF_REPO="$PWD"
 . tools/conf.sh
 _PY="$(conf_pick_py "$PWD" || true)"
 
-# 形態の見分け: deploy/container が在れば入れ物 (コンテナ) で動く形。
+# 形態の見分け: deploy/container が在ればコンテナ (コンテナ) で動く形。
 #   在れば「起動し直すと読み込める」、無ければ「すぐに選べる」を出し分ける。
 _IN_CONTAINER_FORM=0
 [ -d deploy/container ] && _IN_CONTAINER_FORM=1
 
-# 足す前の控えの顔ぶれ (同じフォルダの再追加 = すでに足してある、を見分けるため)
+# 足す前のバックアップの顔ぶれ (同じフォルダの再追加 = すでに足してある、を見分けるため)
 _BEFORE="$(./launch.sh --list 2>/dev/null || echo '[]')"
 
 _OUT="$(./launch.sh --add 2>&1)"
@@ -45,13 +45,13 @@ if [ -z "$_NAME" ]; then
     exit 1
 fi
 
-# 場所は控えから実測で引く (--list は JSON を返す。python3 は --add 自体が使うものと同じ)
+# 場所はバックアップから実測で引く (--list は JSON を返す。python3 は --add 自体が使うものと同じ)
 _PLACE="$(./launch.sh --list 2>/dev/null | "$_PY" -c 'import json,sys
 name = sys.argv[1]
 roots = json.load(sys.stdin)
 print(next((r.get("host_path", "") for r in roots if r.get("name") == name), ""))' "$_NAME")"
 
-# 足す前から同じ名前が居たなら、控えには何も書かれていない (足す側が冪等なため)
+# 足す前から同じ名前が居たなら、バックアップには何も書かれていない (足す側が冪等なため)
 if printf '%s' "$_BEFORE" | "$_PY" -c 'import json, sys
 name = sys.argv[1]
 try:

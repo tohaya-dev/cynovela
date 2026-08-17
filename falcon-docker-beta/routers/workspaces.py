@@ -24,7 +24,7 @@ from core.errors import api_error
 
 # vault-enc: raw chunks の preview 表示前に復号する。masked / 旧平文は素通し。
 from vault_enc import dec_raw
-# ga-close-v3 PartD D-3: 伏字件数の数え方は guardrail.py の 1 か所に集約する。
+# ga-close-v3 PartD D-3: マスキング件数の数え方は guardrail.py の 1 か所に集約する。
 from guardrail import pii_counts_from_db, pii_counts_from_summaries
 
 router = APIRouter(tags=["workspaces"])
@@ -150,8 +150,8 @@ def list_workspaces(
                 # dashboard/summary (routers/dashboard.py)・チャンク一覧 (本ファイル T1) と
                 # 同じ tier='raw' 限定に揃える (zanken-fix1-20260706 の水平展開)。
                 # ga-close-v3 PartD D-3: 数え方は guardrail.pii_counts_from_db に集約。
-                #   pii_detected 列は raw 側が簡易正規表現の当たりでも 1 になる (伏字 0 件
-                #   でも計上される) ため、実際に当てた伏字 (pii_summary) で数える。
+                #   pii_detected 列は raw 側が簡易正規表現の当たりでも 1 になる (マスキング 0 件
+                #   でも計上される) ため、実際に当てたマスキング (pii_summary) で数える。
                 ws["pii_count"] = int(pii_counts_from_db(conn, workspace_id=ws["id"])["pii_chunks"])
             except Exception:
                 ws["pii_count"] = 0
@@ -617,7 +617,7 @@ def delete_workspace(ws_id: str, request: Request):
     # connleak-fix-20260709: 例外時も必ず close する (書き込み txn 残留 = "database is locked" を防ぐ)
     try:
         # cascade-source-cleanup (key-vector-fix-20260721): この WS の collection 群が使って
-        # いた source 候補を控え、削除後にどこの collection からも使われていないものだけ
+        # いた source 候補をバックアップ、削除後にどこの collection からも使われていないものだけ
         # 連鎖削除する (他 WS の collection が使う source は残す)。
         _cand_sources = [
             r["source_id"]
@@ -644,9 +644,9 @@ def delete_workspace(ws_id: str, request: Request):
         conn.commit()
     finally:
         conn.close()
-    # fix-v3 (A2-F2): 削除コミット後に BM25 索引を再構築する。WS の chunks は全削除済みのため
-    # rebuild_bm25_from_db は 0 件 → build_bm25_index が索引を pop し in-memory 索引を一掃する。
-    # 従来は stale 索引が残り削除済みチャンクが RAG 回答に残留していた (delete_collection と同型)。
+    # fix-v3 (A2-F2): 削除コミット後に BM25 インデックスを再構築する。WS の chunks は全削除済みのため
+    # rebuild_bm25_from_db は 0 件 → build_bm25_index がインデックスを pop し in-memory インデックスを一掃する。
+    # 従来は stale インデックスが残り削除済みチャンクが RAG 回答に残留していた (delete_collection と同型)。
     try:
         from rag import rebuild_bm25_from_db
         rebuild_bm25_from_db(ws_id)
@@ -747,8 +747,8 @@ def get_workspace_chunks(
         filter_clause = ""
         if filter == "pii":
             # ga-close-v3 PartD D-3: 絞り込みも数え方に合わせる。旧 ch.pii_detected = 1 は
-            #   masked 層 (viewer が見る層) では伏字後の再判定なのでほぼ常に 0 で、
-            #   「伏字が効いているのに 1 件も出ない」一覧になっていた。
+            #   masked 層 (viewer が見る層) ではマスキング後の再判定なのでほぼ常に 0 で、
+            #   「マスキングが効いているのに 1 件も出ない」一覧になっていた。
             filter_clause = " AND ch.pii_summary IS NOT NULL AND ch.pii_summary <> '' AND ch.pii_summary <> '{}'"
         elif filter == "excluded":
             filter_clause = " AND ch.excluded = 1"
@@ -756,10 +756,10 @@ def get_workspace_chunks(
         # T1 (P0-B F1 案1): chunks 集計・一覧は tier='raw' のみに限定。
         # raw + masked を同時に数えると同一チャンクが二重表示・件数不一致を起こすため。
         # （masked 行は __raw に対応した派生で、管理者画面でも生の raw のみ見ればよい。）
-        # ga-close-v3 PartD D-3: 伏字件数 (pii) は guardrail.pii_counts_from_summaries で
+        # ga-close-v3 PartD D-3: マスキング件数 (pii) は guardrail.pii_counts_from_summaries で
         #   数える。pii_summary は raw 行と masked 行に同じ値が入るので、閲覧者が masked
         #   層を見ていても要約・公開履歴と同じ数になる (旧 pii_detected 列は masked 層で
-        #   伏字後の再判定になり、実測で 2128 対 18 と食い違っていた)。
+        #   マスキング後の再判定になり、実測で 2128 対 18 と食い違っていた)。
         summary_row = conn.execute(
             f"""
             SELECT

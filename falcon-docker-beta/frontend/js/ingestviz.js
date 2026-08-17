@@ -1,11 +1,11 @@
 // ingestviz.js — Cynovela V3.5.0 取り込み可視化
 // 設計の正本: Notion「取り込み可視化UI 設計メモ(2026-06-19)」+「指示書一本化・プロ点検(2026-06-22)」
 //  - チャンキング中の秒単位ポップアップ連発(フリッカー)を「進捗バー」で置換する。
-//  - 完了表示は毎回の定型文にしない: 動的(伏字件数/分類・機微度)だけを最大3行。
+//  - 完了表示は毎回の定型文にしない: 動的(マスキング件数/分類・機微度)だけを最大3行。
 //    固定のガバナンス3点(端末内処理・暗号化保管・監査記録)は常設バッジ1個に圧縮。
 //    詳しい動作文/分類の意味は「受領書(詳細)を開いたとき」だけ。
 //  - 左右分割パネル: 左=進捗バー+要約 / 右=生ストリーミングログ(出来事とラベルのみ・平文PII非表示)。
-//  - 二つの見せ方: ①クイックスタート=左右分割パネルの通し案内 / ②個別操作=受領書+ジョブ一覧(来歴)。
+//  - 二つの見せ方: ①クイックスタート=左右分割パネルの通しガイド / ②個別操作=受領書+ジョブ一覧(来歴)。
 // フロントのみ・APIレスポンス形式/DBスキーマ/保護コアは不変。
 
 const IngestViz = (function () {
@@ -238,7 +238,7 @@ const IngestViz = (function () {
     const fileCnt = parseInt(data.file_count || ctx.fileCount || 0, 10);
     const piiLabels = data.pii_labels || null;
     // ga-close-v3 PartX: 件数は画面で数え直さない。サーバの唯一の口が返す
-    //   pii_count (= 伏字が当たった塊数) をそのまま使う。
+    //   pii_count (= マスキングが当たった塊数) をそのまま使う。
     const piiTotal = parseInt(data.pii_count || 0, 10);
     const breakdown = _labelBreakdown(piiLabels);
     const cls = data.classification_summary || {};
@@ -258,13 +258,13 @@ const IngestViz = (function () {
     _pushHistory(receipt);
 
     // ---- 最大3行の動的サマリー(定型文を毎回繰り返さない) ----
-    // 行1: 伏字件数+内訳 / 行2: 分類・機微度(or チャンク数) / 行3: ガバナンス小バッジ
+    // 行1: マスキング件数+内訳 / 行2: 分類・機微度(or チャンク数) / 行3: ガバナンス小バッジ
     const line1 = piiTotal > 0
-      ? `🛡 ${lj(`Masked personal information in <b>${piiTotal}</b> chunk(s)`, `個人情報を含む塊 <b>${piiTotal}件</b> を伏字にしました`)}${breakdown ? `（${breakdown.join(' ')}）` : ''}`
+      ? `🛡 ${lj(`Masked personal information in <b>${piiTotal}</b> chunk(s)`, `個人情報を含む塊 <b>${piiTotal}件</b> をマスキングにしました`)}${breakdown ? `（${breakdown.join(' ')}）` : ''}`
       : `🛡 ${lj('No personal information detected', '個人情報は検出されませんでした')}`;
     const line2 = (topDoc || topSens)
       ? `📂 ${lj('Classification', '分類')}: <b>${_esc(_classLabel('doc_type', topDoc))}</b> ／ ${lj('Sensitivity', '機微度')}: <b>${_esc(_classLabel('sensitivity', topSens))}</b>`
-      : `📊 ${lj(`Indexed ${chunks} chunks`, `${chunks} チャンクを索引化`)}${fileCnt ? ` ／ ${lj(`${fileCnt} files`, `${fileCnt} ファイル`)}` : ''}`;
+      : `📊 ${lj(`Indexed ${chunks} chunks`, `${chunks} チャンクをインデックス化`)}${fileCnt ? ` ／ ${lj(`${fileCnt} files`, `${fileCnt} ファイル`)}` : ''}`;
 
     // DD-CYN-0091 C: 飛ばしたファイルの一覧 (ファイル名+理由) を完了サマリーに出す
     const _skDetails = Array.isArray(data.skipped_details) ? data.skipped_details : [];
@@ -288,8 +288,8 @@ const IngestViz = (function () {
     _setJobStatus(colId, 'completed');
     const ov = _overlayEl();
     if (t && t.overlay && ov && ov.dataset.colId === String(colId)) {
-      _logLine(colId, '✅', `${lj('Complete', '完了')}: ${lj(`Indexed ${chunks} chunks`, `${chunks} チャンクを索引化`)}`, 'iv-ok');
-      if (piiTotal > 0 && breakdown) _logLine(colId, '🛡', `${lj('Masked', '伏字')}: ${breakdown.join(' ')}`, 'iv-ok');
+      _logLine(colId, '✅', `${lj('Complete', '完了')}: ${lj(`Indexed ${chunks} chunks`, `${chunks} チャンクをインデックス化`)}`, 'iv-ok');
+      if (piiTotal > 0 && breakdown) _logLine(colId, '🛡', `${lj('Masked', 'マスキング')}: ${breakdown.join(' ')}`, 'iv-ok');
       _logLine(colId, '🔐', lj('Originals stored encrypted · masking recorded in audit log', '原本は暗号化保管・マスキングは監査ログに記録'), 'iv-gov');
       const host = document.getElementById(`iv-summary-${colId}`);
       if (host) host.innerHTML = summaryHtml;
@@ -391,7 +391,7 @@ const IngestViz = (function () {
   }
 
   // latestlog-20260627: 最新ログ — 直近1件の取り込み受領書だけを再表示する(来歴一覧は出さない=最新のみ)。
-  //   出どころ= localStorage HIST_KEY の先頭(done() が完了時に push 済み)。進捗ポップアップを閉じた後でも、
+  //   入手元= localStorage HIST_KEY の先頭(done() が完了時に push 済み)。進捗ポップアップを閉じた後でも、
   //   非admin を含む全ユーザーがフロント完結で参照できる(admin限定の永続記録EPには依存しない)。
   //   描画は showHistory の1行と同じ markup を単一受領書で。タイトルは lj()(escape安全・生タグ非表示)。
   function showLatest() {
@@ -423,7 +423,7 @@ const IngestViz = (function () {
     return key;
   }
 
-  // ===== ingest-resilience v1: C(裏で継続案内) / D(リロード復帰) / E(前回ログ・続きから) =====
+  // ===== ingest-resilience v1: C(裏で継続ガイド) / D(リロード復帰) / E(前回ログ・続きから) =====
   const JOBS_KEY = 'cynovela_ingest_jobs';
   const JOBS_MAX = 30;
   function _getJobs() { try { return JSON.parse(localStorage.getItem(JOBS_KEY) || '[]'); } catch (e) { return []; } }
@@ -440,7 +440,7 @@ const IngestViz = (function () {
     });
     _putJobs(a);
     // finalround B-6: サーバ側では裏で継続するが、進行中はタブを閉じる/離れる操作で beforeunload 警告を出す
-    //   (state.js の _cynovelaIngestInProgress)。案内文も「閉じると進捗表示が失われる」旨に統一。
+    //   (state.js の _cynovelaIngestInProgress)。ガイド文も「閉じると進捗表示が失われる」旨に統一。
     const t = _tracked[colId];
     if (t && t.overlay) {
       _logLine(colId, 'ℹ️', lj('Ingest continues on the server (closing this tab loses the live progress view)', '取り込みはサーバ側で継続します（このタブを閉じると進捗表示は失われます）'), 'iv-gov');
@@ -515,8 +515,8 @@ const IngestViz = (function () {
     } catch (e) { return false; }
   }
 
-  // latestlog-dualbtn-20260627: 「最新ログ」ボタンの一本化(走行中なら再アタッチ / 非走行なら完了記録)。
-  //   走行中判定は同一ブラウザ側だけで成立: ①メモリ live=_cynovelaIngestInProgress(state.js・API不要)
+  // latestlog-dualbtn-20260627: 「最新ログ」ボタンの一本化(実行中なら再アタッチ / 非実行なら完了記録)。
+  //   実行中判定は同一ブラウザ側だけで成立: ①メモリ live=_cynovelaIngestInProgress(state.js・API不要)
   //   ②localStorage の running ジョブ(_getJobs・リロード後も残存=閉→再オープン対応)。どちらかが真なら
   //   既存 reattachLive() で進捗・ログへ再アタッチ。何も走っていなければ従来どおり直近の完了記録1件
   //   (showLatest)。新EP/スキーマ無・既存関数の再利用+分岐のみ(DOM ID/fetch URL/関数名 不変)。

@@ -293,7 +293,7 @@ def get_settings(request: Request):
             settings[row["key"]] = row["value"]
     finally:
         conn.close()
-    # multi-ingest-roots-20260728: 起動時に確定した取り込み元の根 (state.ingest_roots) を
+    # multi-ingest-roots-20260728: 起動時に確定した取り込み元のルート (state.ingest_roots) を
     # 画面の表示写像用に公開する (settings 表には書かない実行時値・JSON 文字列)。
     import json as _json
 
@@ -534,8 +534,8 @@ def get_reranker_settings(request: Request):
     elif cls == "ExternalAcceleratorReranker":
         info["provider"] = "external_accelerator"
     # ga-finish-20260727: 再ランクの実行場所と退避状態を返す (埋め込みの mas-status と同型)。
-    #   execution: external (外の口) / in_process (本体内) / none (再ランクなし)
-    #   fallback: 外の口へ届かず退避が起きているか (target = 実際の退避経路)
+    #   execution: external (外部の推論サーバ) / in_process (本体内) / none (再ランクなし)
+    #   fallback: 外部の推論サーバへ届かず退避が起きているか (target = 実際の退避経路)
     try:
         from providers.reranker import get_rerank_fallback_state as _grfs
 
@@ -579,10 +579,10 @@ async def update_reranker_settings(request: Request):
             "provider": body.get("provider", "none"),
             "model": body.get("model", ""),
             "base_url": body.get("base_url", ""),
-            # ga-finish-20260727: 外の口 (external/external_accelerator) への切替は埋め込みと
+            # ga-finish-20260727: 外部の推論サーバ (external/external_accelerator) への切替は埋め込みと
             # 同じ device キーで受ける (provider=external_accelerator も同義)。
             "device": body.get("device", ""),
-            "api_key": body.get("api_key", ""),  # DD-CYN-0067 G-2: env 控えを撤去
+            "api_key": body.get("api_key", ""),  # DD-CYN-0067 G-2: env バックアップを撤去
             "top_n": int(body.get("top_n", 5) or 5),
         }
     }
@@ -641,7 +641,7 @@ async def update_classifier_settings(request: Request):
         "classifier": {
             "provider": body.get("provider", "rule_based"),
             "api_url": body.get("api_url", ""),
-            "api_key": body.get("api_key", ""),  # DD-CYN-0067 G-2: env 控えを撤去
+            "api_key": body.get("api_key", ""),  # DD-CYN-0067 G-2: env バックアップを撤去
         }
     }
     _server._classifier = get_classifier_provider(cfg)
@@ -731,7 +731,7 @@ async def update_vector_store_settings(request: Request):
             "provider": provider,
             "path": body.get("path", ""),
             "qdrant_url": body.get("qdrant_url", "http://localhost:6333"),
-            "qdrant_api_key": body.get("qdrant_api_key", ""),  # DD-CYN-0067 G-2: env 控えを撤去
+            "qdrant_api_key": body.get("qdrant_api_key", ""),  # DD-CYN-0067 G-2: env バックアップを撤去
         }
     }
     _server._vector_store = get_vector_store_provider(cfg)
@@ -756,13 +756,13 @@ def get_embedding_settings(request: Request):
         info["provider"] = "mlx"
     elif cls_name == "OpenAICompatibleEmbeddingProvider":
         info["provider"] = "openai_compat"
-    # mas-status-20260725: 外の口 (Mac Accelerator Service) の稼働状態と退避状態を返す。
+    # mas-status-20260725: 外部の推論サーバ (Mac Accelerator Service) の稼働状態と退避状態を返す。
     #   退避が起きたら黙って遅くならず画面に出すための供給元。
     try:
         import rag as _rag
         info["fallback"] = _rag.get_embedding_fallback_state()
         info["local_device"] = getattr(_rag, "_EF_DEVICE_SELECTED", None)
-        # §9-4: 索引の埋め込み識別との整合状態 (起動時/公開時に検査済みの値)
+        # §9-4: インデックスの埋め込み識別との整合状態 (起動時/公開時に検査済みの値)
         info["identity"] = _rag.get_embedding_identity_state()
     except Exception:
         info["fallback"] = {"active": False}
@@ -791,7 +791,7 @@ async def update_embedding_settings(request: Request):
     provider = body.get("provider", "local")
     model = body.get("model", "") or ""
     base_url = body.get("base_url", "") or ""
-    api_key = body.get("api_key", "")  # DD-CYN-0067 G-2: env 控えを撤去
+    api_key = body.get("api_key", "")  # DD-CYN-0067 G-2: env バックアップを撤去
     cfg = {
         "embedding": {
             "provider": provider,
@@ -843,7 +843,7 @@ def _restore_embedding_from_db() -> None:
     戻っていた。ここでアプリの立ち上がりに 1 度だけ読み直して差し替える。
 
     保存されている値が 1 件も無ければ何もしない (設定ファイルの値がそのまま残る)。
-    api_key は保存していないので、外の口に鍵が要る構成では画面から入れ直す
+    api_key は保存していないので、外部の推論サーバに鍵が要る構成では画面から入れ直す
     (この扱いは LLM 側と同じである)。読めない・作れないときは黙って設定ファイル側の
     ままにする。ここで落ちるとアプリが立ち上がらなくなるためである。
 
@@ -868,11 +868,11 @@ def _restore_embedding_from_db() -> None:
             conn.close()
         saved = {r[0]: r[1] for r in rows}
 
-        # DD-CYN-0088 §6-A: 土台は設定ファイル (cynovela.yaml) の embedding の節とし、
-        # 控えの表は「画面で決めた分だけ」その上に重ねる。
+        # DD-CYN-0088 §6-A: 実行エンジンは設定ファイル (cynovela.yaml) の embedding の節とし、
+        # バックアップの表は「画面で決めた分だけ」その上に重ねる。
         #   以前はこの3鍵だけで cfg を組み立て直していたため、設定ファイルにしか無い
         #   device の鍵が落ちていた。providers/embedding.py は device を先に見て
-        #   外の口 (外部アクセラレータ) を選ぶ作りなので、device が無いと選ばれず、
+        #   外部の推論サーバ (外部アクセラレータ) を選ぶ作りなので、device が無いと選ばれず、
         #   埋め込みが黙って CPU の口へ落ちる。退避ではないため画面にも警告が出ない。
         try:
             from core.config import CYNOVELA_CONFIG as _BASE_CFG  # noqa: PLC0415
@@ -882,7 +882,7 @@ def _restore_embedding_from_db() -> None:
         cfg_emb = dict(base)
         origin = {_k: "設定ファイル" for _k in cfg_emb}
 
-        # 控えの値が空、または既定を意味する値のときは重ねない。
+        # バックアップの値が空、または既定を意味する値のときは重ねない。
         #   'default' は db.py の init_db が embedding_model へ最初に書き込む値であって、
         #   画面で決めた値ではない。重ねるとモデル名が文字列 'default' に化ける。
         _UNSET = ("", "default", "auto", "none", "null")
@@ -899,23 +899,23 @@ def _restore_embedding_from_db() -> None:
             if _val.lower() in _UNSET:
                 continue
             cfg_emb[_cfgkey] = _val
-            origin[_cfgkey] = "控え"
+            origin[_cfgkey] = "バックアップ"
 
-        _overlaid = [_k for _k in origin if origin[_k] == "控え"]
+        _overlaid = [_k for _k in origin if origin[_k] == "バックアップ"]
         if not _overlaid:
             # 画面で決めた値が1つも無い。設定ファイルの口をそのまま使う。
             # ここで作り直すと、同じ口をもう一度作るだけで得が無い。
             print(
-                "[embedding] 控えに画面で決めた値はありません。設定ファイルの口をそのまま使います "
+                "[embedding] バックアップに画面で決めた値はありません。設定ファイルの口をそのまま使います "
                 f"(provider={base.get('provider', '')} device={base.get('device', '')} "
                 f"model={base.get('model', '')} base_url={base.get('base_url', '')})"
             )
             return
 
-        # 画面から供給元そのものを選び直していたときだけ、土台の device を外す。
+        # 画面から供給元そのものを選び直していたときだけ、実行エンジンの device を外す。
         #   device は providers/embedding.py で provider より先に効くため、外さないと
         #   画面で選び直した供給元が無視される。選び直していないときは device を残す。
-        if origin.get("provider") == "控え" and cfg_emb.get("provider") != base.get("provider"):
+        if origin.get("provider") == "バックアップ" and cfg_emb.get("provider") != base.get("provider"):
             cfg_emb.pop("device", None)
             origin["device"] = "画面で供給元を選び直したため外しました"
 
@@ -930,7 +930,7 @@ def _restore_embedding_from_db() -> None:
             )
         )
     except Exception as _e:  # noqa: BLE001
-        print(f"[embedding] 控えからの復元は行いませんでした: {_e}")
+        print(f"[embedding] バックアップからの復元は行いませんでした: {_e}")
 
 
 router.add_event_handler("startup", _restore_embedding_from_db)

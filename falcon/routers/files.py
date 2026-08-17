@@ -7,7 +7,7 @@
 
 ga-close-v3 PartA (2026-07-27): /api/upload (POST) を撤去した。
 受け取ったファイルを store/uploads/ にアプリ内部の生ファイルとして書き出す唯一の経路で、
-暗号化も伏字もされず、ワークスペース削除でも消えず、K8s では受け口 Pod と処理 Pod が
+暗号化もマスキングもされず、ワークスペース削除でも消えず、K8s では受け口 Pod と処理 Pod が
 別なので構造的に必ず失敗していた。取り込みは取り込みフォルダ経由に一本化する。
 """
 
@@ -29,7 +29,7 @@ router = APIRouter(tags=["files"])
 
 
 # ------------------------------------------------------------
-# DD-CYN-0032 B4: 取り込み元 (根) の控えを毎回読む。
+# DD-CYN-0032 B4: 取り込み元 (ルート) のバックアップを毎回読む。
 #   書く側は3つ: 入口スクリプト (./launch.sh --add ほか)・本体の起動時・画面 (/api/ingest-roots)。
 #   読む側をここ1か所に揃えることで、画面から足したものが起動し直さずに効く。
 #   読めない/無いときは None を返し、呼ぶ側が従来の道 (起動時に確定した一覧) に退く。
@@ -137,7 +137,7 @@ def browse_folders(request: Request, path: str = ""):
     どちらも取り込み設定＝管理者の作業であり閲覧者の経路ではない。
     """
     _require_admin(request)
-    # fix-folder-ingest-20260618: 取り込みフォルダ /app/ingest が存在すればそれを根にする (新規 env 不使用)。
+    # fix-folder-ingest-20260618: 取り込みフォルダ /app/ingest が存在すればそれをルートにする (新規 env 不使用)。
     # 無ければ従来どおり $HOME (スタンドアロン挙動は不変)。
     # browse-root-unlock-20260728: home は既定の開始地点と home_path 表示のみに用い、範囲制限には使わない。
     _ingest_box = "/app/ingest"
@@ -152,7 +152,7 @@ def browse_folders(request: Request, path: str = ""):
         raise HTTPException(400, f"Invalid path: {e}")
 
     # multi-ingest-roots-20260728: browse-root-unlock-20260728 で撤廃した境界を復元する。
-    # 取り込み元は起動時マウント (/app/ingest 配下の根) で選ぶ方式に改めたため、
+    # 取り込み元は起動時マウント (/app/ingest 配下のルート) で選ぶ方式に改めたため、
     # 参照範囲は home (= /app/ingest があればそれ、なければ ~) 配下に戻す。
     # ホーム外アクセス禁止 (home + os.sep で前方一致の偽陽性 (/Users/me2 vs /Users/me) を回避)
     if target != home and not target.startswith(home + os.sep):
@@ -180,7 +180,7 @@ def browse_folders(request: Request, path: str = ""):
     except PermissionError:
         raise HTTPException(403, f"Permission denied: {target}")
 
-    # multi-ingest-roots-20260728: 境界復元に合わせ、親無し = home (根) に戻す。
+    # multi-ingest-roots-20260728: 境界復元に合わせ、親無し = home (ルート) に戻す。
     parent_path = None if target == home else os.path.dirname(target)
     resp = {
         "current_path": target,
@@ -189,8 +189,8 @@ def browse_folders(request: Request, path: str = ""):
         "folders": folders,
         "files": files,
     }
-    # multi-ingest-roots-20260728: 取り込み元の根が1件も無い (= /app/ingest が存在して中身が空) とき、
-    # 画面が「起動時に追加してください」と案内できるよう no_roots を返す (既存キーは不変)。
+    # multi-ingest-roots-20260728: 取り込み元のルートが1件も無い (= /app/ingest が存在して中身が空) とき、
+    # 画面が「起動時に追加してください」とガイドできるよう no_roots を返す (既存キーは不変)。
     try:
         if os.path.isdir(_ingest_box) and not os.listdir(os.path.realpath(_ingest_box)):
             resp["no_roots"] = True
@@ -365,7 +365,7 @@ def file_preview(file_id: str, request: Request):
         raise HTTPException(status_code=404, detail="ファイルが見つかりません")
     path = row["path"] or ""
     name = row["name"] or ""
-    # sokessan-fix-a8-20260711: 原本ファイルプレビュー(伏字前本文の先頭2000字)閲覧を監査に残す。
+    # sokessan-fix-a8-20260711: 原本ファイルプレビュー(マスキング前本文の先頭2000字)閲覧を監査に残す。
     try:
         _fp_ca = get_db()
         try:

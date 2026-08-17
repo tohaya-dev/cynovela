@@ -202,8 +202,8 @@ class OpenAICompatibleEmbeddingProvider(EmbeddingProvider):
             self.base_url = self.base_url[: -len("/v1")]
         self.model = model
         self.api_key = api_key or ""  # DD-CYN-0067 G-2: 鍵は設定/画面からのみ (env 読みを撤去)
-        # mas-trust-boundary-20260725: 口へ渡す本文が原文か伏字済みかを常に明示する。
-        # Cynovela の索引/検索経路が外へ出すのは伏字済みのみ (masked-only 不可侵)。
+        # mas-trust-boundary-20260725: 口へ渡す本文が原文かマスキング済みかを常に明示する。
+        # Cynovela のインデックス/検索経路が外へ出すのはマスキング済みのみ (masked-only 不可侵)。
         self.content_class = content_class or "masked"
 
     def _headers(self) -> dict:
@@ -255,7 +255,7 @@ def get_embedding_provider(config: dict) -> EmbeddingProvider:
     mas-device-20260725: embedding.device で実行先を選ぶ。
       本体(ホスト直)側の指定値: auto / cpu / mps / external
       コンテナ側の指定値:       local_cpu / local_mps / external_accelerator
-    external* は base_url (外の口 = Mac Accelerator Service) を指す openai_compat。
+    external* は base_url (外部の推論サーバ = Mac Accelerator Service) を指す openai_compat。
     auto/未指定は従来どおり provider キーの解釈 (完全無回帰)。
     """
     e = (config or {}).get("embedding", {}) or {}

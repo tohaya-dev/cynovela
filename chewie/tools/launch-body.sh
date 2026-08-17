@@ -11,9 +11,9 @@
 #    ./launch.sh --local-only    待ち受けを自マシン内だけに絞る
 #
 #    ./launch.sh --check         起動せずに動く条件だけを調べ、結果を1本のファイルへ書く
-#    ./launch.sh --setup         土台を選んで、足りないものを入れる (入れたら止まります)
+#    ./launch.sh --setup         実行エンジンを選んで、足りないものを入れる (入れたら止まります)
 #
-#    ./launch.sh --base <conda|venv|none>  --setup で聞かずに土台を決める
+#    ./launch.sh --base <conda|venv|none>  --setup で聞かずに実行エンジンを決める
 #    ./launch.sh --env-name <名前>         conda 環境の名前を変える (既定 cynovela-dist)
 #    ./launch.sh --verbose                 入れている間の素の出力をそのまま出す
 #
@@ -27,10 +27,10 @@
 #
 #  環境チェックの3つのモード:
 #    既定    足りないものを並べて止まる (何も入れない・何も書き換えない)
-#    --setup 土台を選んでから、足りないものをそこへ入れる。入れたら止まる
+#    --setup 実行エンジンを選んでから、足りないものをそこへ入れる。入れたら止まる
 #    --check 読み取りだけで同じ検査を回し、結果を store/env-check.txt へ書いて終わる
 #
-#  --setup が土台を決める順番 (DD-CYN-0031):
+#  --setup が実行エンジンを決める順番 (DD-CYN-0031):
 #    1. まず conda を見に行く。使えるなら、この配布物専用の conda 環境を新しく作る。
 #       名前の既定は 'cynovela-dist' で、--env-name で変えられる。
 #    2. conda が使えないときだけ、この配布物の中 (.venv-cynovela) へ倒す。
@@ -43,7 +43,7 @@
 # ============================================================
 set -e
 
-# DD-CYN-0069 M-5: 本体は tools/ の下の部品になった (決定 12-2)。置き場の基準は配布物の根のまま。
+# DD-CYN-0069 M-5: 本体は tools/ の下の部品になった (決定 12-2)。保存先の基準は配布物のルートディレクトリのまま。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHARED_ENV_NAME="cynovela"
 DIST_ENV_NAME="cynovela-dist"
@@ -61,7 +61,7 @@ MODE_SETUP=0
 # DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"
-# DD-CYN-0107 F-c: 取り込み元の控えは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
+# DD-CYN-0107 F-c: 取り込み元のバックアップは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
 #   素の python3 (版の検査なし) へは倒れない。満たすものが無いときは理由と、その場で効く
 #   操作を出す。
 # DD-CYN-0117 R-1: 版は名前で当てず、conf_pick_py がその python 自身に答えさせる。
@@ -71,8 +71,8 @@ _roots_py() {
     if [ -z "$ROOTS_PY" ]; then
         # DD-CYN-0117 R-4: いま失敗した入口 (Cynovela-start.command は ./launch.sh を
         #   呼ぶだけの同じ道) をもう一度押せ、とは言わない。その場で効く操作を出す。
-        echo "エラー: 3.12 以上の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を扱えません。" >&2
-        echo "       直し方: ./launch.sh --setup を叩いてください。この配布物の中に python の置き場が作られ、以後この操作が通ります。" >&2
+        echo "エラー: 3.12 以上の python が見つかりません。取り込み元のバックアップ (store/ingest-roots.json) を扱えません。" >&2
+        echo "       直し方: ./launch.sh --setup を叩いてください。この配布物の中に python の保存先が作られ、以後この操作が通ります。" >&2
         echo "       いま在るものを確かめる: ./launch.sh --check" >&2
         return 1
     fi
@@ -80,8 +80,8 @@ _roots_py() {
 }
 DATA_DIR="$(conf_get_or paths data_dir "$SCRIPT_DIR/store")"
 case "$DATA_DIR" in ./*) DATA_DIR="$SCRIPT_DIR/${DATA_DIR#./}" ;; esac
-# 取り込み元の控えは保存先の下に置く。本体 (server.py) が見る場所と揃える。
-#   揃えないと、保存先を移したときに入口と本体が別々の控えを見て食い違う。
+# 取り込み元のバックアップは保存先の下に置く。本体 (server.py) が見る場所と揃える。
+#   揃えないと、保存先を移したときに入口と本体が別々のバックアップを見て食い違う。
 INGEST_ROOTS_FILE="$DATA_DIR/ingest-roots.json"
 DEFAULT_PORT="$(conf_get_num server port "$DEFAULT_PORT_FALLBACK")"
 DEFAULT_HOST="$(conf_get_or server host 0.0.0.0)"
@@ -127,8 +127,8 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://localhost:8765   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初の合言葉は同梱の STARTUP.md の「ログイン」の節にあります。
-             管理者は最初に入ったときに合言葉の変更を求められます。
+             最初のパスワードは同梱の STARTUP.md の「ログイン」の節にあります。
+             管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 
 共有の conda 環境 'cynovela' は読むだけで、書き換えません。
@@ -156,7 +156,7 @@ usage_all() {
   ./launch.sh --lan               LAN 公開 (--local-only を付けないときと同じ。後方互換)。
   ./launch.sh --allow-tailscale   TailScale の網からの接続を許します。
   ./launch.sh --allow-subnet <網> 許す網を足します (複数指定可)。
-  ./launch.sh --reset-admin       管理者の合言葉を作り直して表示し、終わります。
+  ./launch.sh --reset-admin       管理者のパスワードを作り直して表示し、終わります。
 USAGE_ALL
 }
 
@@ -175,10 +175,10 @@ unknown_arg() {
 #   端末から人が叩いたときだけ聞く (非対話では従来どおり黙って既定で進む)。
 ARGC_AT_START=$#
 
-# 取り込み元を足したあとの案内。形態を見て出し分ける (DD-CYN-0077 S-1)。
+# 取り込み元を足したあとのガイド。形態を見て出し分ける (DD-CYN-0077 S-1)。
 #   見分け方は Cynovela-add-folder.command と同じで、deploy/container の有無を見る。
-#   在れば入れ物 (コンテナ) で動く形。束縛は起動時にしか張れないため起動し直しが要る。
-#   無ければこの Mac で直接動く形。控えは参照のたびに読み直されるため要らない
+#   在ればコンテナ (コンテナ) で動く形。束縛は起動時にしか張れないため起動し直しが要る。
+#   無ければこの Mac で直接動く形。バックアップは参照のたびに読み直されるため要らない
 #   (読む側は routers/files.py。サーバも restart_required_to_apply に偽を返す)。
 #   文面は画面 (frontend/js/ingest_roots_ui.js) と Cynovela-add-folder.command に合わせる。
 _print_add_applied() {
@@ -216,7 +216,7 @@ while [ $# -gt 0 ]; do
             NO_PROMPT=1
             ;;
         --fetch-model)
-            # AIモデルが無いときに取り寄せる (画面が確認を取ってから渡す)
+            # AIモデルが無いときにダウンロードする (画面が確認を取ってから渡す)
             FETCH_MODEL=1
             ;;
         --base)
@@ -365,11 +365,11 @@ _ask_model_if_missing() {
     echo ""
     echo "  資料を読み取るための部品が、この機械にまだありません。"
     echo "  どうしますか？"
-    echo "    1) いま取り寄せる"
+    echo "    1) いまダウンロードする"
     echo "       ・大きさ: 約 2.2 GB"
-    echo "       ・インターネットにつなぎます (取り寄せ先: Hugging Face)"
+    echo "       ・インターネットにつなぎます (ダウンロード元: Hugging Face)"
     echo "    2) すでに持っているフォルダを選ぶ"
-    echo "    3) 取り寄せずに、いちばん軽い設定で始める"
+    echo "    3) ダウンロードせずに、いちばん軽い設定で始める"
     echo ""
     echo "  ※ 選ぶまで、通信は始めません。"
     printf "  選んでください [1-3] (Enter は 3): "
@@ -377,7 +377,7 @@ _ask_model_if_missing() {
     read -r _c || _c=""
     case "$_c" in
         1)
-            echo "  → 起動したあとに取り寄せます。画面に確認が出ます。"
+            echo "  → 起動したあとにダウンロードします。画面に確認が出ます。"
             ;;
         2)
             local _sel
@@ -392,7 +392,7 @@ _ask_model_if_missing() {
             fi
             ;;
         *)
-            echo "  → 取り寄せません。いちばん軽い設定で始めます。"
+            echo "  → ダウンロードしません。いちばん軽い設定で始めます。"
             APP_ARGS+=(--mode minimal)
             ;;
     esac
@@ -430,7 +430,7 @@ run_interactive() {
             ;;
     esac
 
-    # DD-CYN-0097 §5-A (決定 40-2・40-4): 構成の問いを撤去した。案内する形が text の
+    # DD-CYN-0097 §5-A (決定 40-2・40-4): 構成の問いを撤去した。示す形が text の
     #   1つだけになったため、尋ねずにそのまま text で進む。引数 (--mode 等) で渡す道は
     #   従来どおり残っている (server.py の受け付けは変えていない)。
     APP_ARGS+=(--mode text)
@@ -456,7 +456,7 @@ run_interactive() {
 # ------------------------------------------------------------
 # DD-CYN-0032 B3: 取り込み元が1件も足されていないときの既定
 #   何も渡されないときは、この配布物の中のダミー資料の場所を取り込み元にする (決定 9-3)。
-#   場所は起動のたびにここで解き直す ($SCRIPT_DIR 基準)。控えへ展開先の絶対の場所を
+#   場所は起動のたびにここで解き直す ($SCRIPT_DIR 基準)。バックアップへ展開先の絶対の場所を
 #   焼き付けないため、配布物を別の場所へ移しても同じように効く。
 #   受け取り手が --ingest を渡したときは、渡された側だけを使う (既定は足さない)。
 #   既に1件でも足してあるときは何もしない (受け取り手が外した結果を勝手に戻さない)。
@@ -466,7 +466,7 @@ DEFAULT_INGEST_USED=0
 NO_ROOTS_AND_NO_DEFAULT=0
 
 # portable-roots-20260808 (DD-CYN-0066 F-2): 数えるだけなので生読みでも件数は合うが、
-#   控えの読み口を1か所へ寄せるため、ここも scripts/ingest_roots.py に読ませる。
+#   バックアップの読み口を1か所へ寄せるため、ここも scripts/ingest_roots.py に読ませる。
 _roots_count() {
     python3 "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" --repo "$SCRIPT_DIR" list 2>/dev/null \
         | python3 -c 'import json,sys
@@ -492,7 +492,7 @@ fi
 # ------------------------------------------------------------
 # DD-CYN-0032 B5: 掛け直しを必ず効かせる
 #   落とす相手は「この配布物が起動した本体」だけ。まとめて落とす形 (pkill 等) は使わない。
-#   控え (store/server.pid) が無い・古いときでも、使っている番号から相手を1つずつ確かめる。
+#   バックアップ (store/server.pid) が無い・古いときでも、使っている番号から相手を1つずつ確かめる。
 #   落とせなかったときは黙って進まない。何が上がっているかと手で止める方法を画面に出す。
 # ------------------------------------------------------------
 _is_our_server() {   # $1=番号。0 を返したら「この配布物の本体」
@@ -506,7 +506,7 @@ _is_our_server() {   # $1=番号。0 を返したら「この配布物の本体�
         *" server.py"*) : ;;
         *)              return 1 ;;
     esac
-    # この配布物の置き場から起動したものだけを相手にする (start_app は cd "$SCRIPT_DIR" 済み)
+    # この配布物の保存先から起動したものだけを相手にする (start_app は cd "$SCRIPT_DIR" 済み)
     _cwd="$(lsof -a -p "$_p" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1)"
     [ "$_cwd" = "$SCRIPT_DIR" ]
 }
@@ -533,11 +533,11 @@ stop_previous() {
     local _pidfile="$DATA_DIR/server.pid"
     local _targets _p _left _i
 
-    # 古い控えはここで片づける (書く側と読む側の置き場は同じ = store/server.pid)
+    # 古いバックアップはここで片づける (書く側と読む側の保存先は同じ = store/server.pid)
     if [ -f "$_pidfile" ]; then
         _p="$(cat "$_pidfile" 2>/dev/null || true)"
         if ! _is_our_server "$_p"; then
-            echo "[掛け直し] 控えが古いので片づけます (書かれていた番号: ${_p:-空})"
+            echo "[掛け直し] バックアップが古いので片づけます (書かれていた番号: ${_p:-空})"
             rm -f "$_pidfile"
         fi
     fi
@@ -672,7 +672,7 @@ effective_env_name() {
 
 # 本体を動かす python を決める。
 #   1) 配布物専用の conda 環境 (既定 cynovela-dist)  ← --setup が作る
-#   2) 配布物専用の置き場 (.venv-cynovela)           ← --setup が作る
+#   2) 配布物専用の保存先 (.venv-cynovela)           ← --setup が作る
 #   3) 共有の conda 環境 'cynovela'                  ← 読むだけ。書き換えない
 #   4) システムの python3
 resolve_python() {
@@ -686,7 +686,7 @@ resolve_python() {
         return 0
     fi
     # --setup で選んだ直後は、その選択を上書きしない。
-    # (選ばなかった方が先に見つかると、選んだ側と食い違う案内を出してしまう。)
+    # (選ばなかった方が先に見つかると、選んだ側と食い違うガイドを出してしまう。)
     if [ "$BASE_LOCKED" = "1" ] && [ -n "$PY" ]; then
         return 0
     fi
@@ -698,7 +698,7 @@ resolve_python() {
     fi
     if [ -x "$VENV_DIR/bin/python" ]; then
         PY="$VENV_DIR/bin/python"
-        PY_SRC="配布物専用の置き場 ($VENV_DIR)"
+        PY_SRC="配布物専用の保存先 ($VENV_DIR)"
         return 0
     fi
     if [ -n "$CONDA_BASE" ] && [ -x "$CONDA_BASE/envs/$SHARED_ENV_NAME/bin/python" ]; then
@@ -772,7 +772,7 @@ PYEOF
 run_probe() {
     add_report "== 調べた時刻 =="
     add_report "$(date '+%Y-%m-%d %H:%M:%S %Z')"
-    add_report "== 置き場所 =="
+    add_report "== 保存先 =="
     add_report "$SCRIPT_DIR"
 
     # 1. 機械と OS
@@ -784,7 +784,7 @@ run_probe() {
     find_conda_base
     add_report "== conda =="
     if [ -n "$CONDA_BASE" ]; then
-        add_report "conda の置き場: $CONDA_BASE"
+        add_report "conda の保存先: $CONDA_BASE"
         if [ -d "$CONDA_BASE/envs/$SHARED_ENV_NAME" ]; then
             add_report "共有の環境 '$SHARED_ENV_NAME': あり (読むだけ・書き換えません)"
         else
@@ -802,52 +802,52 @@ run_probe() {
         add_report "版: $("$PY" -V 2>&1)"
     else
         add_report "使う python: 見つかりません"
-        # DD-CYN-0117 R-5 (版7): 案内を、いまこの機材に在るものに合わせて出し分ける。
+        # DD-CYN-0117 R-5 (版7): ガイドを、いまこの機材に在るものに合わせて出し分ける。
         #   旧: 無条件に「conda (miniforge) を入れてから」と出していた。∴ conda が
         #   既に在る機材では、同じ書き出しの中で
-        #     conda の置き場: /opt/homebrew/Caskroom/miniforge/base
+        #     conda の保存先: /opt/homebrew/Caskroom/miniforge/base
         #     - python が見つかりません。conda (miniforge) を入れてから…
         #   と、在るものを入れろと言っていた (実測 20260817)。R-4 と同じ型である。
         #   ここで見ているのは「まだ用意していない」だけで、道具は揃っている。
         if [ -n "$CONDA_BASE" ]; then
             add_blocker "この配布物専用の環境がまだ作られていません。conda は見つかっています ($CONDA_BASE)。./launch.sh --setup を叩くと、専用の環境を作って起動できます。"
         elif command -v python3 >/dev/null 2>&1; then
-            add_blocker "この配布物専用の置き場がまだ作られていません。python3 は見つかっています。./launch.sh --setup を叩くと、この配布物の中に置き場を作って起動できます。"
+            add_blocker "この配布物専用の保存先がまだ作られていません。python3 は見つかっています。./launch.sh --setup を叩くと、この配布物の中に保存先を作って起動できます。"
         else
             add_blocker "python が見つかりません。次のどちらかを入れてから ./launch.sh --setup を実行してください。conda (miniforge): https://github.com/conda-forge/miniforge/releases/latest  /  Python 3.12 以上: https://www.python.org/downloads/"
         fi
     fi
-    # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
-    # DD-CYN-0117 R-1: 使う python が決まった後で、控えに使う python を解き直す。
+    # DD-CYN-0107 F-c: バックアップに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
+    # DD-CYN-0117 R-1: 使う python が決まった後で、バックアップに使う python を解き直す。
     #   解き直さないと、同じ書き出しの中で
     #     使う python      : .../envs/cynovela-dist/bin/python   版: Python 3.12.13
-    #     控えに使う python: ありません (3.12 系が見つかりません)
-    #   という食い違いが残る (M5 実測)。決まったものが要件を満たすなら、それを控えにも使う。
+    #     バックアップに使う python: ありません (3.12 系が見つかりません)
+    #   という食い違いが残る (M5 実測)。決まったものが要件を満たすなら、それをバックアップにも使う。
     ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" "${PY:-}" || true)"
     if [ -n "$ROOTS_PY" ]; then
-        add_report "控えに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
+        add_report "バックアップに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
     else
-        add_report "控えに使う python: ありません (3.12 以上のものが見つかりません)"
+        add_report "バックアップに使う python: ありません (3.12 以上のものが見つかりません)"
         if [ -s "$INGEST_ROOTS_FILE" ]; then
             # DD-CYN-0117 R-2: これは起動を止める理由にならない。読めなくなるのは
-            #   取り込み元の控えだけで、本体は動く。∴ 気をつけること へ置く。
+            #   取り込み元のバックアップだけで、本体は動く。∴ 気をつけること へ置く。
             # DD-CYN-0117 R-4: いま失敗した入口をもう一度押せ、とは言わない。
-            add_warning "3.12 以上の python が見つかりません。取り込み元の控え (store/ingest-roots.json) を読めないため、足したフォルダは読み込まれません。起動そのものは止まりません。直すには ./launch.sh --setup を叩いてください (この配布物の中に python の置き場が作られます)。"
+            add_warning "3.12 以上の python が見つかりません。取り込み元のバックアップ (store/ingest-roots.json) を読めないため、足したフォルダは読み込まれません。起動そのものは止まりません。直すには ./launch.sh --setup を叩いてください (この配布物の中に python の保存先が作られます)。"
         fi
     fi
 
     # 4. venv で足りるか
-    add_report "== venv (配布物専用の置き場) =="
+    add_report "== venv (配布物専用の保存先) =="
     if [ -x "$VENV_DIR/bin/python" ]; then
-        add_report "配布物専用の置き場: あり ($VENV_DIR)"
+        add_report "配布物専用の保存先: あり ($VENV_DIR)"
     else
-        add_report "配布物専用の置き場: なし (--setup で作られます)"
+        add_report "配布物専用の保存先: なし (--setup で作られます)"
     fi
     if [ -n "$PY" ] && "$PY" -c "import venv, ensurepip" >/dev/null 2>&1; then
         add_report "venv を作れるか: 作れる"
     else
         add_report "venv を作れるか: 作れない (ensurepip が無い)"
-        [ "$MODE_SETUP" = "1" ] && add_blocker "この python では配布物専用の置き場を作れません (venv/ensurepip が無い)。conda (miniforge) を入れてください。"
+        [ "$MODE_SETUP" = "1" ] && add_blocker "この python では配布物専用の保存先を作れません (venv/ensurepip が無い)。conda (miniforge) を入れてください。"
     fi
 
     # 5. 必要な部品の有無と版差
@@ -878,7 +878,7 @@ run_probe() {
                 add_report "版が違う部品: なし"
             fi
         fi
-        # 伏字に使う言語モデル (無くても起動はする。standard PII が正規表現に退く)
+        # マスキングに使う言語モデル (無くても起動はする。standard PII が正規表現に退く)
         if [ -n "$PY" ]; then
             for _m in ja_core_news_sm en_core_web_sm; do
                 if "$PY" -c "import spacy; spacy.load('$_m')" >/dev/null 2>&1; then
@@ -891,7 +891,7 @@ run_probe() {
         fi
     fi
 
-    # 6. Podman と仮想機械 (この形態では使いませんが、環境の写しとして記録します)
+    # 6. Podman と仮想機械 (この形態では使いませんが、環境のコピーとして記録します)
     add_report "== Podman / 仮想機械 =="
     if command -v podman >/dev/null 2>&1; then
         add_report "podman: $(podman --version 2>&1)"
@@ -920,11 +920,11 @@ run_probe() {
         add_report "ポート $PORT: 空き"
     fi
 
-    # 8. モデル置き場の有無と中身
+    # 8. モデル保存先の有無と中身
     #    探し先は本体と同じ5か所 (config.py の resolve_model_path と同じ順序)。
-    #    この配布物の中の1か所だけを見ると、ホーム側の置き場にモデルがあっても
+    #    この配布物の中の1か所だけを見ると、ホーム側の保存先にモデルがあっても
     #    「ありません」と言って止めてしまい、本体の判断と食い違う。
-    add_report "== 埋め込みモデルの置き場 =="
+    add_report "== 埋め込みモデルの保存先 =="
     _model_snap=""
     for _cand in \
         "$SCRIPT_DIR/store/models/models--BAAI--bge-m3" \
@@ -951,12 +951,12 @@ run_probe() {
         # 別のモードで起動する / やめる) へ届かなくなる。
         #
         # DD-CYN-0099: 聞ける相手が居ないとき (アイコンからの起動・手順書・試験) も、ここでは
-        #   止めない。本体 (server.py) が非対話のときは確認を出さずに取り寄せへ進むように
+        #   止めない。本体 (server.py) が非対話のときは確認を出さずにダウンロードへ進むように
         #   なったため (DD-CYN-0099)、blocker で止めると軽量版が非対話で永遠に起動できない。
-        #   取り寄せに失敗したときは本体が exit 2 と進め方の名指しで知らせる。
+        #   ダウンロードに失敗したときは本体が exit 2 と進め方の名指しで知らせる。
         #   (旧 DD-CYN-0066 F-1 の blocker は、本体が入力の終わりで黙って落ちていた頃の塞ぎ)
         if [ ! -t 0 ] || [ "$NO_PROMPT" = "1" ]; then
-            add_warning "埋め込みモデル bge-m3 が手元にありません。この起動の仕方では確認を出せないため、起動の中で取り寄せを試みます (インターネットにつなぎます)。先に自分で置く場合は SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
+            add_warning "埋め込みモデル bge-m3 が手元にありません。この起動の仕方では確認を出せないため、起動の中でダウンロードを試みます (インターネットにつなぎます)。先に自分で置く場合は SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
         else
             add_warning "埋め込みモデル bge-m3 が手元にありません。このまま起動すると、ダウンロードするかどうかの確認が出ます。先に自分で置く場合は SETUP-ACCELERATOR.md の手順で $MODEL_DIR/snapshots/<版>/ へ置いてください。"
         fi
@@ -1072,9 +1072,9 @@ run_with_progress() {
 }
 
 # ------------------------------------------------------------
-# --setup の土台選び (DD-CYN-0031 B1・B2)
+# --setup の実行エンジン選び (DD-CYN-0031 B1・B2)
 #   まず conda を見に行く。使えるなら専用の conda 環境を新しく作る。
-#   使えないときだけ、この配布物の中の置き場へ倒す。
+#   使えないときだけ、この配布物の中の保存先へ倒す。
 #   選ぶところは番号で選ばせる。--base があれば聞かない。
 #   何も答えなかったときは「何もしない」に倒す (勝手に進めない)。
 # ------------------------------------------------------------
@@ -1209,8 +1209,8 @@ venv_base_python() {
     # DD-CYN-0117 R-6 (版7): 要件は 3.12 以上である (pyproject.toml requires-python
     #   = ">=3.12" / environment.yml が python=3.12.13 を固定 / conf_pick_py も 3.12 以上)。
     #   旧: ここだけ 3.10 以上を通しており、「3.10 以上が見つかりません」と言いながら
-    #   同じ画面で「3.12 を入れてください」と案内する食い違いが出ていた (実測 20260817)。
-    #   ∴ 判定と案内を、宣言した要件 (3.12 以上) に揃える。
+    #   同じ画面で「3.12 を入れてください」と示す食い違いが出ていた (実測 20260817)。
+    #   ∴ 判定とガイドを、宣言した要件 (3.12 以上) に揃える。
     #   版は名前で決めつけず、その python 自身に答えさせる。
     local c
     for c in python3.13 python3.12; do
@@ -1225,11 +1225,11 @@ venv_base_python() {
     return 1
 }
 
-# この配布物の中だけに置き場を作る。
+# この配布物の中だけに保存先を作る。
 setup_venv() {
     local base_py=""
     echo ""
-    echo "  この配布物の中に置き場を作ります: $VENV_DIR"
+    echo "  この配布物の中に保存先を作ります: $VENV_DIR"
     echo "  共有の conda 環境 '$SHARED_ENV_NAME' には書き込みません。"
     base_py="$(venv_base_python || true)"
     if [ -n "$base_py" ]; then
@@ -1249,12 +1249,12 @@ setup_venv() {
     fi
 
     PY="$VENV_DIR/bin/python"
-    PY_SRC="この配布物の中の置き場 ($VENV_DIR)"
+    PY_SRC="この配布物の中の保存先 ($VENV_DIR)"
     BASE_LOCKED=1
     install_requirements
 }
 
-# 足りない部品を入れる (土台の種類によらず共通)
+# 足りない部品を入れる (実行エンジンの種類によらず共通)
 install_requirements() {
     [ -f "$REQ_FILE" ] || return 0
     local probe miss mism total
@@ -1315,7 +1315,7 @@ do_setup() {
 # ------------------------------------------------------------
 # 要るものを枠で囲って出す (DD-CYN-0031 B4)
 #   入れ終わったときと、起動したときの両方で出す。
-#   合言葉の実値はここへ印字しない。同梱の控えの場所を案内する。
+#   パスワードの実値はここへ印字しない。同梱のバックアップの場所を示す。
 # ------------------------------------------------------------
 print_next_steps() {
     local where="${1:-setup}"
@@ -1330,13 +1330,13 @@ print_next_steps() {
     echo "  ■ 入り方"
     echo "      管理者の利用者名: cynovela"
     echo "      閲覧者の利用者名: demo"
-    echo "      最初の合言葉は、同梱の STARTUP.md の「ログイン」の節に書いてあります。"
+    echo "      最初のパスワードは、同梱の STARTUP.md の「ログイン」の節に書いてあります。"
     echo "      (この画面には印字しません。別便で受け取るファイルはありません。)"
-    echo "      管理者は初回に合言葉の変更を求められます。"
+    echo "      管理者は初回にパスワードの変更を求められます。"
     echo ""
     echo "  ■ 気をつけること"
     echo "      1. 起動すると、この配布物の中身が書き換わります。"
-    echo "         (記録・鍵・記録の入れ物が $SCRIPT_DIR/store の下に作られます)"
+    echo "         (記録・鍵・記録のコンテナが $SCRIPT_DIR/store の下に作られます)"
     echo "      2. 鍵はこの機材で新しく作られます。他の機材で作られた鍵とは別のものです。"
     echo "         ∴ 他の機材で取り込んだ中身は、この機材では読めません。"
     echo "      3. 止め方: bash stop.sh"
@@ -1401,7 +1401,7 @@ start_app() {
 #   --setup の道は do_setup を呼んで exit するため start_app を通らない。
 #   ∴ 部品を入れる pip が、実在しない指し先のまま走っていた (無言で失敗しうる)。
 #   本編の頭で 1 度だけ外し、以後どの道 (--setup / --check / 起動) でも同じ状態にする。
-#   falcon 側は取り寄せの直前で同じことをしており、順序はもともと正しい。
+#   falcon 側はダウンロードの直前で同じことをしており、順序はもともと正しい。
 _drop_stale_ssl_cert_file() {
     if [ -n "${SSL_CERT_FILE:-}" ]; then
         echo "[cert] SSL_CERT_FILE を外します (指し先: $SSL_CERT_FILE)"
@@ -1412,7 +1412,7 @@ _drop_stale_ssl_cert_file
 
 echo "============================================"
 echo " Cynovela"
-echo " 置き場所: $SCRIPT_DIR"
+echo " 保存先: $SCRIPT_DIR"
 echo "============================================"
 
 if [ "$MODE_CHECK" = "1" ] && [ "$MODE_SETUP" = "1" ]; then

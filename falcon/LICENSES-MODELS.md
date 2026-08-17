@@ -1,8 +1,17 @@
 # モデルのライセンス表記 (Third-Party Model Licenses)
 
+**English follows, then 日本語.**
+
+Whether the models are bundled depends on which package you have. The all-in-one
+package bundles the models below under `store/models/`; the lightweight package
+does not. The table is both the licence notice for the models bundled in the
+all-in-one package, and reference information for recipients of the lightweight
+package who fetch the models themselves and place them under `store/models/`.
+Copyright in each model belongs to its provider.
+
 **同梱の有無は配布物の種類による。全部入り版（AIモデルを同梱。約 3.15 GB）は以下のモデルを `store/models/` に同梱する。軽量版（AIモデルを含みません。約 2.4 MB）は同梱しない。**
 到達形 (捌き役はコンテナ・モデルは外の推論サーバ) に従い、埋め込みは同一 Mac の
-ホスト側で動く Mac Accelerator Service (外の口) を呼ぶ (SETUP-ACCELERATOR.md 参照)。
+ホスト側で動く Mac Accelerator Service (外部の推論サーバ) を呼ぶ (SETUP-ACCELERATOR.md 参照)。
 以下の表は、全部入り版（AIモデルを同梱。約 3.15 GB）に同梱するモデルのライセンス表記であり、かつ軽量版（AIモデルを含みません。約 2.4 MB）の
 受け取り手が自身で取得して `store/models/` へ配置する際の参考情報でもある。
 各モデルの著作権は提供元に帰属する。

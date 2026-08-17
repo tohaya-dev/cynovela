@@ -261,7 +261,7 @@ def _require_admin_or_self(request: Request, target_user_id: str) -> dict:
 
 
 # ── オブジェクト/テナント単位の認可ヘルパー (authz-fix-v1) ───────────────────
-# ロール境界 (anon/viewer/admin) の上に、オブジェクト所有権・WS所属を足す共通窓口。
+# ロール境界 (anon/viewer/admin) の上に、オブジェクト所有権・WS所属を足す共通インターフェース。
 # 既存の散在実装 (workspaces.py:649-661 get_workspace_chunks / list_workspaces /
 # sessions.py のメンバーシップ・所有権検査) を 1 箇所に集約し、各アクセス点へ
 # 機械的に 1 行差し込む。admin は従来どおり広域アクセスを保持する (検査スキップ)。

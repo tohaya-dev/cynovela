@@ -396,7 +396,7 @@ Publish 時に各チャンクから raw / masked の dual-row を生成。Chroma
 
 ### Fernet 暗号化
 
-`vault_enc.py` の `enc_raw` / `dec_raw` 窓口（`enc:` プレフィックス、冪等）。raw tier のみ暗号化、masked tier は素通し。
+`vault_enc.py` の `enc_raw` / `dec_raw` インターフェース（`enc:` プレフィックス、冪等）。raw tier のみ暗号化、masked tier は素通し。
 
 ---
 

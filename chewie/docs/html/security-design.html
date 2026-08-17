@@ -382,8 +382,8 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
     <h3>4.1 設計方針</h3>
     <ul>
       <li><strong>対象</strong>: 原本本文（raw tier のみ）。masked tier は素通し</li>
-      <li><strong>窓口</strong>: <code>vault_enc.py</code> の <code>enc_raw()</code> / <code>dec_raw()</code> を介す</li>
-      <li><strong>冪等性</strong>: <code>enc:</code> プレフィックスを目印にして二重暗号化を防ぐ</li>
+      <li><strong>インターフェース</strong>: <code>vault_enc.py</code> の <code>enc_raw()</code> / <code>dec_raw()</code> を介す</li>
+      <li><strong>冪等性</strong>: <code>enc:</code> プレフィックスをマーカーにして二重暗号化を防ぐ</li>
       <li><strong>鍵</strong>: 環境変数 <code>CYNOVELA_SECRET_KEY</code> の Fernet 鍵を使用</li>
     </ul>
     <h3>4.2 実装箇所</h3>

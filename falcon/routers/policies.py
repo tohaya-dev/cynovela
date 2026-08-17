@@ -14,7 +14,7 @@ from fastapi.responses import StreamingResponse
 from db import get_db, new_id
 from core.auth import _require_admin
 from core.audit import _log_audit
-# ga-close-v3 PartD D-3: 伏字件数の数え方は guardrail.py の 1 か所に集約する。
+# ga-close-v3 PartD D-3: マスキング件数の数え方は guardrail.py の 1 か所に集約する。
 from guardrail import pii_count_sql
 
 router = APIRouter(tags=["policies"])

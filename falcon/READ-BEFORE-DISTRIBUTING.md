@@ -1,6 +1,43 @@
+# Read Before Distributing
+
+**日本語は下 → [日本語](#配布前にお読みくださいread-before-distributing)**
+
+This document is for whoever receives this package, and for whoever passes it
+on. Read it first.
+
+A package comes in one of two forms: the **container build** and the
+**application build**. The `track:` line of the bundled `VERSION` tells you
+which one you have. Where the two differ, this document says so.
+
+1. **What this package is for.** It is for verification and demonstration —
+   checking that it works, evaluating it, showing it. It is not meant to be run
+   in production as it stands.
+2. **There are two ways to start it.** With no arguments it starts in
+   production mode (an empty database, into which you ingest your own
+   material); with **`--demo`** it starts with the bundled sample material
+   already loaded. If this is your first time, try `--demo` first. The two keep
+   their databases and indexes in separate locations, so nothing from the demo
+   mixes into production.
+3. **All bundled material is fictional.** The seven files under `dummy-corpus/`
+   describe a fictional company. Every person, organisation, address, phone
+   number and email address in them is invented and bears no relation to anyone
+   real.
+4. **The initial passwords are fixed values, written in the bundled
+   `STARTUP.md`.** Nothing is delivered separately. **The administrator is
+   required to change the password at first sign-in** — tell the recipient to
+   do that first.
+5. **In production mode, no ingest source is registered.** You must register one
+   before your own material can be read. See `GETTING-STARTED.md`. With
+   `--demo`, one source is already registered.
+6. **Note the default listen address.** The server listens on **all addresses
+   (0.0.0.0)** by default, so it is visible from other machines on the same
+   network. Pass **`--local-only`** to confine it to your own machine.
+
+---
+
 # 配布前にお読みください（READ BEFORE DISTRIBUTING）
 
-この文書は、本配布物を受け取った方・配布する方に最初に読んでいただく案内です。
+この文書は、本配布物を受け取った方・配布する方に最初に読んでいただくガイドです。
 
 配布物には**コンテナ版**と**アプリ版**の 2 つの形があります。どちらを受け取ったかは、同梱の `VERSION` の `track:` の行で分かります。形によって話が違うところは、そのつど断ります。版はどちらも `1.0.2` です。
 
@@ -12,9 +49,9 @@
 
 引数なしで起動すると**本番**（空のデータベースから始まり、自分の資料を取り込んで使う）、**`--demo`** を付けると同梱のダミー資料が載った**デモ**で起動します。はじめての方はまず `--demo` で試してください。
 
-この 2 つは、データベースと索引の場所が分かれています。
+この 2 つは、データベースとインデックスの場所が分かれています。
 
-| 起動のしかた | データベース | 索引（ベクター） |
+| 起動のしかた | データベース | インデックス（ベクター） |
 |---|---|---|
 | 引数なし（本番） | `store/db/cynovela.db` | `store/vector/default/chroma` |
 | `--demo`（デモ） | `store/db/demo.db` | `store/vector/demo/chroma` |
@@ -26,11 +63,11 @@
 
 ## 3. 同梱資料はすべて架空のサンプルです
 
-同梱の `dummy-corpus/` にある 7 ファイル（案内 1 本+資料 6 本）は、すべて架空の企業**「アオゾラ商事」**を題材にした説明用サンプルです。文中に登場する人物・組織・住所・電話番号・メールアドレスなどの連絡先は**すべて実在しません**。実在の人物・団体とは一切関係ありません。
+同梱の `dummy-corpus/` にある 7 ファイル（ガイド 1 本+資料 6 本）は、すべて架空の企業**「アオゾラ商事」**を題材にした説明用サンプルです。文中に登場する人物・組織・住所・電話番号・メールアドレスなどの連絡先は**すべて実在しません**。実在の人物・団体とは一切関係ありません。
 
-同梱のデータベースと索引は、**配布物を作るときに、この配布物の中の `dummy-corpus/` から作っています**。作る側の作業用の資料や索引は入っていません。コンテナ版には、実際に入っているものを配布物を作るときに数えた内訳が `BUNDLED-DATA.md` として同梱されます。
+同梱のデータベースとインデックスは、**配布物を作るときに、この配布物の中の `dummy-corpus/` から作っています**。作る側の作業用の資料やインデックスは入っていません。コンテナ版には、実際に入っているものを配布物を作るときに数えた内訳が `BUNDLED-DATA.md` として同梱されます。
 
-## 4. 初期パスワードは固定値で、同梱の案内に書いてあります
+## 4. 初期パスワードは固定値で、同梱の STARTUP.md に書いてあります
 
 管理者と閲覧者の初期パスワードは**固定値**で、tar の中の `STARTUP.md` の「ログイン」の節に書かれています。**別便で渡すファイルはありません**（2026-08-02 に、乱数を作って別便で渡す形から変えました。受け取り手が入れない配布物を作らないためです）。
 
@@ -38,11 +75,11 @@
 
 **管理者は初回ログインでパスワードの変更を求められます。** 受け取った方には、まず管理者のパスワードを変えるようにお伝えください。
 
-初回ログイン時に**管理者パスワードの変更が必須**です。画面の案内に従って新しいパスワードを設定してください。
+初回ログイン時に**管理者パスワードの変更が必須**です。画面のガイドに従って新しいパスワードを設定してください。
 
-## 5. 本番で起動すると、取り込み元（ソースの根）は登録 0 件から始まります
+## 5. 本番で起動すると、取り込み元（ソースのルート）は登録 0 件から始まります
 
-**引数なしで起動した場合（本番）**、取り込み元（ソースの根）は登録 0 件です。自分の資料を取り込むには、**最初に取り込み元を 1 つ登録する必要があります**。登録するまで、外部のフォルダは読み取れません。
+**引数なしで起動した場合（本番）**、取り込み元（ソースのルート）は登録 0 件です。自分の資料を取り込むには、**最初に取り込み元を 1 つ登録する必要があります**。登録するまで、外部のフォルダは読み取れません。
 
 登録手順は、同梱の **GETTING-STARTED.md の「7. 自分の資料を取り込む」（7-1. 取り込み元のフォルダを登録する）** を参照してください。
 

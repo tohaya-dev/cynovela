@@ -63,7 +63,7 @@ pip install -r requirements.txt
 
 | フラグ | 型 | 既定値 | 説明 |
 |--------|-----|------|------|
-| `--demo` | bool | False | デモのデータベース `store/db/demo.db` と索引 `store/vector/demo/chroma` を使って起動。付けなければ本番の `store/db/cynovela.db` と `store/vector/default/chroma`。どちらも再起動では消えません |
+| `--demo` | bool | False | デモのデータベース `store/db/demo.db` とインデックス `store/vector/demo/chroma` を使って起動。付けなければ本番の `store/db/cynovela.db` と `store/vector/default/chroma`。どちらも再起動では消えません |
 | `--lmstudio-url` | str | `http://localhost:1234` | LM Studio のベース URL |
 | `--mode` | str | `text` | 起動モード（`full` / `text` / `lite` / `lite-en` / `minimal`） |
 | `--host` | str | `0.0.0.0` | バインドアドレス（既定は全アドレス。絞るのは `--local-only`） |
@@ -72,6 +72,7 @@ pip install -r requirements.txt
 | `--local-only` | bool | False | 自マシン内だけに絞る（`host=127.0.0.1` で待ち受け） |
 | `--allow-tailscale` | bool | False | Tailscale ネットワークからのアクセス許可 |
 | `--reset-admin` | bool | False | 管理者パスワードをリセットして表示し終了（デモを直すときは `--demo` を併記） |
+| `--ingest PATH` | str（複数指定可） | なし | 取り込み元として許可するフォルダ |
 | `--allow-subnet` | list | `[]` | 許可するサブネット（複数指定可） |
 
 ### よく使う組み合わせ

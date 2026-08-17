@@ -1,27 +1,27 @@
-# 外の口 (Mac Accelerator Service) の立て方 — 受け取り手向け 1 ページ
+# 外部の推論サーバ (Mac Accelerator Service) の立て方 — 受け取り手向け 1 ページ
 
 本配布物 (ホスト直起動版) は `./launch.sh` で Mac のホスト上に直接立ち上がります。
 コンテナはありません。
 
-- **埋め込みは既定でこのアプリ自身が Mac の GPU (MPS) で回します。** 外の口は要りません。
-- **再ランクだけは既定で外の口を呼びます** (`cynovela.yaml` の `reranker.device: external`)。
-  外の口が居なければアプリ内の同じモデルへ自動で退避するので、立てなくても動きます。
+- **埋め込みは既定でこのアプリ自身が Mac の GPU (MPS) で回します。** 外部の推論サーバは要りません。
+- **再ランクだけは既定で外部の推論サーバを呼びます** (`cynovela.yaml` の `reranker.device: external`)。
+  外部の推論サーバが居なければアプリ内の同じモデルへ自動で退避するので、立てなくても動きます。
 
-つまり外の口は「必須」ではなく、**再ランクを外へ出す / 複数の Mac で 1 台に推論を寄せる**
+つまり外部の推論サーバは「必須」ではなく、**再ランクを外へ出す / 複数の Mac で 1 台に推論を寄せる**
 ときに立てるものです。回答用 LLM (LM Studio 等) を別に立てるのと同じ考え方です。
 
-## 1. 外の口の立て方
+## 1. 外部の推論サーバの立て方
 
-外の口を動かすには、`torch` / `sentence-transformers` / `fastapi` / `uvicorn` の4件が入った
+外部の推論サーバを動かすには、`torch` / `sentence-transformers` / `fastapi` / `uvicorn` の4件が入った
 python が要ります。**裸の `python` にはこの4件が入っていないことがほとんどです。**
 アプリ本体を動かす環境 (conda の `cynovela-dist` または `.venv-cynovela`) とは別に、
-外の口用の場所をこの配布物の中に作ってから立ててください。
+外部の推論サーバ用の場所をこの配布物の中に作ってから立ててください。
 
 ```bash
 # アプリと同じ Mac のホスト側で。まず、この配布物のフォルダへ移動します。
 cd <この配布物のフォルダ>
 
-# (1) 外の口を動かす場所を、この配布物の中に作る。どちらか一方を選びます。
+# (1) 外部の推論サーバを動かす場所を、この配布物の中に作る。どちらか一方を選びます。
 #     conda を使う場合 (共有の環境ではなく、場所を指定して作ります)
 conda create -y -p .mas-env python=3.12
 #     venv を使う場合 (3.10 以上の python3 を指定してください)
@@ -39,13 +39,13 @@ python3.12 -m venv .mas-env
 
 `.mas-env` はこの配布物の中だけに作られます。**conda の共有の環境 (envs) には何も書きません。**
 入れる部品は `mas/mas-requirements.txt` に書いた4件です。本体アプリ用の `requirements.txt`
-(39件) や `environment.yml` は、外の口を立てる目的には使いません。
+(39件) や `environment.yml` は、外部の推論サーバを立てる目的には使いません。
 
 - 既定で `127.0.0.1:18850` に立ちます (変更は `mas/mas.yaml` の server.host / server.port)。
 - 確認: `curl http://127.0.0.1:18850/health` が `"status":"ok"` を返せば稼働。
   再ランクまで使うなら同じ応答に `"reranker_loaded":true` が出ていること (0.2.0 以降)。
 - `curl http://127.0.0.1:18850/capabilities` で モデル名・版 (revision)・デバイス (mps/cpu) が見えます。
-- アプリと外の口は**同じ Mac の中で 127.0.0.1 越し**に話します。アプリはコンテナの中に
+- アプリと外部の推論サーバは**同じ Mac の中で 127.0.0.1 越し**に話します。アプリはコンテナの中に
   居ないので `host.containers.internal` のような読み替えは不要です。
 
 ## 2. モデルは bge-m3 / bge-reranker-v2-m3 の「配布物と同一の版」を使うこと
@@ -53,7 +53,7 @@ python3.12 -m venv .mas-env
 - 埋め込みモデル: **BAAI/bge-m3、snapshot 版 `5617a9f61b028005a4858fdac845db406aefb181`**
 - 再ランクモデル: **BAAI/bge-reranker-v2-m3**
 - **版が違うとベクトルの数値が変わり、同梱済みのベクターコレクションと混ざって検索順位が壊れます。**
-- 置き場所: この配布物の `store/models/models--BAAI--bge-m3/snapshots/<版>/` (HF キャッシュ形式)。
+- 保存先: この配布物の `store/models/models--BAAI--bge-m3/snapshots/<版>/` (HF キャッシュ形式)。
   `mas/mas.yaml` の `models.embedding.path` が `''` のときは、アプリと同じこの場所から
   読み取り専用で解決します。別の場所に置いたときだけパスを書いてください。
 - 万一版が違う場合、起動時とpublish時に「ベクターコレクションの埋め込み識別と現在の経路が
@@ -68,7 +68,7 @@ python3.12 -m venv .mas-env
 reranker:
   provider: cross_encoder
   model: BAAI/bge-reranker-v2-m3
-  device: external                 # external = 外の口へ出す / cpu / mps = アプリ内で回す
+  device: external                 # external = 外部の推論サーバへ出す / cpu / mps = アプリ内で回す
   base_url: http://localhost:18850
   top_n: 5
 
@@ -79,7 +79,7 @@ embedding:
   base_url: ''
 ```
 
-埋め込みも外の口へ出したい場合 (推論を別の Mac 1 台に寄せる等):
+埋め込みも外部の推論サーバへ出したい場合 (推論を別の Mac 1 台に寄せる等):
 
 ```yaml
 embedding:
@@ -91,26 +91,26 @@ embedding:
 
 ポートを変えた場合は base_url を合わせてください。管理画面 (設定 > Embedding) からも変更できます。
 
-**別の Mac へ出す場合の注意**: アプリの外へ文字が出ることになるため、外の口側の
-`mas/mas.yaml` で `policy.allow_raw_content: false` にして、伏字済みのものだけを
+**別の Mac へ出す場合の注意**: アプリの外へ文字が出ることになるため、外部の推論サーバ側の
+`mas/mas.yaml` で `policy.allow_raw_content: false` にして、マスキング済みのものだけを
 受け付ける形にしてください。
 
 ## 4. 口が居ないときの振る舞い
 
-- 再ランク: 外の口に届かない場合、**アプリ内のモデル (store/models) での処理へ退避**します
+- 再ランク: 外部の推論サーバに届かない場合、**アプリ内のモデル (store/models) での処理へ退避**します
   (本配布物は全部入りで、再ランクのモデルを同梱しています)。再ランクのモデルを置いていない
   場合は、再ランクを行わず検索結果をそのまま返します。どちらの場合も処理は止まりません。
 - 埋め込み (外へ出す設定にしたときのみ): 届かない場合は**アプリ内のローカル処理へ明示的に退避**し、
-  管理画面 (設定 > Embedding) に **「⚠️ 外の口に届かないためローカルへ退避中」** と表示されます。
+  管理画面 (設定 > Embedding) に **「⚠️ 外部の推論サーバに届かないためローカルへ退避中」** と表示されます。
   黙って遅くなることはありません。口を立て直せば次回の埋め込みから自動復帰します。
 
 ## 5. 稼働確認のしかた
 
-1. 外の口: `curl http://127.0.0.1:18850/health` → `"status":"ok"` (再ランクを使うなら
+1. 外部の推論サーバ: `curl http://127.0.0.1:18850/health` → `"status":"ok"` (再ランクを使うなら
    `"reranker_loaded":true` も)
 2. `./launch.sh` でアプリを起動 → 管理者でログイン
-3. 質問を 1 回投げる → 外の口の `curl http://127.0.0.1:18850/metrics` で
-   `rerank_requests` が増えていれば、再ランクは外の口 (MPS) で実行されています
+3. 質問を 1 回投げる → 外部の推論サーバの `curl http://127.0.0.1:18850/metrics` で
+   `rerank_requests` が増えていれば、再ランクは外部の推論サーバ (MPS) で実行されています
 4. 埋め込みも外へ出す設定にした場合は、資料を 1 本取り込み (publish) して
    同じ `/metrics` の `embeddings_texts` が増えることを確認してください
    (既定の `provider: local` のままなら増えません。これは正常です)

@@ -16,7 +16,7 @@ from db import get_db, new_id
 from core.auth import _require_admin, _require_authenticated
 from core.audit import _log_audit, log_admin_change
 from core.errors import api_error
-# ga-close-v3 PartD D-3: 伏字件数の数え方は guardrail.py の 1 か所に集約する。
+# ga-close-v3 PartD D-3: マスキング件数の数え方は guardrail.py の 1 か所に集約する。
 from guardrail import PII_COUNT_TIER, pii_counts_from_db
 
 router = APIRouter(tags=["collections"])
@@ -224,18 +224,18 @@ async def create_collection(request: Request):
     rag_strategy = (body.get("rag_strategy") or "hybrid_bm25").strip()
     if rag_strategy not in RAG_STRATEGIES:
         raise HTTPException(400, f"rag_strategy は {sorted(RAG_STRATEGIES)} のいずれか")
-    # masked-only §9-7 (vector-tier-masked-only-20260724): 伏字なし取り込み (raw_only) は
-    # 廃止。API の受け口も外す: 引数を直接渡しても伏字を経由しない取り込みは行われない。
+    # masked-only §9-7 (vector-tier-masked-only-20260724): マスキングなし取り込み (raw_only) は
+    # 廃止。API の受け口も外す: 引数を直接渡してもマスキングを経由しない取り込みは行われない。
     if bool(body.get("raw_only", False)):
-        raise HTTPException(400, "raw_only (伏字なし取り込み) は廃止されました")
-    # ga-finish-P4 (rawmode-receptor-close-20260727): 伏字を迂回する受け口は raw_only と
+        raise HTTPException(400, "raw_only (マスキングなし取り込み) は廃止されました")
+    # ga-finish-P4 (rawmode-receptor-close-20260727): マスキングを迂回する受け口は raw_only と
     # raw_mode の 2 系統あった。raw_only は上で廃止済みだが、raw_mode は
     # collections.rag_mode='raw' を書き、chat 側の「rawモード Collection は Guardrail を
     # バイパス」分岐 (routers/chat.py の rag_mode='raw' 判定) へ到達していた。
     # 本受け口もここで閉じる。列 (collections.rag_mode) と過去データは保全する
-    # (migration は行わない)。外部提示側の伏字済みへ倒す守りは不変。
+    # (migration は行わない)。外部提示側のマスキング済みへ倒す守りは不変。
     if bool(body.get("raw_mode", False)):
-        raise HTTPException(400, "raw_mode (伏字なし取り込み) は廃止されました")
+        raise HTTPException(400, "raw_mode (マスキングなし取り込み) は廃止されました")
 
     if not name or not workspace_id:
         raise HTTPException(400, "name and workspace_id are required")
@@ -343,7 +343,7 @@ def get_collection_publish_summary(request: Request, col_id: str):
     マスキング件数・ラベル別内訳・除外数・ファイル数を返す読み取り専用 EP。
 
     - DB スキーマ非変更／既存 API 非改変（新規 additive EP）。
-    - 伏字・暗号化ロジックには一切触れず、既に保存済みの集計値を読むだけ。
+    - マスキング・暗号化ロジックには一切触れず、既に保存済みの集計値を読むだけ。
     - raw との二重計上を避けるため masked tier のみを一次ソースにする。
     """
     _require_admin(request)
@@ -368,7 +368,7 @@ def get_collection_publish_summary(request: Request, col_id: str):
             #   旧実装は masked 層を 5 種の許可リスト
             #   {PERSON_JP,PHONE_JP,EMAIL,MYNUMBER,CREDIT} でだけ数えており、
             #   URL / IPV4 / PHONE_LAND / PASSPORT / SSN / IBAN / 資格情報しか当たって
-            #   いない塊は伏字が効いていても 0 件として落ちていた
+            #   いない塊はマスキングが効いていても 0 件として落ちていた
             #   (公開済み「デモ資料一式」実測: 旧 361 / 全型 2121)。
             #   ここで数え直さない = 許可リストを復活させないこと。
             _counts = pii_counts_from_db(conn, collection_id=col_id)
@@ -380,7 +380,7 @@ def get_collection_publish_summary(request: Request, col_id: str):
                 (col_id, PII_COUNT_TIER),
             ).fetchone()["n"]
         # vision-placeholder-warn-20260727: 中身が1文字も入らなかったファイル。
-        #   chunks.content は暗号文で保存されるため、索引から数え直すことはできない
+        #   chunks.content は暗号文で保存されるため、インデックスから数え直すことはできない
         #   (平文と誤認して常に0を返す＝この Part が塞ごうとしている「やっていないのに
         #   成功を返す」を自分で作ることになる)。判定は平文がある取り込みの瞬間に一度だけ
         #   行い、その結果を取り込み操作ログへ残してここで読み出す。
@@ -516,12 +516,12 @@ async def update_collection(col_id: str, request: Request):
                     (rm_s, col_id),
                 )
         if bool(body.get("raw_only", False)):
-            # masked-only §9-7: 伏字なし取り込み (raw_only) は廃止。更新の受け口も外す。
-            raise HTTPException(400, "raw_only (伏字なし取り込み) は廃止されました")
+            # masked-only §9-7: マスキングなし取り込み (raw_only) は廃止。更新の受け口も外す。
+            raise HTTPException(400, "raw_only (マスキングなし取り込み) は廃止されました")
         if bool(body.get("raw_mode", False)):
             # ga-finish-P4: raw_mode も廃止。更新の受け口でも明示的に拒否する
             # (従来は無視されて 200 を返していた)。
-            raise HTTPException(400, "raw_mode (伏字なし取り込み) は廃止されました")
+            raise HTTPException(400, "raw_mode (マスキングなし取り込み) は廃止されました")
         if "file_ids" in body:
             conn.execute("DELETE FROM collection_files WHERE collection_id = ?", (col_id,))
             for fid in body["file_ids"]:
@@ -548,11 +548,11 @@ def delete_collection(request: Request, col_id: str):
     _require_admin(request)
     conn = get_db()
     try:
-        # fix-v3 (A2-F2): BM25 索引再構築のため削除前に workspace_id を取得しておく。
+        # fix-v3 (A2-F2): BM25 インデックス再構築のため削除前に workspace_id を取得しておく。
         _ws_row = conn.execute("SELECT workspace_id FROM collections WHERE id = ?", (col_id,)).fetchone()
         _ws_id = _ws_row["workspace_id"] if _ws_row else None
         # cascade-source-cleanup (key-vector-fix-20260721): 削除前に、この collection が
-        # 使っていた取り込み元 (source) の候補を控える。削除後にどこからも使われて
+        # 使っていた取り込み元 (source) の候補をバックアップる。削除後にどこからも使われて
         # いない source だけを連鎖削除する (他 collection が使う source は残す)。
         _cand_sources = [
             r["source_id"]
@@ -580,10 +580,10 @@ def delete_collection(request: Request, col_id: str):
         conn.commit()
     finally:
         conn.close()
-    # fix-v3 (A2-F2): 削除コミット後に BM25 索引を再構築する。従来は delete 経路が
-    # rebuild_bm25_from_db を呼ばず in-memory BM25 索引が stale のままで、同一 WS に生
+    # fix-v3 (A2-F2): 削除コミット後に BM25 インデックスを再構築する。従来は delete 経路が
+    # rebuild_bm25_from_db を呼ばず in-memory BM25 インデックスが stale のままで、同一 WS に生
     # コレクションが残る限り削除済みチャンクが RAG 回答に残留する漏洩があった (実機再現済)。
-    # publish 経路 (rag.py:1662) と同型の再構築をコミット後に行い索引を最新化する。
+    # publish 経路 (rag.py:1662) と同型の再構築をコミット後に行いインデックスを最新化する。
     if _ws_id:
         try:
             from rag import rebuild_bm25_from_db
@@ -658,8 +658,8 @@ def publish_diff(request: Request, col_id: str):
 @router.post("/api/collections/{col_id}/publish", response_model=None)
 # ingest-eventloop-unblock-20260727 (GA ブロッカー①):
 #   この関数は publish_collection_iter を await 無しで最後まで回す。PDF 抽出・チャンク化・
-#   伏字・埋め込み・保存のすべてがイベントループ上で動くため、大型 PDF の取り込み中は
-#   / も /api/ready も応答できなくなっていた (前走行 falcon 約34分・90サンプル中 89 が HTTP 000)。
+#   マスキング・埋め込み・保存のすべてがイベントループ上で動くため、大型 PDF の取り込み中は
+#   / も /api/ready も応答できなくなっていた (前実行 falcon 約34分・90サンプル中 89 が HTTP 000)。
 #   本文に await は1つも無いので `async def` を `def` にするだけでよい。FastAPI が
 #   同期の経路操作をスレッドプールへ回すため、実行内容・応答形・ガード・履歴記録は不変で
 #   イベントループだけが解放される。SSE 版 publish_stream (下) は元から `def` で同じ実行模型。
@@ -801,7 +801,7 @@ def publish(request: Request, col_id: str):
 
         _lp(
             "ingest",
-            f"完了(同期): {int((_done_event or {}).get('chunk_count', 0) or 0)} チャンクを索引化",
+            f"完了(同期): {int((_done_event or {}).get('chunk_count', 0) or 0)} チャンクをインデックス化",
             level="success", job_id=f"sync-{col_id}",
             metadata={
                 "stage": "done",

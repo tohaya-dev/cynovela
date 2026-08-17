@@ -176,25 +176,25 @@ PII_PATTERNS = [
     ("PHONE_JP", re.compile(r"(?<![0-9A-Za-z_])0[789]0[\s-]?\d{4}[\s-]?\d{4}(?![0-9A-Za-z_])"), "[MASKED:PHONE]"),
     # §F1: -? → [\s-]? (PHONE_JP と対称)
     ("PHONE_LAND", re.compile(r"(?<![0-9A-Za-z_])0(?!7\d|8\d|9\d)\d{1,4}[\s-]?\d{1,4}[\s-]?\d{4}(?![0-9A-Za-z_])"), "[MASKED:PHONE]"),
-    # ga-close-v3 PartD D-2 (小数の除外 / 過剰遮断の低減): 既存 2 枝の本体は一字も変えず、
-    # 「小数の一部である」ことを示す除外 lookaround だけを各枝の前後へ足す。
+    # ga-close-v3 PartD D-2 (小数の除外 / 過剰遮断の低減): 既存 2 分岐の本体は一字も変えず、
+    # 「小数の一部である」ことを示す除外 lookaround だけを各分岐の前後へ足す。
     #   (?<!\d\.) … 直前が「数字 + 小数点」= この数字列は小数部の先頭
     #   (?!\.\d)  … 直後が「小数点 + 数字」= この数字列は整数部の末尾
     # どちらも小数であることの決定論的な印であり、文脈語ゲートや確信度の足切りは使わない。
-    # 文末の "…4111111111111111." (後ろに数字が来ないピリオド/句点) は従来どおり伏字される。
+    # 文末の "…4111111111111111." (後ろに数字が来ないピリオド/句点) は従来どおりマスキングされる。
     ("CREDIT", re.compile(r"(?<!\d\.)\b(?:\d{4}[\s-]?){3}\d{4}\b(?!\.\d)|(?<!\d\.)(?<![0-9A-Za-z_])\d{4}[\s-]\d{4}[\s-]?\d{4}[\s-]?\d{4}(?![0-9A-Za-z_])(?!\.\d)"), "[MASKED:CREDIT]"),
     # §F1: -? → [\s-]? (CREDIT/PHONE と対称)
     # fix-security-batch-v2 (2026-05-28): 桁可変対応 (3-4 + 3-4 + 3-6) で
     # 「123-456-789012」「1234-5678-9012」「1234 5678 9012」「123456789012」を網羅。
-    # mynumber-boundary-fix (2026-07-09 instr-…-mynumber-and-piicount-…-v1): 第3枝を追加。
-    # 第1枝の \b は CJK が \w 扱いのため「在庫は123456789012個」等の日本語直連・区切り無し
+    # mynumber-boundary-fix (2026-07-09 instr-…-mynumber-and-piicount-…-v1): 第3分岐を追加。
+    # 第1分岐の \b は CJK が \w 扱いのため「在庫は123456789012個」等の日本語直連・区切り無し
     # 12桁を取りこぼし、文脈語ゲート(_MYNUM_CTX_RX)も近傍16文字に文脈語が無いとすり抜けて
     # 生マイナンバーが masked 層に残留していた (2026-07-09 MBP監査 Agent2 実測)。
-    # 第3枝 (?<!\d)\d{12}(?!\d) は「数字の直前・直後に数字が来ない連続12桁」を文脈語なしで
+    # 第3分岐 (?<!\d)\d{12}(?!\d) は「数字の直前・直後に数字が来ない連続12桁」を文脈語なしで
     # 無条件検出する (マイナンバーは常に12桁ちょうど)。13桁以上の連続数字 (カード16桁等) の
     # 内部にはマッチせず、9-11/13-14桁の財務・技術数値 (売上1234567890円等) も対象外のため
     # 既存の過剰マスク防止 (test_t1_overmask) は不変。12桁ちょうどの一般数値が新たにマスク
-    # される点は漏れ封鎖優先 (fail-safe) の意図的トレードオフ。第1・第2枝は一字も変えず温存。
+    # される点は漏れ封鎖優先 (fail-safe) の意図的トレードオフ。第1・第2分岐は一字も変えず温存。
     ("MYNUMBER", re.compile(r"\b\d{3,4}[\s-]?\d{3,4}[\s-]?\d{3,6}\b|(?<![0-9A-Za-z_])\d{3,4}[\s-]\d{3,4}[\s-]?\d{3,6}(?![0-9A-Za-z_])|(?<!\d)\d{12}(?!\d)"), "[MASKED:MYNUM]"),
     ("PASSPORT", re.compile(r"\b[A-Z]{2}\d{7}\b"), "[MASKED:PASSPORT]"),
     # uifix v1 H (2026-05-24): \b は - で word boundary を成立させるため
@@ -209,10 +209,10 @@ PII_PATTERNS = [
     ("IPV4", re.compile(r"(?<![-_0-9A-Za-z.])(?:(?:25[0-5]|2[0-4]\d|[01]?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d?\d)(?![0-9A-Za-z_.])"), "[MASKED:IP]"),
     # ------------------------------------------------------------------
     # credential-in-document (ga-finish-20260727 Part3): 資料本文に書かれた
-    # 「資格情報」を伏字対象へ追加する。既存種別の正規表現・判定順序・トークンは
+    # 「資格情報」をマスキング対象へ追加する。既存種別の正規表現・判定順序・トークンは
     # 一字も変更していない（本ブロックは末尾への追加のみ）。末尾追加のため、
     # 既存種別とスパンが完全一致した場合は detect_pii_spans の重複排除で
-    # 「先に入った既存種別」が残り、既存の伏字結果は変わらない。
+    # 「先に入った既存種別」が残り、既存のマスキング結果は変わらない。
     #
     # 追加する 3 種:
     #   PASSWORD    … 「パスワード: X」「password=X」等のラベル+値の様式
@@ -220,7 +220,7 @@ PII_PATTERNS = [
     #                  / Bearer <token> / 「api_key: X」等のラベル+値の様式
     #   PRIVATEKEY  … -----BEGIN ... PRIVATE KEY----- ブロック
     #
-    # 過剰伏字を避けるための共通設計:
+    # 過剰マスキングを避けるための共通設計:
     #   - 値は ASCII 図形文字 [!-~] のみ（空白・CJK で必ず切れる）。よって
     #     「パスワードは定期的に変更してください」「パスワードポリシーは9文字以上」
     #     のような日本語の一般記述はマッチしない。
@@ -232,7 +232,7 @@ PII_PATTERNS = [
     # lookbehind は re モジュールが許さないため）。
     # 「pass」「token」のような一語だけのラベルは採らない (ソース断片の
     # 「pass = ...」「token = ...」まで巻き込むため)。
-    ("PASSWORD", re.compile(r"(?<![0-9A-Za-z])(?:pass(?:word|phrase)|passwd|pwd|パスワード|パスフレーズ|合言葉)[ \t　]*(?:[:：=＝]|は)[ \t　]*[!-~]{4,128}", re.IGNORECASE), "[MASKED:PASSWORD]"),
+    ("PASSWORD", re.compile(r"(?<![0-9A-Za-z])(?:pass(?:word|phrase)|passwd|pwd|パスワード|パスフレーズ|パスワード)[ \t　]*(?:[:：=＝]|は)[ \t　]*[!-~]{4,128}", re.IGNORECASE), "[MASKED:PASSWORD]"),
     # APIKEY: 発行元書式が自己識別する型（値そのものだけがスパン）。
     ("APIKEY", re.compile(r"(?<![0-9A-Za-z])sk-(?:ant-)?[A-Za-z0-9_\-]{16,}"), "[MASKED:APIKEY]"),
     ("APIKEY", re.compile(r"(?<![0-9A-Za-z])(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{16,}"), "[MASKED:APIKEY]"),
@@ -281,7 +281,7 @@ PII_PATTERNS = [
     # (CREDIT の Luhn 検証・IPV4 の octet 0-255 と同じ位置づけ)。
     # D-5 実測の根拠: 国コードを [A-Z]{2} と広く取ると、ONTAP マニュアルの API 応答例
     # 'DX12U609DMRVD8U30Z1M' (S3 access_key) と 'DI89811J9JWMJCCO7IOH' (Cisco Duo
-    # INTEGRATION-KEY) を IBAN として伏字してしまう。DX / DI は採番国に無いため、
+    # INTEGRATION-KEY) を IBAN としてマスキングしてしまう。DX / DI は採番国に無いため、
     # 規格どおりの一覧にするだけでこの 2 件は当たらなくなる (増分 0)。
     ("IBAN", re.compile(r"(?<![0-9A-Za-z])(?:AD|AE|AL|AT|AZ|BA|BE|BG|BH|BI|BR|BY|CH|CR|CY|CZ|DE|DJ|DK|DO|EE|EG|ES|FI|FO|FR|GB|GE|GI|GL|GR|GT|HN|HR|HU|IE|IL|IQ|IS|IT|JO|KW|KZ|LB|LC|LI|LT|LU|LV|LY|MC|MD|ME|MK|MN|MR|MT|MU|NI|NL|NO|PK|PL|PS|PT|QA|RO|RS|RU|SA|SC|SD|SE|SI|SK|SM|SO|ST|SV|TL|TN|TR|UA|VA|VG|XK|YE)\d{2}(?:[ ]?[A-Z0-9]){11,30}(?![0-9A-Za-z])"), "[MASKED:IBAN]"),
 ]
@@ -297,9 +297,9 @@ _MYNUM_CTX_RX = re.compile(r"(?<!\d)\d{12}(?!\d)")
 # ここでは「英数字/_ に連接しない 13-19 桁の連続数字」かつ Luhn 検証通過のものだけを
 # CREDIT として補完検出する。Luhn ゲートにより 100200300400 等の非カード連番は誤爆しない。
 # 区切り入り (4111-1111-... / スペース) は既存 CREDIT 正規表現が従来どおり担当する。
-# ga-close-v3 PartD D-2: 連続桁枝にも同じ小数除外 lookaround を足す (枝の本体は不変)。
+# ga-close-v3 PartD D-2: 連続桁分岐にも同じ小数除外 lookaround を足す (分岐の本体は不変)。
 # 実測 (着手前) では "3.1415926535897932" の小数部 16 桁が Luhn を通過して CREDIT と
-# 判定され、円周率が伏字されていた。既存の境界 lookaround は '.' を除外していないため。
+# 判定され、円周率がマスキングされていた。既存の境界 lookaround は '.' を除外していないため。
 _CREDIT_RUN_RX = re.compile(r"(?<![0-9A-Za-z_])(?<!\d\.)\d{13,19}(?![0-9A-Za-z_])(?!\.\d)")
 
 
@@ -338,7 +338,7 @@ def detect_pii_spans(text: str) -> list[dict]:
     # C (mynumber-context): 文脈語(マイナンバー/個人番号/...)の近傍にある「区切り無し連続12桁」を
     #   MYNUMBER として検出する。既存 MYNUMBER 正規表現(PII_PATTERNS)は語境界 \b が日本語直連で
     #   立たず「マイナンバー123456789000」のような直連を取りこぼすため、文脈語ゲート付きで補完する。
-    #   - 文脈語が直前(最大16文字以内)に在るときだけ発火 → 注文番号/連番ID 等(文脈語なし)は伏字しない。
+    #   - 文脈語が直前(最大16文字以内)に在るときだけ発火 → 注文番号/連番ID 等(文脈語なし)はマスキングしない。
     #   - span は 12桁の数字のみ(文脈語は残す)。ラベルは既存 MYNUMBER と同一([MASKED:MYNUM])。
     #   - (?<!\d)\d{12}(?!\d) で 13桁以上・16桁カードの一部にはマッチしない。重複範囲は下流の dedup が解消。
     for _cm in _MYNUM_CTX_RX.finditer(text_for_detect):
@@ -377,35 +377,35 @@ def detect_pii_spans(text: str) -> list[dict]:
 
 
 # ============================================================
-# ga-close-v3 PartD D-3: 伏字件数の「数え方」を本ファイル 1 か所へ集約する
+# ga-close-v3 PartD D-3: マスキング件数の「数え方」を本ファイル 1 か所へ集約する
 # ============================================================
 # 着手前は数える場所ごとに定義が違い、同じ資料で違う数が出ていた (実測):
 #   要約 (GET /api/collections/{id}/publish-summary) … masked 層 + 5 種の許可リスト
 #       {PERSON_JP,PHONE_JP,EMAIL,MYNUMBER,CREDIT} だけを数える → 361
 #   一覧 (GET /api/workspaces)                       … raw 層の pii_detected 列   → 2128
 #   一覧 (GET /api/workspaces/{id}/chunks, viewer)   … masked 層の pii_detected 列 → 18
-#       (伏字が効くほど masked 層の再判定は 0 になるので「伏字が効いているのに 0 件」)
+#       (マスキングが効くほど masked 層の再判定は 0 になるので「マスキングが効いているのに 0 件」)
 #   公開履歴 (publish_history.pii_count)             … 層を絞らず raw+masked を合算 → 2146
 # 以後はここが唯一の定義であり、表示側・SQL 側で数え直さないこと。
 #
 # 定義: 「1 論理チャンク = tier='raw' の 1 行」を単位とし、そのチャンクの pii_summary
-#       (取り込み時に実際に当てた伏字の {種別: 件数}) に 1 件以上あれば伏字ありと数える。
+#       (取り込み時に実際に当てたマスキングの {種別: 件数}) に 1 件以上あればマスキングありと数える。
 #   - pii_summary は raw 行と masked 行に同じ値が入るため、どちらの層から数えても
 #     同じ数になる (層で意味がずれない)。
 #   - pii_detected 列は使わない。raw 側は簡易正規表現 (メール/電話/12桁) の当たりも
-#     立てるため実際の伏字 0 件でも 1 になり、masked 側は伏字後の再判定なので普通 0 になる。
+#     立てるため実際のマスキング 0 件でも 1 になり、masked 側はマスキング後の再判定なので普通 0 になる。
 PII_COUNT_TIER = "raw"
 
 
 def pii_counts_from_summaries(summaries) -> dict:
-    """pii_summary の並びから伏字件数を集計する唯一の実装。
+    """pii_summary の並びからマスキング件数を集計する唯一の実装。
 
     Args:
         summaries: pii_summary の並び。各要素は JSON 文字列 / dict / None のいずれか。
     Returns:
         {"chunk_count": 走査した塊数,
-         "pii_chunks":  伏字が 1 件以上当たった塊数,
-         "pii_spans":   伏字の総件数 (種別ごとの合計),
+         "pii_chunks":  マスキングが 1 件以上当たった塊数,
+         "pii_spans":   マスキングの総件数 (種別ごとの合計),
          "labels":      {種別: 件数} (許可リストで絞らない)}
     """
     labels: dict[str, int] = {}

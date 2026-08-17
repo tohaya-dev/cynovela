@@ -1,10 +1,10 @@
 #!/bin/bash
 # Cynovela 設定の読み取り (DD-CYN-0053)
-#   設定の置き場は cynovela.yaml 1本だけとする。環境変数では受け取らない。
+#   設定の保存先は cynovela.yaml 1本だけとする。環境変数では受け取らない。
 #   起動の道すじ (Cynovela-start.command → launcher-core.sh → launch.sh → run-container.sh) の
 #   どの段からも、この1本を読む。
 #
-#   使い方: . "<配布物の根>/tools/conf.sh"      (先に CONF_REPO を入れておく)
+#   使い方: . "<配布物のルートディレクトリ>/tools/conf.sh"      (先に CONF_REPO を入れておく)
 #           conf_get server port                 → 値を1行で返す。無ければ空
 #           conf_get_or server port 8801         → 無いときに使う値を指定する
 #
@@ -12,7 +12,7 @@
 #   外の部品を要らないよう awk だけで読む。値の前後の引用符と、行末の注釈は落とす。
 CONF_FILE="${CONF_REPO:-.}/cynovela.yaml"
 
-# DD-CYN-0074 Q-2: 入れ物・名札・保存領域の「無いときの値」は、この1本にだけ書く。
+# DD-CYN-0074 Q-2: コンテナ・名札・保存領域の「無いときの値」は、この1本にだけ書く。
 #   起動の道すじの各段は、この値を conf_get_or の第3引数へ渡す。∴ 名前の綴りが
 #   スクリプトへ散らばらない。cynovela.yaml に値が在れば必ずそちらが勝つ。
 #   ここは cynovela.yaml が欠けた・空だったときの受け皿にすぎない。
@@ -82,7 +82,7 @@ _conf_py_meets() {  # DD-CYN-0117 R-1: $1=python の場所 → 動作要件 (3.1
 }
 
 conf_pick_py() {  # DD-CYN-0107 F-c / DD-CYN-0117 R-1
-    #   $1=木の根、$2 以降=呼ぶ側が既に解いた python (任意・この順で先に見る)
+    #   $1=ディレクトリツリーのルート、$2 以降=呼ぶ側が既に解いた python (任意・この順で先に見る)
     #   → 動作要件 (3.12 以上) を満たす python の絶対パスを出す。
     #
     # DD-CYN-0117 R-1: 版は名前で当てず、必ずその python に答えさせる。
@@ -90,7 +90,7 @@ conf_pick_py() {  # DD-CYN-0107 F-c / DD-CYN-0117 R-1
     #       ∴ 配布物専用の conda 環境 'cynovela-dist' の python は、中身が 3.12.13 でも
     #       名前が python なので候補から外れ、同じ書き出しの中で
     #         使う python      : .../envs/cynovela-dist/bin/python   版: Python 3.12.13
-    #         控えに使う python: ありません (3.12 系が見つかりません)
+    #         バックアップに使う python: ありません (3.12 系が見つかりません)
     #       という食い違いを出していた (M5 実測)。
     #   新: 呼ぶ側が既に解いた python を第一候補にし、要件を満たすならそこで探索を終える。
     #       名前に版の付かない python3 も、版を実測して満たすときだけ受ける。
@@ -100,7 +100,7 @@ conf_pick_py() {  # DD-CYN-0107 F-c / DD-CYN-0117 R-1
     for _c in "$@"; do
         if _conf_py_meets "$_c"; then printf '%s\n' "$_c"; return 0; fi
     done
-    # この配布物の中に作られる置き場 (形態によって名前が違うので両方見る)
+    # この配布物の中に作られる保存先 (形態によって名前が違うので両方見る)
     for _c in "$_root/.venv-cynovela/bin/python3" "$_root/.mas-env/bin/python3"; do
         if _conf_py_meets "$_c"; then printf '%s\n' "$_c"; return 0; fi
     done

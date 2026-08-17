@@ -70,7 +70,7 @@ Cynovela は二段構えで PII（Personally Identifiable Information: 個人情
 | MLX Embedding | `providers/embedding.py:105` | 将来実装予定 |
 | MLX Reranker | `providers/reranker.py:216` | 将来実装予定 |
 | Qdrant VectorStore | `providers/vector_store.py:260-272` | 骨格のみ（add / search / delete / export / import すべて未実装） |
-| LanceDB バックエンド | `utils/vector_store.py:34` | パッケージ未導入時に拒否 |
+| LanceDB バックエンド | `providers/vector_store.py` | パッケージ未導入時に拒否 |
 | GraphRAG 戦略 | `services/rag_strategies.py:116` | 将来実装予定 |
 
 明示的に廃止された機能（A-6 §2）:

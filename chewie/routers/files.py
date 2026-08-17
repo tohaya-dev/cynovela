@@ -7,7 +7,7 @@
 
 ga-close-v3 PartA (2026-07-27): /api/upload (POST) を撤去した。
 受け取ったファイルを store/uploads/ にアプリ内部の生ファイルとして書き出す唯一の経路で、
-暗号化も伏字もされず、ワークスペース削除でも消えず、K8s では受け口 Pod と処理 Pod が
+暗号化もマスキングもされず、ワークスペース削除でも消えず、K8s では受け口 Pod と処理 Pod が
 別なので構造的に必ず失敗していた。取り込みは取り込みフォルダ経由に一本化する。
 """
 
@@ -31,7 +31,7 @@ router = APIRouter(tags=["files"])
 
 
 # ------------------------------------------------------------
-# DD-CYN-0032 B4: 取り込み元 (根) の控えを毎回読む。
+# DD-CYN-0032 B4: 取り込み元 (ルート) のバックアップを毎回読む。
 #   書く側は3つ: 入口スクリプト (./launch.sh --add ほか)・本体の起動時・画面 (/api/ingest-roots)。
 #   読む側をここ1か所に揃えることで、画面から足したものが起動し直さずに効く。
 #   読めない/無いときは None を返し、呼ぶ側が従来の道 (起動時に確定した一覧) に退く。
@@ -121,19 +121,19 @@ def browse_folders(request: Request, path: str = ""):
     """Task 5: フォルダブラウザ。指定パス配下のサブフォルダ一覧を返す。
 
     クエリ:
-      path: 探索対象のフルパス。省略時は「起動時に渡された根の一覧」(仮想の最上位)。
+      path: 探索対象のフルパス。省略時は「起動時に渡されたルートの一覧」(仮想の最上位)。
 
     レスポンス:
       {current_path, parent_path | null, home_path, folders: [{name, path, type}]}
-      根が 1 件も無いときは no_roots: true を追加 (folders/files 空・200)。
+      ルートが 1 件も無いときは no_roots: true を追加 (folders/files 空・200)。
 
     セキュリティ:
       - 管理者専用 (_require_admin)。閲覧者は従来どおり拒否
       - フォルダのみ列挙 (ファイル・symlink・隠しフォルダは除外)
-      - multi-ingest-roots-20260728: 境界は「起動時に渡された根の集合」
-        (--ingest / launch.sh --add-path で store/ingest-roots.json に控えた host_path)。
-        いずれの根の中でもないパスは 403。
-        (browse-root-unlock-20260728 の「ホーム外 403 撤廃」は根方式へ置き換え)
+      - multi-ingest-roots-20260728: 境界は「起動時に渡されたルートの集合」
+        (--ingest / launch.sh --add-path で store/ingest-roots.json にバックアップた host_path)。
+        いずれのルートの中でもないパスは 403。
+        (browse-root-unlock-20260728 の「ホーム外 403 撤廃」はルート方式へ置き換え)
 
     route-admin-sweep-20260727: ホストのファイルシステムを列挙する経路のため管理者専用へ寄せた
     (判定基準③)。2026-07-06 に「要決裁・軽微」として起票されたまま残っていた決裁事項をここで閉じる。
@@ -143,16 +143,16 @@ def browse_folders(request: Request, path: str = ""):
     _require_admin(request)
     # browse-root-unlock-20260728: home は home_path 表示のみに用いる (範囲判定には使わない)。
     home = os.path.realpath(os.path.expanduser("~"))
-    # multi-ingest-roots-20260728: 起動時に確定した根の一覧 (server.py __main__ が設定)。
-    # DD-CYN-0032 B4: 画面から足したものがその場で効くよう、控えを毎回読み直す。
+    # multi-ingest-roots-20260728: 起動時に確定したルートの一覧 (server.py __main__ が設定)。
+    # DD-CYN-0032 B4: 画面から足したものがその場で効くよう、バックアップを毎回読み直す。
     #   起動時に確定した一覧は、起動後に画面から足した分を知らないため。
-    #   控えが読めないときだけ、従来どおり起動時の一覧に退く。
+    #   バックアップが読めないときだけ、従来どおり起動時の一覧に退く。
     roots = _ingest_roots_now()
     if roots is None:
         roots = [r for r in (getattr(_state, "ingest_roots", None) or []) if r.get("host_path")]
 
     if not path:
-        # 仮想の最上位: 根の一覧をフォルダとして返す (実パスではないので current_path は "")
+        # 仮想の最上位: ルートの一覧をフォルダとして返す (実パスではないので current_path は "")
         resp = {
             "current_path": "",
             "parent_path": None,
@@ -172,14 +172,14 @@ def browse_folders(request: Request, path: str = ""):
     except Exception as e:
         raise HTTPException(400, f"Invalid path: {e}")
 
-    # multi-ingest-roots-20260728: いずれかの根の中 (根自身を含む) でなければ 403。
+    # multi-ingest-roots-20260728: いずれかのルートの中 (ルート自身を含む) でなければ 403。
     matched_root = None
     for r in roots:
         rp = r["host_path"]
         if target == rp or target.startswith(rp + os.sep):
             matched_root = rp
             if target == rp:
-                break  # 根そのものへの一致を優先 (parent_path 判定に使う)
+                break  # ルートそのものへの一致を優先 (parent_path 判定に使う)
     if matched_root is None:
         raise HTTPException(403, "この場所を使うには起動時に追加してください")
 
@@ -206,8 +206,8 @@ def browse_folders(request: Request, path: str = ""):
     except PermissionError:
         raise HTTPException(403, f"Permission denied: {target}")
 
-    # multi-ingest-roots-20260728: 根そのものなら仮想最上位 (path 省略 = "") へ、
-    # 根の内側なら親フォルダへ戻れる。
+    # multi-ingest-roots-20260728: ルートそのものなら仮想最上位 (path 省略 = "") へ、
+    # ルートの内側なら親フォルダへ戻れる。
     parent_path = "" if target == matched_root else os.path.dirname(target)
     return {
         "current_path": target,
@@ -384,7 +384,7 @@ def file_preview(file_id: str, request: Request):
         raise HTTPException(status_code=404, detail="ファイルが見つかりません")
     path = row["path"] or ""
     name = row["name"] or ""
-    # sokessan-fix-a8-20260711: 原本ファイルプレビュー(伏字前本文の先頭2000字)閲覧を監査に残す。
+    # sokessan-fix-a8-20260711: 原本ファイルプレビュー(マスキング前本文の先頭2000字)閲覧を監査に残す。
     try:
         _fp_ca = get_db()
         try:

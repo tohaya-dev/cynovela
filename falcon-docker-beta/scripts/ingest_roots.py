@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""multi-ingest-roots-20260728: 取り込み元の控えファイル (store/ingest-roots.json) の操作。
+"""multi-ingest-roots-20260728: 取り込み元のバックアップファイル (store/ingest-roots.json) の操作。
 
 標準ライブラリのみ。falcon / chewie で同一ファイルを保つこと (書式・命名規則の一致が要件)。
 
-控えファイル書式 (JSON):
+バックアップファイル書式 (JSON):
   {"version": 1,
    "roots": [{"name": "<中の名前>", "host_path": "<Mac 側の実際の場所>",
               "label": "<画面に出す名前>"}],
@@ -15,25 +15,25 @@
   3. 32文字で打ち切る。
 一度使った名前は used_names に残し、別のフォルダへは割り当てない (名前の使い回し禁止)。
 root-name-reuse-20260729: ただし同じ host_path を外して再び追加したときだけは前と同じ名前に
-戻す。既に登録済みの根の name は決して付け替えない (取り込み済みの資料のパス解決が壊れるため)。
+戻す。既に登録済みのルートの name は決して付け替えない (取り込み済みの資料のパス解決が壊れるため)。
 used_names は旧形式 (名前だけの文字列配列) も読み込める。旧形式の項目は対応先不明として
-名前の予約だけを引き継ぎ、現に登録されている根からは対応を補う。番号や符号を詰め直さない。
+名前の予約だけを引き継ぎ、現に登録されているルートからは対応を補う。番号や符号を詰め直さない。
 
 portable-roots-20260808 (DD-CYN-0066 F-2 / 決定 9-3):
-  控えに書く host_path には、配布物の根からの相対の書き方 "@app/<以下の道>" を置ける。
-  梱包の場で書き込む**既定の取り込み元だけ**がこの形になる (tools/build-dist.sh が
+  バックアップに書く host_path には、配布物のルートディレクトリからの相対の書き方 "@app/<以下の道>" を置ける。
+  パッケージングの場で書き込む**既定の取り込み元だけ**がこの形になる (tools/build-dist.sh が
   add --portable で書く)。受け取り手が自分で足したものは、従来どおりその機材の絶対パスで
-  保存する (決定 9-3 の運用と、既に足してある控えの読み替えを起こさないため)。
+  保存する (決定 9-3 の運用と、既に足してあるバックアップの読み替えを起こさないため)。
 
   読み書きの境目はこの 1 ファイルに閉じている:
     _load()  … "@app/…" を、この機材での**絶対パス**へ解いて返す。
     _save()  … 読んだときに "@app/…" だった項目だけを、書き戻すときに再び "@app/…" に畳む。
-  ∴ 控えを読むすべての側 (server.py / routers/ / run-container.sh / launch.sh) は
+  ∴ バックアップを読むすべての側 (server.py / routers/ / run-container.sh / launch.sh) は
     従来どおり絶対パスだけを見る。この仕組みのために 1 行も直していない。
 
-  配布物の根の決め方は、この助っ人ファイル自身の置き場から解く
-  (<配布物の根>/scripts/ingest_roots.py)。保存先 (paths.data_dir) を移しても、
-  入れ物の中 (/app/scripts/…) でも、同じ答えになる。--repo で明示もできる。
+  配布物のルートディレクトリの決め方は、この助っ人ファイル自身の保存先から解く
+  (<配布物のルートディレクトリ>/scripts/ingest_roots.py)。保存先 (paths.data_dir) を移しても、
+  コンテナの中 (/app/scripts/…) でも、同じ答えになる。--repo で明示もできる。
 """
 import argparse
 import hashlib
@@ -43,7 +43,7 @@ import sys
 
 KEEP = set("abcdefghijklmnopqrstuvwxyz0123456789-")
 
-# portable-roots-20260808: 配布物の根からの相対を表す前置き。
+# portable-roots-20260808: 配布物のルートディレクトリからの相対を表す前置き。
 PORTABLE_PREFIX = "@app/"
 
 # 読んだときに "@app/…" だった項目 (解いたあとの絶対パス) を覚えておき、_save で畳み直す。
@@ -52,22 +52,22 @@ _PORTABLE_SEEN: set = set()
 
 
 def default_repo() -> str:
-    """配布物の根。この助っ人は必ず <根>/scripts/ingest_roots.py に置かれている。"""
+    """配布物のルートディレクトリ。この助っ人は必ず <ルート>/scripts/ingest_roots.py に置かれている。"""
     return _norm_repo(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def _norm_repo(repo: str) -> str:
-    """根の書き方を、足す側 (cmd_add の realpath) と同じ形に揃える。
+    """ルートの書き方を、足す側 (cmd_add の realpath) と同じ形に揃える。
 
     揃えないと、途中に近道 (symlink) が在るときに「配布物の中なのに外だ」と判定する。
-    実測 2026-08-08: macOS の一時置き場 /var/folders/... は /private/var/folders/... の
-    近道で、梱包の場がここに立つため --portable が必ず落ちた。
+    実測 2026-08-08: macOS の一時保存先 /var/folders/... は /private/var/folders/... の
+    近道で、パッケージングの場がここに立つため --portable が必ず落ちた。
     """
     return os.path.realpath(os.path.expanduser(repo))
 
 
 def resolve_path(host_path: str, repo: str) -> str:
-    """控えに書かれた値を、この機材での絶対パスへ解く。"""
+    """バックアップに書かれた値を、この機材での絶対パスへ解く。"""
     if isinstance(host_path, str) and host_path.startswith(PORTABLE_PREFIX):
         return os.path.normpath(os.path.join(repo, host_path[len(PORTABLE_PREFIX):]))
     return host_path
@@ -105,7 +105,7 @@ def used_map(data: dict) -> dict:
     """used_names を {中の名前: 割り当てた host_path} の対応に正規化して返す。
 
     root-name-reuse-20260729: 旧形式 (名前だけの文字列配列) も受ける。旧形式の項目は
-    対応先不明 ("") として名前の予約だけを引き継ぎ、現に登録されている根から対応を補う。
+    対応先不明 ("") として名前の予約だけを引き継ぎ、現に登録されているルートから対応を補う。
     data["used_names"] はこの呼び出しで対応表に置き換わる (以後の保存もこの形になる)。
     """
     raw = data.get("used_names") or []
@@ -116,7 +116,7 @@ def used_map(data: dict) -> dict:
     else:
         for n in raw:
             out[str(n)] = ""
-    # 登録済みの根は対応が自明なので補う (旧形式からの引き上げ経路でもある)
+    # 登録済みのルートは対応が自明なので補う (旧形式からの引き上げ経路でもある)
     for r in data.get("roots") or []:
         if r.get("name"):
             out[r["name"]] = r.get("host_path") or out.get(r["name"], "")
@@ -127,8 +127,8 @@ def used_map(data: dict) -> dict:
 def assign_name(data: dict, host_path: str) -> str:
     """host_path に付ける中の名前を決め、used_names へ記録して返す。
 
-    1. 既に登録済みの根なら、その名前をそのまま返す (名前は決して付け替えない)。
-    2. 一度外した同じ host_path なら、used_names の控えから前と同じ名前を返す。
+    1. 既に登録済みのルートなら、その名前をそのまま返す (名前は決して付け替えない)。
+    2. 一度外した同じ host_path なら、used_names のバックアップから前と同じ名前を返す。
     3. どちらでもなければ name_for() で新しい名前を作る。既存の名前 (roots + used_names)
        は taken として避けるため、別のフォルダへ同じ名前が割り当たることはない。
     """
@@ -152,7 +152,7 @@ def _load(path: str, repo: str | None = None) -> dict:  # noqa: C901
                 data = json.load(f)
         except ValueError:
             # DD-CYN-0039: _save の書き戻し (os.replace が使えない形態) の途中で落ちた
-            # 控えは本体が欠けるが、全文は .tmp 側に書き終わっている。そちらを読む。
+            # バックアップは本体が欠けるが、全文は .tmp 側に書き終わっている。そちらを読む。
             with open(path + ".tmp", "r", encoding="utf-8") as f:
                 data = json.load(f)
     else:
@@ -203,10 +203,10 @@ def _save(path: str, data: dict, repo: str | None = None) -> None:
     try:
         os.replace(tmp, path)
     except OSError:
-        # DD-CYN-0039: 控えを1本の bind で入れ物へ渡す形態では、マウント点への
+        # DD-CYN-0039: バックアップを1本の bind でコンテナへ渡す形態では、マウント点への
         # os.replace が EBUSY で失敗する (DD-CYN-0038 項9)。tmp に全文が書き
         # 終わっているので同じファイルへ書き戻す。途中で落ちても tmp が完全な
-        # 控えとして残り、_load が拾う。
+        # バックアップとして残り、_load が拾う。
         with open(path, "w", encoding="utf-8") as f:
             f.write(payload)
             f.flush()
@@ -221,10 +221,10 @@ def cmd_add(args) -> int:
     if not os.path.isdir(real):
         print(f"error: not a directory: {real}", file=sys.stderr)
         return 2
-    # portable-roots-20260808: --portable は梱包の場だけが使う。配布物の中を指す既定の
-    #   取り込み元を、配布物の根からの相対で控えへ書き込むための指定である。
+    # portable-roots-20260808: --portable はパッケージングの場だけが使う。配布物の中を指す既定の
+    #   取り込み元を、配布物のルートディレクトリからの相対でバックアップへ書き込むための指定である。
     #   配布物の外を指していたら畳めないので、黙って絶対で書かずに止める
-    #   (梱包の場で気づかせる。受け取り手の機材で行き止まりになるより先に落とす)。
+    #   (パッケージングの場で気づかせる。受け取り手の機材で行き止まりになるより先に落とす)。
     if getattr(args, "portable", False):
         if portable_form(real, repo) is None:
             print(f"error: --portable but path is outside the app root: {real}", file=sys.stderr)
@@ -234,7 +234,7 @@ def cmd_add(args) -> int:
         if r["host_path"] == real:
             print(r["name"])
             return 0
-    # root-name-reuse-20260729: 外したあとの再追加は前と同じ名前に戻す (assign_name が控えを引く)
+    # root-name-reuse-20260729: 外したあとの再追加は前と同じ名前に戻す (assign_name がバックアップを引く)
     name = assign_name(data, real)
     label = args.label or os.path.basename(real.rstrip("/")) or real
     data["roots"].append({"name": name, "host_path": real, "label": label})
@@ -278,17 +278,17 @@ def _repo_of(args) -> str:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--file", required=True, help="控えファイル (store/ingest-roots.json) のパス")
+    ap.add_argument("--file", required=True, help="バックアップファイル (store/ingest-roots.json) のパス")
     ap.add_argument("--repo", default=None,
-                    help="配布物の根 (省略時はこの助っ人の置き場から解く)")
+                    help="配布物のルートディレクトリ (省略時はこの助っ人の保存先から解く)")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    p = sub.add_parser("add", help="根を1件追加し中の名前を出力")
+    p = sub.add_parser("add", help="ルートを1件追加し中の名前を出力")
     p.add_argument("path")
     p.add_argument("--label", default=None)
     p.add_argument("--portable", action="store_true",
-                   help="配布物の根からの相対で控えへ書く (梱包の場だけが使う)")
+                   help="配布物のルートディレクトリからの相対でバックアップへ書く (パッケージングの場だけが使う)")
     p.set_defaults(fn=cmd_add)
-    p = sub.add_parser("list", help="根の一覧を JSON で出力")
+    p = sub.add_parser("list", help="ルートの一覧を JSON で出力")
     p.set_defaults(fn=cmd_list)
     p = sub.add_parser("remove", help="中の名前を指定して1件削除")
     p.add_argument("name")

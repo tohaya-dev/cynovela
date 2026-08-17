@@ -16,4 +16,4 @@ Notes / 前提:
   first login. / 同梱の初期の資格情報は仮のもので、初回に必ず変更します。
 - When an external endpoint is configured, redaction is applied before sending,
   but choosing a trustworthy endpoint is the operator's responsibility.
-  / 外部の宛先を設定した場合、送る前に伏字を掛けますが、宛先を選ぶ責任は運用の側にあります。
+  / 外部の宛先を設定した場合、送る前にマスキングを掛けますが、宛先を選ぶ責任は運用の側にあります。

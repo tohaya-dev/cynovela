@@ -69,11 +69,11 @@ role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))
 
 ## 4. ロール別の回答の違い（PII の見え方）
 
-Cynovela は、二段構えの PII マスキング（個人情報の伏字化）でロールに応じた回答内容を切り替えます。
+Cynovela は、二段構えの PII マスキング（個人情報のマスキング）でロールに応じた回答内容を切り替えます。
 
 ### 4.1 取込時マスキング（Tier1）
 
-Publish（公開）の段階で、原本本文 (raw) と伏字化本文 (masked) を **両方** 保存します。
+Publish（公開）の段階で、原本本文 (raw) とマスキング本文 (masked) を **両方** 保存します。
 - SQLite `chunks` テーブルには `tier='raw'` と `tier='masked'` の 2 行が並びます。
 - ChromaDB（ベクター検索）側にも `{cid}__raw` と `{cid}__masked` の 2 コレクションを並列に作ります。
 
@@ -87,7 +87,7 @@ def tier_for_role(role: str) -> str:
 ```
 
 - **admin** → `raw` 側のコレクションを参照し、回答表示では出口マスクも素通し（原本がそのまま表示されます）
-- **viewer / 未指定**（`curator` 等は viewer に正規化）→ `masked` 側のコレクションを参照し、出口マスクも適用（伏字化されたまま表示されます）
+- **viewer / 未指定**（`curator` 等は viewer に正規化）→ `masked` 側のコレクションを参照し、出口マスクも適用（マスキングされたまま表示されます）
 
 > ただし外部（非ローカル）LLM を使う場合は、crag-egress-guard により admin でも raw の下読み（context_preview）が外部へ送出されません（CRAG スキップ）。上記の admin 素通しは「ローカル LLM での回答表示」を前提とした記述であり、「admin＝常に生本文が外部 LLM へ渡る」わけではありません。
 

@@ -274,7 +274,7 @@ async function fetchCompareBModels() {
   }
 }
 
-// ga-close-v3 PartX: 伏字の強さの書き込み系 savePiiMode() を撤去。画面から選択肢を外したため
+// ga-close-v3 PartX: マスキングの強さの書き込み系 savePiiMode() を撤去。画面から選択肢を外したため
 // 呼び出し元は0になった。PUT /api/settings/pii-mode の受け口・引き渡しの仕組みは本ランでは変更しない。
 
 async function addSource() {
@@ -310,7 +310,7 @@ async function addSource() {
 async function openSourceInFinder(id) {
   try {
     const r = await API.get(`/api/sources/${id}/open-in-finder`);
-    // fix2-D: コンテナ実行時は OS ファイルマネージャーを開けないため、ホスト側パスを info 案内する
+    // fix2-D: コンテナ実行時は OS ファイルマネージャーを開けないため、ホスト側パスを info 示す
     // (誤誘導の success トーストやエラートーストを出さない)。standalone は従来どおり success。
     if (r && r.container) {
       showToast(r.message || lj('Cannot open Finder in container mode.', 'コンテナ実行のため Finder は開けません'), 'info');
@@ -485,7 +485,7 @@ async function startPublishStream(colId) {
     finalizeProgressUI(colId, false, 'no job_id');
     return;
   }
-  // ingest-resilience: jobId 永続化(リロード復帰/前回ログ)＋「裏で継続」案内。
+  // ingest-resilience: jobId 永続化(リロード復帰/前回ログ)＋「裏で継続」ガイド。
   if (typeof IngestViz !== 'undefined') {
     const _c2 = (typeof State !== 'undefined' && State.collections || []).find(c => c.id === colId);
     IngestViz.registerJob(colId, jobId, { colName: (_c2 && _c2.name) || '' });
@@ -683,7 +683,7 @@ async function qsExecute(folder, preset, mode, policyId, policyLabel, qualityLab
   const wsName = `Quick_${ts}`;
   const colName = `Quick_${ts}_collection`;
   // DD-CYN-0089 §6-A: 失敗したときに、どの資料の可視化パネルを閉じればよいかを
-  //   catch から知るための控え。col は try の中の const なので catch からは見えない。
+  //   catch から知るためのバックアップ。col は try の中の const なので catch からは見えない。
   let _qsColId = null;
   try {
     // DD-CYN-0091 A: 作業場所には、その時点で在る閲覧者(viewer)の役割の利用者を全員含める。
@@ -768,7 +768,7 @@ async function qsExecute(folder, preset, mode, policyId, policyLabel, qualityLab
     // _reattachPublishProgress が card.querySelector で UI 復元できるように)
     await refreshAllData();
 
-    // ⑦ 取り込み可視化パネル(左右分割)を開く=通し案内。これ以降フリッカートーストは出さない。
+    // ⑦ 取り込み可視化パネル(左右分割)を開く=通しガイド。これ以降フリッカートーストは出さない。
     const _qsColName = _qsReused ? (col.name || colName) : colName;
     IngestViz.start(col.id, {
       title: lj(`Quick start: ${_qsColName}`, `クイックスタート: ${_qsColName}`),
@@ -790,7 +790,7 @@ async function qsExecute(folder, preset, mode, policyId, policyLabel, qualityLab
       IngestViz.fail(col.id, lj('Publish start failed (job_id not obtained)', 'Publish 開始失敗 (job_id 未取得)'));
       return;
     }
-    // ingest-resilience: jobId を永続化(リロード復帰/前回ログ用)＋「裏で継続」案内。
+    // ingest-resilience: jobId を永続化(リロード復帰/前回ログ用)＋「裏で継続」ガイド。
     IngestViz.registerJob(col.id, job.job_id, { colName: _qsColName, overlay: true });
 
     // ⑨ polling: 進捗/完了は IngestViz が _pollPublishJob 経由で反映。

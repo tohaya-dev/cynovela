@@ -198,7 +198,7 @@ async function renderSettings() {
   // GUI修正2 #30: Settings本体の Chunking セクション
   loadChunkingMainSection().catch(()=>{});
   // DD-CYN-0089 §6-B: ここが try に入っていなかったため、読めないとこの行より後ろ
-  //   (LLM・埋め込み・利用者・控え ほか) が丸ごと描かれないまま、画面には何も出なかった。
+  //   (LLM・埋め込み・利用者・バックアップ ほか) が丸ごと描かれないまま、画面には何も出なかった。
   //   読めなかったことを画面へ出し、描ける分は描く。
   try {
     State.settings = await API.get('/api/settings');
@@ -252,7 +252,7 @@ async function renderSettings() {
       'emb-api-key', emb.api_key_set === true,
       lj('(only if env var CYNOVELA_EMBEDDING_API_KEY is absent)', '(環境変数 CYNOVELA_EMBEDDING_API_KEY が無い場合のみ)'));
     onEmbProviderChange();
-    // mas-status-20260725: 外の口 (Mac Accelerator Service) の稼働状態と退避状態を表示する。
+    // mas-status-20260725: 外部の推論サーバ (Mac Accelerator Service) の稼働状態と退避状態を表示する。
     //   退避中は目立つ警告にし「黙って遅くならない」を画面で担保する。
     const _accSt = document.getElementById('emb-accel-status');
     if (_accSt) {
@@ -262,29 +262,29 @@ async function renderSettings() {
         if (_fbActive) {
           _accSt.textContent = lj(
             '⚠️ Accelerator unreachable — embeddings fell back to local (' + (emb.fallback.target || 'cpu') + ') since ' + (emb.fallback.since || ''),
-            '⚠️ 外の口(アクセラレータ)に届かないため、埋め込みはローカル(' + (emb.fallback.target || 'cpu') + ')へ退避中です (' + (emb.fallback.since || '') + ' から)');
+            '⚠️ 外部の推論サーバ(アクセラレータ)に届かないため、埋め込みはローカル(' + (emb.fallback.target || 'cpu') + ')へ退避中です (' + (emb.fallback.since || '') + ' から)');
           _accSt.style.color = 'var(--warning, #b45309)';
         } else if (_reach) {
           const _dev = (emb.accelerator.detail && emb.accelerator.detail.device) || '';
           _accSt.textContent = lj(
             '✅ Accelerator connected' + (_dev ? ' (device: ' + _dev + ')' : ''),
-            '✅ 外の口(アクセラレータ)接続中' + (_dev ? ' (device: ' + _dev + ')' : ''));
+            '✅ 外部の推論サーバ(アクセラレータ)接続中' + (_dev ? ' (device: ' + _dev + ')' : ''));
           _accSt.style.color = 'var(--success, #15803d)';
         } else {
           _accSt.textContent = lj(
             '⚠️ Accelerator not reachable — next embedding will fall back to local',
-            '⚠️ 外の口(アクセラレータ)に到達できません。次回の埋め込みはローカルへ退避します');
+            '⚠️ 外部の推論サーバ(アクセラレータ)に到達できません。次回の埋め込みはローカルへ退避します');
           _accSt.style.color = 'var(--warning, #b45309)';
         }
         _accSt.style.display = '';
       } else {
         _accSt.style.display = 'none';
       }
-      // §9-4: 索引の埋め込み識別との食い違い警告 (モデル版が索引作成時と違う場合)
+      // §9-4: インデックスの埋め込み識別との食い違い警告 (モデル版がインデックス作成時と違う場合)
       if (emb.identity && emb.identity.match === false) {
         _accSt.textContent = (_accSt.textContent ? _accSt.textContent + ' / ' : '') + lj(
           '🚫 Embedding identity mismatch: index=' + (emb.identity.stored ? emb.identity.stored.model + '@' + emb.identity.stored.revision : '?') + ' current=' + (emb.identity.current ? emb.identity.current.model + '@' + emb.identity.current.revision : '?') + ' — adding documents now would corrupt search ranking',
-          '🚫 索引の埋め込み識別と現在の経路が食い違っています (索引=' + (emb.identity.stored ? emb.identity.stored.model + '@' + emb.identity.stored.revision : '?') + ' / 現在=' + (emb.identity.current ? emb.identity.current.model + '@' + emb.identity.current.revision : '?') + ')。このまま追加取り込みすると検索順位が壊れます');
+          '🚫 インデックスの埋め込み識別と現在の経路が食い違っています (インデックス=' + (emb.identity.stored ? emb.identity.stored.model + '@' + emb.identity.stored.revision : '?') + ' / 現在=' + (emb.identity.current ? emb.identity.current.model + '@' + emb.identity.current.revision : '?') + ')。このまま追加取り込みすると検索順位が壊れます');
         _accSt.style.color = 'var(--danger, #b91c1c)';
         _accSt.style.display = '';
       }
@@ -294,7 +294,7 @@ async function renderSettings() {
                && (emb.identity.current || {}).source === 'external_unreachable') {
         _accSt.textContent = (_accSt.textContent ? _accSt.textContent + ' / ' : '') + lj(
           '❓ Embedding identity could not be verified — the accelerator is unreachable, so the current route was never read. This is NOT a match.',
-          '❓ 埋め込み識別を確認できません。外の口へ到達できず、現在の経路の識別を読み取れていません（「一致」ではありません）');
+          '❓ 埋め込み識別を確認できません。外部の推論サーバへ到達できず、現在の経路の識別を読み取れていません（「一致」ではありません）');
         _accSt.style.color = 'var(--warning, #b45309)';
         _accSt.style.display = '';
       }
@@ -636,7 +636,7 @@ async function loadRerankerSettings() {
     lj('(only if env var CYNOVELA_RERANKER_API_KEY is absent)', '(環境変数 CYNOVELA_RERANKER_API_KEY が無い場合のみ)'));
   onRrProviderChange();
   // ga-finish-20260727: 再ランクの現在の実行場所/状態を表示する (埋め込みの mas-status と同型)。
-  // 外の口へ届かないときの退避 (本体内 / 再ランクなし) は黙って挙動が変わらないよう画面へ出す。
+  // 外部の推論サーバへ届かないときの退避 (本体内 / 再ランクなし) は黙って挙動が変わらないよう画面へ出す。
   const _rrSt = document.getElementById('rr-accel-status');
   if (_rrSt) {
     if (r.provider === 'none') {
@@ -651,18 +651,18 @@ async function loadRerankerSettings() {
         const _tgt = r.fallback.target || '';
         _rrSt.textContent = lj(
           '⚠️ Rerank: accelerator unreachable — falling back to ' + _tgt + ' since ' + (r.fallback.since || ''),
-          '⚠️ 再ランク: 外の口(アクセラレータ)に届かないため退避中 — 経路=' + _tgt + ' (' + (r.fallback.since || '') + ' から)');
+          '⚠️ 再ランク: 外部の推論サーバ(アクセラレータ)に届かないため退避中 — 経路=' + _tgt + ' (' + (r.fallback.since || '') + ' から)');
         _rrSt.style.color = 'var(--warning, #b45309)';
       } else if (_reachA) {
         const _rrDev = (r.accelerator.detail && (r.accelerator.detail.reranker_device || r.accelerator.detail.device)) || '';
         _rrSt.textContent = lj(
           '✅ Rerank: external accelerator connected' + (_rrDev ? ' (device: ' + _rrDev + ')' : ''),
-          '✅ 再ランク: 外の口(アクセラレータ)で実行' + (_rrDev ? ' (device: ' + _rrDev + ')' : ''));
+          '✅ 再ランク: 外部の推論サーバ(アクセラレータ)で実行' + (_rrDev ? ' (device: ' + _rrDev + ')' : ''));
         _rrSt.style.color = 'var(--success, #15803d)';
       } else {
         _rrSt.textContent = lj(
           '⚠️ Rerank: accelerator not reachable — next rerank falls back (in-process if weights exist, otherwise no rerank)',
-          '⚠️ 再ランク: 外の口(アクセラレータ)に到達できません。次回は退避します (重みがあれば本体内・無ければ再ランクなし)');
+          '⚠️ 再ランク: 外部の推論サーバ(アクセラレータ)に到達できません。次回は退避します (重みがあれば本体内・無ければ再ランクなし)');
         _rrSt.style.color = 'var(--warning, #b45309)';
       }
       _rrSt.style.display = '';

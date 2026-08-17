@@ -7,7 +7,7 @@
 #     1. 何を取り除くかを全部画面へ出し、1回目の確認をします
 #     2. 取り返しがつかないことを示し、2回目の確認をします
 #     3. 以後は一括で行い、途中で問い直しません
-#     4. 外の口 (Mac Accelerator Service) を止めます
+#     4. 外部の推論サーバ (Mac Accelerator Service) を止めます
 #     5. コンテナを止めて消します
 #     6. 名前つきの保存領域を消します
 #     7. イメージを消します
@@ -57,7 +57,7 @@ if command -v "$ENG" >/dev/null 2>&1; then
     done
 fi
 
-# 外の口は、この配布物の中の python で動いているものだけを対象にする
+# 外部の推論サーバは、この配布物の中の python で動いているものだけを対象にする
 if [ -x "$MAS_ENV_DIR/bin/python" ]; then
     _mas_pid="$(/bin/ps -Ao pid=,command= 2>/dev/null \
         | /usr/bin/grep -F "$MAS_ENV_DIR/bin/python" \
@@ -95,14 +95,14 @@ else
     echo "  イメージ ${IMG} : ありません → 何もしません"
 fi
 if [ -n "$_mas_pid" ]; then
-    echo "  外の口 (このフォルダの python で動いているもの・番号 ${_mas_pid}) : 在ります → 止めます"
+    echo "  外部の推論サーバ (このフォルダの python で動いているもの・番号 ${_mas_pid}) : 在ります → 止めます"
 else
-    echo "  外の口 (このフォルダの python で動いているもの) : ありません → 何もしません"
+    echo "  外部の推論サーバ (このフォルダの python で動いているもの) : ありません → 何もしません"
 fi
 if [ -d "$MAS_ENV_DIR" ]; then
-    echo "  外の口の python の環境 ${MAS_ENV_DIR} : 在ります → 下のフォルダごとゴミ箱へ入ります"
+    echo "  外部の推論サーバの python の環境 ${MAS_ENV_DIR} : 在ります → 下のフォルダごとゴミ箱へ入ります"
 else
-    echo "  外の口の python の環境 (.mas-env) : ありません → 何もしません"
+    echo "  外部の推論サーバの python の環境 (.mas-env) : ありません → 何もしません"
 fi
 echo "  このフォルダ       : ${REPO}"
 echo "                     → ゴミ箱へ入れます"
@@ -148,7 +148,7 @@ fi
 
 # ── 5. ここから一括で行う。途中で問い直さない ────────────────
 echo ""
-echo "[1/5] 外の口を止めます"
+echo "[1/5] 外部の推論サーバを止めます"
 if [ -n "$_mas_pid" ]; then
     kill -TERM "$_mas_pid" 2>/dev/null && echo "      止めました (番号 ${_mas_pid})" || echo "      止められませんでした (番号 ${_mas_pid})"
 else

@@ -16,7 +16,7 @@ from fastapi import APIRouter, HTTPException, Request
 from db import get_db, new_id
 from core.errors import api_error
 from core.audit import log_admin_change
-# ga-close-v3 PartD D-3: 伏字件数の数え方は guardrail.py の 1 か所に集約する。
+# ga-close-v3 PartD D-3: マスキング件数の数え方は guardrail.py の 1 か所に集約する。
 from guardrail import pii_count_sql
 
 

@@ -1,5 +1,32 @@
 # Cynovela (docker-beta)
 
+**日本語版はこちら → [日本語](#日本語)**
+
+## English
+
+<!-- cynovela:welcome-en:start -->
+**Cynovela lets you point an AI at the documents already on your Mac and ask about them, in Japanese or English. But answering is not the point.**
+
+**When documents are handed to an AI, what happens in between is normally invisible.** Cynovela makes it visible. Reading, masking and vectorising each show up as they progress, with counts of what was masked and of what kind. Answers cite the passage they came from, and if no supporting passage is found, none is invented. Who looked at what, and when, is recorded.
+
+**Seeing that end to end, on your own machine, is what this tool is for.**
+
+**How your documents are handled**
+
+**Reading, search and answering all happen on your own Mac. Nothing is sent to the internet** — with one exception.
+**Exception: API connection.** If you enable a connection to a cloud AI service, your question and the relevant excerpts are sent to that service. It is off by default.
+**What is sent is text that has been through the masking step**, and the tool is built so that text which has not been through it is never routed outside. There is no exception by role — the same applies to administrator accounts.
+**The masking step is not exhaustive.** Some names and address details are known to slip through. Do not load confidential material on the assumption that it will be protected.
+
+**Before you start**
+
+Requires an Apple silicon Mac. This is a learning and demonstration tool, not a production system. Provided as is, without warranty. Answers can be wrong; always open the cited source and check.
+<!-- cynovela:welcome-en:end -->
+
+---
+
+# 日本語
+
 > **この `falcon-docker-beta` は Docker 対応の開発中ベータ（docker-beta）です。** 本命は Podman 版（falcon）で、
 > この docker-beta は falcon とファイルを1つも共有しない、完全に独立したフォルダです。実行エンジンの既定は docker
 > （`cynovela.yaml` の `engine: docker`）になっています。
@@ -7,9 +34,9 @@
 > **AIモデル（埋め込みモデル bge-m3）は同梱していません。** 受け取ったら、次のどちらかで
 > モデルを用意してください（どちらもこの配布物の中で完結します）。
 >
-> 1. **起動時に取り寄せる** — 初回の起動で「いま取り寄せる」を選ぶと、Hugging Face から
+> 1. **起動時にダウンロードする** — 初回の起動で「いまダウンロードする」を選ぶと、Hugging Face から
 >    約 2.2 GB を受け取って `store/models/` に置きます（選ぶまで通信は始まりません）。
-> 2. **手で置く** — 置き場所（`store/models/models--BAAI--bge-m3/snapshots/<版>/`）と
+> 2. **手で置く** — 保存先（`store/models/models--BAAI--bge-m3/snapshots/<版>/`）と
 >    使う snapshot 版は、同梱の `SETUP-ACCELERATOR.md` の手順に従ってください。
 
 全部入り版 = cynovela-<形態>-all-in-one-<日付>.tar.gz ／ 軽量版 = cynovela-falcon-lightweight-<日付>.tar.gz
@@ -17,13 +44,13 @@
 <!-- cynovela:welcome:start -->
 **Cynovela は、手元の資料をAIに読ませて、その内容を日本語と英語で質問できるようにするツールです。ただし主眼は、答えることではありません。**
 
-**資料をAIに渡すとき、途中で何が起きているのかは、ふつう見えません。** Cynovela は、そこを見えるようにしてあります。**読み込み → 伏字 → ベクター化**の各段が進み具合として画面に出て、何をいくつ伏せたかが残ります。答えには根拠にした箇所が付き、根拠が見つからなければ答えを作りません。だれがいつ何を見たかも記録に残ります。
+**資料をAIに渡すとき、途中で何が起きているのかは、ふつう見えません。** Cynovela は、そこを見えるようにしてあります。**読み込み → マスキング → ベクター化**の各段が進み具合として画面に出て、何をいくつ伏せたかが残ります。答えには根拠にした箇所が付き、根拠が見つからなければ答えを作りません。だれがいつ何を見たかも記録に残ります。
 
 **自分の Mac の中だけで、最初から最後まで手を動かして確かめられること。それがこのツールの目的です。**
 
 **読み込み・検索・回答の生成は、すべてこの Mac の中で行います。インターネットには送信しません。** 例外は、クラウドのAIサービスとつなぐ **API連携** を設定した場合だけです。**最初は入っていません。**
 
-**読み込むときに、氏名・電話番号・住所などを伏せる処理を挟みます。** 閲覧者に返るのは伏字処理を通したあとの文だけです。API連携で外部へ送るのも、伏字処理を通したあとの文です。**ただし伏字処理は完全ではなく、伏せきれずに残るものがあります。**
+**読み込むときに、氏名・電話番号・住所などを伏せる処理を挟みます。** 閲覧者に返るのはマスキング処理を通したあとの文だけです。API連携で外部へ送るのも、マスキング処理を通したあとの文です。**ただしマスキング処理は完全ではなく、伏せきれずに残るものがあります。**
 
 **学習と試用のためのツールです。** 業務の本番システムとして使うことを想定していません。**先に「使う前のご注意」(同梱の NOTICE.md) をお読みください。**
 <!-- cynovela:welcome:end -->
@@ -39,7 +66,7 @@
 
 **取り込みのときに見えるもの**
 
-- 読み込み → 伏字 → ベクター化 の各段が、進み具合として画面に出ます
+- 読み込み → マスキング → ベクター化 の各段が、進み具合として画面に出ます
 - 伏せた件数と、その種別（氏名・電話番号・住所など）が残ります
 - いくつの塊に分けたか、いくつをベクターに変えたかが出ます
 - 途中で閉じても続きます。あとから同じ記録を開けます
@@ -52,7 +79,7 @@
 
 **だれが何を見られるか**
 
-利用者は**管理者**と**閲覧者**の2種類です。**閲覧者に返るのは、伏字処理を通したあとの文だけです。** 伏字処理を通す前の文を開けるのは管理者だけで、**この Mac の画面上に限られます。** 読み込むフォルダは複数に分けて登録でき、フォルダごとに見せる相手を変えられます。
+利用者は**管理者**と**閲覧者**の2種類です。**閲覧者に返るのは、マスキング処理を通したあとの文だけです。** マスキング処理を通す前の文を開けるのは管理者だけで、**この Mac の画面上に限られます。** 読み込むフォルダは複数に分けて登録でき、フォルダごとに見せる相手を変えられます。
 
 **使い方**
 
@@ -61,7 +88,7 @@
 **できないこと**
 
 - **業務の本番システムとして使うことは想定していません。** 可用性・性能・長期の保守は考慮していません
-- **伏字処理は完全ではありません。** ふりがなの氏名や住所の番地から先など、伏せきれずに残るものがあります
+- **マスキング処理は完全ではありません。** ふりがなの氏名や住所の番地から先など、伏せきれずに残るものがあります
 - **答えは間違うことがあります。** 必ず出典を開いて原文で確かめてください
 <!-- cynovela:about:end -->
 
@@ -106,7 +133,7 @@
 
 | | 方法A コンテナ | 方法B 配布物のフォルダ内 | 方法C conda の環境 |
 |---|---|---|---|
-| 必要なもの | Podman（未導入なら案内します） | Python 3.12 以上 | conda（miniforge など） |
+| 必要なもの | Podman（未導入なら入れ方を示します） | Python 3.12 以上 | conda（miniforge など） |
 | この Mac に Python を入れるか | 入れません | 既存のものを使います | conda の中に作ります |
 | 残る場所 | コンテナ基盤の管理領域 | この配布物のフォルダ内だけ | conda の環境フォルダ |
 | 削除方法 | コンテナとイメージを削除 | フォルダごと削除 | 環境を1つ削除 |
@@ -130,7 +157,7 @@
 
 ---
 
-## 後片づけ
+## アンインストール
 
 <!-- cynovela:cleanup:start -->
 ```
@@ -154,7 +181,7 @@ bash uninstall.sh
 | コンテナ | 止めて消します |
 | 名前つきの保存領域 | 消します（読み込んだ資料と設定も一緒に無くなります） |
 | イメージ | 消します |
-| 外の口の python の環境 (`.mas-env`) | この配布物のフォルダごとゴミ箱へ入ります |
+| 外部の推論サーバの python の環境 (`.mas-env`) | この配布物のフォルダごとゴミ箱へ入ります |
 | この配布物のフォルダ | **ゴミ箱へ入れます** |
 | Podman | **取り除きません**（他の用途でお使いになるためです） |
 
@@ -178,40 +205,17 @@ bash uninstall.sh
 
 - `LICENSE` — 本体のライセンス（MIT）
 - `LICENSES-MODELS.md` — 同梱・参照するAIモデルのライセンス表記
-- `THIRD_PARTY_NOTICES.md` — 画面側の部品と伏字の仕組みが使う第三者ソフトウェアのライセンス表記
+- `THIRD_PARTY_NOTICES.md` — 画面側の部品とマスキングの仕組みが使う第三者ソフトウェアのライセンス表記
 - `BUNDLED-DATA.md` — 同梱データについての説明
 - `NOTICE.md` — 使う前のご注意（免責）
 - `SECURITY.md` — セキュリティについて
 
 ---
 
-## English
-
-<!-- cynovela:welcome-en:start -->
-**Cynovela lets you point an AI at the documents already on your Mac and ask about them, in Japanese or English. But answering is not the point.**
-
-**When documents are handed to an AI, what happens in between is normally invisible.** Cynovela makes it visible. Reading, masking and vectorising each show up as they progress, with counts of what was masked and of what kind. Answers cite the passage they came from, and if no supporting passage is found, none is invented. Who looked at what, and when, is recorded.
-
-**Seeing that end to end, on your own machine, is what this tool is for.**
-
-**How your documents are handled**
-
-**Reading, search and answering all happen on your own Mac. Nothing is sent to the internet** — with one exception.
-**Exception: API connection.** If you enable a connection to a cloud AI service, your question and the relevant excerpts are sent to that service. It is off by default.
-**What is sent is text that has been through the masking step**, and the tool is built so that text which has not been through it is never routed outside. There is no exception by role — the same applies to administrator accounts.
-**The masking step is not exhaustive.** Some names and address details are known to slip through. Do not load confidential material on the assumption that it will be protected.
-
-**Before you start**
-
-Requires an Apple silicon Mac. This is a learning and demonstration tool, not a production system. Provided as is, without warranty. Answers can be wrong; always open the cited source and check.
-<!-- cynovela:welcome-en:end -->
-
----
-
 ## この配布物でできないこと
 
 - 画面の表示は日本語のみです。英語には切り替わりません。
-- はじめての方への案内は、起動時に自動では出ません。最初の画面の「このツールについて」からいつでも開けます。
+- はじめての方へのガイドは、起動時に自動では出ません。最初の画面の「このツールについて」からいつでも開けます。
 - 環境の準備（--setup）は起動の画面から呼べません。ターミナルから実行してください。手順は同梱の「USE-FROM-TERMINAL.txt」にあります。
 - コンテナで動かす形では、データの保存先を起動の画面から変えられません。保存先はコンテナの保存領域です。
 - この Mac に直接入れる形では、データの保存先を変えても、資料の中身そのものは元の場所に残ります。

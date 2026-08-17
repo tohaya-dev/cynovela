@@ -133,7 +133,7 @@ window.__wireA6 = async function(summary){
   const tw=summary.total_workspaces||0, wsNo=summary.ws_without_policy_count||0;
   const ingest = tc>0 ? Math.round(vc/tc*100) : 0;
   const classify = tf>0 ? Math.round(cf/tf*100) : 0;
-  // 保護軸(枝②): 公開(=伏字・保管済み)カバレッジ = 公開済みコレクション / 全コレクション。
+  // 保護軸(分岐②): 公開(=マスキング・保管済み)カバレッジ = 公開済みコレクション / 全コレクション。
   //   旧 reviewRate(PIIレビュー完了率)は「レビュー」概念が実体なし＋dashboard.py で piiUn==piiTot のため恒等0だったため撤去。
   //   検出比(masked/detected)は全件マスクで構造的100%=偽満点になるため使わない(recon-summary 参照)。
   //   コレクションが1件も無い→null=N/A(測ったふりにしない)。値は実データで変動(下書き/中断コレクションで下がる)。
@@ -209,7 +209,7 @@ window.__wireA6 = async function(summary){
   const _gateCand=[
     {key:'ingest',  label:lj('Ingest','取込'),   pc:ingest,   neck:lj('▲ Ingest is the bottleneck — add & scan a data source to raise readiness / score','▲ 取込がボトルネック — データソースを追加・スキャンして準備度・スコア向上')},
     {key:'classify',label:lj('Classify','分類'), pc:classify, neck:lj('▲ Classify is the bottleneck — classify more files to raise readiness / score','▲ 分類がボトルネック — ファイル分類を進めて準備度・スコア向上')},
-    {key:'protect', label:lj('Protect','保護'),  pc:protect,  neck:lj('▲ Protect is the bottleneck — publish (mask) collections to raise readiness / score','▲ 保護がボトルネック — コレクションを公開(伏字化)して準備度・スコア向上')},
+    {key:'protect', label:lj('Protect','保護'),  pc:protect,  neck:lj('▲ Protect is the bottleneck — publish (mask) collections to raise readiness / score','▲ 保護がボトルネック — コレクションを公開(マスキング)して準備度・スコア向上')},
     {key:'policy',  label:lj('Policy','ポリシー'),pc:policy,   neck:'▲ '+wsNo+lj(' workspaces without a policy — set one to raise readiness / score',' WS にポリシー未設定 — 設定で準備度・スコア向上')},
   ].filter(g=>g.pc!=null);
   const _neck=_gateCand.length?_gateCand.slice().sort((a,b)=>a.pc-b.pc)[0]:null;
@@ -234,7 +234,7 @@ window.__wireA6 = async function(summary){
     // allinone B2 + finalround: 総合スコアの内訳開示。マスク/根拠はレーダー表示（スコア非算入＝二重計上回避）。
     trustBreakdown:{ axes:[
         {n:lj('Local inference','ローカル推論'), v:localInfer, src:lj('Measured: LLM / embedding locality (penalized for external destinations)','実測: LLM・埋め込みのローカル性（外部宛先で減点）')},
-        {n:lj('Protect','保護'), v:protect, src:lj('Protection coverage: ready (published & masked) collections / all collections','保護カバレッジ: 公開済み（伏字・保管済み）コレクション / 全コレクション')},
+        {n:lj('Protect','保護'), v:protect, src:lj('Protection coverage: ready (published & masked) collections / all collections','保護カバレッジ: 公開済み（マスキング・保管済み）コレクション / 全コレクション')},
         {n:lj('Classify','分類'), v:classify, src:lj('Share of classified files','分類済みファイルの割合')},
         {n:lj('Policy assignment rate','ポリシー割り当て率'), v:policy, src:lj('Share of workspaces with an access policy (assignment coverage)','アクセスポリシーを設定したWSの割合（割り当てカバレッジ）')},
       ], note:lj('Equal-weight average of measured axes. Protect = protection coverage (same as the radar Protect axis). Evidence is shown on the radar only (not folded into this score).','計測できた軸の等重み平均。保護＝保護カバレッジ（レーダーの保護軸と同値）。根拠はレーダーのみ表示（このスコアには非算入）。') },
@@ -453,7 +453,7 @@ async function _doPublishWithChunking(id) {
 //   _STALL_NOTICE_MS を過ぎたら「遅れています」と1度だけ知らせるが、追うのはやめない。
 //   _STALL_GIVEUP_MS を過ぎて初めてやめる。やめるときは、その旨と追い直し方を画面に出す。
 //   従来は 90 秒動かないだけで黙って追うのをやめていた (追記200 の実測。取り込みそのものは
-//   続いているのに、画面だけが伏字の段で止まって見えた)。
+//   続いているのに、画面だけがマスキングの段で止まって見えた)。
 const _STALL_NOTICE_MS = 180000;    // 3分
 const _STALL_GIVEUP_MS = 1800000;   // 30分
 const _FETCH_FAIL_NOTICE = 5;       // 問い合わせがこの回数続けて失敗したら知らせる

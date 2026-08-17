@@ -13,19 +13,19 @@ CORE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$CORE_DIR/../.." && pwd)"
 
 # DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
-#   入れ物の名前はここで1度だけ決め、止める・見る・組み立てる のすべてで同じ値を使う。
+#   コンテナの名前はここで1度だけ決め、止める・見る・組み立てる のすべてで同じ値を使う。
 CONF_REPO="$REPO"
 . "$REPO/tools/conf.sh"
 DEFPORT="$(conf_get_num server port 8765)"
-CNAME="$(conf_get_or container name cynovela-settle)"   # この形では使わない (入れ物を作らない)
+CNAME="$(conf_get_or container name cynovela-settle)"   # この形では使わない (コンテナを作らない)
 STATE_FILE="$REPO/store/launch-app.state"
 LOG="$REPO/store/launch-app.log"
 mkdir -p "$REPO/store"
 
-# ---------- コンテナの土台 (実行体) の解決 (DD-CYN-0048) ----------
+# ---------- コンテナの実行エンジン (実行体) の解決 (DD-CYN-0048) ----------
 #   アイコンから起動すると PATH が素の値になり、端末では見つかる podman が見つからない。
 #   決める順: ①設定/指定での明示 (在れば探索しない) ②podman → docker の探索 ③画面側で選んでもらう。
-#   探索は 受け継いだ PATH → ログインシェル → 決まった置き場 の3段。
+#   探索は 受け継いだ PATH → ログインシェル → 決まった保存先 の3段。
 #   採った実行体は store/engine-bin/podman の橋渡しに置き、PATH の先頭に足す
 #   (下流の組み立て・停止スクリプトは podman の名前で呼ぶため)。
 #   launch.sh 側と同一の実装を保つこと。
@@ -93,7 +93,7 @@ engine_activate() {  # 橋渡しを置き、PATH の先頭に足し、記録へ1
         *) if [ "$ENGINE_NAME" = "(コマンド指定)" ]; then
                PATH="$bindir:$PATH"
            else
-               # 土台は補助の実行体を隣から呼ぶため、実行体の親ディレクトリも先頭に足す
+               # 実行エンジンは補助の実行体を隣から呼ぶため、実行体の親ディレクトリも先頭に足す
                PATH="$bindir:$(dirname "$ENGINE_PATH"):$PATH"
            fi
            export PATH ;;
@@ -220,7 +220,7 @@ cmd_start() {
 
     : >> "$LOG"
     local lpid
-    # DD-CYN-0053: 環境変数では何も渡さない。聞かずに進めることと、入れ物の名前と、
+    # DD-CYN-0053: 環境変数では何も渡さない。聞かずに進めることと、コンテナの名前と、
     # 保存先は、いずれも設定ファイル (cynovela.yaml) と指定 (--no-prompt) で伝える。
     # DD-CYN-0053: 背景に投げたものを、この場から切り離す (disown)。
     #   切り離さないと、この入口のプロセスが本体の終わりまで居残る
@@ -255,8 +255,8 @@ cmd_monitor() {
         fi
         if [ "$dead" -ge 2 ]; then
             state_write "STATE=stopped"
-            if tail -n 20 "$LOG" 2>/dev/null | grep -q '取り寄せ先に繋がりませんでした'; then
-                osascript -e 'display notification "取り寄せ先に繋がりませんでした。記録: store/launch-app.log" with title "Cynovela"' >/dev/null 2>&1 || true
+            if tail -n 20 "$LOG" 2>/dev/null | grep -q 'ダウンロード元に繋がりませんでした'; then
+                osascript -e 'display notification "ダウンロード元に繋がりませんでした。記録: store/launch-app.log" with title "Cynovela"' >/dev/null 2>&1 || true
             else
                 osascript -e 'display notification "時間内に用意ができませんでした。記録: store/launch-app.log" with title "Cynovela"' >/dev/null 2>&1 || true
             fi
@@ -282,7 +282,7 @@ cmd_abort() {
     mp="$(state_get MONITOR_PID)"; lp="$(state_get LAUNCH_PID)"
     state_write "STATE=stopped"
     [ -n "$mp" ] && kill "$mp" 2>/dev/null
-    # 中断も stop.sh に任せる (この配布物が作ったものかを stop.sh が目印で確かめる)
+    # 中断も stop.sh に任せる (この配布物が作ったものかを stop.sh がマーカーで確かめる)
     ( cd "$REPO" && bash stop.sh >> "$LOG" 2>&1 ) || true
     [ -n "$lp" ] && kill "$lp" 2>/dev/null
     echo "aborted"
@@ -298,7 +298,7 @@ cmd_stop() {
 }
 
 cmd_restart() {
-    # 前回と同じ姿で立て直す。ポート番号も引き継ぐ (引き継がないと既定へ落ち、
+    # 前回と同じ構成で立て直す。ポート番号も引き継ぐ (引き継がないと既定へ落ち、
     # 「アドレスをコピー」で配ったアドレスが再起動で変わってしまう)。
     local mode src ext ddir browser port args=""
     mode="$(state_get MODE)"; src="$(state_get SOURCE)"; ext="$(state_get EXTERNAL)"
@@ -325,13 +325,13 @@ cmd_root_names() { cmd_list_roots | grep -o '"name": "[^"]*"' | cut -d'"' -f4; }
 cmd_add_root()   { ( cd "$REPO" && ./launch.sh --add-path "$1" 2>&1 ); }
 cmd_remove_root(){ ( cd "$REPO" && ./launch.sh --remove "$1" 2>&1 ); }
 
-# 土台の状態を1行で返す (DD-CYN-0048)。画面 (launcher.applescript) が読む。
+# 実行エンジンの状態を1行で返す (DD-CYN-0048)。画面 (launcher.applescript) が読む。
 #   ENGINE=ok NAME=<名前> / ENGINE=not-running NAME=<名前> / ENGINE=not-found
 #   "engine set <パス>" は「場所を選ぶ」で指された実行ファイルを設定へ覚える。
 cmd_engine() {
     if [ "${1:-}" = "set" ]; then
         shift
-        # 設定は cynovela.yaml の container.engine に覚える (置き場を2本に分けない)
+        # 設定は cynovela.yaml の container.engine に覚える (保存先を2本に分けない)
         conf_set container engine "$1" || { echo "設定を書けませんでした"; return 1; }
         echo "saved container.engine=$1"
         return 0
@@ -346,7 +346,7 @@ cmd_engine() {
         return 0
     fi
     if [ "$ENGINE_NAME" = "podman" ]; then
-        # 従来どおり、一度だけ土台の仮想機械を起こしてみる (起こせればそのまま進む)
+        # 従来どおり、一度だけ実行エンジンの仮想機械を起こしてみる (起こせればそのまま進む)
         podman machine start >> "$LOG" 2>&1 || true
         if podman info >/dev/null 2>&1; then
             echo "ENGINE=ok NAME=$ENGINE_NAME"

@@ -350,7 +350,7 @@ def migrate_db(conn) -> None:
             pass
 
     # ---- collections.raw_only 列 (2026-07-09 追加 / 機能は 2026-07-24 廃止) ----
-    # 伏字なし取り込みは廃止済み (vector-tier-masked-only-20260724 §9-7)。列と過去データは
+    # マスキングなし取り込みは廃止済み (vector-tier-masked-only-20260724 §9-7)。列と過去データは
     # 保全のため残す (消すと既存の記録が壊れうる)。新規に 1 が書かれる経路は無い。
     try:
         conn.execute("ALTER TABLE collections ADD COLUMN raw_only INTEGER NOT NULL DEFAULT 0")
@@ -836,12 +836,12 @@ def _rebase_relative_files(conn) -> int:
     """dist-file-id-rebase-20260802 (DD-CYN-0020 U-7): 配布物由来の相対参照を実行時に作り直す。
 
     配布用 demo.db を作る道具 (tools/build_clean_demo_db.py) は files.path 等を
-    「./dummy-corpus/...」へ相対化するが、識別子 files.id は梱包の場 (mktemp の
+    「./dummy-corpus/...」へ相対化するが、識別子 files.id はパッケージングの場 (mktemp の
     一時ステージ) の絶対パス由来のまま残る。走査 (_do_scan) の照合鍵は
     id = md5(source_id|NFC(絶対パス))[:16] だけなので、受け取り手の最初の再スキャンで
     同じ資料が新規行として二重登録され、旧行に「⚠️ 取り込みフォルダに実体が
     見つかりません」が付いていた (DD-CYN-0020 U-7 陰性対照で実測)。展開先の絶対パスは
-    梱包時に知り得ないため、道具側では識別子を作り直せない (不成立を実証済み)。
+    パッケージング時に知り得ないため、道具側では識別子を作り直せない (不成立を実証済み)。
     よって絶対パスが確定する唯一の時点 = 受け取り手の起動時に、ここで作り直す。
 
     規則は走査側と同一 (走査側の規則は変えない):
@@ -995,7 +995,7 @@ def init_db(demo: bool = False):
                 import secrets as _secrets
                 import logging as _logging
 
-                # DD-CYN-0067 G-2: 環境変数からは受け取らない。初期の合言葉の出どころは
+                # DD-CYN-0067 G-2: 環境変数からは受け取らない。初期のパスワードの入手元は
                 #   cynovela.yaml (auth.admin_initial_password) の 1 本だけである。
                 #   利用者名は仕様の既定値 cynovela に固定する (配布仕様書 §5-4)。
                 try:
@@ -1005,10 +1005,10 @@ def init_db(demo: bool = False):
                 except Exception:
                     _admin_password = None
                 _admin_username = "cynovela"
-                # DD-CYN-0067 G-1: 初回シードで作られる管理者には、値の出どころによらず
+                # DD-CYN-0067 G-1: 初回シードで作られる管理者には、値の入手元によらず
                 #   初回変更を求める印を立てる (配布仕様書 §5-4)。従来は yaml で明示指定した
                 #   場合に印を立てず、配布物の本番 (空) 側だけ印の無い管理者ができていた
-                #   (配布物は cynovela.yaml に初期の合言葉を書き込むため)。
+                #   (配布物は cynovela.yaml に初期のパスワードを書き込むため)。
                 #   稼働側の既存の管理者は _need_seed=False でこのブロックに入らず、影響しない。
                 if _admin_password:
                     _must_change = 1
@@ -1083,7 +1083,7 @@ def init_db(demo: bool = False):
         # 既に値がある行 (パスワード変更済み等) は触らない。
         #
         # DD-CYN-0070 N-4 (追記277 277-2): このブロックは従来 `if demo:` の中に在り、
-        # 引数なし (本番) では閲覧者の資格情報が作られず、案内の値で入れなかった。
+        # 引数なし (本番) では閲覧者の資格情報が作られず、ガイドの値で入れなかった。
         # 配布仕様書 §5-4 は利用者を管理者と閲覧者の2つと定め、受け入れ項4 は
         # 「閲覧者で入れる」を合格条件とする。∴ demo 分岐の外へ移し、本番でも
         # 同じ供給順序で seed する。決定 7-1 の「本番＝空」は資料のことであり、
@@ -1136,12 +1136,12 @@ def init_db(demo: bool = False):
         if demo:
             # bundled-data-20260731 (DD-CYN-0007 B1): 同梱デモの取り込み元は、配布物の中に
             # 置いたダミー資料 (dummy-corpus/) を指す。従来は ./sample_data と
-            # ./sample_data/technical の 2 行を入れていたが、その置き場は配布物に同梱されて
+            # ./sample_data/technical の 2 行を入れていたが、その保存先は配布物に同梱されて
             # おらず (tools/build-dist.sh がステージから落とす)、受け取り手の環境では
             # 取り込み元一覧に 0件・idle で並んだまま「読み直し」が 400 で失敗していた。
-            # id は梱包処理 (tools/build_bundled_data.py) が作る行と同じ 'src-dummy' に
+            # id はパッケージング処理 (tools/build_bundled_data.py) が作る行と同じ 'src-dummy' に
             # 固定してあるため、同梱 demo.db に対しては INSERT OR IGNORE が何もしない
-            # (同じ置き場が二重に登録されない)。
+            # (同じ保存先が二重に登録されない)。
             demo_sources = [
                 ("src-dummy", "ダミー資料 (アオゾラ商事)", "./dummy-corpus", "idle", 0),
             ]
@@ -1158,8 +1158,8 @@ def init_db(demo: bool = False):
         # cynovela.db は同梱しないが、受け取り手が本番で使い始めたあとも残り続ける機構
         # であるため、配る前に閉じる。
         try:
-            # 実体の無い置き場を指す旧シードの取り込み元。src-hr は 2026 年前半に、
-            # src-tech/src-shared は DD-CYN-0007 で投入をやめた (置き場が配布物に無い)。
+            # 実体の無い保存先を指す旧シードの取り込み元。src-hr は 2026 年前半に、
+            # src-tech/src-shared は DD-CYN-0007 で投入をやめた (保存先が配布物に無い)。
             for _src in ("src-hr", "src-tech", "src-shared"):
                 conn.execute("DELETE FROM workspace_sources WHERE source_id = ?", (_src,))
                 conn.execute("DELETE FROM files WHERE source_id = ?", (_src,))

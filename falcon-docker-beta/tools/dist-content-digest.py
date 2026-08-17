@@ -4,24 +4,24 @@
 使い方:
     python dist-content-digest.py <アプリのツリー> <demo.db> <chroma ディレクトリ>
 
-出力は 1 行 1 項目の "名前<TAB>値"。2 回の梱包でこの出力が完全一致すれば
+出力は 1 行 1 項目の "名前<TAB>値"。2 回のパッケージングでこの出力が完全一致すれば
 「内容としては同じもの」と判定できる。バイト単位の一致は要求しない。
 
 なぜバイト単位で比べないか (実測で確定したこと):
   同じ入力から 2 回作っても、demo.db・chroma.sqlite3・HNSW のバイナリは必ず違う。
-  違いの出どころは 6 つあり、いずれも直すべき欠陥ではない。
+  違いの入手元は 6 つあり、いずれも直すべき欠陥ではない。
     ① 識別子が uuid4 (db.new_id)
     ② パスワードの塩と初期パスワードそのものが乱数
     ③ 時刻 (created_at / applied_at / publish_history.timestamp / elapsed_seconds)
     ④ 金庫の暗号化は同じ平文でも毎回違う暗号文を出す (初期化ベクトル)
     ⑤ 分類の並び順が list(set(...)) 由来で、文字列ハッシュの種に左右される
     ⑥ Chroma が書く metadata の JSON キー順
-  一方で、塊の本文 (復号後)・埋め込みのベクトル・伏字の件数・件数・取り込み元の
-  相対パスは 3 回の走行で完全に一致した。よって同等性はこちらで判定する。
+  一方で、塊の本文 (復号後)・埋め込みのベクトル・マスキングの件数・件数・取り込み元の
+  相対パスは 3 回の実行で完全に一致した。よって同等性はこちらで判定する。
 
 この検査が「同じに見えるが中身が違うもの」を捕まえることは、次の 4 通りの
 陽性対照で確かめてある: 塊を1行消す / 本文を1文字書き換える (正しく再暗号化する) /
-ベクトルを1本壊す / 伏字を1か所剥がす。いずれも出力が変わる。
+ベクトルを1本壊す / マスキングを1か所剥がす。いずれも出力が変わる。
 """
 import hashlib, json, os, sqlite3, sys
 
@@ -34,7 +34,7 @@ _cwd = os.getcwd(); os.chdir(APP)
 from vault_enc import dec_raw          # noqa: E402
 os.chdir(_cwd)
 
-# 走行ごとに必ず変わる列/キー = 「内容」に数えないもの
+# 実行ごとに必ず変わる列/キー = 「内容」に数えないもの
 VOLATILE_META = {"source_id", "workspace_id", "file_id", "file_path",
                  "parent_id", "logical_chunk_id", "vector_id"}
 
@@ -54,7 +54,7 @@ for t in ["workspaces", "sources", "collections", "files",
           "chunks", "parent_chunks", "publish_history", "users"]:
     emit(f"count.{t}", con.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0])
 
-# ② 取り込み元の相対パス (絶対パスは梱包先で変わるので根からの相対で見る)
+# ② 取り込み元の相対パス (絶対パスはパッケージング先で変わるのでルートからの相対で見る)
 roots = [r[0] for r in con.execute("SELECT path FROM sources ORDER BY path")]
 def rel(p):
     for r in sorted(roots, key=len, reverse=True):
@@ -73,7 +73,7 @@ for tbl in ("chunks", "parent_chunks"):
         emit(f"body.{tbl}.{tier}.n", len(vals))
         emit(f"body.{tbl}.{tier}.sha256", h(vals))
 
-# ④ 伏字の件数と塊の統計
+# ④ マスキングの件数と塊の統計
 r = con.execute("SELECT doc_count, chunk_count, pii_count, excluded_count, "
                 "avg_chunk_chars FROM publish_history ORDER BY id").fetchall()
 emit("publish_history", h([json.dumps([dict(x) for x in r], sort_keys=True)]))

@@ -1,0 +1,190 @@
+# scan-scope.txt — 禁則#61 の造語走査の対象範囲
+# DD-CYN-0123 / J-1・J-2・J-3 / 2026-08-17
+#
+# 実測した木: HEAD 80f23b5 (枝 docs/dd-cyn-0122)。
+#   走行中に別の走行が e351a39 → 80f23b5 を積んで対象ファイルが動いたため、
+#   下の行番号・md5・当たり件数はすべて 80f23b5 で採り直した値である。
+#   区間の指定は行番号ではなく正規表現なので、行がずれても追随する。
+#
+# 形式 (1行1指示・トークン区切りはタブ文字・# 始まりはコメント):
+#   include      <glob>
+#   skip-file    <glob>                      <なぜ外すか>
+#   skip-region  <path>  <開始行の正規表現>  <終了行の正規表現>  <なぜ外すか>
+#
+# include が唯一の権威。ここに挙げた場所だけを走査する。
+# skip-region は開始行にマッチするたびに区間へ入り、次に終了行にマッチした行で
+# 区間を閉じる (両端を含めて外す)。1ファイル内に同じ形の区間が複数あってよい。
+#
+# 対象の配布物: falcon / chewie / falcon-docker-beta の3つ + リポジトリ直下の *.md
+# 対象の拡張子: .md .txt .html .sh .py .command .js
+#   .js は frontend/js/ のみ。同じ画面の文言が html と js に分かれており、
+#   片方だけ見ると1つの画面で用語が割れたまま素通りするため (DD-CYN-0122 で実際に起きた)。
+# 対象の考え方: 「当機が書いた文章」と「受け取り手の画面に出る文言」だけ。
+#
+# hansolo/ は決定 §61 により走査対象に入れない (GitHub 公開絶対禁止のため
+# 公開文書の言い換え作業の対象外)。include に一切書かないことで担保する。
+#
+# glob は再帰記号 (**) を使わず1階層ずつ挙げる。「見る場所を挙げる」形を保ち、
+# 挙げていない場所 (dummy-corpus/ demo_data/ store/ keys/ static/vendor/ 等) が
+# 手違いで入り込まないようにするため。
+
+
+# ============================================================
+# include — リポジトリ直下
+# ============================================================
+include	*.md
+
+# ============================================================
+# include — falcon
+# ============================================================
+include	falcon/*.md
+include	falcon/*.txt
+include	falcon/*.command
+include	falcon/*.sh
+include	falcon/*.py
+include	falcon/core/*.py
+include	falcon/core/schemas/*.py
+include	falcon/deploy/*.md
+include	falcon/deploy/container/*.sh
+include	falcon/docs/*.md
+include	falcon/docs/*.html
+include	falcon/docs/html/*.html
+include	falcon/docs/html/*.md
+include	falcon/frontend/*.html
+include	falcon/frontend/js/*.js
+include	falcon/mas/*.py
+include	falcon/migrations/*.py
+include	falcon/providers/*.py
+include	falcon/routers/*.py
+include	falcon/scripts/*.py
+include	falcon/services/*.py
+include	falcon/tools/*.py
+include	falcon/tools/*.sh
+include	falcon/tools/launcher-app/*.sh
+include	falcon/utils/*.py
+include	falcon/utils/metadata/*.py
+
+# ============================================================
+# include — chewie
+#   chewie には deploy/ が無いので deploy 系の glob を書かない (0件回避)
+# ============================================================
+include	chewie/*.md
+include	chewie/*.txt
+include	chewie/*.command
+include	chewie/*.sh
+include	chewie/*.py
+include	chewie/core/*.py
+include	chewie/core/schemas/*.py
+include	chewie/docs/*.md
+include	chewie/docs/*.html
+include	chewie/docs/html/*.html
+include	chewie/docs/html/*.md
+include	chewie/frontend/*.html
+include	chewie/frontend/js/*.js
+include	chewie/mas/*.py
+include	chewie/migrations/*.py
+include	chewie/providers/*.py
+include	chewie/routers/*.py
+include	chewie/scripts/*.py
+include	chewie/services/*.py
+include	chewie/tools/*.py
+include	chewie/tools/*.sh
+include	chewie/tools/launcher-app/*.sh
+include	chewie/utils/*.py
+include	chewie/utils/metadata/*.py
+
+# ============================================================
+# include — falcon-docker-beta
+# ============================================================
+include	falcon-docker-beta/*.md
+include	falcon-docker-beta/*.txt
+include	falcon-docker-beta/*.command
+include	falcon-docker-beta/*.sh
+include	falcon-docker-beta/*.py
+include	falcon-docker-beta/core/*.py
+include	falcon-docker-beta/core/schemas/*.py
+include	falcon-docker-beta/deploy/*.md
+include	falcon-docker-beta/deploy/container/*.sh
+include	falcon-docker-beta/docs/*.md
+include	falcon-docker-beta/docs/*.html
+include	falcon-docker-beta/docs/html/*.html
+include	falcon-docker-beta/docs/html/*.md
+include	falcon-docker-beta/frontend/*.html
+include	falcon-docker-beta/frontend/js/*.js
+include	falcon-docker-beta/mas/*.py
+include	falcon-docker-beta/migrations/*.py
+include	falcon-docker-beta/providers/*.py
+include	falcon-docker-beta/routers/*.py
+include	falcon-docker-beta/scripts/*.py
+include	falcon-docker-beta/services/*.py
+include	falcon-docker-beta/tools/*.py
+include	falcon-docker-beta/tools/*.sh
+include	falcon-docker-beta/tools/launcher-app/*.sh
+include	falcon-docker-beta/utils/*.py
+include	falcon-docker-beta/utils/metadata/*.py
+
+
+# ============================================================
+# skip-file — include の glob に入るが外すもの (J-3)
+# ============================================================
+skip-file	falcon/requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。当機の文章でも画面の文言でもない。
+skip-file	chewie/requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。当機の文章でも画面の文言でもない。
+skip-file	falcon-docker-beta/requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。当機の文章でも画面の文言でもない。
+skip-file	falcon/scripts/test_comprehensive_e2e.py	試験の走行台本と試験データ。受け取り手の目に触れず、言い換えると試験が落ちる。
+skip-file	chewie/scripts/test_comprehensive_e2e.py	試験の走行台本と試験データ。受け取り手の目に触れず、言い換えると試験が落ちる。
+skip-file	falcon-docker-beta/scripts/test_comprehensive_e2e.py	試験の走行台本と試験データ。受け取り手の目に触れず、言い換えると試験が落ちる。
+
+# ------------------------------------------------------------
+# 以下は include に挙げていないので現時点で0件に当たる。
+# 「なぜ見ないか」を残すための控えの札であり、include を広げた際の防壁も兼ねる。
+# ------------------------------------------------------------
+skip-file	*/dummy-corpus/*.md	デモ用の架空のサンプル資料 (取り込ませる中身)。当機の文章ではない。(J-1と同じ理由)
+skip-file	chewie/demo_data/*.txt	デモ用の架空のサンプル資料 (取り込ませる中身)。当機の文章ではない。(J-1と同じ理由)
+skip-file	chewie/demo_data/p25/*.txt	デモ用の架空のサンプル資料 (取り込ませる中身)。当機の文章ではない。(J-1と同じ理由)
+skip-file	*/docs/html/_tokens.txt	画面の色・字体の固定値の一覧 (CSS変数の値)。文章ではない。
+skip-file	*/mas/mas-requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。
+skip-file	*/static/vendor/*	外から取り込んだ他所の書き庫 (縮小済み JavaScript)。対象の拡張子にも当たらない。
+skip-file	hansolo/*	決定 §61。GitHub 公開絶対禁止のため公開文書の言い換えの対象外。
+
+
+# ============================================================
+# skip-region — ファイルの一部だけ外す
+# ============================================================
+
+# --- J-1: デモ用の架空のサンプル文書の本文だけを外す ---
+#   Tocchi の判断 (2026-08-17) = 「サンプル文書の本文のみ保護する」。
+#   ∴ demo-general.html はファイルごと外さない。同ファイル内の解説文
+#   (step-desc / explain-panel / h3 見出し) は走査の対象に残す。
+#   区間は <div class="doc-content"> …</div> の2か所 (原文側・伏字後側)。
+#   実測: 3配布物とも同一 (md5 11bb165cee6dbaceb9db24705d66bc8a)・
+#         区間は 829-838 行と 842-851 行。架空の個人情報はこの中に収まる。
+#   demo-tech.html には doc-content 区間が無い (=サンプル文書の本文が無い) ため
+#   区間指定を書かない。
+skip-region	falcon/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
+skip-region	chewie/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
+skip-region	falcon-docker-beta/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
+
+# --- J-3: 機械で作った外部部品の一覧 ---
+#   外すのは版を留めた依存の並び (英数字のみ) の区間だけ。
+#   題・前置き・見出し・同梱モデルの並び・末尾の件数行は当機の文章なので対象に残す。
+#   実測 (HEAD 80f23b5): falcon と falcon-docker-beta は並びが2区間 (10-178 行・182-229 行)、
+#   chewie は1区間 (10-178 行)。chewie には MAS の並びが無いので2本目を書かない。
+#   2本目の開始/終了の語は1区間目にも現れる (14 行・167 行) が、1区間目は1本目で
+#   既に外れているため重なるだけで害はなく、見出し 180 行を対象に残せる。
+skip-region	falcon/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- yarl 1\.24\.5 — Apache-2\.0$	外から取り込んだ部品の一覧を機械で書き出したもの。固定値の並びで言い換えの対象にならない。
+skip-region	falcon/THIRD_PARTY_NOTICES.md	^- annotated-doc 0\.0\.5 — MIT$	^- uvicorn 0\.51\.0 — BSD-3-Clause$	同上 (MAS 環境の部品の並び)。
+skip-region	chewie/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- yarl 1\.24\.5 — Apache-2\.0$	外から取り込んだ部品の一覧を機械で書き出したもの。固定値の並びで言い換えの対象にならない。
+skip-region	falcon-docker-beta/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- yarl 1\.24\.5 — Apache-2\.0$	外から取り込んだ部品の一覧を機械で書き出したもの。固定値の並びで言い換えの対象にならない。
+skip-region	falcon-docker-beta/THIRD_PARTY_NOTICES.md	^- annotated-doc 0\.0\.5 — MIT$	^- uvicorn 0\.51\.0 — BSD-3-Clause$	同上 (MAS 環境の部品の並び)。
+
+# --- J-3: 他所の許諾文の全文 (一字一句変えてはならない) ---
+#   前置きの日本語 (1-25行) は当機の文章なので対象に残す。
+skip-region	falcon/LICENSES-MODELS.md	^## MIT License \(BAAI/bge-m3\)$	^SOFTWARE\.$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
+skip-region	falcon/LICENSES-MODELS.md	^Licensed under the Apache License, Version 2\.0 \(the "License"\);$	^limitations under the License\.$	他所の許諾文の定型句。一字も変えられない。
+skip-region	falcon/LICENSES-MODELS.md	^ +Apache License$	^   END OF TERMS AND CONDITIONS$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
+skip-region	chewie/LICENSES-MODELS.md	^## MIT License \(BAAI/bge-m3\)$	^SOFTWARE\.$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
+skip-region	chewie/LICENSES-MODELS.md	^Licensed under the Apache License, Version 2\.0 \(the "License"\);$	^limitations under the License\.$	他所の許諾文の定型句。一字も変えられない。
+skip-region	chewie/LICENSES-MODELS.md	^ +Apache License$	^   END OF TERMS AND CONDITIONS$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
+skip-region	falcon-docker-beta/LICENSES-MODELS.md	^## MIT License \(BAAI/bge-m3\)$	^SOFTWARE\.$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
+skip-region	falcon-docker-beta/LICENSES-MODELS.md	^Licensed under the Apache License, Version 2\.0 \(the "License"\);$	^limitations under the License\.$	他所の許諾文の定型句。一字も変えられない。
+skip-region	falcon-docker-beta/LICENSES-MODELS.md	^ +Apache License$	^   END OF TERMS AND CONDITIONS$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。

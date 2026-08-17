@@ -52,7 +52,7 @@ function _renderPager({ key, page, limit, total }) {
 // modelchat-ui-v3-20260628 (spec2/5): API キー入力欄をブラウザのパスワードマネージャ対象から外す。
 //   type=password を廃止し CSS(.apikey-mask-input = -webkit-text-security)で視覚マスク。これにより
 //   ブラウザ/OS の資格情報ストアへ鍵が保存・自動補完されず端末ローカルに残らない。さらに自動補完で
-//   幻の「点(●)」が入り「未設定」表示と矛盾する事象も根絶する。id は不変(参照互換維持)。
+//   幻の「点(●)」が入り「未設定」表示と矛盾する事象もルート絶する。id は不変(参照互換維持)。
 function _apiKeyMaskedInputHtml(inputId, ph) {
   return '<input type="text" id="' + inputId + '" class="form-input apikey-mask-input"'
     + ' placeholder="' + ph + '" autocomplete="off" autocorrect="off" autocapitalize="off"'
@@ -776,7 +776,7 @@ function onClsProviderChange() {
 
 function onRrProviderChange() {
   const p = $('rr-provider').value;
-  // ga-finish-20260727: 外の口 (external_accelerator) も Base URL を使う
+  // ga-finish-20260727: 外部の推論サーバ (external_accelerator) も Base URL を使う
   const needsBase = (p === 'ollama' || p === 'openai_compat' || p === 'external_accelerator');
   const needsKey = ['cohere','jina','voyage','openai_compat'].includes(p);
   $('rr-base-url-row').style.display = needsBase ? '' : 'none';
@@ -830,7 +830,7 @@ function _pickFolderFiles() {
   tmp.click();
 }
 
-// fix-llm-endpoint-unify-20260618: フォルダ窓の「表示専用」名札写像。
+// fix-llm-endpoint-unify-20260618: フォルダウィンドウの「表示専用」名札写像。
 // /app/ingest はコンテナ内部名なので Mac の取り込みフォルダ ~/Cynovela と分かる表示に置換する。
 // 注意: 表示文字列のみ。実 currentPath / 送信パス / 上へ遷移 / 選択値 / 403 境界には一切影響しない。
 function _ingestBoxLabel(p) {
@@ -872,7 +872,7 @@ async function _fbLoad(path) {
   const _folders = data.folders || [];
   const _files = data.files || [];
   if (_folders.length === 0 && _files.length === 0) {
-    // multi-ingest-roots-20260728: 根0件 (no_roots) は空フォルダと区別して起動時の追加を案内する。
+    // multi-ingest-roots-20260728: ルート0件 (no_roots) は空フォルダと区別して起動時の追加を示す。
     listEl.innerHTML = data.no_roots
       ? irNoRootsHtml()
       : `<div style="padding:14px;color:#94a3b8;text-align:center;">${bi('(Empty)', '(空フォルダ)')}</div>`;

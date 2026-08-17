@@ -3,7 +3,7 @@
 #  Cynovela 入口 (entry-unify-20260802 / DD-CYN-0020 S-1〜S-4)
 #
 #  受け取り手が実行するのはこの1本だけです。
-#  この系統は「入れ物 (コンテナ) で動かす形」の1本道です。ホストで直接動かす道は
+#  この系統は「コンテナ (コンテナ) で動かす形」の1本道です。ホストで直接動かす道は
 #  持ちません (start.sh は廃止しました)。中で使う組み立て用のスクリプトは
 #  deploy/container/run-container.sh へ降ろし、この入口からだけ呼びます。
 #
@@ -25,26 +25,26 @@
 #    ./launch.sh --ingest <パス>           取り込み元を足してから起動する (複数指定可)
 #    ./launch.sh --sync-labels <トークン>  取り込み元の表示名を動いている本体へ合わせる
 #
-#  停止: podman stop <入れ物の名前>  (名前は cynovela.yaml の container: の name: に書いてある)
+#  停止: podman stop <コンテナの名前>  (名前は cynovela.yaml の container: の name: に書いてある)
 #
 #  環境チェックの3つのモード:
 #    既定    足りないものを並べて止まる (何も入れない・何も書き換えない)
-#    --setup この配布物の中だけで用意できるもの (鍵の置き場など) を用意して起動まで進む
+#    --setup この配布物の中だけで用意できるもの (鍵の保存先など) を用意して起動まで進む
 #    --check 読み取りだけで同じ検査を回し、結果を store/env-check.txt へ書いて終わる
 #
 #  共有の conda 環境 'cynovela' は使いません。書き込みもしません。
-#  (この形態の部品はすべて入れ物の中に入っています。)
+#  (この形態の部品はすべてコンテナの中に入っています。)
 #
-#  土台の選択について (DD-CYN-0031):
-#    この形態には「選ぶ土台」がありません。本体を動かす python は入れ物 (イメージ) の
+#  実行エンジンの選択について (DD-CYN-0031):
+#    この形態には「選ぶ実行エンジン」がありません。本体を動かす python はコンテナ (イメージ) の
 #    中に入っており、ホスト側の python も conda も使いません。
 #    ∴ 他の2系統にある --base / --env-name (conda 環境を作るか、配布物の中に作るか) は
 #      この形態には置きません。置いても選ぶものが無く、嘘の選択肢になるためです。
-#    この形態の --setup がホスト側に用意するのは、金庫の鍵の置き場だけです。
+#    この形態の --setup がホスト側に用意するのは、金庫の鍵の保存先だけです。
 # ============================================================
 set -e
 
-# DD-CYN-0069 M-5: 本体は tools/ の下の部品になった (決定 12-2)。置き場の基準は配布物の根のまま。
+# DD-CYN-0069 M-5: 本体は tools/ の下の部品になった (決定 12-2)。保存先の基準は配布物のルートディレクトリのまま。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTAINER_PART="$SCRIPT_DIR/deploy/container/run-container.sh"
 REPORT_FILE="$SCRIPT_DIR/store/env-check.txt"
@@ -57,7 +57,7 @@ MODE_SETUP=0
 # DD-CYN-0053: 決めごとは cynovela.yaml 1本から読む。環境変数では受け取らない。
 CONF_REPO="$SCRIPT_DIR"
 . "$SCRIPT_DIR/tools/conf.sh"
-# DD-CYN-0107 F-c: 取り込み元の控えは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
+# DD-CYN-0107 F-c: 取り込み元のバックアップは、動作要件 (3.12 以上) を満たす python でのみ読み書きする。
 #   素の python3 (版の検査なし) へは倒れない。満たすものが無いときは理由と、その場で効く
 #   操作を出す。
 # DD-CYN-0117 R-1: 版は名前で当てず、conf_pick_py がその python 自身に答えさせる。
@@ -66,11 +66,11 @@ ROOTS_PY="$(conf_pick_py "$SCRIPT_DIR" || true)"
 _roots_py() {
     if [ -z "$ROOTS_PY" ]; then
         # DD-CYN-0117 R-4: いま失敗した入口 (Cynovela-start.command は ./launch.sh を
-        #   呼ぶだけの同じ道) をもう一度押せ、とは言わない。この形態は入れ物で動くため、
+        #   呼ぶだけの同じ道) をもう一度押せ、とは言わない。この形態はコンテナで動くため、
         #   押し直しても Mac 側に python は作られない。∴ その場で効く操作だけを出す。
-        echo "エラー: 3.12 以上の python がこの Mac にありません。取り込み元の控え (store/ingest-roots.json) を扱えません。" >&2
+        echo "エラー: 3.12 以上の python がこの Mac にありません。取り込み元のバックアップ (store/ingest-roots.json) を扱えません。" >&2
         echo "       直し方: https://www.python.org/downloads/ から 3.12 以上を入れてください。" >&2
-        echo "       入れ物の中の部品はこれとは別です。入れ物を作り直す必要はありません。" >&2
+        echo "       コンテナの中の部品はこれとは別です。コンテナを作り直す必要はありません。" >&2
         return 1
     fi
     "$ROOTS_PY" "$@"
@@ -78,10 +78,10 @@ _roots_py() {
 HOSTPORT_DEFAULT="$(conf_get_num server port 8801)"
 HOSTPORT="$HOSTPORT_DEFAULT"
 CNAME_DEFAULT="$(conf_get_or container name "$CONF_DEFAULT_CNAME")"
-# DD-CYN-0074 Q-1: モデルの置き場は cynovela.yaml の paths: の models_dir: から読む。
+# DD-CYN-0074 Q-1: モデルの保存先は cynovela.yaml の paths: の models_dir: から読む。
 #   空なら従来どおり、この配布物の中の store/models を使う。
-#   入れ物へ渡す元も同じ1つの値である (deploy/container/run-container.sh も同じ行を読む)。
-#   ∴ ここで「あり」と言ったのに入れ物の中から見えない、ということは起きない。
+#   コンテナへ渡す元も同じ1つの値である (deploy/container/run-container.sh も同じ行を読む)。
+#   ∴ ここで「あり」と言ったのにコンテナの中から見えない、ということは起きない。
 MODEL_ROOT="$(conf_get paths models_dir)"
 if [ -z "$MODEL_ROOT" ]; then
     MODEL_ROOT="$SCRIPT_DIR/store/models"
@@ -94,9 +94,9 @@ NO_PROMPT=0
 FETCH_MODEL=0
 PART_ARGS=()
 
-# ---------- コンテナの土台 (実行体) の解決 (DD-CYN-0048) ----------
+# ---------- コンテナの実行エンジン (実行体) の解決 (DD-CYN-0048) ----------
 #   決める順: ①設定/指定での明示 (在れば探索しない) ②podman → docker の探索。
-#   探索は 受け継いだ PATH → ログインシェル → 決まった置き場 の3段。
+#   探索は 受け継いだ PATH → ログインシェル → 決まった保存先 の3段。
 #   採った実行体は store/engine-bin/podman の橋渡しに置き、PATH の先頭に足す
 #   (組み立て・停止のスクリプトは podman の名前で呼ぶため)。
 #   tools/launcher-app/launcher-core.sh 側と同一の実装を保つこと。
@@ -166,7 +166,7 @@ engine_activate() {  # 橋渡しを置き、PATH の先頭に足し、起動の�
         *) if [ "$ENGINE_NAME" = "(コマンド指定)" ]; then
                PATH="$bindir:$PATH"
            else
-               # 土台は補助の実行体を隣から呼ぶため、実行体の親ディレクトリも先頭に足す
+               # 実行エンジンは補助の実行体を隣から呼ぶため、実行体の親ディレクトリも先頭に足す
                PATH="$bindir:$(dirname "$ENGINE_PATH"):$PATH"
            fi
            export PATH ;;
@@ -180,7 +180,7 @@ engine_activate() {  # 橋渡しを置き、PATH の先頭に足し、起動の�
 usage() {
     cat <<'USAGE'
 Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
-この系統は入れ物 (コンテナ) で動きます。
+この系統はコンテナ (コンテナ) で動きます。
 
 ● 何も付けないとき
   ./launch.sh                     聞かれたことに番号で答えるだけで起動します。
@@ -192,7 +192,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
   ./launch.sh --list              いま足してあるフォルダを一覧で出します。
   ./launch.sh --remove <名前>     足したフォルダを外します (名前は --list に出るもの)。
                                   ※ 画面でも 設定 → 取り込み元 から見る・外せます。
-                                  ※ この系統は入れ物で動くため、足したものが読めるように
+                                  ※ この系統はコンテナで動くため、足したものが読めるように
                                     なるのは、もう一度 ./launch.sh を叩いたあとです。
 
 ● 入れる / 点検する
@@ -213,11 +213,11 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://127.0.0.1:8801   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初の合言葉は同梱の STARTUP.md の「ログイン」の節にあります。
-             管理者は最初に入ったときに合言葉の変更を求められます。
+             最初のパスワードは同梱の STARTUP.md の「ログイン」の節にあります。
+             管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 
-この系統には選ぶ土台がありません (本体を動かす python は入れ物の中にあり、
+この系統には選ぶ実行エンジンがありません (本体を動かす python はコンテナの中にあり、
 ホスト側の python も conda も使いません)。
 
 試験・開発のための指定は ./launch.sh --help-all で見られます。
@@ -279,7 +279,7 @@ while [ $# -gt 0 ]; do
             NO_PROMPT=1
             ;;
         --fetch-model)
-            # AIモデルが無いときに取り寄せる (画面が確認を取ってから渡す)
+            # AIモデルが無いときにダウンロードする (画面が確認を取ってから渡す)
             FETCH_MODEL=1
             ;;
         --port)
@@ -314,7 +314,7 @@ while [ $# -gt 0 ]; do
                 exit 2
             fi
             NAME="$(_roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$2")"
-            echo "取り込み元を追加しました (中の名前: $NAME / 入れ物の中では /app/ingest/$NAME)"
+            echo "取り込み元を追加しました (中の名前: $NAME / コンテナの中では /app/ingest/$NAME)"
             echo "反映には起動し直し (./launch.sh) が必要です"
             exit 0
             ;;
@@ -324,7 +324,7 @@ while [ $# -gt 0 ]; do
                 exit 1
             }
             NAME="$(_roots_py "$INGEST_ROOTS_HELPER" --file "$INGEST_ROOTS_FILE" add "$SEL")"
-            echo "取り込み元を追加しました (中の名前: $NAME / 入れ物の中では /app/ingest/$NAME)"
+            echo "取り込み元を追加しました (中の名前: $NAME / コンテナの中では /app/ingest/$NAME)"
             echo "反映には起動し直し (./launch.sh) が必要です"
             exit 0
             ;;
@@ -385,7 +385,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-# 土台の解決は引数を読み終えてから行う (--engine / --engine-command を効かせるため)
+# 実行エンジンの解決は引数を読み終えてから行う (--engine / --engine-command を効かせるため)
 engine_resolve && engine_activate
 
 
@@ -395,7 +395,7 @@ engine_resolve && engine_activate
 #   分からなければ Enter で必ず先へ進める。
 # ============================================================
 
-# この配布物が前に起動した入れ物が使っている番号なら、掛け直せるので空きとみなす。
+# この配布物が前に起動したコンテナが使っている番号なら、掛け直せるので空きとみなす。
 _port_is_usable() {
     local _p="$1" _pcname _powner _prun _pports
     # DD-CYN-0095: LISTEN だけを見る (残存クライアント接続で「使用中」と誤検知しない)
@@ -420,10 +420,10 @@ _pick_port() {
     echo "${HOSTPORT_DEFAULT:-8801}"
 }
 
-# 部品 (bge-m3) を Hugging Face から curl で取り寄せる。
+# 部品 (bge-m3) を Hugging Face から curl でダウンロードする。
 #   python の部品 (huggingface_hub) に頼らない (受け取った人の Mac には無い)。
 #   置き方は同梱版と同じ形 (snapshots/<版>/ に実ファイル) にそろえる。
-#   途中で切れた取り寄せが「在る」と誤認されないよう、一時置き場で受けてから最後に移す。
+#   途中で切れたダウンロードが「在る」と誤認されないよう、一時保存先で受けてから最後に移す。
 _fetch_model() {
     # conda 環境では SSL_CERT_FILE が実在しない証明書を指すことがあり、
     # その場合 curl が繋がらない。実在しないときだけ外す (chewie の起動と同じ扱い)。
@@ -439,7 +439,7 @@ _fetch_model() {
     rm -rf "$_tmp"
     mkdir -p "$_tmp/1_Pooling"
     for _f in         config.json config_sentence_transformers.json modules.json         sentence_bert_config.json special_tokens_map.json tokenizer_config.json         tokenizer.json sentencepiece.bpe.model colbert_linear.pt sparse_linear.pt         1_Pooling/config.json pytorch_model.bin; do
-        echo "  取り寄せ中: $_f"
+        echo "  ダウンロード中: $_f"
         if ! curl $_curlopt --retry 2 --connect-timeout 10 -o "$_tmp/$_f" "$_base/$_f"; then
             rm -rf "$_tmp"
             return 1
@@ -452,7 +452,7 @@ _fetch_model() {
     return 0
 }
 
-# 選ばれたフォルダを「モデルの置き場」として cynovela.yaml へ書き留める (DD-CYN-0074 Q-1)。
+# 選ばれたフォルダを「モデルの保存先」として cynovela.yaml へ書き留める (DD-CYN-0074 Q-1)。
 #   受け取り手が選ぶのは models--BAAI--bge-m3 そのものか、その親のどちらでもよい。
 #   中身 (snapshots の下に実ファイル) が在ることを確かめてからでないと書かない。
 #   0=つないだ / 1=つなげなかった
@@ -478,25 +478,25 @@ _link_model_dir() {  # $1=選ばれたフォルダ
 }
 
 # 次に何をすればよいかを画面へ出す (DD-CYN-0074 Q-1)。
-#   効き目は断言しない。取り寄せは相手先とネットの具合で変わる。
+#   効き目は断言しない。ダウンロードは相手先とネットの具合で変わる。
 _print_model_next_steps() {
     echo ""
     echo "  資料を読み取るための部品 (bge-m3) が、まだ手元にありません。"
     echo "  この配布物はモデルを同梱していません。次のどちらかで進められます。"
     echo ""
-    echo "  A) 取り寄せる (約 2.2 GB・インターネットにつなぎます)"
+    echo "  A) ダウンロードする (約 2.2 GB・インターネットにつなぎます)"
     echo "       ./launch.sh --fetch-model"
-    echo "     ※ 取り寄せ先 (Hugging Face) とネットの具合によっては失敗することがあります。"
+    echo "     ※ ダウンロード元 (Hugging Face) とネットの具合によっては失敗することがあります。"
     echo "  B) すでに持っているフォルダをつなぐ"
     echo "       cynovela.yaml の paths: の models_dir: に、"
     echo "       models--BAAI--bge-m3 が入っているフォルダの場所を書いてください。"
     echo "     ※ 端末から叩くと、フォルダを選ぶ画面から選ぶこともできます。"
     echo ""
-    echo "  どちらも、置き場の形は SETUP-ACCELERATOR.md の手順に合わせてください。"
+    echo "  どちらも、保存先の形は SETUP-ACCELERATOR.md の手順に合わせてください。"
 }
 
 # 部品 (bge-m3) が手元に無いときは、黙って取りに行かない。必ず一度止めて聞く。
-#   置き場は cynovela.yaml の paths: の models_dir: の1つだけである (既定は配布物の中)。
+#   保存先は cynovela.yaml の paths: の models_dir: の1つだけである (既定は配布物の中)。
 _ask_model_if_missing() {
     local _s _found=""
     if [ -d "$MODEL_DIR" ]; then
@@ -509,10 +509,10 @@ _ask_model_if_missing() {
     echo ""
     echo "  資料を読み取るための部品が、この配布物の中にまだありません。"
     echo "  どうしますか？"
-    echo "    1) いま取り寄せる"
+    echo "    1) いまダウンロードする"
     echo "       ・大きさ: 約 2.2 GB"
-    echo "       ・インターネットにつなぎます (取り寄せ先: Hugging Face)"
-    echo "       ・取り寄せ先とネットの具合によっては失敗することがあります"
+    echo "       ・インターネットにつなぎます (ダウンロード元: Hugging Face)"
+    echo "       ・ダウンロード元とネットの具合によっては失敗することがあります"
     echo "    2) すでに持っているフォルダをつなぐ"
     echo "    3) やめる (あとで置いてから、もう一度叩く)"
     echo ""
@@ -522,10 +522,10 @@ _ask_model_if_missing() {
     read -r _c || _c=""
     case "$_c" in
         1)
-            echo "  → 取り寄せます (数分かかります)。"
+            echo "  → ダウンロードします (数分かかります)。"
             mkdir -p "$MODEL_ROOT"
             _fetch_model || {
-                echo "  AIモデルの取り寄せ先に繋がりませんでした。"
+                echo "  AIモデルのダウンロード元に繋がりませんでした。"
                 echo "  インターネットに繋がっているかをご確認ください。"
                 echo "  繋がっているのに失敗する場合は、同梱の LICENSES-MODELS の一覧にある入手先から手で受け取り、"
                 echo "  下の B) の道でつないでから、もう一度お試しください。"
@@ -535,13 +535,13 @@ _ask_model_if_missing() {
             ;;
         2)
             # DD-CYN-0074 Q-1: 選ばれた場所を cynovela.yaml へ書き留めて、そのまま使う。
-            #   入れ物へ渡す元も同じ値を読むので、写し替えなくても中から見える。
+            #   コンテナへ渡す元も同じ値を読むので、コピー替えなくても中から見える。
             local _sel
             _sel="$(osascript -e 'POSIX path of (choose folder with prompt "bge-m3 が入っているフォルダを選んでください")' 2>/dev/null || true)"
             echo "  → 選ばれた場所: ${_sel:-(選ばれませんでした)}"
             if _link_model_dir "$_sel"; then
                 echo "     つなぎました。cynovela.yaml の paths: の models_dir: に書き留めました。"
-                echo "     置き場: $MODEL_DIR"
+                echo "     保存先: $MODEL_DIR"
             else
                 echo "     そのフォルダの中に models--BAAI--bge-m3 の中身が見つかりませんでした。"
                 _print_model_next_steps
@@ -557,7 +557,7 @@ _ask_model_if_missing() {
 }
 
 # DD-CYN-0074 Q-1: モデルが無いときの一手。run_probe のあとに呼ぶ。
-#   端末が在れば聞く (取り寄せる / つなぐ / やめる)。
+#   端末が在れば聞く (ダウンロードする / つなぐ / やめる)。
 #   端末が無いとき (アイコンからの起動・手順書・試験) は聞けないので、
 #   足りないものとして積み、次に何をすればよいかを並べてから止める。
 #   --check は読み取りだけなので聞かない。
@@ -601,7 +601,7 @@ run_interactive() {
             ;;
     esac
 
-    # DD-CYN-0097 §5-A (決定 40-2・40-4): 構成の問いを撤去した。案内する形が text の
+    # DD-CYN-0097 §5-A (決定 40-2・40-4): 構成の問いを撤去した。示す形が text の
     #   1つだけになったため、尋ねずにそのまま text で進む。引数 (--mode 等) で渡す道は
     #   従来どおり残っている (server.py の受け付けは変えていない)。
     PART_ARGS+=(text)
@@ -635,40 +635,40 @@ add_warning() { WARNINGS+=("$1"); }
 run_probe() {
     add_report "== 調べた時刻 =="
     add_report "$(date '+%Y-%m-%d %H:%M:%S %Z')"
-    add_report "== 置き場所 =="
+    add_report "== 保存先 =="
     add_report "$SCRIPT_DIR"
     add_report "== 起動の形 =="
-    add_report "入れ物 (コンテナ) で動かす形の1本道です。ホストで直接動かす道はありません。"
+    add_report "コンテナ (コンテナ) で動かす形の1本道です。ホストで直接動かす道はありません。"
 
     # 1. 機械と OS
     add_report "== 機械と OS =="
     add_report "CPU 種別: $(uname -m) / $(sysctl -n machdep.cpu.brand_string 2>/dev/null || echo '不明')"
     add_report "OS: $(sw_vers -productName 2>/dev/null || uname -s) $(sw_vers -productVersion 2>/dev/null || uname -r)"
 
-    # 2. python (取り込み元の控えを読み書きする補助にだけ使う。本体の部品は入れ物の中)
+    # 2. python (取り込み元のバックアップを読み書きする補助にだけ使う。本体の部品はコンテナの中)
     add_report "== python (補助にだけ使います) =="
     if command -v python3 >/dev/null 2>&1; then
         add_report "python3: $(command -v python3) / $(python3 -V 2>&1)"
     else
         add_report "python3: ありません"
     fi
-    # DD-CYN-0107 F-c: 控えに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
+    # DD-CYN-0107 F-c: バックアップに使うのは動作要件 (3.12 以上) を満たす python だけ。有無ではなく版まで見る。
     # DD-CYN-0117 R-1: 版は名前で当てない。上で出した python3 も、中身が 3.12 以上なら
     #   conf_pick_py が候補に入れる。∴ 「見つかりました」と出しながら「ありません」と
     #   言う食い違いが起きない。
     if [ -n "$ROOTS_PY" ]; then
-        add_report "控えに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
+        add_report "バックアップに使う python: $ROOTS_PY / $("$ROOTS_PY" -V 2>&1)"
     else
-        add_report "控えに使う python: ありません (3.12 以上のものが見つかりません)"
+        add_report "バックアップに使う python: ありません (3.12 以上のものが見つかりません)"
         if [ -s "$INGEST_ROOTS_FILE" ]; then
             # DD-CYN-0117 R-2: これは起動を止める理由にならない。読めなくなるのは
-            #   取り込み元の控えだけで、入れ物の中の本体は動く。∴ 気をつけること へ置く。
+            #   取り込み元のバックアップだけで、コンテナの中の本体は動く。∴ 気をつけること へ置く。
             # DD-CYN-0117 R-4: いま失敗した入口をもう一度押せ、とは言わない。
-            add_warning "3.12 以上の python がこの Mac にありません。取り込み元の控え (store/ingest-roots.json) を読めないため、足したフォルダは読み込まれません。入れ物の起動そのものは止まりません。直すには https://www.python.org/downloads/ から 3.12 以上を入れてください (入れ物の中の部品はこれとは別で、作り直しは要りません)。"
+            add_warning "3.12 以上の python がこの Mac にありません。取り込み元のバックアップ (store/ingest-roots.json) を読めないため、足したフォルダは読み込まれません。コンテナの起動そのものは止まりません。直すには https://www.python.org/downloads/ から 3.12 以上を入れてください (コンテナの中の部品はこれとは別で、作り直しは要りません)。"
         fi
     fi
 
-    # 3. conda (この形態では使いません。写しとして記録します)
+    # 3. conda (この形態では使いません。コピーとして記録します)
     add_report "== conda =="
     if command -v conda >/dev/null 2>&1; then
         add_report "conda: あり ($(conda info --base 2>/dev/null || echo '場所不明')) — この形態では使いません。書き込みもしません。"
@@ -676,9 +676,9 @@ run_probe() {
         add_report "conda: なし — この形態では不要です。"
     fi
 
-    # 4. 本体の部品 (入れ物の中に入っているので、ホスト側には要りません)
+    # 4. 本体の部品 (コンテナの中に入っているので、ホスト側には要りません)
     add_report "== 本体の部品 =="
-    add_report "requirements.txt の部品は入れ物 (イメージ) の中に入っています。ホスト側へ入れる必要はありません。"
+    add_report "requirements.txt の部品はコンテナ (イメージ) の中に入っています。ホスト側へ入れる必要はありません。"
 
     # 5. Podman と仮想機械の有無・割り当て
     add_report "== Podman / 仮想機械 =="
@@ -699,12 +699,12 @@ run_probe() {
         fi
     else
         add_report "podman: ありません"
-        add_blocker "podman がありません。この形態は入れ物で動くため podman が要ります: https://podman.io/"
+        add_blocker "podman がありません。この形態はコンテナで動くため podman が要ります: https://podman.io/"
     fi
 
     # 6. 使うポートの空き
-    #    DD-CYN-0032 B5: 使っているのが「この配布物が前に起動した入れ物」なら止める理由にしない。
-    #      従来は使用中というだけで無条件に blocker を積み、入れ物を置き換える処理
+    #    DD-CYN-0032 B5: 使っているのが「この配布物が前に起動したコンテナ」なら止める理由にしない。
+    #      従来は使用中というだけで無条件に blocker を積み、コンテナを置き換える処理
     #      (run-container.sh) へ進む前に exit 1 していた。∴ 掛け直しが一度も通らなかった。
     add_report "== ポート =="
     if lsof -nP -iTCP:"$HOSTPORT" -sTCP:LISTEN >/dev/null 2>&1; then
@@ -722,7 +722,7 @@ run_probe() {
             fi
         fi
         if [ "$_own" = "1" ]; then
-            add_report "使っているのは この配布物が前に起動した入れ物 ($_pcname) です。掛け直します。"
+            add_report "使っているのは この配布物が前に起動したコンテナ ($_pcname) です。掛け直します。"
         else
             add_blocker "ポート $HOSTPORT を別のものが使っています。そちらを止めるか、./launch.sh --port <別の番号> を使ってください。"
         fi
@@ -730,40 +730,40 @@ run_probe() {
         add_report "ポート $HOSTPORT: 空き"
     fi
 
-    # 7. 入れ物の名前のぶつかり
-    add_report "== 入れ物の名前 =="
+    # 7. コンテナの名前のぶつかり
+    add_report "== コンテナの名前 =="
     _cname="$CNAME_DEFAULT"
     add_report "使う名前: $_cname"
     if command -v podman >/dev/null 2>&1 && podman container exists "$_cname" 2>/dev/null; then
         _owner="$(podman inspect "$_cname" --format '{{index .Config.Labels "org.cynovela.artifact"}}' 2>/dev/null || true)"
         if [ "$_owner" = "cynovela-container" ]; then
-            add_report "同じ名前の入れ物: あり (この配布物が作ったもの。消さずに、止まっていればそのまま起こします)"
+            add_report "同じ名前のコンテナ: あり (この配布物が作ったもの。消さずに、止まっていればそのまま起こします)"
         else
-            add_report "同じ名前の入れ物: あり (この配布物が作ったものではありません)"
-            add_blocker "'$_cname' という名前の入れ物が既にあります。この配布物が作ったものではないため消しません。別の名前で起動するには: cynovela.yaml の container: の name: を変えてください。"
+            add_report "同じ名前のコンテナ: あり (この配布物が作ったものではありません)"
+            add_blocker "'$_cname' という名前のコンテナが既にあります。この配布物が作ったものではないため消しません。別の名前で起動するには: cynovela.yaml の container: の name: を変えてください。"
         fi
     else
-        add_report "同じ名前の入れ物: なし"
+        add_report "同じ名前のコンテナ: なし"
     fi
 
-    # 8. モデル置き場の有無と中身
+    # 8. モデル保存先の有無と中身
     #    探し先は「cynovela.yaml の paths: の models_dir: が指す1か所」だけにする (DD-CYN-0074 Q-1)。
-    #    (1) 入れ物へ渡すのも同じ1つの値で (run-container.sh の -v)、両者は同じ行を読む。
-    #        ∴ 5か所を見て「あり」と言い、入れ物の中では見えない、という食い違いは起きない。
-    #    (2) 入れ物は画面を持たない起動 (podman run -d) なので、本体の
+    #    (1) コンテナへ渡すのも同じ1つの値で (run-container.sh の -v)、両者は同じ行を読む。
+    #        ∴ 5か所を見て「あり」と言い、コンテナの中では見えない、という食い違いは起きない。
+    #    (2) コンテナは画面を持たない起動 (podman run -d) なので、本体の
     #        「必要なモデルが見つかりません」の確認 (今すぐダウンロードして起動する ほか) は
     #        そもそも出せない。ここで受け取り手に届けるのが唯一の場所である。
     #    無いときは、ここでは止めない。印だけ立て、run_probe を抜けてから
     #    _resolve_model_or_block が聞く (端末が在るとき) か、次の一手を並べて止める。
     #    アプリの形 (chewie / hansolo) は画面を持つ起動なので、そちらは止めずに本体の確認へ渡す。
-    add_report "== 埋め込みモデルの置き場 =="
+    add_report "== 埋め込みモデルの保存先 =="
     if [ -d "$MODEL_DIR" ]; then
         _snap="$(ls -d "$MODEL_DIR"/snapshots/*/ 2>/dev/null | head -1 || true)"
         if [ -n "$_snap" ] && [ -n "$(ls -A "$_snap" 2>/dev/null || true)" ]; then
             add_report "bge-m3: あり ($_snap)"
             add_report "中身: $(ls "$_snap" 2>/dev/null | tr '\n' ' ')"
         else
-            add_report "bge-m3: 置き場はあるが中身が空です ($MODEL_DIR)"
+            add_report "bge-m3: 保存先はあるが中身が空です ($MODEL_DIR)"
             MODEL_MISSING=1
         fi
     else
@@ -777,9 +777,9 @@ run_probe() {
     _code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 4 "${_llm}/v1/models" 2>/dev/null || true)"
     add_report "ホストから $_llm/v1/models: HTTP ${_code:-000}"
     if [ "$_code" != "200" ]; then
-        add_warning "回答を作る LLM ($_llm) にホストから届きません。取り込みと検索は動きますが、回答は作れません。画面の Settings で宛先を直せます (入れ物からは host.containers.internal 経由になります)。"
+        add_warning "回答を作る LLM ($_llm) にホストから届きません。取り込みと検索は動きますが、回答は作れません。画面の Settings で宛先を直せます (コンテナからは host.containers.internal 経由になります)。"
     else
-        add_warning "入れ物の中からホストの LLM へは localhost では届きません。画面の Settings では http://host.containers.internal:1234 を使ってください。"
+        add_warning "コンテナの中からホストの LLM へは localhost では届きません。画面の Settings では http://host.containers.internal:1234 を使ってください。"
     fi
 
     # 10. 鍵の有無 (在るかどうかだけ。中身は読みません)
@@ -787,7 +787,7 @@ run_probe() {
     if [ -f "$KEYFILE" ]; then
         add_report "keys/secret.key: あり (中身は読みません)"
     elif [ -f "$SCRIPT_DIR/store/secret.key" ]; then
-        add_report "keys/secret.key: なし / store/secret.key: あり (起動時に keys/ へ写します)"
+        add_report "keys/secret.key: なし / store/secret.key: あり (起動時に keys/ へコピーします)"
     else
         add_report "keys/secret.key: なし / store/secret.key: なし"
         add_warning "金庫の鍵がありません。起動時に新しく作られますが、同梱のデモ本文はその鍵では読めません。"
@@ -798,7 +798,7 @@ run_probe() {
     add_report "$(df -h "$SCRIPT_DIR" 2>/dev/null | tail -1)"
     _avail_g="$(df -g "$SCRIPT_DIR" 2>/dev/null | awk 'NR==2{print $4}')"
     if [ -n "$_avail_g" ] && [ "$_avail_g" -lt 5 ] 2>/dev/null; then
-        add_blocker "ディスクの空きが ${_avail_g}GB しかありません。入れ物の組み立てに 5GB 以上あけてください。"
+        add_blocker "ディスクの空きが ${_avail_g}GB しかありません。コンテナの組み立てに 5GB 以上あけてください。"
     elif [ -n "$_avail_g" ] && [ "$_avail_g" -lt 20 ] 2>/dev/null; then
         add_warning "ディスクの空きが ${_avail_g}GB です。取り込みを行うなら 20GB 以上を勧めます。"
     fi
@@ -821,21 +821,21 @@ print_probe_result() {
 }
 
 # ------------------------------------------------------------
-# --setup: この形態でホスト側に用意するものは「金庫の鍵の置き場」だけです。
-#   本体の部品は入れ物の中にあり、共有の conda 環境は使いません。
+# --setup: この形態でホスト側に用意するものは「金庫の鍵の保存先」だけです。
+#   本体の部品はコンテナの中にあり、共有の conda 環境は使いません。
 # ------------------------------------------------------------
 do_setup() {
     echo ""
     echo "[--setup] この形態でホスト側に用意するものを揃えます。"
-    echo "          本体の部品は入れ物 (イメージ) の中に入っているため、"
+    echo "          本体の部品はコンテナ (イメージ) の中に入っているため、"
     echo "          共有の conda 環境へは何も入れません (使いません)。"
     if [ ! -f "$KEYFILE" ] && [ -f "$SCRIPT_DIR/store/secret.key" ]; then
         mkdir -p "$SCRIPT_DIR/keys"
         cp "$SCRIPT_DIR/store/secret.key" "$KEYFILE"
         chmod 600 "$KEYFILE"
-        echo "          金庫の鍵の置き場を作りました: $KEYFILE (同梱の鍵を写しました)"
+        echo "          金庫の鍵の保存先を作りました: $KEYFILE (同梱の鍵をコピーしました)"
     else
-        echo "          金庫の鍵の置き場: 用意済み、または同梱の鍵がありません (起動時に作られます)"
+        echo "          金庫の鍵の保存先: 用意済み、または同梱の鍵がありません (起動時に作られます)"
     fi
     echo ""
 }
@@ -843,8 +843,8 @@ do_setup() {
 # ------------------------------------------------------------
 # 要るものを枠で囲って出す (DD-CYN-0031 B4)
 #   用意し終わったときと、起動したときの両方で出す。
-#   合言葉の実値はここへ印字しない。同梱の控えの場所を案内する。
-#   この形態は入れ物を裏で動かすため、本体が出す案内は受け取り手の画面へ
+#   パスワードの実値はここへ印字しない。同梱のバックアップの場所を示す。
+#   この形態はコンテナを裏で動かすため、本体が出すガイドは受け取り手の画面へ
 #   届かない。∴ この入口が出さないと、止め方も入り方も画面に出ない。
 # ------------------------------------------------------------
 print_next_steps() {
@@ -860,13 +860,13 @@ print_next_steps() {
     echo "  ■ 入り方"
     echo "      管理者の利用者名: cynovela"
     echo "      閲覧者の利用者名: demo"
-    echo "      最初の合言葉は、同梱の STARTUP.md の「ログイン」の節に書いてあります。"
+    echo "      最初のパスワードは、同梱の STARTUP.md の「ログイン」の節に書いてあります。"
     echo "      (この画面には印字しません。別便で受け取るファイルはありません。)"
-    echo "      管理者は初回に合言葉の変更を求められます。"
+    echo "      管理者は初回にパスワードの変更を求められます。"
     echo ""
     echo "  ■ 気をつけること"
     echo "      1. 起動すると、この配布物の中身が書き換わります。"
-    echo "         (記録・鍵・記録の入れ物が $SCRIPT_DIR/store と $SCRIPT_DIR/keys の下に"
+    echo "         (記録・鍵・記録のコンテナが $SCRIPT_DIR/store と $SCRIPT_DIR/keys の下に"
     echo "          作られます)"
     echo "      2. 鍵はこの機材で新しく作られます。他の機材で作られた鍵とは別のものです。"
     echo "         ∴ 他の機材で取り込んだ中身は、この機材では読めません。"
@@ -893,8 +893,8 @@ print_next_steps() {
 # 本編
 # ------------------------------------------------------------
 echo "============================================"
-echo " Cynovela (入れ物で動かす形)"
-echo " 置き場所: $SCRIPT_DIR"
+echo " Cynovela (コンテナで動かす形)"
+echo " 保存先: $SCRIPT_DIR"
 echo "============================================"
 
 if [ "$MODE_CHECK" = "1" ] && [ "$MODE_SETUP" = "1" ]; then
@@ -908,7 +908,7 @@ if [ "$ARGC_AT_START" = "0" ] && [ -t 0 ] && [ "$NO_PROMPT" != "1" ]; then
     run_interactive
 fi
 
-# DD-CYN-0046: アイコンの道 (非対話) で「取り寄せる」が押されたときの取得。
+# DD-CYN-0046: アイコンの道 (非対話) で「ダウンロードする」が押されたときの取得。
 #   対話の道は run_interactive 内の _ask_model_if_missing が同じ役を持つ。
 #   画面 (launcher.applescript) が確認を取ってから印を立てるため、ここでは聞かずに取得する。
 if [ "$FETCH_MODEL" = "1" ]; then
@@ -919,10 +919,10 @@ if [ "$FETCH_MODEL" = "1" ]; then
         done
     fi
     if [ -z "$_fm_found" ]; then
-        echo "  → 取り寄せます (数分かかります)。"
+        echo "  → ダウンロードします (数分かかります)。"
         mkdir -p "$MODEL_ROOT"
         if ! _fetch_model; then
-            echo "AIモデルの取り寄せ先に繋がりませんでした。"
+            echo "AIモデルのダウンロード元に繋がりませんでした。"
             echo "インターネットに繋がっているかをご確認ください。"
             echo "繋がっているのに失敗する場合は、同梱の LICENSES-MODELS の一覧にある入手先から手で受け取り、"
             echo "この配布物の store/models の中へ置いてから、もう一度お試しください。"
@@ -967,7 +967,7 @@ if [ "$MODE_CHECK" = "1" ]; then
     mkdir -p "$(dirname "$REPORT_FILE")"
     print_probe_result > "$REPORT_FILE"
     echo ""
-    echo "[--check] 読み取りだけで調べました。何も入れず、入れ物も作らず、何も起動していません。"
+    echo "[--check] 読み取りだけで調べました。何も入れず、コンテナも作らず、何も起動していません。"
     echo "[--check] 結果: $REPORT_FILE"
     echo ""
     cat "$REPORT_FILE"
@@ -991,8 +991,8 @@ if [ "${#BLOCKERS[@]}" -gt 0 ]; then
     exit 1
 fi
 
-# 入れ物を組み立てて起動する。組み立て用のスクリプトはこの入口からだけ呼ぶ。
+# コンテナを組み立てて起動する。組み立て用のスクリプトはこの入口からだけ呼ぶ。
 echo ""
-echo "[起動] 入れ物を組み立てて起動します (ホスト側ポート $HOSTPORT)"
+echo "[起動] コンテナを組み立てて起動します (ホスト側ポート $HOSTPORT)"
 print_next_steps launch
 exec bash "$CONTAINER_PART" --from-entry --hostport "$HOSTPORT" ${PART_ARGS[@]+"${PART_ARGS[@]}"}

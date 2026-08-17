@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""build_bundled_data.py — 配布物に同梱する索引とデータベースを「梱包の場で」作る。
+"""build_bundled_data.py — 配布物に同梱するインデックスとデータベースを「パッケージングの場で」作る。
 
 bundled-data-20260731 (DD-CYN-0007 B0):
   従来の tools/build-dist.sh は、同梱する store/db/demo.db と store/vector を
   **開発機の作業ツリーからそのまま複製**していた。作業ツリーの中身は開発の過程で
   溜まったもの (旧世代の資料・撤去したはずの作業場所・開発機の利用者名) を含むため、
-  配布物の中身の出どころを言えなかった。実測では梱包直前の検査が実際に停止していた。
+  配布物の中身の入手元を言えなかった。実測ではパッケージング直前の検査が実際に停止していた。
 
   本スクリプトは、配布物の中に同梱されるダミー資料 (dummy-corpus/) だけを入力にして、
-  ステージの中で索引とデータベースを作る。よって同梱データの出どころは
+  ステージの中でインデックスとデータベースを作る。よって同梱データの入手元は
   「この配布物の中の dummy-corpus」だけになる。作業ツリーは読まない。
 
 使い方 (tools/build-dist.sh から呼ばれる):
@@ -19,13 +19,13 @@ bundled-data-20260731 (DD-CYN-0007 B0):
   - <ステージのツリー>/store/secret.key に金庫鍵が置かれていること
     (この鍵で暗号化するので、同梱する鍵と中身が必ず噛み合う)
   - <ステージのツリー>/store/models に埋め込みモデルが在ること
-    (軽量版では同梱しないので、呼び出し側が梱包中だけ読み取り専用で繋ぎ、
+    (軽量版では同梱しないので、呼び出し側がパッケージング中だけ読み取り専用で繋ぎ、
      作り終えたら外す)
 
 決まった値 (乱数にしない):
   取り込み元 / 作業場所 / コレクションの id は固定文字列にする。db.py の初期化処理が
   デモ起動のたびに INSERT OR IGNORE する取り込み元と同じ id ('src-dummy') にしてある
-  ため、受け取り手の環境で同じ置き場が二重に登録されない。
+  ため、受け取り手の環境で同じ保存先が二重に登録されない。
 
 出力: 標準出力へ「作った中身の数え上げ」を1行の JSON で書く。
       呼び出し側はこれを一覧文書の件数に使う。
@@ -62,15 +62,15 @@ def main() -> int:
         print(f"[bundled] 埋め込みモデルが見つかりません: {store}/models", file=sys.stderr)
         return 1
 
-    # 置き場をステージの中へ固定する。
+    # 保存先をステージの中へ固定する。
     # DD-CYN-0069 M-2: 「server.py は setdefault で置くので、先に置けば勝つ」は
     #   DD-CYN-0053 以後の現行と食い違う。server.py は import 時に cynovela.yaml の
-    #   paths と sys.argv の --demo の有無から置き場を決め、下の環境変数を無条件に
-    #   入れ直す (server.py の DD-CYN-0053 注記)。--demo が立っていないと索引が
+    #   paths と sys.argv の --demo の有無から保存先を決め、下の環境変数を無条件に
+    #   入れ直す (server.py の DD-CYN-0053 注記)。--demo が立っていないとインデックスが
     #   store/vector/default (引数なし側) へ作られ、同梱データ (store/db/demo.db =
     #   --demo 側) と別の側に落ちる。DD-CYN-0068 の受け入れで、受け取り手の --demo
-    #   起動が空の索引を読み、出典つきの回答が返らないことが実測されている。
-    #   ∴ server を読む前に sys.argv へ --demo を立て、索引をデモ側
+    #   起動が空のインデックスを読み、出典つきの回答が返らないことが実測されている。
+    #   ∴ server を読む前に sys.argv へ --demo を立て、インデックスをデモ側
     #   (store/vector/demo) へ作らせる。第1引数 (ステージ) は既に読み終えている。
     #   下の環境変数は server import までの db.py 初期化が読むため残す。
     os.environ["CYNOVELA_DATA_DIR"] = store
@@ -90,12 +90,12 @@ def main() -> int:
 
     _db.init_db()
 
-    import server  # noqa: E402  (置き場を決めたあとに読む)
+    import server  # noqa: E402  (保存先を決めたあとに読む)
     from rag import publish_collection  # noqa: E402
 
-    # DD-CYN-0069 M-2 連動: 梱包の埋め込みは、受け取り手と同じローカルの経路で行う。
-    #   開発機の cynovela.yaml が外の口 (external) を指していると、梱包は EF (embedding
-    #   function) を注入せずにコレクションを作り、その設定が索引へ永続化される。
+    # DD-CYN-0069 M-2 連動: パッケージングの埋め込みは、受け取り手と同じローカルの経路で行う。
+    #   開発機の cynovela.yaml が外部の推論サーバ (external) を指していると、パッケージングは EF (embedding
+    #   function) を注入せずにコレクションを作り、その設定がインデックスへ永続化される。
     #   受け取り手の実行時はローカル埋め込みで EF を注入するため、chroma 1.5 系の
     #   整合検査が「persisted: default vs new: sentence_transformer」で例外を出し、
     #   照会は0件に握り潰され、公開のし直しは失敗する (DD-CYN-0069 §7 で実測)。
@@ -105,7 +105,7 @@ def main() -> int:
     from providers.embedding import get_embedding_provider as _gep  # noqa: E402
 
     _rag_mod.set_embedding_provider(_gep({}))
-    print("[bundled] 埋め込みは受け取り手と同じローカルの経路で行う (外の口は使わない)")
+    print("[bundled] 埋め込みは受け取り手と同じローカルの経路で行う (外部の推論サーバは使わない)")
 
     conn = get_db()
     try:
@@ -113,7 +113,7 @@ def main() -> int:
         # 「取り込み元の絶対パス → ./<最後の名前>」の対応表を作り、その対応表を
         # files / file_hashes / document_lineage へ波及させて相対化する。ここを相対で
         # 入れると対応表が空になり、files 系に取り込み時の絶対パスが残る
-        # (実測: 7 ファイル × 3 表 = 21 件が残り、梱包が検査で止まった)。
+        # (実測: 7 ファイル × 3 表 = 21 件が残り、パッケージングが検査で止まった)。
         conn.execute(
             "INSERT OR IGNORE INTO sources (id, name, path, status) VALUES (?, ?, ?, 'idle')",
             (SRC_ID, SRC_NAME, corpus),
