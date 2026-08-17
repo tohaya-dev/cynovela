@@ -1478,7 +1478,7 @@ do_setup() {
 print_first_login() {
     local _db _pw _dir
     _dir="${DATA_DIR:-$SCRIPT_DIR/store}"
-    # entry-fix-20260817: この配布物の引数の入れ物は APP_ARGS である (PART_ARGS は falcon の名前。
+    # entry-fix-20260817: この配布物の引数の配列は APP_ARGS である (PART_ARGS は falcon の名前。
     # 前は存在しない変数を見ていて、--demo の判定が常に外れていた)。
     if printf '%s' "${APP_ARGS[*]:-}$*" | grep -q -- '--demo'; then
         _db="$_dir/db/demo.db"
