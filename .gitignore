@@ -65,3 +65,5 @@ tools/dist-initial-credentials.local
 ._*
 .Spotlight-V100
 .Trashes
+chewie/store/server.pid
+falcon/store/engine-bin/podman
