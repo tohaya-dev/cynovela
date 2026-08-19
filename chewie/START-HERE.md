@@ -110,12 +110,47 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | `Cynovela-add-folder.command` | **Adds a folder to be ingested. Double-click.** |
 | `launch.sh` | **What the three above call internally. Use this one from the terminal.** |
 | `uninstall.sh` | **Removes what this package created.** |
+| `cynovela-cli.py` | **Use it from the terminal. Run `doctor` first — it tells you what is missing.** |
 
 `launcher-core.sh` and `tools/launch-body.sh` are internal parts. You never need to touch them.
 
 ---
 
-### 8. Before you rely on any of it, read these three points
+### 8. Using it from the terminal (CLI), and connecting an AI client (MCP)
+
+**CLI — `cynovela-cli.py`.** It talks only to the running server's API and never changes anything. Standard library only — no extra installs. Run it with the Python this package prepared (package edition: `./.venv-cynovela/bin/python3`; source edition choice 1: `conda run -n cynovela-dist python3`; or any Python 3.12+):
+
+```
+./.venv-cynovela/bin/python3 cynovela-cli.py doctor
+```
+
+**Run `doctor` first.** It works even when the server is not running, and for every missing piece it prints the one line to run next.
+
+| Command | What it does (all read-only) |
+|---|---|
+| `doctor` | What is missing right now: Python version, models, inference server (LM Studio / Ollama), port, database, conda |
+| `status` | Is the server up |
+| `workspaces` / `collections` | Lists |
+| `search --workspace <id> --collection <id> --query "..."` | Returns source fragments only (no answer is shown) |
+| `index-status` | Chunk counts per collection |
+
+Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes: **0** = OK, **1** = bad input, **2** = server unreachable, **3** = authentication failed, **4** = server error. Commands other than `doctor`/`status` need the token issued at web sign-in: pass it with `--token`, or write `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` into `~/.cynovela_cli.env`. (The `./launch.sh` flags themselves are covered in `docs/USE-FROM-TERMINAL.txt` — a different topic.)
+
+**MCP — connecting an AI client.** `mcp_server.py` exposes Cynovela's search and workspace tools to MCP clients (protocol revision 2026-07-28, stdio). Point your client at it like this (the same snippet is served signed-in at `/api/mcp/config`):
+
+```json
+{"mcpServers": {"cynovela": {
+  "command": "/path/to/.venv-cynovela/bin/python3",
+  "args": ["/path/to/mcp_server.py", "--cynovela-url", "http://127.0.0.1:8765"],
+  "env": {"CYNOVELA_TOKEN": "<token issued at web sign-in>"}
+}}}
+```
+
+What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Details: `docs/mcp-guide.md`.
+
+---
+
+### 9. Before you rely on any of it, read these three points
 
 - **This is for learning and experimentation.** It is not built to be a production system, and it comes with no warranty.
 - **Masking is not complete.** Names, phone numbers and the like are masked automatically, but some slip through. Do not load confidential material on the assumption that it will be protected.
@@ -123,7 +158,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 ---
 
-### 9. Open only when you need it
+### 10. Open only when you need it
 
 | File | What it covers (how it differs from the others) |
 |---|---|
@@ -251,12 +286,47 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | `Cynovela-add-folder.command` | **読み込むフォルダを足す。ダブルクリック** |
 | `launch.sh` | **上の3つが内側で呼んでいるもの。ターミナルから使うときはこれ** |
 | `uninstall.sh` | **この配布物が作ったものを消す** |
+| `cynovela-cli.py` | **端末から使う。まず `doctor` を叩けば、足りないものが分かる** |
 
 `launcher-core.sh` と `tools/launch-body.sh` は内側の部品です。触る必要はありません。
 
 ---
 
-### 8. 使う前に、次の3つをお読みください
+### 8. 端末から使う（CLI）と、AI クライアントを繋ぐ（MCP）
+
+**CLI — `cynovela-cli.py`。** 稼働中のサーバの API だけを叩き、何も変更しません。標準ライブラリのみで、追加の導入は不要です。この配布物が用意した Python で叩きます（パッケージ版: `./.venv-cynovela/bin/python3`、ソース版の選択肢1: `conda run -n cynovela-dist python3`、または任意の Python 3.12 以上）:
+
+```
+./.venv-cynovela/bin/python3 cynovela-cli.py doctor
+```
+
+**最初に `doctor` を叩いてください。** サーバが起きていなくても動き、足りないものごとに「次に打つ1行」を出します。
+
+| 命令 | すること（全て読むだけ） |
+|---|---|
+| `doctor` | いま何が足りないか: Python の版・モデル・推論サーバ（LM Studio / Ollama）・番号・データベース・conda |
+| `status` | サーバが起きているか |
+| `workspaces` / `collections` | 一覧 |
+| `search --workspace <id> --collection <id> --query "..."` | 出典の断片だけを返します（回答は表示しません） |
+| `index-status` | コレクションごとの塊の数 |
+
+全命令に `--json`（機械で読める形）と `--lang en|ja` があります。終了コード: **0** = 正常、**1** = 入力の誤り、**2** = サーバへ到達できない、**3** = 認証に失敗、**4** = サーバが誤りを返した。`doctor`・`status` 以外は、画面のログインで発行されたトークンが要ります: `--token` で渡すか、`~/.cynovela_cli.env` に `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` を書いてください。（`./launch.sh` 自体のフラグは別の話で、`docs/USE-FROM-TERMINAL.txt` にあります。）
+
+**MCP — AI クライアントを繋ぐ。** `mcp_server.py` が Cynovela の検索・ワークスペースの道具を MCP クライアントへ出します（プロトコル版 2026-07-28・stdio）。クライアントには次の形で指します（同じスニペットはログイン後の `/api/mcp/config` でも取れます）:
+
+```json
+{"mcpServers": {"cynovela": {
+  "command": "/path/to/.venv-cynovela/bin/python3",
+  "args": ["/path/to/mcp_server.py", "--cynovela-url", "http://127.0.0.1:8765"],
+  "env": {"CYNOVELA_TOKEN": "<画面のログインで発行されたトークン>"}
+}}}
+```
+
+繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。詳細は `docs/mcp-guide.md`。
+
+---
+
+### 9. 使う前に、次の3つをお読みください
 
 - **これは学習と試用のためのものです。** 業務の本番システムとして使うことを想定して作られていません。無保証です。
 - **マスキングは完全ではありません。** 氏名・電話番号などを自動で伏せますが、取りこぼしは起こります。伏せられることを前提に機密資料を入れないでください。
@@ -264,7 +334,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 ---
 
-### 9. 必要になったときに開くもの
+### 10. 必要になったときに開くもの
 
 | ファイル | 何が書いてあるか（他とどう違うか） |
 |---|---|

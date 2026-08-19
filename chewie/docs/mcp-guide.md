@@ -14,6 +14,8 @@
 
 Cynovela can expose its own features to external LLM clients as an MCP server for MCP (Model Context Protocol, the AI tool integration protocol proposed by Anthropic). This document explains the concept of MCP, the MCP tools that Cynovela exposes, and the connection procedure.
 
+The server (`mcp_server.py`) implements protocol revision **2026-07-28** over stdio: it answers `server/discover` (no handshake and no session id is required — `initialize` from older clients is answered too), declares tool inputs and outputs with JSON Schema 2020-12, and returns results as `structuredContent` in addition to plain text. When the target material does not exist it returns JSON-RPC error `-32602`.
+
 ---
 
 ## 1. What MCP is
@@ -111,10 +113,10 @@ Register the following in LM Studio's MCP server configuration. For the actual k
     "cynovela": {
       "command": "/path/to/python",
       "args": [
-        "/Users/<ユーザー名>/Projects/cynovela/cynovela/mcp_server.py"
+        "/path/to/mcp_server.py"
       ],
       "env": {
-        "CYNOVELA_BASE_URL": "http://127.0.0.1:8765",
+        "CYNOVELA_BASE": "http://127.0.0.1:8765",
         "CYNOVELA_TOKEN": "<認証トークン>"
       }
     }
@@ -124,19 +126,17 @@ Register the following in LM Studio's MCP server configuration. For the actual k
 
 ---
 
-## 4. Limitations specific to a conda environment
+## 4. Which Python runs the MCP server
 
-Cynovela is built on the premise that it runs in a conda environment (`cynovela`). When the MCP server calls the main API, the path of the Python executable needs to be given explicitly.
+`mcp_server.py` uses the standard library only — it has no external dependencies, so **any Python 3.12 or later can run it**; no environment needs to be activated. The natural choice is the Python this package prepared (package edition: `.venv-cynovela/bin/python3`; source edition choice 1: the `cynovela-dist` conda environment).
 
 ### 4-1. Specifying the Python path
 
-The environment variable `CYNOVELA_MCP_PYTHON` can specify the absolute path of the Python used to run the MCP script.
+The environment variable `CYNOVELA_MCP_PYTHON` can specify the absolute path of the Python that the `/api/mcp/config` snippet points clients at.
 
 ```bash
-export CYNOVELA_MCP_PYTHON=~/miniforge3/envs/cynovela/bin/python
+export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3
 ```
-
-Without this setting, the conda environment is not activated in the child process started by a client such as LM Studio, and an ImportError of a dependency library may occur.
 
 ---
 
@@ -165,7 +165,7 @@ Operations made through MCP are also recorded in the same audit log (the `audit_
 |---|---|
 | The tools are not found | Whether the Cynovela main body (`server.py`) is already running at `http://127.0.0.1:8765` |
 | Authentication error | The value of the `CYNOVELA_TOKEN` environment variable, and whether the token is still valid |
-| ImportError appears | Whether the Python path of the conda environment is specified with `CYNOVELA_MCP_PYTHON` |
+| ImportError appears | Whether the Python is 3.12 or later (`mcp_server.py` itself has no external dependencies) |
 | The result is empty | Whether the target Collection has reached the `ready` status |
 
 ---
@@ -183,6 +183,8 @@ Operations made through MCP are also recorded in the same audit log (the `audit_
 > 会社・製品の公式見解を一切代表しません。
 
 Cynovela は MCP（Model Context Protocol、Anthropic が提唱する AI ツール連携プロトコル）の MCP サーバーとして自身の機能を外部の LLM クライアントへ公開できます。本ドキュメントでは MCP の概念と Cynovela が公開している MCP ツール、接続手順を説明します。
+
+サーバー（`mcp_server.py`）はプロトコル版 **2026-07-28** を stdio で実装しています: `server/discover` に応え（握手もセッション ID も要求しません — 旧世代クライアントの `initialize` にも応えます）、道具の入出力を JSON Schema 2020-12 で宣言し、結果を平文に加えて `structuredContent` で構造化して返します。対象の資料が無いときは JSON-RPC エラー `-32602` を返します。
 
 ---
 
@@ -281,10 +283,10 @@ LM Studio の MCP サーバー設定に以下を登録します。実際のキ�
     "cynovela": {
       "command": "/path/to/python",
       "args": [
-        "/Users/<ユーザー名>/Projects/cynovela/cynovela/mcp_server.py"
+        "/path/to/mcp_server.py"
       ],
       "env": {
-        "CYNOVELA_BASE_URL": "http://127.0.0.1:8765",
+        "CYNOVELA_BASE": "http://127.0.0.1:8765",
         "CYNOVELA_TOKEN": "<認証トークン>"
       }
     }
@@ -294,19 +296,17 @@ LM Studio の MCP サーバー設定に以下を登録します。実際のキ�
 
 ---
 
-## 4. conda 環境固有の制限
+## 4. MCP サーバーを動かす Python
 
-Cynovela は conda 環境（`cynovela`）で動作する前提で構築されています。MCP サーバーから本体 API を呼び出す際は、Python 実行ファイルパスを明示する必要があります。
+`mcp_server.py` は標準ライブラリのみで動きます — 外部依存が無いため、**Python 3.12 以上ならどれでも動きます**。環境のアクティブ化も要りません。自然な選択は、この配布物が用意した Python です（パッケージ版: `.venv-cynovela/bin/python3`、ソース版の選択肢1: conda 環境 `cynovela-dist`）。
 
 ### 4-1. Python パスの指定
 
-環境変数 `CYNOVELA_MCP_PYTHON` で MCP スクリプト実行用 Python の絶対パスを指定できます。
+環境変数 `CYNOVELA_MCP_PYTHON` で、`/api/mcp/config` のスニペットがクライアントへ示す Python の絶対パスを指定できます。
 
 ```bash
-export CYNOVELA_MCP_PYTHON=~/miniforge3/envs/cynovela/bin/python
+export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3
 ```
-
-この指定がない場合、LM Studio などのクライアントが起動した子プロセスでは conda 環境がアクティブにならず、依存ライブラリの ImportError が発生する可能性があります。
 
 ---
 
@@ -335,7 +335,7 @@ MCP 経由の操作も本体と同じ監査ログ（`audit_logs` テーブル）
 |---|---|
 | ツールが見つからない | Cynovela 本体（`server.py`）が `http://127.0.0.1:8765` で起動済みか |
 | 認証エラー | `CYNOVELA_TOKEN` 環境変数の値、トークンの有効性 |
-| ImportError が出る | `CYNOVELA_MCP_PYTHON` で conda 環境の Python パスを指定済みか |
+| ImportError が出る | Python が 3.12 以上か（`mcp_server.py` 自体に外部依存はありません） |
 | 結果が空 | 対象 Collection が `ready` ステータスに到達済みか |
 
 ---
