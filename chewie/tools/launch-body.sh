@@ -1550,6 +1550,26 @@ start_app() {
     #   部品を入れる pip が実在しない証明書を指したまま走っていた。
 
     cd "$SCRIPT_DIR"
+
+    # DD-CYN-0141 §5-D2: exFAT などの外付けでは、macOS がファイルを作るたびに付属情報
+    # (AppleDouble) を「._名前」の別ファイルへ落とす。モデルを読み込む部品はフォルダ内の
+    # .py を全部文章として読むため、中身が文章でない ._*.py で落ちる。tar の作成側・
+    # 展開側のどの指定でも防げないことを実測済み (FS 層で生える) ため、起動の前にここで
+    # 消す。消す範囲は配布物 (SCRIPT_DIR) の中に限る。内蔵 (APFS) では対象が 0 件で
+    # 何も起きない。--setup は別プロセスで先に終わっているので、pip が生やした分も拾える。
+    # 注意: FSKit exFAT は非 ASCII 名の unlink が失敗することがある (実測)。その 1 件で
+    # 起動を止めない。/usr/bin/find を明示する (find が別物に差し替わる環境を実測済み)。
+    _AD_COUNT="$(/usr/bin/find "$SCRIPT_DIR" -type f -name '._*' 2>/dev/null | /usr/bin/wc -l | tr -d ' ')"
+    if [ "${_AD_COUNT:-0}" -gt 0 ]; then
+        /usr/bin/find "$SCRIPT_DIR" -type f -name '._*' -delete 2>/dev/null || true
+        _AD_LEFT="$(/usr/bin/find "$SCRIPT_DIR" -type f -name '._*' 2>/dev/null | /usr/bin/wc -l | tr -d ' ')"
+        echo " 外付け向けの掃除: 付属情報ファイル (._*) を $((_AD_COUNT - _AD_LEFT)) 件消しました"
+        if [ "${_AD_LEFT:-0}" -gt 0 ]; then
+            echo " 消せなかったもの ($_AD_LEFT 件):"
+            /usr/bin/find "$SCRIPT_DIR" -type f -name '._*' 2>/dev/null | /usr/bin/head -20
+        fi
+    fi
+
     echo ""
     echo "============================================"
     echo " Cynovela を起動します (http://localhost:$PORT)"

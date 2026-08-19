@@ -62,7 +62,7 @@ The implementation is entirely original and contains no source code of the refer
 ### 2-5. External integration
 
 - LM Studio / Ollama / OpenAI-compatible API connection
-- MCP server (11 tools)
+- MCP server (16 tools)
 - LAN sharing and Tailscale sharing
 
 ---
@@ -218,7 +218,7 @@ Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かし�
 ### 2-5. 外部連携
 
 - LM Studio / Ollama / OpenAI 互換 API 接続
-- MCP サーバー（11 ツール）
+- MCP サーバー（16 ツール）
 - LAN 共有・Tailscale 共有
 
 ---

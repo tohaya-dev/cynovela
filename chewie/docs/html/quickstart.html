@@ -258,13 +258,12 @@ a:hover { text-decoration: underline; }
 <span class="slide-title">2. Setting Up the conda Environment</span>
 </div>
 <div class="slide-body">
-<p>Cynovela has been verified on a conda environment. Create the environment with the following procedure.</p>
-<pre><code># conda 環境を作成（任意の名前。例: cynovela）
-conda create -n cynovela python=3.11 -y
-conda activate cynovela
+<p>The recommended way is <code>./launch.sh</code> — on the first run it builds the environment in a dedicated place, and no shared conda environment is created or modified. Only if you cannot use <code>launch.sh</code> and must build it by hand, use the <strong>dedicated name <code>cynovela-dist</code></strong>. Do not create or modify a shared environment:</p>
+<pre><code># Create a dedicated environment for this package (do NOT use a shared name)
+conda create -n cynovela-dist python=3.12 -y
 
-# 依存ライブラリをインストール
-pip install -r requirements.txt</code></pre>
+# Install the dependencies
+conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre>
 <blockquote><strong>Note</strong>: The required libraries are listed in<code>requirements.txt</code>. They include FastAPI, SQLite, ChromaDB, cryptography (Fernet encryption), huggingface_hub (model download), and others.</blockquote>
 </div>
 <div class="slide-footer">
@@ -547,13 +546,12 @@ pip install -r requirements.txt</code></pre>
 <span class="slide-title">2. conda 環境のセットアップ</span>
 </div>
 <div class="slide-body">
-<p>Cynovela は conda 環境上で動作確認しています。以下の手順で環境を作成してください。</p>
-<pre><code># conda 環境を作成（任意の名前。例: cynovela）
-conda create -n cynovela python=3.11 -y
-conda activate cynovela
+<p>推奨は <code>./launch.sh</code> です — 初回に専用の場所へ環境を作り、共有の conda 環境は作りません・書き換えません。<code>launch.sh</code> を使えず手で作るときのみ、<strong>配布物専用の名前 <code>cynovela-dist</code></strong> を使ってください。共有の環境は作らない・書き換えないでください:</p>
+<pre><code># 名前は配布物専用の cynovela-dist（共有の名前を使わない）
+conda create -n cynovela-dist python=3.12 -y
 
 # 依存ライブラリをインストール
-pip install -r requirements.txt</code></pre>
+conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre>
 <blockquote><strong>補足</strong>: 必要なライブラリは<code>requirements.txt</code> に列挙されています。FastAPI、SQLite、ChromaDB、cryptography（Fernet 暗号化）、huggingface_hub（モデルダウンロード）などが含まれます。</blockquote>
 </div>
 <div class="slide-footer">

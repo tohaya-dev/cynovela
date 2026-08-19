@@ -118,7 +118,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 ### 8. Using it from the terminal (CLI), and connecting an AI client (MCP)
 
-**CLI — `cynovela-cli.py`.** It talks only to the running server's API and never changes anything. Standard library only — no extra installs. Run it with the Python this package prepared (package edition: `./.venv-cynovela/bin/python3`; source edition choice 1: `conda run -n cynovela-dist python3`; or any Python 3.12+):
+**CLI — `cynovela-cli.py`.** It talks only to the running server's API. Every command is read-only except `settings set`, which shows the change first and never runs without an explicit `--yes`. Standard library only — no extra installs. Run it with the Python this package prepared (package edition: `./.venv-cynovela/bin/python3`; source edition choice 1: `conda run -n cynovela-dist python3`; or any Python 3.12+):
 
 ```
 ./.venv-cynovela/bin/python3 cynovela-cli.py doctor
@@ -126,13 +126,16 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 **Run `doctor` first.** It works even when the server is not running, and for every missing piece it prints the one line to run next.
 
-| Command | What it does (all read-only) |
+| Command | What it does |
 |---|---|
-| `doctor` | What is missing right now: Python version, models, inference server (LM Studio / Ollama), port, database, conda |
+| `doctor` | What is missing right now: Python version, models, inference server (LM Studio / Ollama), **whether the configured model is actually loaded**, port, database, conda |
 | `status` | Is the server up |
 | `workspaces` / `collections` | Lists |
 | `search --workspace <id> --collection <id> --query "..."` | Returns source fragments only (no answer is shown) |
 | `index-status` | Chunk counts per collection |
+| `settings show [name]` | Current settings. `name` is one of `llm` (default), `reranker`, `classifier`, `embedding`, `pii`, `vector-store`, `datasync`. API keys are shown only as set / not set, never as values (admin token) |
+| `settings models` / `settings test` / `settings providers` | Models at the endpoint / test the LLM connection / selectable presets (admin token) |
+| `settings set [name] --set KEY=VALUE` | **The only command that changes server state.** Shows before → after, then does nothing unless `--yes` is added; `--dry-run` previews only (admin token) |
 
 Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes: **0** = OK, **1** = bad input, **2** = server unreachable, **3** = authentication failed, **4** = server error. Commands other than `doctor`/`status` need the token issued at web sign-in: pass it with `--token`, or write `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` into `~/.cynovela_cli.env`. (The `./launch.sh` flags themselves are covered in `docs/USE-FROM-TERMINAL.txt` — a different topic.)
 
@@ -146,7 +149,7 @@ Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes
 }}}
 ```
 
-What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Details: `docs/mcp-guide.md`.
+What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two things people trip over: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token expires after 8 hours. The full walkthrough, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/mcp-guide.md`.
 
 ---
 
@@ -294,7 +297,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 ### 8. 端末から使う（CLI）と、AI クライアントを繋ぐ（MCP）
 
-**CLI — `cynovela-cli.py`。** 稼働中のサーバの API だけを叩き、何も変更しません。標準ライブラリのみで、追加の導入は不要です。この配布物が用意した Python で叩きます（パッケージ版: `./.venv-cynovela/bin/python3`、ソース版の選択肢1: `conda run -n cynovela-dist python3`、または任意の Python 3.12 以上）:
+**CLI — `cynovela-cli.py`。** 稼働中のサーバの API だけを叩きます。命令は `settings set` を除いて全て読むだけで、`settings set` も変更内容を先に見せ、明示的な `--yes` なしには決して実行しません。標準ライブラリのみで、追加の導入は不要です。この配布物が用意した Python で叩きます（パッケージ版: `./.venv-cynovela/bin/python3`、ソース版の選択肢1: `conda run -n cynovela-dist python3`、または任意の Python 3.12 以上）:
 
 ```
 ./.venv-cynovela/bin/python3 cynovela-cli.py doctor
@@ -302,13 +305,16 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 **最初に `doctor` を叩いてください。** サーバが起きていなくても動き、足りないものごとに「次に打つ1行」を出します。
 
-| 命令 | すること（全て読むだけ） |
+| 命令 | すること |
 |---|---|
-| `doctor` | いま何が足りないか: Python の版・モデル・推論サーバ（LM Studio / Ollama）・番号・データベース・conda |
+| `doctor` | いま何が足りないか: Python の版・モデル・推論サーバ（LM Studio / Ollama）・**設定されたモデルが実際に読み込まれているか**・番号・データベース・conda |
 | `status` | サーバが起きているか |
 | `workspaces` / `collections` | 一覧 |
 | `search --workspace <id> --collection <id> --query "..."` | 出典の断片だけを返します（回答は表示しません） |
 | `index-status` | コレクションごとの塊の数 |
+| `settings show [対象]` | いまの設定。対象は `llm`（既定）/ `reranker` / `classifier` / `embedding` / `pii` / `vector-store` / `datasync`。API キーは設定あり / なし だけを示し、値は出しません（管理者トークン） |
+| `settings models` / `settings test` / `settings providers` | 接続先のモデル一覧 / LLM 接続の確認 / 選べるプリセット（管理者トークン） |
+| `settings set [対象] --set KEY=VALUE` | **サーバの状態を変える唯一の命令。** 変更前 → 変更後を見せてから、`--yes` を足さない限り何もしません。`--dry-run` は確認だけ（管理者トークン） |
 
 全命令に `--json`（機械で読める形）と `--lang en|ja` があります。終了コード: **0** = 正常、**1** = 入力の誤り、**2** = サーバへ到達できない、**3** = 認証に失敗、**4** = サーバが誤りを返した。`doctor`・`status` 以外は、画面のログインで発行されたトークンが要ります: `--token` で渡すか、`~/.cynovela_cli.env` に `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` を書いてください。（`./launch.sh` 自体のフラグは別の話で、`docs/USE-FROM-TERMINAL.txt` にあります。）
 
@@ -322,7 +328,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 }}}
 ```
 
-繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。詳細は `docs/mcp-guide.md`。
+繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。つまずきやすい点が2つあります: LM Studio で書くファイルは `mcp.json` です（**Program** パネル → **Install** → **Edit mcp.json** から開けます）。そして登録した後も、**LM Studio は道具の呼び出しごとに画面で許可を求めます** — 許可を出すまで道具は一度も動きません。トークンは 8 時間で切れます。手順の全体・設定系の道具・書き込みの守り（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）は `docs/mcp-guide.md` にあります。
 
 ---
 

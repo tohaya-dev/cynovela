@@ -37,7 +37,7 @@ python server.py --mode text --demo   # demo
 
 ### First time only: a screen for choosing whether to download the AI model appears
 
-In forms that do not bundle the model (the lightweight package, or using this repository as it is), the AI model
+In forms that do not bundle the model (the model-separate edition, or using this repository as it is), the AI model
 for reading documents (the embedding model bge-m3) is not yet present the first time. Only when it is missing,
 the following three choices appear in the middle of startup.
 
@@ -240,7 +240,7 @@ python server.py --mode text --demo   # デモ
 
 ### 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます
 
-モデルを同梱しない形（軽量版や、このリポジトリをそのまま使う形）では、資料を読み取る
+モデルを同梱しない形（モデル別取得版や、このリポジトリをそのまま使う形）では、資料を読み取る
 ための AI モデル（埋め込みモデル bge-m3）が初回はまだ入っていません。無いときだけ、
 起動の途中で次の三択が出ます。
 

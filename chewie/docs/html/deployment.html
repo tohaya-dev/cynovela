@@ -260,8 +260,9 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
 <h3>Creating the environment</h3>
-<pre><code>conda create -n cynovela python=3.11 -y
-conda activate cynovela</code></pre>
+<p>The recommended way is <code>./launch.sh</code> — the shared conda environment is never created and never modified. Only if you cannot use it, build by hand with the dedicated name <code>cynovela-dist</code>:</p>
+<pre><code>conda create -n cynovela-dist python=3.12 -y
+conda activate cynovela-dist</code></pre>
 <h3>Installing the dependencies</h3>
 <pre><code>pip install -r requirements.txt</code></pre>
 <h4>Main dependencies</h4>
@@ -691,8 +692,9 @@ Uvicorn で FastAPI 起動</code></pre>
 </div>
 <div class="slide-body">
 <h3>環境作成</h3>
-<pre><code>conda create -n cynovela python=3.11 -y
-conda activate cynovela</code></pre>
+<p>推奨は <code>./launch.sh</code> です — 共有の conda 環境は作りません・書き換えません。使えないときのみ、配布物専用の名前 <code>cynovela-dist</code> で手作りします:</p>
+<pre><code>conda create -n cynovela-dist python=3.12 -y
+conda activate cynovela-dist</code></pre>
 <h3>依存ライブラリのインストール</h3>
 <pre><code>pip install -r requirements.txt</code></pre>
 <h4>主要な依存</h4>
