@@ -40,7 +40,8 @@ SERVER_INFO = {"name": "cynovela-mcp", "version": "3.0"}
 JSON_SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 
 # ─────────────────────────────────────────
-# ツール定義 (11本。全て実在する REST の口だけを叩く — DD-CYN-0140 §4 Agent D 実測)
+# ツール定義 (16本。全て実在する REST の口だけを叩く — DD-CYN-0140 §4 Agent D 実測、
+#             設定系5本は DD-CYN-0141 §5-C)
 #   search_collection / search_across_collections / rag_with_role / rag_general
 #     → POST /api/chat
 #   list_workspaces → GET /api/workspaces + GET /api/collections
@@ -50,6 +51,11 @@ JSON_SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 #   list_sources → GET /api/sources?workspace_id=
 #   publish_collection → POST /api/collections/{id}/publish
 #   create_workspace → POST /api/workspaces
+#   settings_show → GET /api/settings/{llm|reranker|classifier|embedding|pii-mode|vector-store|datasync}
+#   settings_models → GET /api/settings/models
+#   settings_test → POST /api/settings/test-connection
+#   settings_set → POST (pii のみ PUT) 同上の各口 (既定で閉・CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1 で開)
+#   settings_providers → GET /api/llm/presets
 # ─────────────────────────────────────────
 TOOLS = [
     {
@@ -395,6 +401,125 @@ TOOLS = [
             "required": ["ok"],
         },
     },
+    # ─── 設定系 (DD-CYN-0141 §5-C。管理者トークンが必要。API キーの値は入力にだけ現れ、
+    #     応答には *_set の bool しか出さない) ───
+    {
+        "name": "settings_show",
+        "description": "サーバの設定を見ます (管理者のみ)。name で対象を選びます (既定: llm)。APIキーの値は返さず、設定あり/なし (api_key_set) だけを返します。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "対象 (既定: llm)",
+                    "enum": ["llm", "reranker", "classifier", "embedding", "pii", "vector-store", "datasync"],
+                },
+            },
+            "required": [],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "settings": {"type": "object"},
+            },
+            "required": ["name", "settings"],
+        },
+    },
+    {
+        "name": "settings_models",
+        "description": "接続先の推論サーバにあるモデルの一覧を出します (管理者のみ)。注意: ダウンロード済み全件であり、読み込み済みを意味しません。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "models": {"type": "array", "items": {"type": "string"}},
+                "count": {"type": "integer"},
+            },
+            "required": ["models", "count"],
+        },
+    },
+    {
+        "name": "settings_test",
+        "description": "LLM への接続を確かめ、通ったか通らなかったかを言葉で返します (管理者のみ)。引数を渡すと保存済み設定の代わりにその値で試します。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "provider": {"type": "string", "description": "試すプロバイダー (任意)"},
+                "base_url": {"type": "string", "description": "試す接続先 (任意)"},
+                "model": {"type": "string", "description": "試すモデル (任意)"},
+            },
+            "required": [],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "connected": {"type": "boolean"},
+                "status": {"type": "string"},
+                "endpoint": {"type": ["string", "null"]},
+                "models": {"type": ["integer", "null"]},
+                "error": {"type": ["string", "null"]},
+            },
+            "required": ["connected", "status"],
+        },
+    },
+    {
+        "name": "settings_set",
+        "description": "サーバの設定を変えます (管理者のみ)。この道具は既定で閉じており、MCP サーバの環境変数 CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1 を設定したときだけ実行できます。name で対象を選び (既定: llm)、values に変える項目だけを入れます。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "対象 (既定: llm)",
+                    "enum": ["llm", "reranker", "classifier", "embedding", "pii", "vector-store", "datasync"],
+                },
+                "values": {"type": "object", "description": "変える項目と値 (例: {\"model\": \"...\"})"},
+            },
+            "required": ["values"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "name": {"type": "string"},
+                "applied": {"type": "boolean"},
+                "after": {"type": "object"},
+            },
+            "required": ["ok", "name", "applied"],
+        },
+    },
+    {
+        "name": "settings_providers",
+        "description": "選べる LLM プロバイダーのプリセット一覧を出します (管理者のみ)。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "providers": {"type": "array", "items": {"type": "object"}},
+                "count": {"type": "integer"},
+            },
+            "required": ["providers", "count"],
+        },
+    },
 ]
 
 
@@ -703,6 +828,107 @@ def _tool_create_workspace(a):
     return structured, f"ワークスペース作成: {structured['name']} ({structured['id']})"
 
 
+# ─── 設定系の実装 (DD-CYN-0141 §5-C) ───
+# 各対象の 読む口 / 書く口。pii だけ書き込みが PUT (routers/settings.py の実装どおり)。
+_SETTINGS_KINDS = {
+    "llm": ("GET", "/api/settings/llm", "POST", "/api/settings/llm"),
+    "reranker": ("GET", "/api/settings/reranker", "POST", "/api/settings/reranker"),
+    "classifier": ("GET", "/api/settings/classifier", "POST", "/api/settings/classifier"),
+    "embedding": ("GET", "/api/settings/embedding", "POST", "/api/settings/embedding"),
+    "pii": ("GET", "/api/settings/pii-mode", "PUT", "/api/settings/pii-mode"),
+    "vector-store": ("GET", "/api/settings/vector-store", "POST", "/api/settings/vector-store"),
+    "datasync": ("GET", "/api/settings/datasync", "POST", "/api/settings/datasync"),
+}
+_SECRET_ARG_KEYS = ("api_key", "qdrant_api_key")
+
+
+def _strip_secrets(d) -> dict:
+    """応答へ秘密の値を出さない (§5-C)。サーバの GET は *_set の bool しか返さないが、
+    こちら側でも secret 名のキーは落とす (二重の守り)。"""
+    if not isinstance(d, dict):
+        return {}
+    return {k: v for k, v in d.items() if k not in _SECRET_ARG_KEYS}
+
+
+def _tool_settings_show(a):
+    name = a.get("name") or "llm"
+    g_m, g_p, _sm, _sp = _SETTINGS_KINDS[name]
+    _st, d = _api(g_m, g_p, timeout=30)
+    structured = {"name": name, "settings": _strip_secrets(d)}
+    return structured, f"設定 {name}: " + json.dumps(structured["settings"], ensure_ascii=False)
+
+
+def _tool_settings_models(a):
+    _st, d = _api("GET", "/api/settings/models", timeout=30)
+    raw = d.get("data") if isinstance(d, dict) else d
+    if not isinstance(raw, list):
+        raise ToolFailure(f"モデル一覧の形が想定外です ({type(raw).__name__})")
+    models = [
+        str(m.get("id") or m.get("name") or "?") if isinstance(m, dict) else str(m)
+        for m in raw
+    ]
+    structured = {"models": models, "count": len(models)}
+    return structured, f"モデル {len(models)}件 (ダウンロード済み全件・読み込み済みの意味ではない)"
+
+
+def _tool_settings_test(a):
+    body = {k: a[k] for k in ("provider", "base_url", "model") if a.get(k)}
+    # 接続の確認は冷えた推論サーバに届くことがあるため長めに待つ
+    _st, d = _api("POST", "/api/settings/test-connection", body=body, timeout=120)
+    d = d if isinstance(d, dict) else {}
+    status = str(d.get("status") or "unknown")
+    structured = {
+        "connected": status == "connected",
+        "status": status,
+        "endpoint": d.get("endpoint"),
+        "models": d.get("models"),
+        "error": d.get("error"),
+    }
+    word = "接続できました" if structured["connected"] else f"接続できませんでした: {d.get('error') or status}"
+    return structured, f"{word} ({structured['endpoint']})"
+
+
+def _tool_settings_set(a):
+    # DD-CYN-0141 §5-B: 設定を変える道具は既定で閉じる。MCP を呼ぶのは直前に読んだ資料の
+    # 中身に引きずられうる AI であり、資料内の「設定を書き換えろ」を指示と受け取る経路が
+    # 原理的に存在する。∴ 明示的に開けたときだけ通す。資格の検査 (サーバ側 admin 必須) の
+    # 代わりではなく、その手前に重ねる薄い守り。読む道具には付けない。
+    if os.environ.get("CYNOVELA_MCP_ALLOW_SETTINGS_WRITE", "").strip() != "1":
+        raise ToolFailure(
+            "設定の書き込みは既定で閉じています。MCP サーバの起動設定 (mcpServers の env) に "
+            "CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1 を書いたときだけ実行できます。"
+            "見る道具 (settings_show など) はこの守りの対象外です。"
+        )
+    name = a.get("name") or "llm"
+    g_m, g_p, s_m, s_p = _SETTINGS_KINDS[name]
+    values = a.get("values")
+    if not isinstance(values, dict) or not values:
+        raise ToolFailure("values にはキーと値を 1 つ以上入れてください (例: {\"model\": \"...\"})")
+    _st, _resp = _api(s_m, s_p, body=values, timeout=60)
+    _st2, after = _api(g_m, g_p, timeout=30)
+    structured = {"ok": True, "name": name, "applied": True, "after": _strip_secrets(after)}
+    return structured, f"設定 {name} を変更しました: " + json.dumps(structured["after"], ensure_ascii=False)
+
+
+def _tool_settings_providers(a):
+    _st, d = _api("GET", "/api/llm/presets", timeout=30)
+    d = d if isinstance(d, dict) else {}
+    rows = []
+    for group in ("presets", "custom"):
+        for p in d.get(group) or []:
+            if isinstance(p, dict):
+                rows.append({
+                    "id": p.get("id"),
+                    "label": p.get("label"),
+                    "provider": p.get("provider"),
+                    "base_url": p.get("base_url"),
+                    "model": p.get("model"),
+                    "group": group,
+                })
+    structured = {"providers": rows, "count": len(rows)}
+    return structured, f"プリセット {len(rows)}件"
+
+
 _TOOL_IMPL = {
     "search_collection": _tool_search_collection,
     "search_across_collections": _tool_search_across_collections,
@@ -715,6 +941,11 @@ _TOOL_IMPL = {
     "list_sources": _tool_list_sources,
     "publish_collection": _tool_publish_collection,
     "create_workspace": _tool_create_workspace,
+    "settings_show": _tool_settings_show,
+    "settings_models": _tool_settings_models,
+    "settings_test": _tool_settings_test,
+    "settings_set": _tool_settings_set,
+    "settings_providers": _tool_settings_providers,
 }
 
 _TOOL_DEFS = {t["name"]: t for t in TOOLS}
@@ -738,6 +969,11 @@ def _validate_input(tool_def: dict, arguments: dict) -> str:
             return f"引数 {key} は integer である必要があります"
         if t == "array" and not isinstance(val, list):
             return f"引数 {key} は array である必要があります"
+        if t == "object" and not isinstance(val, dict):
+            return f"引数 {key} は object である必要があります"
+        enum_vals = p.get("enum")
+        if enum_vals and val not in enum_vals:
+            return f"引数 {key} は {enum_vals} のいずれかである必要があります"
     return ""
 
 

@@ -110,8 +110,53 @@ class LMStudioAdapter:
         except Exception:
             return []
 
+    async def _loaded_model_ids(self) -> list[str]:
+        """実際に読み込まれているモデル id の一覧 (DD-CYN-0141 §5-D)。
+
+        /v1/models は「ダウンロード済み全件」で読み込み状態を持たない (実測 32件中
+        読み込み済み 1件)。読み込み状態 (state) は LM Studio の /api/v0/models にしか
+        無い。口が無い・形が違う接続先では空を返し、呼び出し側は従来の判定に戻る。
+        """
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                r = await client.get(f"{self.base_url}/api/v0/models")
+                r.raise_for_status()
+                items = (r.json() or {}).get("data", []) or []
+                return [
+                    (m.get("id") or "")
+                    for m in items
+                    if isinstance(m, dict) and m.get("state") == "loaded" and m.get("id")
+                ]
+        except Exception:
+            return []
+
+    async def model_load_state(self, model_id: str) -> str:
+        """指定モデルの読み込み状態: 'loaded' / 'not-loaded' / 'unknown' (§5-D)。"""
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                r = await client.get(f"{self.base_url}/api/v0/models")
+                r.raise_for_status()
+                for m in (r.json() or {}).get("data", []) or []:
+                    if isinstance(m, dict) and (m.get("id") or "") == model_id:
+                        return "loaded" if m.get("state") == "loaded" else "not-loaded"
+        except Exception:
+            pass
+        return "unknown"
+
     async def has_loaded_model(self) -> tuple[bool, str]:
-        """(ロード済みか, チャット可能な先頭モデルID) を返す。"""
+        """(ロード済みか, チャット可能な先頭モデルID) を返す。
+
+        DD-CYN-0141 §5-D: モデル未指定 (auto) の解決は、実際に読み込まれている
+        モデルを最優先する。従来は /v1/models の先頭 (＝単にダウンロード済みの先頭)
+        を選んでおり、未読込モデル宛の要求が JIT ロードの時間を沈黙のまま
+        タイムアウト枠の中で払っていた。
+        """
+        loaded = [
+            mid for mid in await self._loaded_model_ids()
+            if not any(h in mid.lower() for h in _NON_CHAT_MODEL_HINTS)
+        ]
+        if loaded:
+            return True, loaded[0]
         models = await self.list_models()
         if models:
             return True, _pick_chat_model(models)

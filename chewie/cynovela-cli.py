@@ -5,7 +5,7 @@ DD-CYN-0140 §5-J. Standard library only. Talks only to the REST API — it neve
 reads the database, store/, or the configuration behind the server's back
 (doctor inspects local files read-only, and changes nothing).
 
-Commands (all read-only; nothing here changes server state):
+Commands (read-only except `settings set`, which never runs without an explicit --yes):
   doctor        What is missing right now, and the one line to run next.
                 Works even when the server is not running.
   status        Is the server up? (GET /api/health)
@@ -13,6 +13,14 @@ Commands (all read-only; nothing here changes server state):
   workspaces    List workspaces.
   collections   List collections (optionally per workspace).
   index-status  Chunk counts per collection.
+  settings      Show or change server settings (admin token required; DD-CYN-0141 §5-A):
+                  settings show [llm|reranker|classifier|embedding|pii|vector-store|datasync]
+                  settings models       models visible at the configured endpoint
+                  settings test         test the LLM connection (words, not codes)
+                  settings providers    selectable provider presets
+                  settings set [name] --set KEY=VALUE ...  (--dry-run to preview;
+                                        nothing is written unless --yes is given)
+                API keys are write-only: `settings show` prints set / not set, never values.
 
 Exit codes:  0 = OK   1 = bad user input   2 = server unreachable
              3 = authentication failed    4 = server returned an error
@@ -77,6 +85,22 @@ MSG = {
     "index_note": {
         "en": "Note: there is no dedicated index endpoint; these figures are the chunk_count values from GET /api/collections.",
         "ja": "注意: 索引専用の口は無いため、この数字は GET /api/collections の chunk_count です。",
+    },
+    "settings_need_yes": {
+        "en": "Not applied. Re-run the same line with --yes to apply the change shown above.",
+        "ja": "まだ変更していません。上に並べた変更を実行するには、同じ行に --yes を付けて打ち直してください。",
+    },
+    "settings_dry_run": {
+        "en": "Dry run: nothing was changed.",
+        "ja": "確認だけの実行です: 何も変更していません。",
+    },
+    "settings_secret_note": {
+        "en": "API keys are write-only here: shown as set / not set, never as values.",
+        "ja": "APIキーは書き込み専用です: 値は表示せず、設定あり / なし だけを示します。",
+    },
+    "settings_bad_pair": {
+        "en": "--set expects KEY=VALUE. Allowed keys for '{name}': {keys}",
+        "ja": "--set は KEY=VALUE の形で指定してください。'{name}' で使える KEY: {keys}",
     },
 }
 
@@ -257,6 +281,55 @@ def cmd_doctor(ctx: Ctx, _args) -> int:
         "Neither LM Studio nor Ollama answered. Start LM Studio and load a model, or `ollama serve`. Questions cannot be answered without one.",
         "LM Studio も Ollama も応答しません。LM Studio を起動してモデルを読み込むか、`ollama serve` を実行してください。どちらも居ないと質問に答えられません。")
 
+    # 3b) 設定されたモデルが実際に読み込まれているか (DD-CYN-0141 §5-D)。
+    #    /v1/models はダウンロード済み全件で読み込み状態を持たない。読み込み状態は
+    #    LM Studio の /api/v0/models にしか無い。口が無い接続先では判定できない旨を出す。
+    #    質問がタイムアウトになるとき、サーバの回答文と同じ言葉をここで事前に言う。
+    def _fetch_json(url: str):
+        try:
+            req = urllib.request.Request(url, headers={"Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=3) as r:
+                return json.loads(r.read())
+        except Exception:
+            return None
+
+    if lm_up:
+        v0 = _fetch_json(f"{llm_base.rstrip('/')}/api/v0/models")
+        if v0 is None:
+            add("Loaded model", "読み込み済みモデル", True,
+                ("cannot judge: this endpoint has no /api/v0/models (load state is only visible on LM Studio)"
+                 if not ja else
+                 "判定できません: この接続先に /api/v0/models がありません（読み込み状態は LM Studio でのみ見えます）"))
+        else:
+            items = v0.get("data") or []
+            loaded = [m.get("id") for m in items
+                      if isinstance(m, dict) and m.get("state") == "loaded" and m.get("id")
+                      and not any(h in str(m.get("id")).lower() for h in ("embed", "embedding", "rerank", "reranker"))]
+            cfg_model = ""
+            if ctx.token:
+                st_llm, d_llm = _request(ctx, "GET", "/api/settings/llm", timeout=5)
+                if st_llm == 200 and isinstance(d_llm, dict):
+                    cfg_model = str(d_llm.get("model") or "")
+            if cfg_model and cfg_model not in ("auto",):
+                ok_loaded = cfg_model in loaded
+                add("Loaded model", "読み込み済みモデル", ok_loaded,
+                    (f"configured model: {cfg_model} — {'loaded' if ok_loaded else 'NOT loaded'} (loaded now: {len(loaded)})"
+                     if not ja else
+                     f"設定されたモデル: {cfg_model} — {'読み込み済み' if ok_loaded else '未読込'}（現在読み込み済み {len(loaded)}件）"),
+                    f"The configured model '{cfg_model}' is not loaded on the inference server yet. "
+                    "Next step: load it in LM Studio, or pick an already-loaded model in the settings "
+                    "(the web Settings screen / cynovela-cli settings set llm / MCP settings_set).",
+                    f"設定されたモデル『{cfg_model}』は推論サーバにまだ読み込まれていません。"
+                    "次の一手: LM Studio でこのモデルを読み込むか、設定（画面の Settings / "
+                    "cynovela-cli settings set llm / MCP settings_set）で読み込み済みのモデルを選んでください。")
+            else:
+                add("Loaded model", "読み込み済みモデル", bool(loaded),
+                    (f"{len(loaded)} chat-capable model(s) loaded" + ("" if ctx.token else " (pass --token to also check the configured model)")
+                     if not ja else
+                     f"チャットに使えるモデル {len(loaded)}件が読み込み済み" + ("" if ctx.token else "（--token を渡すと設定モデルとの照合もします）")),
+                    "No model is loaded on the inference server. Load one in LM Studio; questions will time out until then.",
+                    "推論サーバに読み込み済みのモデルがありません。LM Studio でモデルを読み込んでください。それまで質問はタイムアウトになります。")
+
     # 4) port
     try:
         port = int(_yaml_scalar(yaml_text, "server", "port") or "8765")
@@ -398,6 +471,205 @@ def cmd_index_status(ctx: Ctx, args) -> int:
                                      "note": _m("index_note", ctx.lang)}, lines)
 
 
+# ─── settings (DD-CYN-0141 §5-A; REST only, admin token required) ─
+# 各対象の 読む口 / 書く口 / 書ける KEY。pii だけ書き込みが PUT である
+# (routers/settings.py の実装どおり)。KEY の型は送る前の変換にだけ使う。
+SETTINGS_KINDS = {
+    "llm": {"get": ("GET", "/api/settings/llm"), "set": ("POST", "/api/settings/llm"),
+            "keys": {"provider": str, "base_url": str, "model": str, "api_key": str}},
+    "reranker": {"get": ("GET", "/api/settings/reranker"), "set": ("POST", "/api/settings/reranker"),
+                 "keys": {"provider": str, "model": str, "base_url": str, "device": str,
+                          "api_key": str, "top_n": int}},
+    "classifier": {"get": ("GET", "/api/settings/classifier"), "set": ("POST", "/api/settings/classifier"),
+                   "keys": {"provider": str, "api_url": str, "api_key": str}},
+    "embedding": {"get": ("GET", "/api/settings/embedding"), "set": ("POST", "/api/settings/embedding"),
+                  "keys": {"provider": str, "model": str, "base_url": str, "api_key": str}},
+    "pii": {"get": ("GET", "/api/settings/pii-mode"), "set": ("PUT", "/api/settings/pii-mode"),
+            "keys": {"mode": str}},
+    "vector-store": {"get": ("GET", "/api/settings/vector-store"), "set": ("POST", "/api/settings/vector-store"),
+                     "keys": {"provider": str, "path": str, "qdrant_url": str, "qdrant_api_key": str}},
+    "datasync": {"get": ("GET", "/api/settings/datasync"), "set": ("POST", "/api/settings/datasync"),
+                 "keys": {"enabled": bool, "interval_sec": int}},
+}
+_SECRET_KEYS = {"api_key", "qdrant_api_key"}
+
+
+def _settings_lines(data: dict, lang: str):
+    """dict → 表示行。秘密の値はサーバが返さない (api_key_set の bool のみ) が、
+    念のためこちら側でも secret 名の値は出さない。"""
+    lines = []
+    for k in sorted(data):
+        v = data[k]
+        if k in _SECRET_KEYS:
+            v = "(hidden)"
+        lines.append(f"{k}: {json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else v}")
+    return lines
+
+
+def cmd_settings_show(ctx: Ctx, args) -> int:
+    kind = SETTINGS_KINDS[args.name]
+    method, path = kind["get"]
+    status, data = _request(ctx, method, path, timeout=30)
+    if status != 200:
+        return _fail(ctx, f"settings show {args.name}", status, data)
+    data = data if isinstance(data, dict) else {"value": data}
+    lines = [f"[{args.name}]"] + _settings_lines(data, ctx.lang) + [_m("settings_secret_note", ctx.lang)]
+    return _ok(ctx, f"settings show {args.name}",
+               {"name": args.name, "settings": data, "note": _m("settings_secret_note", ctx.lang)}, lines)
+
+
+def cmd_settings_models(ctx: Ctx, _args) -> int:
+    status, data = _request(ctx, "GET", "/api/settings/models", timeout=30)
+    if status != 200:
+        return _fail(ctx, "settings models", status, data)
+    raw = data.get("data") if isinstance(data, dict) else data
+    models = []
+    for m in raw if isinstance(raw, list) else []:
+        models.append(str(m.get("id") or m.get("name") or "?") if isinstance(m, dict) else str(m))
+    lines = models + [f"({len(models)} models)" if ctx.lang == "en" else f"（モデル {len(models)}件）"]
+    return _ok(ctx, "settings models", {"models": models, "count": len(models)}, lines)
+
+
+def cmd_settings_test(ctx: Ctx, args) -> int:
+    body = {}
+    if args.provider:
+        body["provider"] = args.provider
+    if args.base_url:
+        body["base_url"] = args.base_url
+    if args.model:
+        body["model"] = args.model
+    status, data = _request(ctx, "POST", "/api/settings/test-connection", body=body, timeout=120)
+    if status != 200:
+        return _fail(ctx, "settings test", status, data)
+    data = data if isinstance(data, dict) else {}
+    st = str(data.get("status") or "unknown")
+    endpoint = str(data.get("endpoint") or "")
+    n_models = data.get("models")
+    if st == "connected":
+        word = (f"Connected. {endpoint} answered ({n_models} models visible)." if ctx.lang == "en"
+                else f"接続できました。{endpoint} が応答しました（見えるモデル {n_models}件）。")
+    elif st == "warning":
+        word = (f"Reached {endpoint}, but with a warning: {data.get('error') or ''}" if ctx.lang == "en"
+                else f"{endpoint} へ届きましたが、注意があります: {data.get('error') or ''}")
+    else:
+        word = (f"Not connected. {endpoint or ctx.url}: {data.get('error') or st}" if ctx.lang == "en"
+                else f"接続できませんでした。{endpoint or ctx.url}: {data.get('error') or st}")
+    return _ok(ctx, "settings test", {"result": data, "connected": st == "connected"}, [word])
+
+
+def cmd_settings_providers(ctx: Ctx, _args) -> int:
+    status, data = _request(ctx, "GET", "/api/llm/presets", timeout=30)
+    if status != 200:
+        return _fail(ctx, "settings providers", status, data)
+    data = data if isinstance(data, dict) else {}
+    rows = []
+    for group in ("presets", "custom"):
+        for pset in data.get(group) or []:
+            if isinstance(pset, dict):
+                rows.append({"id": pset.get("id"), "label": pset.get("label"),
+                             "provider": pset.get("provider"), "base_url": pset.get("base_url"),
+                             "model": pset.get("model"), "group": group})
+    lines = [f"{r['id']}\t{r['label']}\t{r['provider']}\t{r['base_url'] or '-'}\t{r['model'] or '-'}" for r in rows]
+    lines.append(f"({len(rows)} presets)" if ctx.lang == "en" else f"（プリセット {len(rows)}件）")
+    return _ok(ctx, "settings providers", {"providers": rows, "count": len(rows)}, lines)
+
+
+def _mask(kind_key: str, value):
+    return "(hidden)" if kind_key in _SECRET_KEYS else value
+
+
+def cmd_settings_set(ctx: Ctx, args) -> int:
+    kind = SETTINGS_KINDS[args.name]
+    allowed = kind["keys"]
+
+    def bad_input(msg: str) -> int:
+        if ctx.as_json:
+            print(json.dumps({"ok": False, "command": f"settings set {args.name}", "exit_code": EXIT_USER,
+                              "error": {"http_status": None, "message": msg}}, ensure_ascii=False))
+        else:
+            print(msg, file=sys.stderr)
+        return EXIT_USER
+
+    changes = {}
+    for pair in args.pairs:
+        if "=" not in pair:
+            return bad_input(_m("settings_bad_pair", ctx.lang, name=args.name, keys=", ".join(allowed)))
+        k, v = pair.split("=", 1)
+        k = k.strip()
+        if k not in allowed:
+            return bad_input(_m("settings_bad_pair", ctx.lang, name=args.name, keys=", ".join(allowed)))
+        typ = allowed[k]
+        try:
+            if typ is bool:
+                if v.strip().lower() not in ("true", "false", "1", "0", "yes", "no"):
+                    raise ValueError(v)
+                changes[k] = v.strip().lower() in ("true", "1", "yes")
+            elif typ is int:
+                changes[k] = int(v.strip())
+            else:
+                changes[k] = v
+        except ValueError:
+            return bad_input(_m("settings_bad_pair", ctx.lang, name=args.name, keys=", ".join(allowed)))
+
+    # 変更前を読む (秘密は *_set の bool でしか返らない)
+    g_method, g_path = kind["get"]
+    status, before = _request(ctx, g_method, g_path, timeout=30)
+    if status != 200:
+        return _fail(ctx, f"settings set {args.name}", status, before)
+    before = before if isinstance(before, dict) else {}
+
+    ja = ctx.lang == "ja"
+    diff_rows = []
+    for k, v in changes.items():
+        if k in _SECRET_KEYS:
+            old_disp = ("set" if before.get(f"{k}_set") or before.get("api_key_set") else "not set")
+            new_disp = "(new value hidden)" if v else "(cleared)"
+        else:
+            old_disp = before.get(k, "(unset)")
+            new_disp = v
+        diff_rows.append({"key": k, "before": _mask(k, old_disp), "after": _mask(k, new_disp)})
+    lines = [f"[{args.name}]"]
+    lines += [(f"{r['key']}: {r['before']}  ->  {r['after']}") for r in diff_rows]
+
+    if args.dry_run:
+        lines.append(_m("settings_dry_run", ctx.lang))
+        return _ok(ctx, f"settings set {args.name}",
+                   {"name": args.name, "applied": False, "dry_run": True, "diff": diff_rows}, lines)
+    if not args.yes:
+        lines.append(_m("settings_need_yes", ctx.lang))
+        if ctx.as_json:
+            print(json.dumps({"ok": False, "command": f"settings set {args.name}", "exit_code": EXIT_USER,
+                              "data": {"name": args.name, "applied": False, "diff": diff_rows},
+                              "error": {"http_status": None, "message": _m("settings_need_yes", ctx.lang)}},
+                             ensure_ascii=False))
+        else:
+            for line in lines:
+                print(line)
+        return EXIT_USER
+
+    s_method, s_path = kind["set"]
+    status, resp = _request(ctx, s_method, s_path, body=changes, timeout=60)
+    if status != 200:
+        return _fail(ctx, f"settings set {args.name}", status, resp)
+    # 変更後を読み直して見せる
+    status2, after = _request(ctx, g_method, g_path, timeout=30)
+    after = after if (status2 == 200 and isinstance(after, dict)) else {}
+    lines.append("applied." if not ja else "変更しました。")
+    lines += _settings_lines(after, ctx.lang)
+    return _ok(ctx, f"settings set {args.name}",
+               {"name": args.name, "applied": True, "diff": diff_rows, "after": after}, lines)
+
+
+def cmd_settings(ctx: Ctx, args) -> int:
+    return {
+        "show": cmd_settings_show,
+        "models": cmd_settings_models,
+        "test": cmd_settings_test,
+        "set": cmd_settings_set,
+        "providers": cmd_settings_providers,
+    }[args.settings_cmd](ctx, args)
+
+
 # ─── argparse (exit code 1 on bad input, not argparse's 2) ─────
 class Parser(argparse.ArgumentParser):
     def error(self, message):
@@ -429,6 +701,24 @@ def build_parser() -> Parser:
 
     p_ix = sub.add_parser("index-status", help="chunk counts per collection")
     p_ix.add_argument("--workspace", help="filter by workspace_id")
+
+    kinds = list(SETTINGS_KINDS)
+    p_st = sub.add_parser("settings", help="show or change server settings (admin token required)")
+    st_sub = p_st.add_subparsers(dest="settings_cmd", required=True)
+    s_show = st_sub.add_parser("show", help="current settings (api keys shown as set / not set only)")
+    s_show.add_argument("name", nargs="?", choices=kinds, default="llm")
+    st_sub.add_parser("models", help="models visible at the configured endpoint (GET /api/settings/models)")
+    s_test = st_sub.add_parser("test", help="test the LLM connection (POST /api/settings/test-connection)")
+    s_test.add_argument("--provider", help="test this provider instead of the saved one")
+    s_test.add_argument("--base-url", dest="base_url", help="test this endpoint instead of the saved one")
+    s_test.add_argument("--model", help="model name to test with")
+    s_set = st_sub.add_parser("set", help="change settings; shows before/after and needs --yes to write")
+    s_set.add_argument("name", nargs="?", choices=kinds, default="llm")
+    s_set.add_argument("--set", dest="pairs", action="append", required=True, metavar="KEY=VALUE",
+                       help="repeatable; e.g. --set model=qwen3-4b --set base_url=http://localhost:1234")
+    s_set.add_argument("--yes", action="store_true", help="actually apply the change")
+    s_set.add_argument("--dry-run", action="store_true", help="show what would change, write nothing")
+    st_sub.add_parser("providers", help="selectable provider presets (GET /api/llm/presets)")
     return p
 
 
@@ -448,6 +738,7 @@ def main(argv=None) -> int:
         "collections": cmd_collections,
         "search": cmd_search,
         "index-status": cmd_index_status,
+        "settings": cmd_settings,
     }
     return dispatch[args.cmd](ctx, args)
 

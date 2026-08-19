@@ -414,6 +414,31 @@ async def _guarded_call_llm(
         )
 
 
+async def _timeout_answer(adapter, configured_model: str) -> str:
+    """DD-CYN-0141 §5-D: タイムアウトの原因が「設定モデルが推論サーバに未読込」なら、
+    汎用のタイムアウト文言ではなく、何が足りないか・次の一手を返す。
+    doctor (cynovela-cli.py) も同じ言葉で事前に検知する。判定できない口では従来文言。"""
+    target = configured_model if configured_model not in ("", "auto") else ""
+    if not target:
+        target = getattr(adapter, "model", "") or ""
+        if target == "auto":
+            target = ""
+    state = "unknown"
+    mls = getattr(adapter, "model_load_state", None)
+    if mls and target:
+        try:
+            state = await mls(target)
+        except Exception:
+            state = "unknown"
+    if state == "not-loaded":
+        return (
+            f"設定されたモデル『{target}』は推論サーバにまだ読み込まれていません。"
+            "次の一手: LM Studio でこのモデルを読み込むか、設定（画面の Settings / "
+            "cynovela-cli settings set llm / MCP settings_set）で読み込み済みのモデルを選んでください。"
+        )
+    return "回答の生成に時間がかかり、タイムアウトしました。参照ドキュメント数を減らすか、しばらくしてから再度お試しください。"
+
+
 def _get_llm_params_overrides(temperature_default: float = 0.1, prefix: str = "llm"):
     """#06: settings DB からモデルパラメータの上書きを読み出す。
     Returns: (temperature, params_dict) — 値が無いキーは含めない。
@@ -1781,7 +1806,8 @@ async def chat(request: Request):
         if isinstance(e, _MNF_m):
             answer = str(e)  # C: 理由と名前を画面に出す（汎用文言で覆わない）
         elif _is_timeout:
-            answer = "回答の生成に時間がかかり、タイムアウトしました。参照ドキュメント数を減らすか、しばらくしてから再度お試しください。"
+            # DD-CYN-0141 §5-D: 未読込モデルが原因なら、原因と次の一手を返す
+            answer = await _timeout_answer(adapter_now, model)
         else:
             answer = "LLMへの接続に失敗しました。しばらくしてから再度お試しください。"
     llm_elapsed = _time.perf_counter() - t_llm
@@ -3112,7 +3138,8 @@ async def chat_stream(workspace_id: str, request: Request):
                 if isinstance(e, _MNF_s):
                     answer = str(e)  # C: 理由と名前を画面に出す（汎用文言で覆わない）
                 elif _is_timeout:
-                    answer = "回答の生成に時間がかかり、タイムアウトしました。参照ドキュメント数を減らすか、しばらくしてから再度お試しください。"
+                    # DD-CYN-0141 §5-D: 未読込モデルが原因なら、原因と次の一手を返す (SSE 経路も同じ言葉)
+                    answer = await _timeout_answer(adapter, _sse_model)
                 else:
                     answer = "LLMへの接続に失敗しました。しばらくしてから再度お試しください。"
             llm_elapsed = _asyncio.get_event_loop().time() - t0
