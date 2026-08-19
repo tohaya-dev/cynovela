@@ -34,7 +34,7 @@ This package is the **application build (runs on macOS directly, no container)**
 | macOS | Apple silicon Mac (M1 or later). Intel Macs, Windows and Linux are not verified. **The package edition runs on Apple silicon only.** |
 | Python | **3.12 or later** (`pyproject.toml` declares `requires-python = ">=3.12"`; `environment.yml` pins 3.12.13). **3.10 and 3.11 cannot be used.** Not needed for the package edition, nor for source-edition choice 1 (conda fetches its own). |
 | conda | **Miniforge recommended** (its default channel is conda-forge). **Not required** — the package edition and source-edition choice 2 work without it. |
-| Free disk space | Package edition expanded: **about <PKG-SIZE-GB> GB**. Source edition expanded: **about <SRC-SIZE-GB> GB**. AI models: **4.84 GB** (separate). |
+| Free disk space | Package edition expanded: **about 3.1 GB** (measured). Source edition expanded: all-in-one **about 5.2 GB** / model-separate edition **about 8 MB** (measured). AI models: **4.84 GB** (separate download for the package and model-separate editions; already inside the all-in-one). |
 | Memory | 8 GB or more recommended (existing record; not re-measured). |
 | Network | Package edition: not needed to run — only to fetch the AI models. Source edition setup fetches from: conda-forge / PyPI / github.com (2 wheels) / huggingface.co (models). |
 | LLM for answers | LM Studio or an OpenAI-compatible API (answers need a real LLM). |
@@ -175,7 +175,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | macOS | Apple シリコン搭載の Mac（M1 以降）。Intel の Mac・Windows・Linux では動作を確認していません。**パッケージ版は Apple シリコン専用です。** |
 | Python | **3.12 以上**（`pyproject.toml` が `requires-python = ">=3.12"` を宣言。`environment.yml` は 3.12.13 を固定）。**3.10・3.11 は使えません。** パッケージ版と、ソース版の選択肢1（conda）では、事前の Python は不要です。 |
 | conda | **Miniforge を推奨**（既定のチャネルが conda-forge のため）。**必須ではありません** — パッケージ版とソース版の選択肢2 は conda 無しで動きます。 |
-| ディスクの空き | パッケージ版の展開後: **約 <PKG-SIZE-GB> GB**。ソース版の展開後: **約 <SRC-SIZE-GB> GB**。AIモデル: **4.84 GB**（別）。 |
+| ディスクの空き | パッケージ版の展開後: **約 3.1 GB**（実測）。ソース版の展開後: 全部入り **約 5.2 GB**／モデル別取得版 **約 8 MB**（実測）。AIモデル: **4.84 GB**（パッケージ版とモデル別取得版は別に落とします。全部入りには入っています）。 |
 | メモリ | 8 GB 以上を推奨（既存の記録による値。今回は測り直していません）。 |
 | ネットワーク | パッケージ版: 動かすのに不要。AIモデルの取得時のみ必要。ソース版のセットアップは次から取り寄せます: conda-forge / PyPI / github.com（wheel 2本）/ huggingface.co（モデル）。 |
 | 回答用の LLM | LM Studio もしくは OpenAI 互換 API（答えを作るには実 LLM が要ります）。 |
