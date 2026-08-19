@@ -157,8 +157,8 @@ In addition, `_mask_for_viewer` is also applied to the LLM output, achieving a d
 ## 3-1. Recommended environment
 
 - macOS (Apple Silicon recommended), Linux, Windows
-- Python 3.10 or later
-- A conda environment (recommended environment name: `cynovela`)
+- Python 3.12 or later (`pyproject.toml` declares `requires-python = ">=3.12"`; 3.10 and 3.11 cannot be used)
+- A conda environment (dedicated environment name: `cynovela-dist`. Never create or modify a shared environment)
 
 ## 3-2. Startup commands
 
@@ -720,8 +720,8 @@ LLM への悪意ある指示注入を防ぐため、3 層防御を実装して�
 ## 3-1. 推奨環境
 
 - macOS（Apple Silicon 推奨）、Linux、Windows
-- Python 3.10 以上
-- conda 環境（推奨環境名: `cynovela`）
+- Python 3.12 以上（`pyproject.toml` が `requires-python = ">=3.12"` を宣言。3.10・3.11 は使えません）
+- conda 環境（専用の環境名: `cynovela-dist`。共有の環境は作らない・書き換えないでください）
 
 ## 3-2. 起動コマンド
 

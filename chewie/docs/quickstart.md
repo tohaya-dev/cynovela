@@ -4,31 +4,42 @@
 
 ## English
 
-These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `1.0.2` (working directory `<the folder where you extracted the package>`).
+These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `1.0.4` (working directory `<the folder where you extracted the package>`).
 
-> For an even shorter startup note, see [STARTUP.md](STARTUP.md).
-
----
-
-## 1. Prerequisite Environment
-
-| Item | Content |
-|---|---|
-| Python | The conda environment `cynovela` (verified with the Python 3.12 series / environment.yml pins 3.12.13) |
-| Local LLM | LM Studio or an OpenAI-compatible API |
-| Recommended RAM | 8GB or more (the required models are the same in every startup mode) |
-| Network | Needed for the model download on the first start |
+> The single entry document is [START-HERE.md](../START-HERE.md). If this is your first time, start there.
 
 ---
 
-## 2. Setting Up the conda Environment
+## 1. Which package did you download?
+
+There are 2 packages. **The package edition comes first** — if you have it, skip section 2 entirely.
+
+| Package | Who it is for | What to do |
+|---|---|---|
+| **Package edition** (ready to use) | Apple silicon Macs | Extract it and run `./launch.sh`. **No Python and no conda are needed. Nothing is installed on this Mac.** To remove it, delete the folder. |
+| **Source edition** | Everyone else, or those who want to build the environment themselves | Extract it, then follow section 2 below. At startup you choose one of 2 ways to build the environment. |
+
+---
+
+## 2. Setting Up the Environment (source edition only)
+
+**The recommended way is to let `./launch.sh` do it.** On the first run it offers the 2 choices below, and either way **the shared conda environment is never created and never modified** (everything goes into a dedicated place):
 
 ```bash
-# conda 環境を作成（例: cynovela）
-conda create -n cynovela python=3.12 -y
+cd <the folder where you extracted the package>
+./launch.sh
+#   1) Create a dedicated conda environment (name: cynovela-dist)
+#   2) Create a Python environment only inside this package's folder
+```
 
-# 依存ライブラリをインストール
-conda run -n cynovela python -m pip install -r requirements.txt
+If you cannot use `launch.sh` and must build it by hand, use the **dedicated name `cynovela-dist`**. Do not create or modify a shared environment:
+
+```bash
+# Create a dedicated environment for this package (do NOT use a shared name)
+conda create -n cynovela-dist python=3.12 -y
+
+# Install the dependencies
+conda run -n cynovela-dist python -m pip install -r requirements.txt
 ```
 
 Main dependencies: FastAPI / uvicorn / ChromaDB / sentence-transformers / spaCy + ja-ginza / torch / pypdf and others (see `requirements.txt`).
@@ -75,7 +86,8 @@ cd<配布物を展開したフォルダ>
 unset SSL_CERT_FILE
 
 # デモデータ + 実 LLM（LM Studio を http://localhost:1234 で起動しておく）
-conda run -n cynovela python server.py --demo
+# 名前は配布物専用の cynovela-dist。共有の環境は作らない・書き換えない
+conda run -n cynovela-dist python server.py --demo
 ```
 
 To access:
@@ -85,8 +97,6 @@ open http://127.0.0.1:8765
 ```
 
 > ⚠️ **A real LLM is required**: To produce answers to questions, an LLM such as LM Studio is required. The `--mock` option that used to exist (a setting to run without calling an LLM) has been removed, and specifying it now stops with an error.
-
-> If you run the **container edition (podman)**, use `deploy/container/run-container.sh` (for the details of the ingest folder, see the README). Note: the container procedure is bundled only with the container edition (the direct host start edition has no `deploy/`).
 
 ---
 
@@ -153,7 +163,7 @@ In the answer, chunks are shown as sources with citation numbers like `[1][2]`. 
 ## 9. Checking Behavior (Tests)
 
 > **The package does not contain `tests/`** (it is taken out when the package is built). On the package you received, `pytest` / `make test` cannot be run.
-> To check the behavior, please use `conda run -n cynovela python scripts/test_comprehensive_e2e.py`.
+> To check the behavior, please use `conda run -n cynovela-dist python scripts/test_comprehensive_e2e.py`.
 
 ```bash
 # 開発ツリー（tests/ が在る側）での実行
@@ -161,7 +171,7 @@ In the answer, chunks are shown as sources with citation numbers like `[1][2]`. 
 # 手動 pytest（軽量・最初の失敗で停止）
 cd<開発ツリーのフォルダ>
 unset SSL_CERT_FILE
-conda run -n cynovela python -m pytest -x -q
+conda run -n cynovela-dist python -m pytest -x -q
 ```
 
 `make test` / `make test-quick` / `make verify-live` in the `Makefile` can also be used. The `live` family assumes that the server is running at `http://127.0.0.1:8765`.
@@ -181,7 +191,7 @@ conda run -n cynovela python -m pytest -x -q
 - **The model download or HTTPS fails with SSL** -> Please `unset SSL_CERT_FILE` before starting or testing (unnecessary when using the launcher).
 - **It cannot be opened from another device on the LAN** -> Since it listens on `0.0.0.0` by default, first check the port and the destination IP (if you added `--local-only`, it is narrowed to your own machine).
 - **The quality is not stable** -> Please check the model and settings on the LM Studio side.
-- **You forgot the admin password** -> It can be reissued with `conda run -n cynovela python server.py --reset-admin`.
+- **You forgot the admin password** -> It can be reissued with `conda run -n cynovela-dist python server.py --reset-admin`.
 - **Port 8765 is in use** -> Check with `lsof -i :8765`. Because `./stop.sh` stops only the PID recorded at startup (the Cynovela server itself), even if 8765 is used for another purpose that process is not affected. If there is no recorded PID and you stop it manually, please confirm that the target is Cynovela and then use something like `pkill -f "python server.py"`.
 
 For anything else, please see [faq.md](faq.md).
@@ -190,31 +200,42 @@ For anything else, please see [faq.md](faq.md).
 
 # 日本語
 
-Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.0.2`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
+Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.0.4`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
 
-> さらに短い起動メモは [STARTUP.md](STARTUP.md) を参照してください。
-
----
-
-## 1. 前提環境
-
-| 項目 | 内容 |
-|---|---|
-| Python | conda 環境 `cynovela`（Python 3.12 系で検証 / environment.yml は 3.12.13 を固定） |
-| ローカル LLM | LM Studio もしくは OpenAI 互換 API |
-| 推奨 RAM | 8GB 以上（どの起動モードでも必要なモデルは同じです） |
-| ネットワーク | 初回起動時のモデルダウンロードに必要 |
+> 唯一の入口の文書は [START-HERE.md](../START-HERE.md) です。初めての方はそちらから始めてください。
 
 ---
 
-## 2. conda 環境のセットアップ
+## 1. どちらの配布物を落としましたか
+
+配布物は 2 つあります。**パッケージ版が先です** — お持ちならセクション 2 は丸ごと飛ばせます。
+
+| 配布物 | 対象 | することは |
+|---|---|---|
+| **パッケージ版**（すぐ使える形） | Apple silicon の Mac | 展開して `./launch.sh` を叩くだけです。**Python も conda も要りません。この Mac には何も入れません。** 消すときはフォルダごと削除します。 |
+| **ソース版** | 上記以外の方、または自分で環境を作りたい方 | 展開して下のセクション 2 へ。起動時に環境の作り方を 2 つから選びます。 |
+
+---
+
+## 2. 環境のセットアップ（ソース版のみ）
+
+**推奨は `./launch.sh` に作らせる形です。** 初回に下の 2 択が出ます。どちらを選んでも**共有の conda 環境は作りません・書き換えません**（すべて専用の場所に作られます）:
 
 ```bash
-# conda 環境を作成（例: cynovela）
-conda create -n cynovela python=3.12 -y
+cd <配布物を展開したフォルダ>
+./launch.sh
+#   1) 専用の conda 環境を作る（名前: cynovela-dist）
+#   2) この配布物のフォルダの中だけに Python の環境を作る
+```
+
+`launch.sh` を使えず手で作るしかない場合は、**配布物専用の名前 `cynovela-dist`** を使ってください。共有の環境は作らない・書き換えないでください:
+
+```bash
+# この配布物専用の環境を作る（共有の名前を使わない）
+conda create -n cynovela-dist python=3.12 -y
 
 # 依存ライブラリをインストール
-conda run -n cynovela python -m pip install -r requirements.txt
+conda run -n cynovela-dist python -m pip install -r requirements.txt
 ```
 
 主な依存: FastAPI / uvicorn / ChromaDB / sentence-transformers / spaCy + ja-ginza / torch / pypdf ほか（`requirements.txt` 参照）。
@@ -261,7 +282,8 @@ cd<配布物を展開したフォルダ>
 unset SSL_CERT_FILE
 
 # デモデータ + 実 LLM（LM Studio を http://localhost:1234 で起動しておく）
-conda run -n cynovela python server.py --demo
+# 名前は配布物専用の cynovela-dist。共有の環境は作らない・書き換えない
+conda run -n cynovela-dist python server.py --demo
 ```
 
 アクセス:
@@ -271,8 +293,6 @@ open http://127.0.0.1:8765
 ```
 
 > ⚠️ **実 LLM が要ります**: 質問への答えを作るには LM Studio などの LLM が要ります。以前あった `--mock`（LLM を呼ばずに動かす指定）は撤去済みで、いま指定するとエラーで止まります。
-
-> **コンテナ版（podman）** で動かす場合は `deploy/container/run-container.sh` を使います（取り込みフォルダの詳細は README を参照）。※ コンテナ手順はコンテナ版にのみ同梱されています（ホスト直起動版には `deploy/` はありません）。
 
 ---
 
@@ -339,7 +359,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 ## 9. 動作確認（テスト）
 
 > **配布物には `tests/` は入っていません**（配布物を作るときに外されます）。受け取った配布物では `pytest` / `make test` は実行できません。
-> 動作を確かめるには `conda run -n cynovela python scripts/test_comprehensive_e2e.py` を使ってください。
+> 動作を確かめるには `conda run -n cynovela-dist python scripts/test_comprehensive_e2e.py` を使ってください。
 
 ```bash
 # 開発ツリー（tests/ が在る側）での実行
@@ -347,7 +367,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 # 手動 pytest（軽量・最初の失敗で停止）
 cd<開発ツリーのフォルダ>
 unset SSL_CERT_FILE
-conda run -n cynovela python -m pytest -x -q
+conda run -n cynovela-dist python -m pytest -x -q
 ```
 
 `Makefile` の `make test` / `make test-quick` / `make verify-live` も利用できます。`live` 系はサーバが `http://127.0.0.1:8765` で稼働していることが前提です。
@@ -367,7 +387,7 @@ conda run -n cynovela python -m pytest -x -q
 - **モデルダウンロードや HTTPS が SSL で失敗** → `unset SSL_CERT_FILE` してから起動・テストしてください（ランチャー使用時は不要）。
 - **LAN の他の端末から開けない** → 既定で `0.0.0.0` 待ち受けなので、まずポートと接続先 IP を確認してください（`--local-only` を付けていると自マシン内に絞られます）。
 - **品質が安定しない** → LM Studio 側のモデルと設定を確認してください。
-- **admin パスワードを忘れた** → `conda run -n cynovela python server.py --reset-admin` で再発行できます。
+- **admin パスワードを忘れた** → `conda run -n cynovela-dist python server.py --reset-admin` で再発行できます。
 - **ポート 8765 が使用中** → `lsof -i :8765` で確認します。`./stop.sh` は起動時に記録した PID（Cynovela サーバー自身）のみを停止するため、8765 を他用途で使っている場合でもそのプロセスには影響しません。記録 PID が無く手動で止める場合は、対象が Cynovela であることを確認したうえで `pkill -f "python server.py"` などを使ってください。
 
 その他は [faq.md](faq.md) を参照してください。

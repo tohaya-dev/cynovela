@@ -228,17 +228,25 @@ _find_conda() {
 }
 HAVE_CONDA=0
 _find_conda && HAVE_CONDA=1
-# 3.10 以上の python を探す (新しい版から順に。順序と書き方は falcon 側 tools/mas-phase.sh の原文と同じ)
+# 3.12 以上の python を探す (新しい版から順に)
 _find_python() {
-    local c
-    for c in python3.13 python3.12 python3.11 python3.10; do
-        if command -v "$c" >/dev/null 2>&1; then command -v "$c"; return 0; fi
+    # DD-CYN-0140: 要件は 3.12 以上である (pyproject.toml requires-python = ">=3.12" /
+    #   environment.yml が python=3.12.13 を固定 / tools/conf.sh の _conf_py_meets も 3.12 以上)。
+    #   旧: ここだけ 3.10 以上を通しており、選択肢2 を選ぶと launch-body.sh 側が 3.12 未満を
+    #   弾いて止まるのに、この画面は「3.10 以上」と「3.12 を入れてください」を並べて出していた。
+    #   ∴ 判定と文言を、宣言した要件 (3.12 以上) に揃える (launch-body.sh の venv_base_python と同じ)。
+    #   版は名前で決めつけず、その python 自身に答えさせる。
+    local c p
+    for c in python3.13 python3.12; do
+        if p="$(command -v "$c" 2>/dev/null)" \
+           && "$p" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1; then
+            printf '%s\n' "$p"; return 0
+        fi
     done
     # 版のついた名前が無いときは python3 の版を見る
-    if command -v python3 >/dev/null 2>&1; then
-        if python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
-            command -v python3; return 0
-        fi
+    if p="$(command -v python3 2>/dev/null)" \
+       && "$p" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1; then
+        printf '%s\n' "$p"; return 0
     fi
     return 1
 }
@@ -297,8 +305,8 @@ choose_form() {
             2)
                 if [ "$HAVE_PY" = "1" ]; then FORM_SEL="venv"; FORM_DISP="この配布物の中の Python"; return 0; fi
                 echo ""
-                echo "3.10 以上の python3 が見つかりませんでした。"
-                echo "  入れ方: https://www.python.org/downloads/ から 3.12 を入れてください"
+                echo "3.12 以上の python3 が見つかりませんでした。"
+                echo "  入れ方: https://www.python.org/downloads/ から 3.12 以上を入れてください"
                 echo "  または 1) の conda を選んでください"
                 echo "  入れ終えたら、もう一度このファイルを押してください"
                 echo "このターミナルは開いたままにしてあります。"

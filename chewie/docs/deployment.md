@@ -32,13 +32,17 @@ Cynovela is a tool for personal verification, and the environments in which it h
 
 ---
 
-## 2. Setting Up the conda Environment
+## 2. Setting Up the Environment
 
-### Creating the environment
+**The recommended way is `./launch.sh`** — on the first run it builds the environment in a dedicated place, and the shared conda environment is never created and never modified.
+
+### Creating the environment by hand (only if you cannot use launch.sh)
+
+Use the dedicated name `cynovela-dist`. Do not create or modify a shared environment.
 
 ```bash
-conda create -n cynovela python=3.12 -y
-conda activate cynovela
+conda create -n cynovela-dist python=3.12 -y
+conda activate cynovela-dist
 ```
 
 ### Installing the dependencies
@@ -343,13 +347,17 @@ Cynovela は個人検証用のツールであり、動作確認している環�
 
 ---
 
-## 2. conda 環境セットアップ
+## 2. 環境セットアップ
 
-### 環境作成
+**推奨は `./launch.sh` です** — 初回に専用の場所へ環境を作ります。共有の conda 環境は作りません・書き換えません。
+
+### 手で環境を作る場合（launch.sh を使えないときのみ）
+
+配布物専用の名前 `cynovela-dist` を使ってください。共有の環境は作らない・書き換えないでください。
 
 ```bash
-conda create -n cynovela python=3.12 -y
-conda activate cynovela
+conda create -n cynovela-dist python=3.12 -y
+conda activate cynovela-dist
 ```
 
 ### 依存ライブラリのインストール

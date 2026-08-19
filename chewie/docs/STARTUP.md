@@ -13,20 +13,26 @@ If this is your first time, please start with quickstart.md.
 There are two ways to start. **No argument is production** (it starts from an empty database, and you ingest and use your own documents), and **adding `--demo` is the demo** (the demo DB with the dummy documents loaded).
 
 ```bash
-# 1. Activate the conda environment
-conda activate cynovela
+# The entry point is launch.sh (or double-click Cynovela-start.command)
+./launch.sh            # production: an empty database
+./launch.sh --demo     # if you want to try it first, use the demo (with the dummy documents)
 
-# 2. Countermeasure for the SSL certificate error (macOS)
+# Open it in a browser
+# http://localhost:8765
+```
+
+If you must start the server by hand instead of through `launch.sh` (the environment must already exist — the dedicated name is `cynovela-dist`; never create or modify a shared environment):
+
+```bash
+# 1. Activate the dedicated environment of this package
+conda activate cynovela-dist
+
+# 2. Countermeasure for the SSL certificate error (macOS. launch.sh does this for you)
 unset SSL_CERT_FILE
 
-# 3. Start the server (production: an empty database)
-python server.py --mode text
-
-# 3'. If you want to try it first, use the demo (with the dummy documents)
-python server.py --mode text --demo
-
-# 4. Open it in a browser
-# http://localhost:8765
+# 3. Start the server
+python server.py --mode text          # production
+python server.py --mode text --demo   # demo
 ```
 
 ### First time only: a screen for choosing whether to download the AI model appears
@@ -210,20 +216,26 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 起動は 2 通りあります。**引数なしは本番**（空のデータベースから始まり、自分の資料を取り込んで使う）、**`--demo` を付けるとデモ**（ダミー資料が載ったデモDB）です。
 
 ```bash
-# 1. conda環境を有効化
-conda activate cynovela
+# 入口は launch.sh です（または Cynovela-start.command をダブルクリック）
+./launch.sh            # 本番: 空のデータベース
+./launch.sh --demo     # 最初に試すならデモ（ダミー資料入り）で
 
-# 2. SSL証明書エラー対策（macOS）
+# ブラウザで開く
+# http://localhost:8765
+```
+
+`launch.sh` を通さず手でサーバーを起動する場合（環境が既に在ることが前提です。専用の名前は `cynovela-dist`。共有の環境は作らない・書き換えないでください）:
+
+```bash
+# 1. この配布物専用の環境を有効化
+conda activate cynovela-dist
+
+# 2. SSL証明書エラー対策（macOS。launch.sh はこれを内包しています）
 unset SSL_CERT_FILE
 
-# 3. サーバー起動（本番: 空のデータベース）
-python server.py --mode text
-
-# 3'. 最初に試すならデモ（ダミー資料入り）で
-python server.py --mode text --demo
-
-# 4. ブラウザで開く
-# http://localhost:8765
+# 3. サーバー起動
+python server.py --mode text          # 本番
+python server.py --mode text --demo   # デモ
 ```
 
 ### 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます

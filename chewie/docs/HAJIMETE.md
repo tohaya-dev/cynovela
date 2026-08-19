@@ -23,6 +23,30 @@ the terminal is collected at the end.
 
 This package runs directly on your own machine.
 
+### Which package did you download?
+
+```
+1) Package edition (for Apple silicon Macs — ready to use)
+     Extract it and run one line. No Python and no conda are needed.
+     Nothing is installed on this Mac. To remove it, delete the folder.
+2) Source edition (for everyone else, or those who want to build the environment themselves)
+     At startup you choose one of 2 ways to build the environment.
+```
+
+```
+Source edition: how the environment is built (you choose at startup)
+  1) Create a dedicated conda environment
+       Where the Python comes from : conda downloads it from conda-forge.
+       What is created            : one conda environment (dedicated name: cynovela-dist).
+       What remains               : that one environment, inside conda's folder. The shared environments are never touched.
+  2) Use this Mac's Python and build the environment only inside this package's folder
+       Where the Python comes from : the Python 3.12 or later already on this Mac (checked by asking the Python itself).
+       What is created            : a venv named .venv-cynovela inside this package's folder.
+       What remains               : only files inside this folder. Nothing outside it is changed.
+```
+
+The AI models are downloaded separately (see "First run only" below).
+
 ---
 
 ## 1. Start it
@@ -81,9 +105,9 @@ You can print the list of everything it can do at any time with this.
 
 ### First run only: a screen asks you to choose about downloading the AI model
 
-In the forms that do not bundle the model (the lightweight package, or using this
-repository as it is), the AI model that reads documents (the embedding model bge-m3) is
-not yet present on the first run. Only when it is missing, the following three choices
+In the forms that do not bundle the model (the package edition, the model-separate
+package, or using this repository as it is), the AI model that reads documents (the
+embedding model bge-m3) is not yet present on the first run. Only when it is missing, the following three choices
 appear in the middle of startup.
 
 1. **Download it now** — receives about 2.2-2.3 GB from the internet (download source:
@@ -247,6 +271,30 @@ More detail is in the bundled `README.md` and `STARTUP.md`.
 
 この配布物は、お使いの機械の上で直接動きます。
 
+### どちらの配布物を落としましたか
+
+```
+1) パッケージ版（M系 Mac の方はこちら・すぐ使える形）
+     展開して1行叩くだけで動きます。Python も conda も要りません。
+     この Mac には何も入れません。消すときはフォルダごと削除します。
+2) ソース版（上記以外の方、または自分で環境を作りたい方）
+     起動時に、環境の作り方を2つから選びます。
+```
+
+```
+ソース版：環境の作り方（起動時に選びます）
+  1) conda に専用の環境を作る
+       Python の出どころ : conda が conda-forge から取り寄せます。
+       作られるもの      : conda の環境1つ（専用の名前: cynovela-dist）。
+       残るもの          : conda のフォルダの中にその環境1つ。共有の環境には触りません。
+  2) この Mac の Python を使い、この配布物のフォルダの中だけに作る
+       Python の出どころ : この Mac に既に在る 3.12 以上の Python（版はその Python 自身に答えさせて確かめます）。
+       作られるもの      : この配布物のフォルダの中の .venv-cynovela という venv。
+       残るもの          : このフォルダの中だけ。外には何も変更を加えません。
+```
+
+AIモデルは別に落とします（下の「初回だけ」を参照）。
+
 ---
 
 ## 1. 起動する
@@ -300,8 +348,8 @@ More detail is in the bundled `README.md` and `STARTUP.md`.
 
 ### 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます
 
-モデルを同梱しない形（軽量版や、このリポジトリをそのまま使う形）では、資料を読み取る
-ための AI モデル（埋め込みモデル bge-m3）が初回はまだ入っていません。無いときだけ、
+モデルを同梱しない形（パッケージ版・モデル別取得版や、このリポジトリをそのまま使う形）では、
+資料を読み取るための AI モデル（埋め込みモデル bge-m3）が初回はまだ入っていません。無いときだけ、
 起動の途中で次の三択が出ます。
 
 1. **いまダウンロードする** — インターネットから約 2.2〜2.3 GB を受け取ります（ダウンロード元: Hugging Face）。通信が要ります。

@@ -21,7 +21,14 @@ This document collects the procedures for starting and stopping, backup, logs, a
 ### Startup
 
 ```bash
-conda activate cynovela
+# The entry point is launch.sh
+./launch.sh --demo
+```
+
+To start by hand instead (the dedicated environment name is `cynovela-dist`; never create or modify a shared environment):
+
+```bash
+conda activate cynovela-dist
 python server.py --demo
 ```
 
@@ -296,7 +303,14 @@ notifications:
 ### 起動
 
 ```bash
-conda activate cynovela
+# 入口は launch.sh です
+./launch.sh --demo
+```
+
+手で起動する場合（専用の環境名は `cynovela-dist`。共有の環境は作らない・書き換えないでください）:
+
+```bash
+conda activate cynovela-dist
 python server.py --demo
 ```
 

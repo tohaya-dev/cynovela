@@ -2,6 +2,9 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
+**The only entry document is [START-HERE.md](START-HERE.md). Open it first — setup, restart, reinstall and uninstall are all there.**
+**最初に開くのは [START-HERE.md](START-HERE.md) だけです（唯一の入口。セットアップ・再起動・再インストール・アンインストールはすべてそこにあります）。**
+
 ## English
 
 <!-- cynovela:welcome-en:start -->
@@ -25,11 +28,14 @@ Requires an Apple silicon Mac. This is a learning and demonstration tool, not a 
 
 See docs/NOTICE.md ("Before You Start") before you rely on it.
 
+**Which package to download**
+
+1. **Package edition** (for Apple silicon Macs — ready to use). Extract it and run one line. No Python and no conda are needed; nothing is installed on this Mac. To remove it, delete the folder.
+2. **Source edition** (for everyone else, or those who want to build the environment themselves). At startup you choose one of 2 ways to build the environment: 1) create a dedicated conda environment, or 2) use this Mac's Python and build the environment only inside the package's folder.
+
 ---
 
 # 日本語
-
-全部入り版 = cynovela-<形態>-all-in-one-<日付>.tar.gz ／ 軽量版 = cynovela-falcon-lightweight-<日付>.tar.gz
 
 <!-- cynovela:welcome:start -->
 **Cynovela は、手元の資料を検索の対象にして、その内容を日本語と英語で質問できるようにするツールです。ただし主眼は、答えることではありません。**
@@ -91,47 +97,47 @@ See docs/NOTICE.md ("Before You Start") before you rely on it.
 |---|---|
 | 対応している機種 | **Apple シリコン搭載の Mac のみ**（M1 以降）。Intel の Mac・Windows・Linux では動作を確認していない |
 | OS | macOS（アイコンからの起動・フォルダを選ぶ画面が macOS の標準機能に依存） |
-| コンテナで動かす場合 | **Podman。** 初回のビルドに 5〜20 分。**Docker その他は当方では確認しておらず、利用者ご自身での調整が必要** |
 | ディスクの空き | **10 GB 以上を推奨。** AIモデル一式で 4.84 GB、配布ファイルが 3.15 GB |
 | ブラウザ | Safari / Chrome / Edge のいずれか |
 | インターネット | 初回にAIモデルを取得するときのみ必要（精度を優先 4.84 GB／容量を優先 約 2.2 GB／動作確認用 約 2.2 GB）。以降は不要 |
 | 費用 | **無償。** API連携を使う場合、連携先の利用料は利用者の負担 |
 
-動作の確認は Podman で行っています。Docker では確認していません。
-使う実行ファイルは設定で指定できます。
+この配布物はこの Mac の上で直接動きます。コンテナは使いません。
 <!-- cynovela:env:end -->
 
 ---
 
 ## 導入方法
 
-この Mac に何が残るかが変わります。あとから削除できます。
+```
+どれを落とすか
+  1) パッケージ版（M系 Mac の方はこちら・すぐ使える形）
+       展開して1行叩くだけで動きます。
+       Python も conda も要りません。この Mac には何も入れません。
+       消すときはフォルダごと削除します。
+  2) ソース版（上記以外の方、または自分で環境を作りたい方）
+       起動時に、環境の作り方を2つから選びます。
+```
 
-- **方法A. コンテナで動かす（この Mac への影響が最も少ない）**
-  Python をインストールしません。必要なのは Podman だけです。使い終わったらコンテナごと削除できます。
-  残るもの: お使いのコンテナ基盤 ＋ コンテナイメージ。初回のビルドに 5〜20 分。
-- **方法B. 配布物のフォルダ内だけに作る（conda を使わない）**
-  Python の実行環境を、この配布物のフォルダ内だけに作ります。他の場所には変更を加えません。
-  削除するときは、このフォルダを削除するだけです。**Python がインストール済みである必要があります。**
-- **方法C. conda の環境を新しく作る**
-  すでに conda をお使いの方向けです。環境が1つ増えます（名前は変更できます）。
-  **既存の環境には変更を加えません。**
+```
+ソース版：環境の作り方（起動時に選びます）
+  1) conda に専用の環境を作る
+  2) この Mac の Python を使い、この配布物のフォルダの中だけに Python の環境を作る
+```
 
-**迷ったら方法A です。** この Mac に Python をインストールせずに済み、削除も最も簡単です。
+**迷ったらパッケージ版です。** この Mac に Python も conda も入れずに済み、削除も最も簡単です。
 
 ### 詳しい比較 — 何がどこに、どれだけ残るか
 
-| | 方法A コンテナ | 方法B 配布物のフォルダ内 | 方法C conda の環境 |
+| | パッケージ版 | ソース版 1) conda の環境 | ソース版 2) 配布物のフォルダ内 |
 |---|---|---|---|
-| 必要なもの | Podman（未導入なら入れ方を示します） | Python 3.12 以上 | conda（miniforge など） |
-| この Mac に Python を入れるか | 入れません | 既存のものを使います | conda の中に作ります |
-| 残る場所 | コンテナ基盤の管理領域 | この配布物のフォルダ内だけ | conda の環境フォルダ |
-| 削除方法 | コンテナとイメージを削除 | フォルダごと削除 | 環境を1つ削除 |
-| 他の環境への影響 | ありません | ありません | 既存の環境には変更を加えません |
-| 初回の待ち時間 | 5〜20 分（ビルド） | 未実測 | 未実測 |
-| 使用する容量 | 未実測 | 未実測 | 未実測 |
+| 必要なもの | Apple シリコンの Mac だけ | conda（miniforge など） | Python 3.12 以上 |
+| この Mac に Python を入れるか | 入れません（同梱の環境で動きます） | conda の中に専用の環境を作ります | 既存のものを使います |
+| 残る場所 | この配布物のフォルダ内だけ | conda の環境フォルダ（専用の名前 `cynovela-dist`） | この配布物のフォルダ内だけ |
+| 削除方法 | フォルダごと削除 | 環境を1つ削除（`bash uninstall.sh`） | フォルダごと削除 |
+| 他の環境への影響 | ありません | **共有の環境には変更を加えません** | ありません |
 
-共通で必要なもの（実測済み）: AIモデル一式 **4.84 GB**／配布ファイル **3.15 GB**／初回の通信 **約 2.2 GB**。空き容量は **10 GB 以上**を推奨。
+共通で必要なもの（実測済み）: AIモデル一式 **4.84 GB**（別に落とします）。空き容量は **10 GB 以上**を推奨。
 
 ## モデル別取得版を受け取った方へ
 
@@ -210,8 +216,7 @@ bash uninstall.sh
 - 画面の表示は日本語のみです。英語には切り替わりません。
 - はじめての方へのガイドは、起動時に自動では出ません。最初の画面の「このツールについて」からいつでも開けます。
 - 環境の準備（--setup）は起動の画面から呼べません。ターミナルから実行してください。手順は同梱の「docs/USE-FROM-TERMINAL.txt」にあります。
-- コンテナで動かす形では、データの保存先を起動の画面から変えられません。保存先はコンテナの保存領域です。
-- この Mac に直接入れる形では、データの保存先を変えても、資料の中身そのものは元の場所に残ります。
+- データの保存先を変えても、資料の中身そのものは元の場所に残ります。
 - 資料のフォルダを足したあと、起動し直す前に外そうとすると失敗します。起動し直してから外してください。
 - 構成の「動作確認用」は、いまは「容量を優先」と同じモデルを使います。容量は変わりません。
 
