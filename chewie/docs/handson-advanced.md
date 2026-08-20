@@ -160,7 +160,7 @@ python server.py --demo --lan --port 9000
 
 MCP is the protocol for calling Cynovela's RAG search and workspace management tools from an external AI assistant. Cynovela ships with an MCP server implementation (`mcp_server.py`).
 
-### Provided tools (11)
+### Provided tools (25 in total; 22 visible by default)
 
 | Category | Tool name | Description |
 |------|--------|------|
@@ -168,13 +168,26 @@ MCP is the protocol for calling Cynovela's RAG search and workspace management t
 | RAG search | `search_across_collections` | RAG search across multiple collections |
 | RAG search | `rag_with_role` | RAG with the answer style of each role |
 | RAG search | `rag_general` | Ask the LLM directly without RAG (general knowledge answer) |
-| Information | `list_workspaces` | List of workspaces and collections |
-| Information | `get_workspace_info` | Details of a workspace |
-| Information | `get_collection_info` | Details of a collection |
-| Information | `get_audit_logs` | Get audit logs (up to 50) |
-| Management | `list_sources` | List of data sources |
-| Management | `publish_collection` | Publish a collection |
-| Management | `create_workspace` | Create a workspace |
+| Viewing | `list_workspaces` | List of workspaces and collections |
+| Viewing | `get_workspace_info` | Details of a workspace |
+| Viewing | `get_collection_info` | Details of a collection |
+| Viewing | `get_audit_logs` | Get audit logs (up to 50) |
+| Viewing | `list_sources` | List of data sources |
+| Viewing | `server_status` | Current status of the Cynovela server |
+| Ingestion and progress | `ingest_source` | Ingest a data source into a collection |
+| Ingestion and progress | `get_job_status` | Check the progress of a running job |
+| Ingestion and progress | `cancel_scan` | Cancel a running scan |
+| Publishing and creation | `publish_collection` | Start publishing a collection (returns a `job_id` immediately; check progress with `get_job_status`) |
+| Publishing and creation | `create_collection` | Create a collection |
+| Publishing and creation | `publish_control` | Control the publishing process |
+| Publishing and creation | `create_workspace` | Create a workspace |
+| Settings | `settings_show` | Show the current settings |
+| Settings | `settings_models` | Show the model settings |
+| Settings | `settings_test` | Test the settings and connections |
+| Settings | `settings_set` | Change a setting (enabled with `CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) |
+| Settings | `settings_providers` | Show the LLM providers |
+
+In addition, 3 admin tools (`delete_item` / `manage_users` / `manage_backups`) are closed by default. They appear only when `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` is set in the MCP server's env.
 
 ### How to check the connection
 
@@ -197,7 +210,7 @@ MCP is the protocol for calling Cynovela's RAG search and workspace management t
 | Behavior per role | The store switching and exit masking of admin / viewer |
 | `--mode` switching | The configuration differences of text / lite / lite-en |
 | LAN sharing | `--lan` / `--allow-tailscale` / `--allow-subnet` |
-| MCP integration | Operating Cynovela from an external assistant with 11 tools |
+| MCP integration | Operating Cynovela from an external assistant with 25 tools |
 
 ---
 
@@ -360,7 +373,7 @@ python server.py --demo --lan --port 9000
 
 MCP は、外部の AI アシスタントから Cynovela の RAG 検索やワークスペース管理ツールを呼び出すための連携プロトコルです。Cynovela には MCP サーバー実装（`mcp_server.py`）が同梱されています。
 
-### 提供されているツール（11 個）
+### 提供されているツール（全 25 個。既定で見えるのは 22 個）
 
 | 区分 | ツール名 | 説明 |
 |------|--------|------|
@@ -368,13 +381,26 @@ MCP は、外部の AI アシスタントから Cynovela の RAG 検索やワー
 | RAG 検索 | `search_across_collections` | 複数コレクションを横断する RAG 検索 |
 | RAG 検索 | `rag_with_role` | ロール別の回答スタイルで RAG |
 | RAG 検索 | `rag_general` | RAG なしで LLM に直接質問（一般知識回答） |
-| 情報 | `list_workspaces` | ワークスペースとコレクション一覧 |
-| 情報 | `get_workspace_info` | ワークスペースの詳細 |
-| 情報 | `get_collection_info` | コレクションの詳細 |
-| 情報 | `get_audit_logs` | 監査ログ取得（最大 50 件） |
-| 管理 | `list_sources` | データソース一覧 |
-| 管理 | `publish_collection` | コレクションを公開 |
-| 管理 | `create_workspace` | ワークスペース作成 |
+| 見る | `list_workspaces` | ワークスペースとコレクション一覧 |
+| 見る | `get_workspace_info` | ワークスペースの詳細 |
+| 見る | `get_collection_info` | コレクションの詳細 |
+| 見る | `get_audit_logs` | 監査ログ取得（最大 50 件） |
+| 見る | `list_sources` | データソース一覧 |
+| 見る | `server_status` | Cynovela サーバーの現在の状態 |
+| 入れる・進み具合 | `ingest_source` | データソースをコレクションへ取り込む |
+| 入れる・進み具合 | `get_job_status` | 走っているジョブの進み具合を確認 |
+| 入れる・進み具合 | `cancel_scan` | 走っているスキャンを取り消す |
+| 公開と作成 | `publish_collection` | コレクションの公開を始める（`job_id` を即返す。進み具合は `get_job_status`） |
+| 公開と作成 | `create_collection` | コレクション作成 |
+| 公開と作成 | `publish_control` | 公開処理の制御 |
+| 公開と作成 | `create_workspace` | ワークスペース作成 |
+| 設定 | `settings_show` | 現在の設定を表示 |
+| 設定 | `settings_models` | モデル設定を表示 |
+| 設定 | `settings_test` | 設定と接続の疎通確認 |
+| 設定 | `settings_set` | 設定の変更（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1` で有効） |
+| 設定 | `settings_providers` | LLM プロバイダの表示 |
+
+このほかに管理系の 3 個（`delete_item` / `manage_users` / `manage_backups`）が既定で閉じています。MCP サーバの env に `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を書いたときだけ現れます。
 
 ### 接続確認の進め方
 
@@ -397,6 +423,6 @@ MCP は、外部の AI アシスタントから Cynovela の RAG 検索やワー
 | ロール別動作 | admin / viewer の保管庫切替と出口マスク |
 | `--mode` 切替 | text / lite / lite-en の構成差 |
 | LAN 共有 | `--lan` / `--allow-tailscale` / `--allow-subnet` |
-| MCP 連携 | 11 ツールで外部アシスタントから Cynovela 操作 |
+| MCP 連携 | 25 ツールで外部アシスタントから Cynovela 操作 |
 
 ---

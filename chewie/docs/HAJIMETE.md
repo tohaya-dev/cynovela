@@ -188,6 +188,24 @@ the current stage and the number of items processed.
 For large documents the masking stage takes time, but as long as the count keeps moving
 it is making progress.
 
+### When you place folders or files there later
+
+Placing a folder or a file under an ingest source that is already registered does not
+make it appear in the list immediately. It is reflected by any one of the following.
+
+1. Start the application again (every start scans the registered ingest sources once;
+   files that have not changed are not read again, so it is fast)
+2. On the screen, the **"🔄 すべて読み込み直す"** (reload everything) button above the
+   "資料" (documents) list, or **"🔄 再スキャン"** (rescan) on each row (administrators only)
+3. Terminal: `python3 cynovela-cli.py ingest --path <folder>` (new) /
+   `python3 cynovela-cli.py scan start --source <ID>` (already registered)
+4. MCP: `ingest_source` / `get_job_status`
+
+The scan returns immediately once started; you follow the progress with the toast on the
+screen, or with `scan status --job <job_id>` of the CLI (stop it with
+`scan cancel --source <ID>`). To appear in search, go on as before: link it to a
+collection and publish it.
+
 ---
 
 ## 5. Ask a question
@@ -413,6 +431,24 @@ AIモデルは別に落とします（下の「初回だけ」を参照）。
 
 **画面を閉じても取り込みは続きます。** 開き直すと、いまの段と何件目かに戻ります。
 大きな資料ではマスキングの段に時間がかかりますが、件数が動き続けていれば進んでいます。
+
+### 後からフォルダやファイルを置いたとき
+
+登録済みの取り込み元の下に、後からフォルダやファイルを置いただけでは、即座には一覧に
+出ません。次のどれかで反映されます。
+
+1. 本体を起動し直す（起動のたびに登録済みの取り込み元を1回走査します。変わっていない
+   ファイルは読み直さないので速いです）
+2. 画面の「資料」一覧の上にある **「🔄 すべて読み込み直す」** ボタン、または各行の
+   **「🔄 再スキャン」**（管理者のみ）
+3. ターミナル: `python3 cynovela-cli.py ingest --path <フォルダ>`（新規）/
+   `python3 cynovela-cli.py scan start --source <ID>`（登録済み）
+4. MCP: `ingest_source` / `get_job_status`
+
+走査は「開始」で即戻ります。進み具合は画面のトースト、または CLI の
+`scan status --job <job_id>` で見ます（中止は `scan cancel --source <ID>`）。
+検索に出るには、この後は従来どおり、まとまり（Collection）へ結び付けて公開（Publish）
+まで行います。
 
 ---
 

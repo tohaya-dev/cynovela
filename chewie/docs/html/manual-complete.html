@@ -892,13 +892,16 @@ failed → draft</code></pre>
 <span class="slide-title">6-2. MCP Integration</span>
 </div>
 <div class="slide-body">
-<p>Cynovela exposes 11 tools as an MCP server.</p>
+<p>Cynovela exposes 25 tools as an MCP server (22 visible by default; the 3 admin tools appear only when <code>CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1</code> is set).</p>
 <table>
 <thead><tr><th>Category</th><th>Tools</th></tr></thead>
 <tbody>
 <tr><td>RAG search (4)</td><td><code>search_collection</code>,<code>search_across_collections</code>,<code>rag_with_role</code>,<code>rag_general</code></td></tr>
-<tr><td>Information retrieval (4)</td><td><code>list_workspaces</code>,<code>get_workspace_info</code>,<code>get_collection_info</code>,<code>get_audit_logs</code></td></tr>
-<tr><td>Administration (3)</td><td><code>list_sources</code>,<code>publish_collection</code>,<code>create_workspace</code></td></tr>
+<tr><td>Information retrieval (6)</td><td><code>list_workspaces</code>,<code>get_workspace_info</code>,<code>get_collection_info</code>,<code>get_audit_logs</code>,<code>list_sources</code>,<code>server_status</code></td></tr>
+<tr><td>Ingestion and progress (3)</td><td><code>ingest_source</code>,<code>get_job_status</code>,<code>cancel_scan</code></td></tr>
+<tr><td>Publishing and creation (4)</td><td><code>publish_collection</code>,<code>create_collection</code>,<code>publish_control</code>,<code>create_workspace</code></td></tr>
+<tr><td>Settings (5)</td><td><code>settings_show</code>,<code>settings_models</code>,<code>settings_test</code>,<code>settings_set</code>,<code>settings_providers</code></td></tr>
+<tr><td>Administration, closed by default (3)</td><td><code>delete_item</code>,<code>manage_users</code>,<code>manage_backups</code></td></tr>
 </tbody>
 </table>
 <p>You can connect from an MCP client such as LM Studio. As a limitation specific to conda environments, you must specify the path of the Python executable with the<code>CYNOVELA_MCP_PYTHON</code> environment variable.</p>
@@ -1812,13 +1815,16 @@ failed → draft</code></pre>
 <span class="slide-title">6-2. MCP 連携</span>
 </div>
 <div class="slide-body">
-<p>Cynovela は MCP サーバーとして 11 ツールを公開しています。</p>
+<p>Cynovela は MCP サーバーとして 25 ツールを公開しています（既定で見えるのは 22。管理系の 3 個は <code>CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1</code> を設定したときだけ現れます）。</p>
 <table>
 <thead><tr><th>カテゴリ</th><th>ツール</th></tr></thead>
 <tbody>
 <tr><td>RAG 検索系（4）</td><td><code>search_collection</code>、<code>search_across_collections</code>、<code>rag_with_role</code>、<code>rag_general</code></td></tr>
-<tr><td>情報取得系（4）</td><td><code>list_workspaces</code>、<code>get_workspace_info</code>、<code>get_collection_info</code>、<code>get_audit_logs</code></td></tr>
-<tr><td>管理系（3）</td><td><code>list_sources</code>、<code>publish_collection</code>、<code>create_workspace</code></td></tr>
+<tr><td>見る（6）</td><td><code>list_workspaces</code>、<code>get_workspace_info</code>、<code>get_collection_info</code>、<code>get_audit_logs</code>、<code>list_sources</code>、<code>server_status</code></td></tr>
+<tr><td>資料を入れる・進み具合（3）</td><td><code>ingest_source</code>、<code>get_job_status</code>、<code>cancel_scan</code></td></tr>
+<tr><td>公開と作成（4）</td><td><code>publish_collection</code>、<code>create_collection</code>、<code>publish_control</code>、<code>create_workspace</code></td></tr>
+<tr><td>設定（5）</td><td><code>settings_show</code>、<code>settings_models</code>、<code>settings_test</code>、<code>settings_set</code>、<code>settings_providers</code></td></tr>
+<tr><td>管理・既定で閉（3）</td><td><code>delete_item</code>、<code>manage_users</code>、<code>manage_backups</code></td></tr>
 </tbody>
 </table>
 <p>LM Studio などの MCP クライアントから接続できます。conda 環境固有の制限として、<code>CYNOVELA_MCP_PYTHON</code> 環境変数で Python 実行ファイルパスを指定する必要があります。</p>

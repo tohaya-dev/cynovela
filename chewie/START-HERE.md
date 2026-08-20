@@ -118,7 +118,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 ### 8. Using it from the terminal (CLI), and connecting an AI client (MCP)
 
-**CLI — `cynovela-cli.py`.** It talks only to the running server's API. Every command is read-only except `settings set`, which shows the change first and never runs without an explicit `--yes`. Standard library only — no extra installs. Run it with the Python this package prepared (package edition: `./.venv-cynovela/bin/python3`; source edition choice 1: `conda run -n cynovela-dist python3`; or any Python 3.12+):
+**CLI — `cynovela-cli.py`.** It talks only to the running server's API. The commands cover the same work the screen can do: see, ask, bring material in, publish, clean up, manage people, and back up. Dangerous operations (`delete` / `users` / `backup` / `settings set`) always show what would happen first and never run without an explicit `--yes`. Standard library only — no extra installs. Run it with the Python this package prepared (package edition: `./.venv-cynovela/bin/python3`; source edition choice 1: `conda run -n cynovela-dist python3`; or any Python 3.12+):
 
 ```
 ./.venv-cynovela/bin/python3 cynovela-cli.py doctor
@@ -130,16 +130,26 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 |---|---|
 | `doctor` | What is missing right now: Python version, models, inference server (LM Studio / Ollama), **whether the configured model is actually loaded**, port, database, conda |
 | `status` | Is the server up |
-| `workspaces` / `collections` | Lists |
+| `workspaces` | List. Also: `create --name <name>` / `update --workspace <id> [--name] [--description] [--add-source <source_id>]` / `archive` / `unarchive` |
+| `collections` | List. Also: `create --workspace <id> --name <name>` / `link --collection <id> --from-source <source_id>` (or `--files id,id`) |
+| `sources` | List registered sources. `--files <source_id>` lists the files of one source |
+| `audit-logs [--limit N]` | Recent audit log entries (admin token) |
 | `search --workspace <id> --collection <id> --query "..."` | Returns source fragments only (no answer is shown) |
+| `chat --workspace <id> --query "..." [--collection <id>]` | Asks a question and prints the answer with its sources |
+| `ingest --path <folder> [--name <name>] [--workspace <id>]` | One line that registers a folder as a source and starts scanning it. Returns a `job_id` at once |
+| `scan start --source <id>` / `scan status --job <job_id>` / `scan cancel --source <id>` | Start a scan (returns a `job_id` at once) / see its progress / cancel it |
+| `publish start --collection <id>` / `publish status --job <job_id>` / `publish stop` / `publish recover` | Start a publish (returns a `job_id` at once) / progress / stop / recover a stuck one |
 | `index-status` | Chunk counts per collection |
+| `delete source\|collection\|workspace <id>` | Deletes it. Without `--yes` it only shows what would happen (admin token) |
+| `users list` / `create` / `update` / `delete` / `reset-password` | Manage users. Changes need `--yes` (admin token) |
+| `backup list` / `create` / `restore` / `delete` | Backups of the database and settings. Changes need `--yes`; after `restore`, restart the server (admin token) |
 | `settings show [name]` | Current settings. `name` is one of `llm` (default), `reranker`, `classifier`, `embedding`, `pii`, `vector-store`, `datasync`. API keys are shown only as set / not set, never as values (admin token) |
 | `settings models` / `settings test` / `settings providers` | Models at the endpoint / test the LLM connection / selectable presets (admin token) |
-| `settings set [name] --set KEY=VALUE` | **The only command that changes server state.** Shows before → after, then does nothing unless `--yes` is added; `--dry-run` previews only (admin token) |
+| `settings set [name] --set KEY=VALUE` | Changes server settings. Shows before → after, then does nothing unless `--yes` is added; `--dry-run` previews only (admin token) |
 
 Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes: **0** = OK, **1** = bad input, **2** = server unreachable, **3** = authentication failed, **4** = server error. Commands other than `doctor`/`status` need the token issued at web sign-in: pass it with `--token`, or write `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` into `~/.cynovela_cli.env`. (The `./launch.sh` flags themselves are covered in `docs/USE-FROM-TERMINAL.txt` — a different topic.)
 
-**MCP — connecting an AI client.** `mcp_server.py` exposes Cynovela's search and workspace tools to MCP clients (protocol revision 2026-07-28, stdio). Point your client at it like this (the same snippet is served signed-in at `/api/mcp/config`):
+**MCP — connecting an AI client.** `mcp_server.py` exposes Cynovela's tools to MCP clients (protocol revision 2026-07-28, stdio): searching, viewing, bringing material in (`ingest_source`, progress via `get_job_status`), publishing, and settings — 25 tools, of which 22 are visible by default. The three admin tools (`delete_item` / `manage_users` / `manage_backups`) appear only when the MCP server's env sets `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1`. Point your client at it like this (the same snippet is served signed-in at `/api/mcp/config`):
 
 ```json
 {"mcpServers": {"cynovela": {
@@ -297,7 +307,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 ### 8. 端末から使う（CLI）と、AI クライアントを繋ぐ（MCP）
 
-**CLI — `cynovela-cli.py`。** 稼働中のサーバの API だけを叩きます。命令は `settings set` を除いて全て読むだけで、`settings set` も変更内容を先に見せ、明示的な `--yes` なしには決して実行しません。標準ライブラリのみで、追加の導入は不要です。この配布物が用意した Python で叩きます（パッケージ版: `./.venv-cynovela/bin/python3`、ソース版の選択肢1: `conda run -n cynovela-dist python3`、または任意の Python 3.12 以上）:
+**CLI — `cynovela-cli.py`。** 稼働中のサーバの API だけを叩きます。命令は画面でできる作業と同じ範囲を覆います: 見る・探す・資料を入れる・公開する・片づける・利用者を管理する・控えを取る。危険な操作（`delete` / `users` / `backup` / `settings set`）は必ず「何が起きるか」を先に見せ、明示的な `--yes` なしには決して実行しません。標準ライブラリのみで、追加の導入は不要です。この配布物が用意した Python で叩きます（パッケージ版: `./.venv-cynovela/bin/python3`、ソース版の選択肢1: `conda run -n cynovela-dist python3`、または任意の Python 3.12 以上）:
 
 ```
 ./.venv-cynovela/bin/python3 cynovela-cli.py doctor
@@ -309,16 +319,26 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 |---|---|
 | `doctor` | いま何が足りないか: Python の版・モデル・推論サーバ（LM Studio / Ollama）・**設定されたモデルが実際に読み込まれているか**・番号・データベース・conda |
 | `status` | サーバが起きているか |
-| `workspaces` / `collections` | 一覧 |
+| `workspaces` | 一覧。ほかに: `create --name <名前>` / `update --workspace <id> [--name] [--description] [--add-source <資料のid>]` / `archive` / `unarchive` |
+| `collections` | 一覧。ほかに: `create --workspace <id> --name <名前>` / `link --collection <id> --from-source <資料のid>`（または `--files id,id`） |
+| `sources` | 登録済みの取り込み元の一覧。`--files <資料のid>` でその中のファイル一覧 |
+| `audit-logs [--limit N]` | 監査ログの直近の記録（管理者トークン） |
 | `search --workspace <id> --collection <id> --query "..."` | 出典の断片だけを返します（回答は表示しません） |
+| `chat --workspace <id> --query "..." [--collection <id>]` | 質問して、回答と出典を表示します |
+| `ingest --path <フォルダ> [--name <名前>] [--workspace <id>]` | フォルダを資料として登録し走査を始める、を1行で。`job_id` を即返します |
+| `scan start --source <id>` / `scan status --job <job_id>` / `scan cancel --source <id>` | 走査を始める（`job_id` を即返す）/ 進み具合を見る / 中止する |
+| `publish start --collection <id>` / `publish status --job <job_id>` / `publish stop` / `publish recover` | 公開を始める（`job_id` を即返す）/ 進み具合 / 止める / 固着からの復旧 |
 | `index-status` | コレクションごとの塊の数 |
+| `delete source\|collection\|workspace <id>` | 消します。`--yes` を付けないときは「何が起きるか」を見せるだけです（管理者トークン） |
+| `users list` / `create` / `update` / `delete` / `reset-password` | 利用者の管理。変更には `--yes` が必須（管理者トークン） |
+| `backup list` / `create` / `restore` / `delete` | データベースと設定の控え。変更には `--yes` が必須。`restore` の後はサーバを起動し直してください（管理者トークン） |
 | `settings show [対象]` | いまの設定。対象は `llm`（既定）/ `reranker` / `classifier` / `embedding` / `pii` / `vector-store` / `datasync`。API キーは設定あり / なし だけを示し、値は出しません（管理者トークン） |
 | `settings models` / `settings test` / `settings providers` | 接続先のモデル一覧 / LLM 接続の確認 / 選べるプリセット（管理者トークン） |
-| `settings set [対象] --set KEY=VALUE` | **サーバの状態を変える唯一の命令。** 変更前 → 変更後を見せてから、`--yes` を足さない限り何もしません。`--dry-run` は確認だけ（管理者トークン） |
+| `settings set [対象] --set KEY=VALUE` | サーバの設定を変えます。変更前 → 変更後を見せてから、`--yes` を足さない限り何もしません。`--dry-run` は確認だけ（管理者トークン） |
 
 全命令に `--json`（機械で読める形）と `--lang en|ja` があります。終了コード: **0** = 正常、**1** = 入力の誤り、**2** = サーバへ到達できない、**3** = 認証に失敗、**4** = サーバが誤りを返した。`doctor`・`status` 以外は、画面のログインで発行されたトークンが要ります: `--token` で渡すか、`~/.cynovela_cli.env` に `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` を書いてください。（`./launch.sh` 自体のフラグは別の話で、`docs/USE-FROM-TERMINAL.txt` にあります。）
 
-**MCP — AI クライアントを繋ぐ。** `mcp_server.py` が Cynovela の検索・ワークスペースの道具を MCP クライアントへ出します（プロトコル版 2026-07-28・stdio）。クライアントには次の形で指します（同じスニペットはログイン後の `/api/mcp/config` でも取れます）:
+**MCP — AI クライアントを繋ぐ。** `mcp_server.py` が Cynovela の道具を MCP クライアントへ出します（プロトコル版 2026-07-28・stdio）: 検索・見る・資料を入れる（`ingest_source`。進み具合は `get_job_status`）・公開・設定の 25 個で、既定で見えるのは 22 個です。管理系の 3 個（`delete_item` / `manage_users` / `manage_backups`）は、MCP サーバの env に `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を書いたときだけ現れます。クライアントには次の形で指します（同じスニペットはログイン後の `/api/mcp/config` でも取れます）:
 
 ```json
 {"mcpServers": {"cynovela": {

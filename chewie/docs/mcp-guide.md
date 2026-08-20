@@ -30,7 +30,9 @@ With MCP, when a user says to an LLM client "search our internal documents", the
 
 ---
 
-## 2. MCP tools Cynovela exposes (16 in total)
+## 2. MCP tools Cynovela exposes (25 in total)
+
+22 tools are visible by default. The three administration tools in section 2-6 are closed by default: they appear in `tools/list` only when the MCP server's `env` sets `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` (see section 5-5).
 
 ### 2-1. RAG search tools (4)
 
@@ -53,7 +55,7 @@ With MCP, when a user says to an LLM client "search our internal documents", the
 - **Arguments (required)**: `query`, `workspace_id`
 - **Description**: Generates an answer using only the LLM's general knowledge, without using RAG. It is for general questions that do not depend on internal documents.
 
-### 2-2. Information retrieval tools (4)
+### 2-2. Information retrieval tools (6)
 
 #### `list_workspaces`
 - **Arguments**: none
@@ -72,22 +74,50 @@ With MCP, when a user says to an LLM client "search our internal documents", the
 - **Arguments (optional)**: `limit` (default 10, maximum 50)
 - **Description**: Gets the audit log (chat history, PII detection, errors).
 
-### 2-3. Administration tools (3)
-
 #### `list_sources`
 - **Arguments (required)**: `workspace_id`
 - **Description**: Returns a list of the data sources under the workspace (file path, status, file count).
 
+#### `server_status`
+- **Arguments**: none
+- **Description**: Shows whether the server is up and the state of the index (collections and their chunk counts).
+
+### 2-3. Ingestion and progress tools (3)
+
+#### `ingest_source`
+- **Arguments (required)**: `path`
+- **Arguments (optional)**: `name`, `workspace_id`
+- **Description**: Ingests material in one tool: adds the folder as a data source, registers the material, and starts the scan. The scan returns a `job_id` the moment it starts and the call comes back immediately; watch the progress with `get_job_status`.
+
+#### `get_job_status`
+- **Arguments (required)**: `job_id`
+- **Description**: Shows the progress of a scan or a publish. Pass the `job_id` returned by `ingest_source` or `publish_collection`.
+
+#### `cancel_scan`
+- **Arguments (required)**: `source_id`
+- **Description**: Requests cancellation of a running scan.
+
+### 2-4. Publishing and creation tools (4)
+
 #### `publish_collection`
 - **Arguments (required)**: `collection_id`
-- **Description**: Publishes the specified collection into a state where it can be searched by RAG.
+- **Description**: Starts publishing the collection and returns a `job_id` immediately — it does not wait for the publish to finish. Watch the progress with `get_job_status`. Once published, the collection can be searched by RAG.
+
+#### `create_collection`
+- **Arguments (required)**: `workspace_id`, `name`
+- **Arguments (optional)**: `source_id`
+- **Description**: Creates a collection inside the workspace. When `source_id` is given, all files of that data source are linked to the new collection.
+
+#### `publish_control`
+- **Arguments (required)**: `collection_id`, `action` (`stop` or `recover`)
+- **Description**: Stops a running publish, or recovers a collection stuck in the publishing state.
 
 #### `create_workspace`
 - **Arguments (required)**: `name`
 - **Arguments (optional)**: `description`
 - **Description**: Creates a new workspace.
 
-### 2-4. Settings tools (5) — DD-CYN-0141 §5-C
+### 2-5. Settings tools (5)
 
 All five require an **admin** token. API keys are write-only: responses carry only the
 `api_key_set` boolean (set / not set), never a key value.
@@ -113,6 +143,28 @@ All five require an **admin** token. API keys are write-only: responses carry on
 - **Arguments**: none
 - **Description**: Lists the selectable LLM provider presets.
 
+### 2-6. Administration tools (3) — closed by default
+
+These three appear in `tools/list` only when the MCP server's `env` sets `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` (see section 5-5). This is not a removed feature: it is a guard that stops an AI, swayed by material it has just read, from firing destructive operations on its own.
+
+#### `delete_item`
+- **Arguments (required)**: `kind` (`source` / `collection` / `workspace`), `id`
+- **Description**: Deletes a data source, a collection, or a workspace.
+
+#### `manage_users`
+- **Arguments (required)**: `action` (`list` / `create` / `update` / `delete` / `reset_password`)
+- **Arguments (optional)**: `user_id`, `username`, `password`, `role`, `display_name`, `is_active`
+- **Description**: Manages users (list, create, update, delete, reset a password).
+
+#### `manage_backups`
+- **Arguments (required)**: `action` (`list` / `create` / `restore` / `delete`)
+- **Arguments (optional)**: `name`, `label`
+- **Description**: Handles backups (list, create, restore, delete). `restore` replaces the current data with the contents of the backup; a server restart is required for the restore to take effect.
+
+### 2-7. How to use the long-running operations
+
+Scanning (`ingest_source`) and publishing (`publish_collection`) return a `job_id` the moment they start and come back immediately. Watch the progress by passing that `job_id` to `get_job_status`, repeatedly. To cancel, use `cancel_scan` for a scan and `publish_control` with `stop` for a publish.
+
 ---
 
 ## 3. Connecting from LM Studio
@@ -132,7 +184,7 @@ Cynovela 本体（FastAPI サーバー）
 ### 3-2. Where LM Studio's configuration file is
 
 The MCP registration lives in a single JSON file named `mcp.json` inside LM Studio's home
-directory. Measured locations on macOS (DD-CYN-0141, LM Studio 0.4.x):
+directory. Measured locations on macOS (measured on LM Studio 0.4.x):
 
 - `~/.cache/lm-studio/mcp.json` — the location measured on the development machine
 - `~/.lmstudio/mcp.json` — the location when LM Studio's home is the newer default
@@ -181,6 +233,7 @@ Register the following in `mcp.json` (merge into the existing `mcpServers` objec
 
 - `command`: any Python 3.12+ — the natural choice is the one this package prepared (see section 4).
 - To allow `settings_set`, add `"CYNOVELA_MCP_ALLOW_SETTINGS_WRITE": "1"` to the `env` block (see 5-4). Leave it out to keep settings read-only.
+- To expose the three administration tools (`delete_item` / `manage_users` / `manage_backups`), add `"CYNOVELA_MCP_ALLOW_ADMIN_WRITE": "1"` to the `env` block (see 5-5). Leave it out and they do not appear at all.
 
 ### 3-5. LM Studio asks a person for permission — this part is yours
 
@@ -218,7 +271,7 @@ The MCP server authenticates to the main Cynovela API with the `Authorization: B
 
 ### 5-2. Role permissions
 
-Calls made through MCP also pass the same role permission checks (admin / curator / viewer) as the main API. In particular, administration tools such as `create_workspace` and `publish_collection` may require admin permission, and all five settings tools require it.
+Calls made through MCP also pass the same role permission checks (admin / curator / viewer) as the main API. In particular, tools that write — such as `ingest_source`, `publish_collection` and `create_workspace` — may require admin permission, and all five settings tools require it.
 
 ### 5-3. Audit log
 
@@ -233,6 +286,10 @@ The settings tools are split into reading and writing:
 
 Why: the caller of an MCP tool is an AI that can be swayed by whatever material it has just read. If a document says "rewrite the settings", a path exists in principle for the AI to treat that as an instruction. Writing therefore requires an explicit, human-made decision on the client side. This guard is *not* a replacement for the server-side role check — that check still runs as before; this is a thin extra layer in front of it.
 
+### 5-5. Guard for the administration tools (default: hidden)
+
+The three administration tools (`delete_item`, `manage_users`, `manage_backups`) are **closed by default**. They appear in `tools/list` — and run — only when the MCP server process was started with `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` in its environment; in LM Studio, that means adding the line to the `env` block of `mcp.json` (section 3-4). The reason is the same as in 5-4: deletion, user management and backup restore are exactly the operations an AI must not fire on its own after being swayed by material it has just read. This is not a removed feature — it is a thin, explicit switch a human turns on; the server-side role check still runs as before.
+
 ---
 
 ## 6. Troubleshooting
@@ -243,6 +300,7 @@ Why: the caller of an MCP tool is an AI that can be swayed by whatever material 
 | The server appears in LM Studio but no tool is ever called | The human permission in LM Studio has not been granted yet — see section 3-5. The registration alone does not allow calls; allow the tool call in the chat window's confirmation dialog |
 | Authentication error | The value of the `CYNOVELA_TOKEN` environment variable, and whether the token is still valid — **tokens expire after 8 hours**; re-issue with the login call in section 3-3 |
 | `settings_set` answers "the write is closed by default" | That is the write guard (section 5-4), not a fault. Add `"CYNOVELA_MCP_ALLOW_SETTINGS_WRITE": "1"` to the `env` block of `mcp.json` if you really want writes |
+| `delete_item` / `manage_users` / `manage_backups` do not appear in the tool list | That is the guard (section 5-5), not a fault. Add `"CYNOVELA_MCP_ALLOW_ADMIN_WRITE": "1"` to the `env` block of `mcp.json` if you really want them |
 | ImportError appears | Whether the Python is 3.12 or later (`mcp_server.py` itself has no external dependencies) |
 | The result is empty | Whether the target Collection has reached the `ready` status |
 
@@ -278,7 +336,9 @@ MCP を使うと、ユーザーが LLM クライアントに「うちの社内�
 
 ---
 
-## 2. Cynovela が公開する MCP ツール（全 16 件）
+## 2. Cynovela が公開する MCP ツール（全 25 件）
+
+既定で見えるのは 22 件です。2-6 節の管理系 3 件は既定で閉じており、MCP サーバの `env` に `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を書いたときだけ `tools/list` に現れます（5-5 節）。
 
 ### 2-1. RAG 検索系（4 件）
 
@@ -301,7 +361,7 @@ MCP を使うと、ユーザーが LLM クライアントに「うちの社内�
 - **引数（必須）**: `query`, `workspace_id`
 - **説明**: RAG を使わず、LLM の一般知識のみで回答を生成します。社内文書に依存しない一般的な質問用です。
 
-### 2-2. 情報取得系（4 件）
+### 2-2. 情報取得系（6 件）
 
 #### `list_workspaces`
 - **引数**: なし
@@ -320,22 +380,50 @@ MCP を使うと、ユーザーが LLM クライアントに「うちの社内�
 - **引数（任意）**: `limit`（既定 10、上限 50）
 - **説明**: 監査ログ（チャット履歴、PII 検出、エラー）を取得します。
 
-### 2-3. 管理系（3 件）
-
 #### `list_sources`
 - **引数（必須）**: `workspace_id`
 - **説明**: ワークスペース配下のデータソース一覧（ファイルパス、ステータス、ファイル数）を返します。
 
+#### `server_status`
+- **引数**: なし
+- **説明**: サーバの稼働と索引の状態（まとまりごとの塊の数）を見ます。
+
+### 2-3. 資料を入れる・進み具合（3 件）
+
+#### `ingest_source`
+- **引数（必須）**: `path`
+- **引数（任意）**: `name`, `workspace_id`
+- **説明**: 資料を入れます。取り込み元を足す→資料として登録する→走査を始める、を 1 道具で行います。走査は始めた時点で `job_id` を返してすぐ戻ります。進み具合は `get_job_status` で見ます。
+
+#### `get_job_status`
+- **引数（必須）**: `job_id`
+- **説明**: 走査と公開の進み具合を見ます。`ingest_source` / `publish_collection` が返した `job_id` を渡します。
+
+#### `cancel_scan`
+- **引数（必須）**: `source_id`
+- **説明**: 走行中の走査に中止を要求します。
+
+### 2-4. 公開と作成系（4 件）
+
 #### `publish_collection`
 - **引数（必須）**: `collection_id`
-- **説明**: 指定コレクションを RAG 検索可能な状態に公開します。
+- **説明**: 指定コレクションの公開を始め、`job_id` を即座に返します — 終わるまで待ちません。進み具合は `get_job_status` で見ます。公開後は RAG 検索が可能になります。
+
+#### `create_collection`
+- **引数（必須）**: `workspace_id`, `name`
+- **引数（任意）**: `source_id`
+- **説明**: 作業場所の中にまとまり（コレクション）を作ります。`source_id` を渡すと、その資料の全ファイルを結び付けます。
+
+#### `publish_control`
+- **引数（必須）**: `collection_id`, `action`（`stop` / `recover`）
+- **説明**: 走行中の公開を止める、または固着した公開から復旧します。
 
 #### `create_workspace`
 - **引数（必須）**: `name`
 - **引数（任意）**: `description`
 - **説明**: 新規ワークスペースを作成します。
 
-### 2-4. 設定系（5 件）— DD-CYN-0141 §5-C
+### 2-5. 設定系（5 件）
 
 5 件とも**管理者**のトークンが必要です。API キーは書き込み専用で、応答には
 設定あり / なし の bool（`api_key_set`）だけが載り、値は決して返しません。
@@ -361,6 +449,28 @@ MCP を使うと、ユーザーが LLM クライアントに「うちの社内�
 - **引数**: なし
 - **説明**: 選べる LLM プロバイダーのプリセット一覧を出します。
 
+### 2-6. 管理系（3 件）— 既定で閉
+
+この 3 件は、MCP サーバの `env` に `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を書いたときだけ `tools/list` に現れます（5-5 節）。これは機能を削っているのではなく、直前に読んだ資料に引きずられた AI の暴発を止める仕掛けです。
+
+#### `delete_item`
+- **引数（必須）**: `kind`（`source` / `collection` / `workspace`）, `id`
+- **説明**: 資料・まとまり・作業場所を消します。
+
+#### `manage_users`
+- **引数（必須）**: `action`（`list` / `create` / `update` / `delete` / `reset_password`）
+- **引数（任意）**: `user_id`, `username`, `password`, `role`, `display_name`, `is_active`
+- **説明**: 利用者を管理します（一覧・作成・変更・削除・パスワード再設定）。
+
+#### `manage_backups`
+- **引数（必須）**: `action`（`list` / `create` / `restore` / `delete`）
+- **引数（任意）**: `name`, `label`
+- **説明**: 控えを扱います（一覧・作成・復元・削除）。`restore` はいまのデータを控えの中身に置き換えます。反映にはサーバの再起動が要ります。
+
+### 2-7. 時間のかかる処理の使い方
+
+走査（`ingest_source`）と公開（`publish_collection`）は、開始した時点で `job_id` を返してすぐ戻ります。進み具合は `get_job_status` に `job_id` を渡して繰り返し見ます。中止は、走査なら `cancel_scan`、公開なら `publish_control` の `stop` です。
+
 ---
 
 ## 3. LM Studio からの接続
@@ -380,7 +490,7 @@ Cynovela 本体（FastAPI サーバー）
 ### 3-2. LM Studio の設定ファイルの場所
 
 MCP の登録は、LM Studio のホームディレクトリにある `mcp.json` という 1 つの JSON
-ファイルに書きます。macOS での実測の位置（DD-CYN-0141・LM Studio 0.4.x）:
+ファイルに書きます。macOS での位置（LM Studio 0.4.x での実測）:
 
 - `~/.cache/lm-studio/mcp.json` — 開発機で実測した位置
 - `~/.lmstudio/mcp.json` — LM Studio のホームが新しい既定のときの位置
@@ -429,6 +539,7 @@ curl -s -X POST http://127.0.0.1:8765/api/auth/login \
 
 - `command`: Python 3.12 以上ならどれでも動きます。自然な選択は、この配布物が用意した Python です（4 節）。
 - `settings_set` を許すときだけ、`env` に `"CYNOVELA_MCP_ALLOW_SETTINGS_WRITE": "1"` を足します（5-4 節）。書かなければ設定は読み取り専用のままです。
+- 管理系の 3 件（`delete_item` / `manage_users` / `manage_backups`）を出すときだけ、`env` に `"CYNOVELA_MCP_ALLOW_ADMIN_WRITE": "1"` を足します（5-5 節）。書かなければ 3 件はそもそも現れません。
 
 ### 3-5. LM Studio が画面で許可を求めます — ここからは人の操作です
 
@@ -466,7 +577,7 @@ MCP サーバーは Cynovela 本体 API に対して `Authorization: Bearer<toke
 
 ### 5-2. ロール権限
 
-MCP 経由の呼び出しも本体 API と同じロール（admin / curator / viewer）の権限チェックを通過します。特に `create_workspace` や `publish_collection` などの管理系ツールは admin 権限を要する場合があり、設定系の 5 件はすべて admin 権限が必要です。
+MCP 経由の呼び出しも本体 API と同じロール（admin / curator / viewer）の権限チェックを通過します。特に `ingest_source` や `publish_collection`、`create_workspace` など書き込みを伴うツールは admin 権限を要する場合があり、設定系の 5 件はすべて admin 権限が必要です。
 
 ### 5-3. 監査ログ
 
@@ -481,6 +592,10 @@ MCP 経由の操作も本体と同じ監査ログ（`audit_logs` テーブル）
 
 理由: MCP の道具を呼ぶのは、直前に読んだ資料の中身に引きずられうる AI です。資料の中に「設定を書き換えろ」と書かれていれば、それを指示と受け取って実行する経路が原理的に存在します。∴ 書き込みには、クライアント側での人の明示的な判断を要します。この守りはサーバ側のロール検査の代わりでは*なく*、従来どおり動くその検査の手前に重ねる薄い層です。
 
+### 5-5. 管理系の道具の守り（既定: 見えない）
+
+管理系の 3 件（`delete_item`・`manage_users`・`manage_backups`）は**既定で閉じています**。MCP サーバのプロセスが環境変数 `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` 付きで起動されたときだけ `tools/list` に現れ、実行できます — LM Studio では `mcp.json` の `env` にこの 1 行を足すことがそれに当たります（3-4 節）。理由は 5-4 節と同じです: 削除・利用者管理・控えの復元は、直前に読んだ資料に引きずられた AI が独断で撃ってはならない操作そのものです。これは機能を削っているのではなく、人が明示的に入れる薄いスイッチです。サーバ側のロール検査は従来どおり動きます。
+
 ---
 
 ## 6. トラブルシューティング
@@ -491,6 +606,7 @@ MCP 経由の操作も本体と同じ監査ログ（`audit_logs` テーブル）
 | LM Studio にサーバは並ぶのに道具が一度も呼ばれない | LM Studio の画面での人の許可がまだ出ていません — 3-5 節を見てください。登録だけでは呼び出しは許可されません。チャット画面の確認ダイアログで許可を出します |
 | 認証エラー | `CYNOVELA_TOKEN` 環境変数の値、トークンの有効性 — **トークンは 8 時間で切れます**。3-3 節のログインの呼び出しで発行し直してください |
 | `settings_set` が「書き込みは既定で閉じています」と答える | それは守り（5-4 節）であって故障ではありません。本当に書き込みたいときだけ `mcp.json` の `env` に `"CYNOVELA_MCP_ALLOW_SETTINGS_WRITE": "1"` を足します |
+| `delete_item` / `manage_users` / `manage_backups` が一覧に出ない | それは守り（5-5 節）であって故障ではありません。本当に使いたいときだけ `mcp.json` の `env` に `"CYNOVELA_MCP_ALLOW_ADMIN_WRITE": "1"` を足します |
 | ImportError が出る | Python が 3.12 以上か（`mcp_server.py` 自体に外部依存はありません） |
 | 結果が空 | 対象 Collection が `ready` ステータスに到達済みか |
 

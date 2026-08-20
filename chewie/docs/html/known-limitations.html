@@ -543,7 +543,7 @@ a:hover { text-decoration: underline; }
 <p>The MCP tools include<code>search_across_collections</code> (search across multiple collections), but<strong>the screen (GUI) has no entry point for cross-collection search.</strong> From the screen you select one workspace and search.</p>
 <h3>MCP</h3>
 <ul>
-<li><code>mcp_server.py</code> provides 11 tools.</li>
+<li><code>mcp_server.py</code> provides 25 tools (22 visible by default; 3 admin tools appear only when CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 is set).</li>
 <li>The MCP server is built to query the Cynovela REST API internally with authentication. In other words,<strong>if the main application is not running, MCP does not run either.</strong></li>
 <li>The Python executable that runs MCP can be specified with the environment variable<code>CYNOVELA_MCP_PYTHON</code>. If it is not specified, the currently running Python is used as it is (<code>routers/mcp.py</code>).</li>
 </ul>
@@ -932,7 +932,7 @@ a:hover { text-decoration: underline; }
 <p>MCP のツールには<code>search_across_collections</code>（複数のコレクションをまたぐ検索）がありますが、<strong>画面（GUI）には横断検索の入口がありません。</strong> 画面からはワークスペースを 1 つ選んで検索します。</p>
 <h3>MCP</h3>
 <ul>
-<li><code>mcp_server.py</code> は 11 個のツールを提供します。</li>
+<li><code>mcp_server.py</code> は 25 個の道具（既定で見えるのは 22 個。管理系の 3 個は CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を設定したときだけ現れます）を提供します。</li>
 <li>MCP サーバーは、内部で Cynovela の REST API に認証付きで問い合わせる作りです。つまり<strong>本体が動いていないと MCP も動きません。</strong></li>
 <li>MCP を動かす Python の実行ファイルは、環境変数<code>CYNOVELA_MCP_PYTHON</code> で指定できます。指定が無ければ、いま動いている Python をそのまま使います（<code>routers/mcp.py</code>）。</li>
 </ul>

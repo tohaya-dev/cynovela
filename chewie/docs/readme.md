@@ -62,7 +62,7 @@ The implementation is entirely original and contains no source code of the refer
 ### 2-5. External integration
 
 - LM Studio / Ollama / OpenAI-compatible API connection
-- MCP server (16 tools)
+- MCP server (25 tools; 22 visible by default — 3 admin tools appear only when CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 is set)
 - LAN sharing and Tailscale sharing
 
 ---
@@ -218,7 +218,7 @@ Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かし�
 ### 2-5. 外部連携
 
 - LM Studio / Ollama / OpenAI 互換 API 接続
-- MCP サーバー（16 ツール）
+- MCP サーバー（25 個の道具。既定で見えるのは 22 個。管理系の 3 個は CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を設定したときだけ現れます）
 - LAN 共有・Tailscale 共有
 
 ---

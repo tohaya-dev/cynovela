@@ -140,6 +140,22 @@ CREATE TABLE IF NOT EXISTS publish_jobs (
     created_at    TEXT DEFAULT (datetime('now')),
     updated_at    TEXT DEFAULT (datetime('now'))
 );
+
+-- scan_jobs (バックグラウンド走査の進捗管理)。publish_jobs と同じ形に揃える。
+-- status: pending / running / completed / failed / stopped
+-- stage:  counting / scanning / done / error / stopped
+CREATE TABLE IF NOT EXISTS scan_jobs (
+    id            TEXT PRIMARY KEY,
+    source_id     TEXT NOT NULL,
+    status        TEXT DEFAULT 'pending',
+    stage         TEXT DEFAULT '',
+    progress      INTEGER DEFAULT 0,
+    total         INTEGER DEFAULT 0,
+    message       TEXT DEFAULT '',
+    error         TEXT DEFAULT NULL,
+    created_at    TEXT DEFAULT (datetime('now')),
+    updated_at    TEXT DEFAULT (datetime('now'))
+);
 """
 
 
@@ -184,6 +200,22 @@ def migrate_db(conn) -> None:
         conn.execute("ALTER TABLE publish_jobs ADD COLUMN stage TEXT DEFAULT ''")
     except Exception:
         pass
+
+    # ---- scan_jobs (バックグラウンド走査の進捗管理。publish_jobs と同じ形) ----
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS scan_jobs (
+            id            TEXT PRIMARY KEY,
+            source_id     TEXT NOT NULL,
+            status        TEXT DEFAULT 'pending',
+            stage         TEXT DEFAULT '',
+            progress      INTEGER DEFAULT 0,
+            total         INTEGER DEFAULT 0,
+            message       TEXT DEFAULT '',
+            error         TEXT DEFAULT NULL,
+            created_at    TEXT DEFAULT (datetime('now')),
+            updated_at    TEXT DEFAULT (datetime('now'))
+        )
+    """)
 
     # ---- Phase 1 追加: chunks テーブル（UIからの可視化用メタデータ） ----
     # ChromaDB主体だが、Chunksビューア／RAGデバッグ用にメタデータをSQLite側にも保持する。

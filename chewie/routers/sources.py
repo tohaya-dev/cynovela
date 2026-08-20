@@ -236,6 +236,43 @@ def cancel_scan(request: Request, source_id: str):
     return {"ok": True, "status": "cancel_requested", "source_id": source_id}
 
 
+@router.post("/api/sources/{source_id}/scan/async", response_model=None)
+def scan_source_async(request: Request, source_id: str):
+    """DD-CYN-0142 §5-B: 走査を「開始だけを返す口」で始める (publish/async と同じ形)。
+
+    scan_jobs に pending 行を作って job_id を即返し、走査は別スレッドで回す。
+    進み具合は GET /api/jobs/{job_id} で取る。中止は既存の /scan/cancel。
+    """
+    from server import _do_scan
+
+    _require_admin(request)
+    conn = get_db()
+    try:
+        source = conn.execute("SELECT * FROM sources WHERE id = ?", (source_id,)).fetchone()
+        if not source:
+            raise HTTPException(404, "Source not found")
+        # 同じ source への走査の重複起動を防ぐ (publish/async の 409 ガードと同じ)
+        running = conn.execute(
+            "SELECT id FROM scan_jobs WHERE source_id = ? AND status IN ('pending','running')",
+            (source_id,),
+        ).fetchone()
+        if running:
+            raise HTTPException(
+                409, f"この取り込み元は走査中です (job_id={running['id']})。終わるのを待つか /scan/cancel で止めてください。"
+            )
+        job_id = new_id()
+        conn.execute(
+            "INSERT INTO scan_jobs (id, source_id, status, message) VALUES (?, ?, 'pending', 'Queued')",
+            (job_id, source_id),
+        )
+        _log_audit(conn, "scan_started", source_id, f"async job={job_id}")
+        conn.commit()
+    finally:
+        conn.close()
+    threading.Thread(target=_do_scan, args=(source_id,), kwargs={"job_id": job_id}, daemon=True).start()
+    return {"job_id": job_id, "source_id": source_id, "status": "pending"}
+
+
 @router.post("/api/sources/{source_id}/scan", response_model=None)
 def scan_source(request: Request, source_id: str):
     from server import _do_scan, row_to_dict

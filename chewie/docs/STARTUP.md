@@ -21,6 +21,19 @@ There are two ways to start. **No argument is production** (it starts from an em
 # http://localhost:8765
 ```
 
+Notes before the first start:
+
+- macOS attaches a mark (`com.apple.quarantine`) to a downloaded package, and confirmations
+  can appear again and again, one per component. `./launch.sh` removes all of these marks
+  inside the package by itself at the very beginning of startup. To do it by hand:
+  `xattr -rc <folder>`.
+- Do not place the package under a cloud-synced folder (iCloud Drive, Dropbox, OneDrive,
+  Google Drive). `./launch.sh` detects this before starting and shows a warning (it goes
+  on without stopping).
+- When the bundled environment (`.venv-cynovela`) is already there and works, `./launch.sh`
+  starts as it is, without showing the screen for choosing the base (the choice screen
+  appears only when it is broken).
+
 If you must start the server by hand instead of through `launch.sh` (the environment must already exist — the dedicated name is `cynovela-dist`; never create or modify a shared environment):
 
 ```bash
@@ -174,6 +187,9 @@ When switching, it is recommended to unload the LM Studio model before switching
 
 ## Backup
 
+`store/` holds the index of the ingested documents, the database, the settings, and the keys.
+The signing key for the passes is newly created on this machine at the first startup.
+
 ```bash
 # Backup of the DB and Chroma
 cp -r store/ ~/cynovela-backup-$(date +%Y%m%d)/
@@ -223,6 +239,16 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 # ブラウザで開く
 # http://localhost:8765
 ```
+
+はじめて起動する前の注意:
+
+- ダウンロードした配布物には macOS が印（`com.apple.quarantine`）を付け、部品ごとに
+  何度も確認が出ることがあります。`./launch.sh` は起動の最初に、配布物の中の印を全部
+  自分で落とします。手動で行うなら `xattr -rc <フォルダ>` です。
+- クラウド同期（iCloud Drive・Dropbox・OneDrive・Google Drive）の下に配布物を置かないで
+  ください。`./launch.sh` が起動前に検知して注意を出します（止めずに進みます）。
+- 同梱の環境（`.venv-cynovela`）が既に在って動くときは、`./launch.sh` は土台の選択画面を
+  出さずにそのまま起動します（壊れているときだけ選択画面が出ます）。
 
 `launch.sh` を通さず手でサーバーを起動する場合（環境が既に在ることが前提です。専用の名前は `cynovela-dist`。共有の環境は作らない・書き換えないでください）:
 
@@ -376,6 +402,9 @@ Model は **`ollama list` に出るモデル名**をそのまま入力します
 4. **Chat** でRAGチャット開始
 
 ## バックアップ
+
+`store/` には、取り込んだ資料の索引・データベース・設定・鍵が入っています。
+通行証の署名鍵は、初回起動時にその機械で新しく作られます。
 
 ```bash
 # DBとChromaのバックアップ

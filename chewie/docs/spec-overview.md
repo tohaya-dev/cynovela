@@ -66,7 +66,7 @@ This document organizes the features confirmed as of Cynovela  and the known lim
 
 | Feature | State | Overview |
 |---|---|---|
-| MCP server | Implemented | Exposes 11 tools that can be called from outside |
+| MCP server | Implemented | Exposes 25 tools that can be called from outside (22 visible by default; 3 admin tools appear only when CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 is set) |
 | LM Studio integration | Implemented | Goes through the OpenAI-compatible `/v1` API |
 | Circuit breaker | Implemented | Automatic cut-off and recovery when the LLM fails |
 | Dashboard | Implemented | Visualizes pipeline health / statistics / polling state and others |
@@ -209,7 +209,7 @@ The priority topics toward Beta GA, as read from the CHANGELOG, are as follows.
 
 | 機能 | 状態 | 概要 |
 |---|---|---|
-| MCP サーバー | 実装済み | 外部から呼べる 11 ツールを公開 |
+| MCP サーバー | 実装済み | 外部から呼べる 25 個の道具を公開（既定で見えるのは 22 個。管理系の 3 個は CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を設定したときだけ現れます） |
 | LM Studio 連携 | 実装済み | OpenAI 互換 `/v1` API を経由 |
 | サーキットブレーカー | 実装済み | LLM 障害時の自動遮断と回復 |
 | ダッシュボード | 実装済み | パイプライン健全性 / 統計 / ポーリング状態などを可視化 |

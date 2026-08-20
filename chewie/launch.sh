@@ -31,6 +31,46 @@ LOG="$WRAP_DIR/store/launch-app.log"
 SHARED_ENV="cynovela"
 DIST_ENV="cynovela-dist"
 
+# ── A-3 (DD-CYN-0142 §5-C): 配布物に付いた印 (拡張属性) を自分で全部落とす ──
+#   com.apple.quarantine を含め、種類を狙わず全部落とす。対象はこの配布物の中だけ。
+#   部品を入れる処理 (--setup の pip) より前 = この入口の先頭で行う。
+#   落とせないもの (非 ASCII 名で OS 側が失敗する等) は名前を出して先へ進む。1件で止めない。
+_drop_marks() {
+    [ -x /usr/bin/xattr ] || return 0
+    local _err
+    _err="$(/usr/bin/xattr -rc "$WRAP_DIR" 2>&1 >/dev/null | head -20 || true)"
+    if [ -n "$_err" ]; then
+        echo "注意: 次の印 (拡張属性) は落とせませんでした。そのまま起動を続けます:"
+        printf '%s\n' "$_err" | sed 's/^/    /'
+    fi
+}
+
+# ── A-4 (DD-CYN-0142 §5-D): 置き場所がクラウド同期の下かを、起動の前に判定して伝える ──
+#   止めるのではなく、何が起きるかと逃がし方を伝えたうえで進む。
+_warn_if_cloud_synced() {
+    local _hit=""
+    case "$WRAP_DIR" in
+        *"/Library/Mobile Documents"*)      _hit="iCloud Drive" ;;
+        *"/Library/CloudStorage"*)          _hit="クラウド同期 (CloudStorage 配下)" ;;
+        *"/Dropbox/"*|*"/Dropbox")          _hit="Dropbox" ;;
+        *"/OneDrive"*)                      _hit="OneDrive" ;;
+        *"/Google Drive"*|*"/GoogleDrive"*) _hit="Google Drive" ;;
+    esac
+    [ -n "$_hit" ] || return 0
+    echo "──────────────────────────────────────────────"
+    echo " 注意: この配布物は ${_hit} の同期フォルダの下に置かれています。"
+    echo "   何が起きるか:"
+    echo "     - 部品一式 (数GB) がまるごと同期に乗り、容量と時間を食います"
+    echo "     - 同期がファイルの実体を退避すると、._ の掃除・印 (拡張属性) の処理・"
+    echo "       アンインストールが終わらないことがあります"
+    echo "   どうすればよいか: 同期の対象外の場所 (例: ホーム直下の ~/Cynovela) へ"
+    echo "   フォルダごと移してから起動することを勧めます。このまま進めることもできます。"
+    echo "──────────────────────────────────────────────"
+}
+
+_warn_if_cloud_synced
+_drop_marks
+
 # ── 透過の道 ──────────────────────────────────────────────
 # 次のものは本体へそのまま渡す (この包みは何も足さず・何も変えない):
 #   1. 凍結済みの操作手順 (Cynovela-start.command → launcher-core.sh) が付ける --no-prompt
@@ -422,12 +462,32 @@ confirm_launch() {
 # ── 実行の順 (N-6 → N-1 → N-3) ──────────────────────────────
 running_menu
 
-while true; do
-    choose_form
-    _compute_selection
-    confirm_launch
-    [ "$CONFIRM" = "yes" ] && break
-done
+# ── A-5 (DD-CYN-0142 §5-E): 同梱の環境 (.venv-cynovela) が既に在り、その python が
+#    動くときは、選択の画面を出さずにそのまま使う。在るのに壊れているときだけ選択へ。
+_BUNDLED_PY="$WRAP_DIR/.venv-cynovela/bin/python"
+[ -x "$_BUNDLED_PY" ] || _BUNDLED_PY="$WRAP_DIR/.venv-cynovela/bin/python3"
+_BUNDLED_OK=0
+if [ -x "$_BUNDLED_PY" ] \
+   && "$_BUNDLED_PY" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1; then
+    _BUNDLED_OK=1
+fi
+if [ "$_BUNDLED_OK" = "1" ]; then
+    echo ""
+    echo "同梱の環境 (.venv-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。"
+    FORM_SEL="venv"; FORM_DISP="この配布物の中の Python"
+    SEL_PY="$_BUNDLED_PY"; NEED_SETUP=0; CONFIRM="yes"
+else
+    if [ -d "$WRAP_DIR/.venv-cynovela" ]; then
+        echo ""
+        echo "同梱の環境 (.venv-cynovela) は在りますが、壊れているようです (python が動きません)。選択の画面を出します。"
+    fi
+    while true; do
+        choose_form
+        _compute_selection
+        confirm_launch
+        [ "$CONFIRM" = "yes" ] && break
+    done
+fi
 
 # N-6 で「止めて、新しく起こす」が選ばれていたら、確認 (Y) の後にここで止める。
 # 止めるだけであり、消さない。止まったことを実測して画面へ出す。

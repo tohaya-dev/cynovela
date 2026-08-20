@@ -16,6 +16,29 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## v1.0.6 (2026-08-20)
+
+- **The CLI now covers the same work as the screen.** Added: `sources` / `audit-logs` / `chat` /
+  `ingest` (register a folder and start scanning in one line) / `scan start·status·cancel` /
+  `publish start·status·stop·recover` / `collections create·link` / `workspaces create·update·archive·unarchive` /
+  `delete` / `users` / `backup`. Dangerous operations show what would happen and never run without `--yes`.
+- **MCP now has 25 tools (22 visible by default).** Added `server_status`, `ingest_source`,
+  `get_job_status`, `cancel_scan`, `create_collection`, `publish_control`; the three admin tools
+  (`delete_item` / `manage_users` / `manage_backups`) are closed by default and appear only when
+  `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` is set. `publish_collection` now starts the publish and
+  returns a `job_id` immediately instead of blocking.
+- **Scans run in the background.** New `POST /api/sources/{id}/scan/async` returns a `job_id`
+  immediately; progress via `GET /api/jobs/{job_id}` (same shape as publish). The screen's rescan
+  uses this, a "Reload sources" button was added above the source list, and the server scans the
+  registered sources once at every startup (files that have not changed are not re-read).
+- **`launch.sh`**: drops the quarantine marks inside the package by itself at start; warns before
+  starting when the folder sits under cloud sync (iCloud Drive / Dropbox / OneDrive / Google Drive);
+  and skips the base-selection screen when the bundled `.venv-cynovela` is present and working.
+- **`uninstall.sh`** now reports the reason and the next step when the move to the Trash fails.
+- Removed the old, unreferenced `cynovela_cli.py` (underscore name). The CLI is `cynovela-cli.py`.
+- Documents: added download-and-assembly guidance, updated tool counts and command lists, fixed the
+  model overlay destination to `store/models/`, and aligned stale version numbers.
+
 ## Public repository and package form (2026-08-12)
 
 - In the public GitHub repository (cynovela), two forms were placed side by side:
@@ -27,9 +50,9 @@ This records the main changes to Cynovela in chronological order.
 - The lightweight form (the form that does not bundle the models) is distributed as **a single file**. At first startup you can choose to
   download the models (no communication starts until you choose).
 
-##  ()
+## The first working milestone (before the public repository)
 
- is the milestone for "a state in which the core flows work end to end as a personal learning tool". After going through Stage 0 to Stage 6, the main features of guardrails, PII detection, RAG, and MCP integration became operational.
+This is the milestone for "a state in which the core flows work end to end as a personal learning tool". After going through Stage 0 to Stage 6, the main features of guardrails, PII detection, RAG, and MCP integration became operational.
 
 ### Stage 0: Startup foundation
 
@@ -79,7 +102,7 @@ This records the main changes to Cynovela in chronological order.
 
 ### Stage 6: External integration
 
-- Publishing an MCP server (11 tools)
+- Publishing an MCP server (11 tools at that time; 25 as of v1.0.6)
 - LM Studio / Ollama / OpenAI-compatible API connections
 - Setting up the flags for LAN sharing and Tailscale sharing (`--lan` / `--allow-tailscale` / `--allow-subnet`)
 - IP allowlist middleware
@@ -161,6 +184,29 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ---
 
+## v1.0.6（2026-08-20）
+
+- **CLI が画面と同じ作業を覆うようになった。** 追加: `sources` / `audit-logs` / `chat` /
+  `ingest`（フォルダの登録と走査の開始を1行で）/ `scan start·status·cancel` /
+  `publish start·status·stop·recover` / `collections create·link` / `workspaces create·update·archive·unarchive` /
+  `delete` / `users` / `backup`。危険な操作は「何が起きるか」を見せ、`--yes` なしには実行しない。
+- **MCP の道具が 25 個になった（既定で見えるのは 22 個）。** `server_status`・`ingest_source`・
+  `get_job_status`・`cancel_scan`・`create_collection`・`publish_control` を追加。管理系の 3 個
+  （`delete_item` / `manage_users` / `manage_backups`）は既定で閉じており、
+  `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を設定したときだけ現れる。`publish_collection` は
+  公開を始めて `job_id` を即返す形になった（終わるまで待たない）。
+- **走査が背景で走るようになった。** `POST /api/sources/{id}/scan/async` が `job_id` を即返し、
+  進み具合は `GET /api/jobs/{job_id}`（公開と同じ形）。画面の再スキャンはこの形を使い、
+  資料一覧の上に「すべて読み込み直す」を新設。サーバは起動のたびに登録済みの取り込み元を
+  1回走査する（変わっていないファイルは読み直さない）。
+- **`launch.sh`**: 起動の最初に配布物の中の印（quarantine を含む拡張属性）を自分で全部落とす。
+  クラウド同期（iCloud Drive / Dropbox / OneDrive / Google Drive）の下に置かれているときは
+  起動前に注意を出す。同梱の `.venv-cynovela` が在って動くときは土台の選択画面を出さない。
+- **`uninstall.sh`** は、ゴミ箱へ入れられなかったときに理由と次の一手を出すようになった。
+- 参照されていなかった旧 `cynovela_cli.py`（下線の名前）を撤去した。CLI は `cynovela-cli.py`。
+- 文書: 落とし方と結合の案内を追加。道具の数と命令の一覧を実体へ更新。モデルを重ねる宛先を
+  `store/models/` に統一。古い版番号の表記を揃えた。
+
 ## 公開のリポジトリと配る形（2026-08-12）
 
 - 公開の GitHub リポジトリ（cynovela）に、falcon（コンテナの中で動く形）と
@@ -172,9 +218,9 @@ Cynovela の主要な変更内容を時系列で記録します。
 - 軽量版（モデルを同梱しない形）は **1つのファイル**で配る。初回の起動でモデルの
   ダウンロードを選べる（選ぶまで通信は始まらない）。
 
-## （）
+## 最初に一通り動いた節目（公開リポジトリより前）
 
- は「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。
+これは「個人学習用ツールとして一通りのコアフローが動く状態」のマイルストーンです。Stage 0 〜 Stage 6 を経て、ガードレール・PII 検出・RAG・MCP 連携の主要機能が稼働するに至りました。
 
 ### Stage 0: 起動基盤
 
@@ -224,7 +270,7 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ### Stage 6: 外部連携
 
-- MCP サーバー（11 ツール）の公開
+- MCP サーバー（当時 11 ツール。v1.0.6 時点では 25 ツール）の公開
 - LM Studio / Ollama / OpenAI 互換 API 接続
 - LAN 共有・Tailscale 共有のフラグ整備（`--lan` / `--allow-tailscale` / `--allow-subnet`）
 - IP アローリストミドルウェア

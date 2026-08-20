@@ -16,7 +16,7 @@ This document describes what Cynovela **cannot** do. Explanations of what it can
 `README.md` and `quickstart.md`. Only the things that will disappoint you if you expect them
 are written here.
 
-The version is `1.0.2` (`APP_VERSION` in `core/version.py` is the only source, and
+The version is `1.0.6` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -354,7 +354,7 @@ From the screen you select one workspace and search it.
 
 ### MCP
 
-- `mcp_server.py` provides 11 tools.
+- `mcp_server.py` provides 25 tools (22 visible by default; 3 admin tools appear only when CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 is set).
 - The MCP server is built to query Cynovela's REST API internally, with authentication.
   In other words, **if the main body is not running, MCP does not work either.**
 - The Python executable that runs MCP can be specified with the environment variable
@@ -420,7 +420,7 @@ In that case, restarting invalidates any issued passes (logging in again works).
 この文書は、Cynovela に **できないこと** を書いたものです。できることの説明は
 `README.md` と `quickstart.md` にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.0.2` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `1.0.6` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
@@ -737,7 +737,7 @@ MCP のツールには `search_across_collections`（複数のコレクション
 
 ### MCP
 
-- `mcp_server.py` は 11 個のツールを提供します。
+- `mcp_server.py` は 25 個の道具（既定で見えるのは 22 個。管理系の 3 個は CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を設定したときだけ現れます）を提供します。
 - MCP サーバーは、内部で Cynovela の REST API に認証付きで問い合わせる作りです。
   つまり **本体が動いていないと MCP も動きません。**
 - MCP を動かす Python の実行ファイルは、環境変数 `CYNOVELA_MCP_PYTHON` で指定できます。

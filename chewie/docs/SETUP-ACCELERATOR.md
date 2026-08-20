@@ -58,7 +58,8 @@ The parts to install are the 4 items written in `mas/mas-requirements.txt`. The 
 - Embedding model: **BAAI/bge-m3, snapshot revision `5617a9f61b028005a4858fdac845db406aefb181`**
 - Rerank model: **BAAI/bge-reranker-v2-m3**
 - **If the revision differs, the numbers of the vectors change, they mix with the bundled vector collection, and the search ranking breaks.**
-- Where to save: `store/models/models--BAAI--bge-m3/snapshots/<版>/` of this package (the HF cache format).
+- Where to save: `store/models/models--BAAI--bge-m3/snapshots/5617a9f61b028005a4858fdac845db406aefb181/` of this package (the HF cache format).
+  Under `store/models`, do not place it in any place other than this form.
   When `models.embedding.path` in `mas/mas.yaml` is `''`, it is resolved read-only from this same place as the application.
   Write the path only when you have placed it somewhere else.
 - In the unlikely event that the revision differs, at startup and at publish, the warning "ベクターコレクションの埋め込み識別と現在の経路が
@@ -179,7 +180,8 @@ python3.12 -m venv .mas-env
 - 埋め込みモデル: **BAAI/bge-m3、snapshot 版 `5617a9f61b028005a4858fdac845db406aefb181`**
 - 再ランクモデル: **BAAI/bge-reranker-v2-m3**
 - **版が違うとベクトルの数値が変わり、同梱済みのベクターコレクションと混ざって検索順位が壊れます。**
-- 保存先: この配布物の `store/models/models--BAAI--bge-m3/snapshots/<版>/` (HF キャッシュ形式)。
+- 保存先: この配布物の `store/models/models--BAAI--bge-m3/snapshots/5617a9f61b028005a4858fdac845db406aefb181/` (HF キャッシュ形式)。
+  `store/models` 配下では、この形以外の場所に置かないでください。
   `mas/mas.yaml` の `models.embedding.path` が `''` のときは、アプリと同じこの場所から
   読み取り専用で解決します。別の場所に置いたときだけパスを書いてください。
 - 万一版が違う場合、起動時とpublish時に「ベクターコレクションの埋め込み識別と現在の経路が

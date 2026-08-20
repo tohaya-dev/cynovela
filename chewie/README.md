@@ -30,8 +30,22 @@ See docs/NOTICE.md ("Before You Start") before you rely on it.
 
 **Which package to download**
 
-1. **Package edition** (for Apple silicon Macs — ready to use). Extract it and run one line. No Python and no conda are needed; nothing is installed on this Mac. To remove it, delete the folder.
-2. **Source edition** (for everyone else, or those who want to build the environment themselves). At startup you choose one of 2 ways to build the environment: 1) create a dedicated conda environment, or 2) use this Mac's Python and build the environment only inside the package's folder.
+Everything is on GitHub Releases (v1.0.6): https://github.com/tohaya-dev/cynovela/releases
+
+1. **Package edition** — `cynovela-chewie-package-1.0.6.tar.gz` (1 file, about 800 MB). For Apple silicon Macs. No Python and no conda are needed; extract it and run `./launch.sh`. The AI models are separate: also download the `models` files below and lay them on top.
+2. **Source edition, all-in-one** — `cynovela-chewie-all-in-one-1.0.6.tar.gz.part00`–`part02` (3 split files). Models included.
+3. **Source edition, models fetched separately (lightweight)** — `cynovela-chewie-lightweight-1.0.6.tar.gz` (1 file, a few MB). Also download the `models` files below and lay them on top.
+
+- **AI models only** — `cynovela-chewie-models-1.0.6.tar.gz.part00`–`part02` (3 split files). Despite the name, these split files are not conda packages — they are the AI models themselves.
+
+**Joining, verifying, extracting.** Join the split files in part order into one file: `cat cynovela-chewie-models-1.0.6.tar.gz.part00 cynovela-chewie-models-1.0.6.tar.gz.part01 cynovela-chewie-models-1.0.6.tar.gz.part02 > cynovela-chewie-models-1.0.6.tar.gz` (`cat ...part* > ...` gives the same result). Verify with `shasum -a 256 --ignore-missing -c SHA256SUMS` — every line must say OK. Extract with `tar -xzf`. For the models, run `tar -xzf ../cynovela-chewie-models-1.0.6.tar.gz` inside the extracted chewie folder — `store/models/` is created there. The step-by-step guide, **HOW-TO-ASSEMBLE.md**, sits next to the files on the releases page.
+
+**If unsure:** (1) fetching from outside (conda-forge / PyPI / huggingface.co) is not allowed on your machine, or you are not certain it is — package edition + models. (2) You want everything in one download — all-in-one. (3) You want to run on your own Python/conda, or want a small download — lightweight + models.
+
+**Two short cautions**
+
+- **Do not place the extracted folder under cloud sync** (iCloud Drive, Dropbox, OneDrive, Google Drive). The whole set of files rides the sync, and cleanup or uninstall may never finish. `./launch.sh` detects this and warns before starting (it proceeds without stopping).
+- **macOS marks each extracted file with the `com.apple.quarantine` attribute**, which can trigger repeated confirmations or stall loading. `./launch.sh` removes this mark, inside the distribution only, at the start of every launch. To remove it by hand: `xattr -rc <extracted folder>`.
 
 ---
 
@@ -109,23 +123,31 @@ See docs/NOTICE.md ("Before You Start") before you rely on it.
 
 ## 導入方法
 
-```
-どれを落とすか
-  1) パッケージ版（M系 Mac の方はこちら・すぐ使える形）
-       展開して1行叩くだけで動きます。
-       Python も conda も要りません。この Mac には何も入れません。
-       消すときはフォルダごと削除します。
-  2) ソース版（上記以外の方、または自分で環境を作りたい方）
-       起動時に、環境の作り方を2つから選びます。
-```
+### どれを落とすか
+
+すべて GitHub Releases (v1.0.6) にあります: https://github.com/tohaya-dev/cynovela/releases
+
+1. **パッケージ版** — `cynovela-chewie-package-1.0.6.tar.gz`（1本・約800MB）。Apple silicon の Mac 向け。Python も conda も要らず、展開して `./launch.sh` を叩くだけで動きます。ただし AIモデルは別です: 下の `models` の分割ファイルも落として重ねます。
+2. **ソース版・全部入り** — `cynovela-chewie-all-in-one-1.0.6.tar.gz.part00`〜`part02`（分割3本）。モデル込みです。
+3. **ソース版・モデル別取得版（軽量）** — `cynovela-chewie-lightweight-1.0.6.tar.gz`（1本・数MB）。下の `models` の分割ファイルも落として重ねます。
+
+- **AIモデルだけ** — `cynovela-chewie-models-1.0.6.tar.gz.part00`〜`part02`（分割3本）。名前は models ですが、この分割ファイルは conda のパッケージではなく **AIモデル本体**です。
+
+**つなぐ・確かめる・展開する。** 分割ファイルは part の順に 1 本へつなぎます: `cat cynovela-chewie-models-1.0.6.tar.gz.part00 cynovela-chewie-models-1.0.6.tar.gz.part01 cynovela-chewie-models-1.0.6.tar.gz.part02 > cynovela-chewie-models-1.0.6.tar.gz`（`cat ...part* > ...` でも同じです）。`shasum -a 256 --ignore-missing -c SHA256SUMS` で確かめ、全行 OK であること。展開は `tar -xzf` です。models は、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.0.6.tar.gz` を実行します（`store/models/` が作られます）。落とし方とつなぎ方の手引き **HOW-TO-ASSEMBLE.md** が、Releases のファイルの並びに一緒に置いてあります。
+
+**迷ったら:** (1) 会社支給などで外への取り寄せ（conda-forge / PyPI / huggingface.co）が許可されていない・確信が無い → **パッケージ版 + models**。 (2) とにかく1回で全部 → **全部入り**。 (3) 自分の Python/conda で動かしたい・軽く落としたい → **lightweight + models**。
+
+### 短い注意 2 点
+
+- **クラウド同期（iCloud Drive・Dropbox・OneDrive・Google Drive）の下に展開しないでください。** 部品一式が同期に乗り、掃除やアンインストールが終わらないことがあります。`./launch.sh` は同期の下を検知して起動前に注意を出します（止めずに進みます）。
+- **展開すると macOS が各ファイルに「印」（`com.apple.quarantine` という拡張属性）を付けます。** 確認が何度も出たり読み込みが止まったりする原因です。`./launch.sh` は起動の最初に、この印を配布物の中だけ全部自分で落とします。手で外すなら `xattr -rc <展開したフォルダ>` です。
+
+### ソース版の環境の作り方（起動時に選びます）
 
 ```
-ソース版：環境の作り方（起動時に選びます）
   1) conda に専用の環境を作る
   2) この Mac の Python を使い、この配布物のフォルダの中だけに Python の環境を作る
 ```
-
-**迷ったらパッケージ版です。** この Mac に Python も conda も入れずに済み、削除も最も簡単です。
 
 ### 詳しい比較 — 何がどこに、どれだけ残るか
 

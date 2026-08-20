@@ -2097,14 +2097,67 @@ async function scanSource(id) {
     `画像（.png .jpg .heic .webp .gif）も取り込めます\n\n` +
     `上記以外（.dmg 等）は自動的にスキップされます。`;
   confirmAction('スキャン実行', message, '🔍', async () => {
-    showToast(lj('Scanning...','スキャン中...'), 'info');
     try {
-      const res = await API.post(`/api/sources/${id}/scan`);
-      State.allFiles[id] = null; // invalidate cache
-      showToast(lj(`Scan complete: ${res.file_count} files`,`スキャン完了: ${res.file_count}ファイル`), 'success');
+      // DD-CYN-0142 §5-B: 開始だけを返す口 (scan/async) で始め、進み具合は /api/jobs で取る。
+      const res = await API.post(`/api/sources/${id}/scan/async`);
+      showToast(lj('Scan started','走査を始めました'), 'info');
+      _pollScanJob(res.job_id, id);
       renderSources();
     } catch (e) { showToast(lj(`Scan failed: ${e.message}`,`スキャン失敗: ${e.message}`), 'error'); }
   });
+}
+
+// DD-CYN-0142 A-10(b): 走査ジョブの進み具合を publish と同じ 2 秒ポーリングで追う。
+function _pollScanJob(jobId, sourceId) {
+  let ticks = 0;
+  const timer = setInterval(async () => {
+    ticks++;
+    let job;
+    try { job = await API.get(`/api/jobs/${jobId}`); }
+    catch (e) { clearInterval(timer); return; }
+    if (job.status === 'completed') {
+      clearInterval(timer);
+      State.allFiles[sourceId] = null; // invalidate cache
+      showToast(lj(`Scan complete: ${job.progress} files`,`スキャン完了: ${job.progress}ファイル`), 'success');
+      renderSources();
+    } else if (job.status === 'failed' || job.status === 'stopped') {
+      clearInterval(timer);
+      if (job.status === 'stopped') {
+        showToast(lj('Scan cancelled','走査を中止しました'), 'info');
+      } else {
+        showToast(lj(`Scan failed: ${job.error||''}`,`走査に失敗しました: ${job.error||''}`), 'error');
+      }
+      renderSources();
+    } else {
+      if (ticks % 3 === 0) renderSources();   // 状態列 (scanning) を途中経過として反映
+      if (ticks > 900) clearInterval(timer);  // 30分で追跡を打ち切る (走査自体は続く)
+    }
+  }, 2000);
+}
+
+// DD-CYN-0142 A-10(b): 取り込み元の下に後から置いたフォルダ/ファイルを一覧へ反映する入口。
+async function rescanAllSources() {
+  const n = State.sources.length;
+  if (!n) { showToast(lj('No sources yet','取り込み元がまだありません'), 'info'); return; }
+  confirmAction(
+    lj('Reload sources','読み込み直す'),
+    lj(`Rescan all ${n} registered sources.\nFolders and files added after registration will appear in the list.`,
+       `登録済みの取り込み元 ${n} 件を読み込み直します。\n登録の後に置いたフォルダやファイルが一覧に反映されます。`),
+    '🔄',
+    async () => {
+      let started = 0, busy = 0;
+      for (const s of State.sources) {
+        try {
+          const res = await API.post(`/api/sources/${s.id}/scan/async`);
+          _pollScanJob(res.job_id, s.id);
+          started++;
+        } catch (e) { busy++; }
+      }
+      const extra = busy ? lj(` (${busy} already scanning)`,`（${busy} 件は走査中のため飛ばしました）`) : '';
+      showToast(lj(`Rescan started: ${started}/${n} sources${extra}`,`読み込み直しを始めました: ${started}/${n} 件${extra}`), 'info');
+      renderSources();
+    }
+  );
 }
 
 async function showSourceFiles(sourceId) {

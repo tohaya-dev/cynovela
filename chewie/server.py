@@ -254,6 +254,12 @@ async def lifespan(app_instance):
         await _startup_rebuild_bm25()
     except Exception as _e:
         logger.warning(f"BM25 startup rebuild failed at lifespan: {_e}")
+    # A-10(a) DD-CYN-0142: 起動のたびに登録済みの取り込み元を1回走査する
+    # (変更の無いファイルは読み直さない)。起動を待たせないよう別スレッドで直列に回す。
+    try:
+        threading.Thread(target=_startup_scan_sources, daemon=True, name="startup-scan").start()
+    except Exception as _e:
+        logger.warning(f"startup scan spawn failed: {_e}")
     # §9-4 embedding-identity (ga-mas-20260725): 起動時にインデックスの埋め込み識別と現在の経路を
     # 突き合わせる。食い違いは check 内で warning ログ + 状態保持 (画面は設定 > Embedding)。
     try:
@@ -822,6 +828,42 @@ async def _startup_reset_residual_publish_jobs():
         logger.warning(f"residual publish job reset failed: {_e}")
 
 
+def _startup_scan_sources():
+    """A-10(a) DD-CYN-0142: 起動のたびに、登録済みの取り込み元を1回走査する。
+
+    skip_unchanged=True で呼ぶため、前回走査以降に変わっていないファイルは読み直さない
+    (登録済み扱いで数だけ進める)。SQLite の書き込みは単一ロックなので直列に回す。
+    """
+    try:
+        conn = get_db()
+        try:
+            # 前回の走査ジョブの残骸を落とす (publish 側の残骸掃除と同じ扱い)
+            conn.execute(
+                "UPDATE scan_jobs SET status='failed', stage='error', "
+                "error=COALESCE(error, 'server_restarted'), updated_at=datetime('now') "
+                "WHERE status IN ('pending','running')"
+            )
+            sids = [
+                r["id"]
+                for r in conn.execute(
+                    "SELECT id FROM sources WHERE archived_at IS NULL ORDER BY created_at"
+                ).fetchall()
+            ]
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception as _e:
+        logger.warning(f"startup scan: source 一覧の取得に失敗: {_e}")
+        return
+    logger.info(f"[Cynovela] startup scan: {len(sids)} source(s)")
+    for sid in sids:
+        try:
+            _do_scan(sid, skip_unchanged=True)
+        except Exception as _e:
+            logger.warning(f"startup scan 失敗 src={sid}: {_e}")
+    logger.info("[Cynovela] startup scan finished")
+
+
 async def _startup_rebuild_bm25():
     """BM25 インデックスはメモリ常駐のため、起動時に SQLite chunks から再構築する。
     対象: 1 つ以上の published コレクションを持つワークスペース。
@@ -1285,14 +1327,39 @@ _scan_cancel_flags: dict[str, bool] = {}
 # /api/sources/{source_id}/scan/cancel は routers/sources.py に移動済み
 
 
-def _do_scan(source_id: str):
-    """Execute scan on a source: walk directory, register files, classify."""
+def _do_scan(source_id: str, job_id: str | None = None, skip_unchanged: bool = False):
+    """Execute scan on a source: walk directory, register files, classify.
+
+    job_id: scan_jobs の行ID。渡されたときは進捗を同じ conn で書き周期 commit する
+    (別接続だと _do_scan 自身の未commit書き込みと単一書き込みロックを取り合うため)。
+    skip_unchanged: 起動時走査用。前回走査以降に変わっていないファイルは本文抽出を
+    行わない (登録済み扱いで数だけ進める)。
+    """
     # BLOCK B-6: スキャン開始時にcancel flagをクリア
     _scan_cancel_flags.pop(source_id, None)
+
+    def _job_write(conn_, **fields):
+        if not job_id:
+            return
+        sets = ["updated_at = datetime('now')"]
+        params: list = []
+        for k in ("status", "stage", "progress", "total", "message", "error"):
+            if k in fields and fields[k] is not None:
+                sets.append(f"{k} = ?")
+                params.append(fields[k])
+        params.append(job_id)
+        try:
+            conn_.execute(f"UPDATE scan_jobs SET {', '.join(sets)} WHERE id = ?", params)
+            conn_.commit()
+        except Exception as _je:
+            logger.warning(f"scan job update failed job={job_id}: {_je}")
+
     conn = get_db()
     try:
         source = conn.execute("SELECT * FROM sources WHERE id = ?", (source_id,)).fetchone()
         if not source:
+            _job_write(conn, status="failed", stage="error", error="source_not_found",
+                       message="取り込み元が見つかりません")
             conn.close()
             return
 
@@ -1306,13 +1373,39 @@ def _do_scan(source_id: str):
 
         conn.execute("UPDATE sources SET status = 'scanning' WHERE id = ?", (source_id,))
         conn.commit()
+        _job_write(conn, status="running", stage="counting", message="対象ファイルを数えています")
 
         src_path = os.path.abspath(os.path.expanduser(source["path"]))
         if not os.path.exists(src_path):
             conn.execute("UPDATE sources SET status = 'failed' WHERE id = ?", (source_id,))
             conn.commit()
+            _job_write(conn, status="failed", stage="error", error="path_not_found",
+                       message=f"パスが見つかりません: {src_path}")
             conn.close()
             raise HTTPException(400, f"パスが見つかりません: {src_path}")
+
+        # 進み具合の分母: 抽出を始める前に対象ファイル数だけを速く数える (publish と同じ形)。
+        _total_expected = 0
+        if os.path.isfile(src_path):
+            _total_expected = 1 if os.path.splitext(src_path)[1].lower() in SUPPORTED_EXTENSIONS else 0
+        elif os.path.isdir(src_path):
+            for _cr, _cd, _cf in os.walk(src_path):
+                _total_expected += sum(1 for _f in _cf if os.path.splitext(_f)[1].lower() in SUPPORTED_EXTENSIONS)
+        _job_write(conn, stage="scanning", total=_total_expected, message="走査中")
+
+        # skip_unchanged 用: 前回走査時点の登録済みファイル (path→size) と前回走査時刻。
+        _prev_sizes: dict[str, int] = {}
+        _last_scan_ts: float | None = None
+        if skip_unchanged:
+            for _pr in conn.execute(
+                "SELECT path, size FROM files WHERE source_id = ? AND missing = 0", (source_id,)
+            ).fetchall():
+                _prev_sizes[_pr["path"]] = _pr["size"]
+            try:
+                if source["last_scanned"]:
+                    _last_scan_ts = datetime.fromisoformat(source["last_scanned"]).timestamp()
+            except Exception:
+                _last_scan_ts = None
 
         # Phase F: 安定 file_id（path から導出）に切替。再スキャンで file_id が変わると
         # collection_files が孤立して再Publishが空になるため。
@@ -1403,6 +1496,8 @@ def _do_scan(source_id: str):
                     if _scan_cancel_flags.get(source_id):
                         conn.execute("UPDATE sources SET status = 'failed' WHERE id = ?", (source_id,))
                         conn.commit()
+                        _job_write(conn, status="stopped", stage="stopped", progress=file_count,
+                                   message="中止しました")
                         _scan_cancel_flags.pop(source_id, None)
                         conn.close()
                         return
@@ -1414,6 +1509,20 @@ def _do_scan(source_id: str):
                             continue
                         fpath = unicodedata.normalize("NFC", os.path.join(root, fname))
                         fsize = os.path.getsize(fpath)
+
+                        # skip_unchanged: 前回走査以降に変わっていないファイルは読み直さない。
+                        if skip_unchanged and _last_scan_ts is not None and _prev_sizes.get(fpath) == fsize:
+                            try:
+                                _mtime = os.path.getmtime(fpath)
+                            except OSError:
+                                _mtime = None
+                            if _mtime is not None and _mtime <= _last_scan_ts:
+                                seen_paths.add(fpath)
+                                file_count += 1
+                                if job_id and file_count % 25 == 0:
+                                    _job_write(conn, progress=file_count, message="走査中")
+                                continue
+
                         mime = mimetypes.guess_type(fpath)[0] or "application/octet-stream"
 
                         # Extract text and classify
@@ -1484,6 +1593,8 @@ def _do_scan(source_id: str):
                             )
 
                         file_count += 1
+                        if job_id and file_count % 25 == 0:
+                            _job_write(conn, progress=file_count, message="走査中")
 
             # intake-togo-v2-20260705 (Fix 7): disk 上から消えたファイルは削除せず missing=1 を立てる（非破壊）。
             # 旧実装の DELETE は collection_files を CASCADE で消し、scan のみ実行時に chunks/Chroma が
@@ -1499,10 +1610,14 @@ def _do_scan(source_id: str):
                 "UPDATE sources SET status = 'completed', file_count = ?, last_scanned = ? WHERE id = ?",
                 (file_count, datetime.now().isoformat(), source_id),
             )
+            _job_write(conn, status="completed", stage="done", progress=file_count,
+                       total=max(_total_expected, file_count), message=f"完了: {file_count} ファイル")
         except Exception as e:
             # 失敗理由を無痕跡にしない: アプリログ + audit_logs へ記録した上で failed 化
             logger.error(f"scan 失敗 src={source_id}: {type(e).__name__}: {e}")
             conn.execute("UPDATE sources SET status = 'failed' WHERE id = ?", (source_id,))
+            _job_write(conn, status="failed", stage="error", error=f"{type(e).__name__}: {e}",
+                       message="走査に失敗しました")
             try:
                 _log_audit(conn, "scan_failed", target=source_id, detail=f"{type(e).__name__}: {e}", result="failure")
             except Exception:

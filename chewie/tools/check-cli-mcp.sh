@@ -53,6 +53,8 @@ chk 1 "unknown command -> 1" -- "$PY" "$CLI" frobnicate
 chk 1 "missing required arg -> 1" -- "$PY" "$CLI" search --workspace x
 chk 1 "settings show bogus -> 1" -- "$PY" "$CLI" settings show bogus
 chk 1 "settings set without --set -> 1" -- "$PY" "$CLI" settings set llm
+chk 1 "scan without subcommand -> 1" -- "$PY" "$CLI" scan
+chk 1 "delete without kind -> 1" -- "$PY" "$CLI" delete
 
 if [ "$SERVER_UP" = 1 ]; then
   say "5) 認証"
@@ -62,6 +64,11 @@ if [ "$SERVER_UP" = 1 ]; then
     chk 0 "workspaces" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" workspaces
     chk 0 "collections" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" collections
     chk 0 "index-status" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" index-status
+    say "5a2) DD-CYN-0142 §5-A: 作業の単位の命令 (読むだけのもの + --yes 門)"
+    chk 0 "sources" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" sources
+    chk 0 "audit-logs" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" audit-logs --limit 5 || true
+    chk 1 "users create without --yes -> 1 (書かない)" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" users create --username check-cli-noyes --password 'Check-12345!'
+    chk 1 "backup create without --yes -> 1 (書かない)" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" backup create
     say "5b) settings (DD-CYN-0141 §5-A。admin token のときだけ 0、viewer token なら 3 が正)"
     if "$PY" "$CLI" --url "$BASE" --token "$TOKEN" settings show >/dev/null 2>&1; then
       chk 0 "settings show" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" settings show
@@ -99,6 +106,8 @@ MCPOUT="$("$PY" "$MCP" --cynovela-url "$BASE" <<'EOF'
 {"jsonrpc":"2.0","id":5,"method":"nonexistent/method"}
 {"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"settings_show","arguments":{"name":"bogus"}}}
 {"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"settings_set","arguments":{"values":{"model":"x"}}}}
+{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"delete_item","arguments":{"kind":"source","id":"x"}}}
+{"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"ingest_source","arguments":{}}}
 EOF
 )"
 echo "$MCPOUT"
@@ -113,7 +122,10 @@ def need(cond, label):
     ok = ok and cond
 need(by_id[1]["result"]["protocolVersion"] == "2026-07-28", "discover: protocolVersion 2026-07-28")
 tools = by_id[2]["result"]["tools"]
-need(len(tools) == 16, f"tools/list: 16 tools (got {len(tools)})")
+need(len(tools) == 22, f"tools/list: 22 tools by default (got {len(tools)})")
+names = {t["name"] for t in tools}
+need(not ({"delete_item","manage_users","manage_backups"} & names),
+     "admin tools hidden by default")
 need(all(t["inputSchema"].get("$schema","").endswith("2020-12/schema") for t in tools), "all inputSchema declare 2020-12")
 need(all("outputSchema" in t for t in tools), "all tools declare outputSchema")
 need(by_id[3]["error"]["code"] == -32602, "unknown tool -> -32602")
@@ -123,9 +135,29 @@ need(by_id[6]["error"]["code"] == -32602, "settings_show bad name (enum) -> -326
 r7 = by_id[7]["result"]
 need(r7["isError"] is True and "閉じています" in r7["content"][0]["text"],
      "settings_set is closed by default (isError + explanation)")
+r8 = by_id[8]["result"]
+need(r8["isError"] is True and "閉じています" in r8["content"][0]["text"],
+     "delete_item is closed by default (isError + explanation)")
+need(by_id[9]["error"]["code"] == -32602, "ingest_source missing path -> -32602")
 sys.exit(0 if ok else 1)
 '
 if [ $? = 0 ]; then PASS=$((PASS+1)); else FAIL=$((FAIL+1)); fi
+
+say "7b) MCP: CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 で 25 本"
+MCPOUT2="$(CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 "$PY" "$MCP" --cynovela-url "$BASE" <<'EOF'
+{"jsonrpc":"2.0","id":1,"method":"tools/list"}
+EOF
+)"
+echo "$MCPOUT2" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read())
+tools = d["result"]["tools"]
+names = {t["name"] for t in tools}
+assert len(tools) == 25, f"expected 25, got {len(tools)}"
+assert {"delete_item","manage_users","manage_backups"} <= names
+print("[PASS] tools/list with ALLOW_ADMIN_WRITE=1: 25 tools incl. admin 3")
+'
+if [ $? = 0 ]; then PASS=$((PASS+1)); else FAIL=$((FAIL+1)); echo "[FAIL] tools/list with ALLOW_ADMIN_WRITE=1"; fi
 
 if [ "$SERVER_UP" = 1 ] && [ -n "$TOKEN" ]; then
   say "8) MCP: 実データの道具 (list_workspaces, structuredContent)"

@@ -918,6 +918,9 @@ body.lang-ja .en-block { display: none !important; }
 <option value="name_asc" data-en="Name (A→Z)" data-ja="名前（昇順）">名前（昇順）</option>
 <option value="name_desc" data-en="Name (Z→A)" data-ja="名前（降順）">名前（降順）</option>
 </select>
+<!-- DD-CYN-0142 A-10(b): 取り込み元の下に後から置いたものを一覧へ反映する「読み込み直す」。押す場所が分かる位置に置く。 -->
+<button class="btn btn-sm btn-primary" data-role-min="admin" onclick="rescanAllSources()"
+        data-en="🔄 Reload sources" data-ja="🔄 すべて読み込み直す">🔄 すべて読み込み直す</button>
 </div>
 <div class="table-wrap"><table id="sources-table"><thead></thead><tbody></tbody></table></div>
 <div id="source-pager"></div>

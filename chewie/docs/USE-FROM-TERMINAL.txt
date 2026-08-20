@@ -10,7 +10,7 @@ Cynovela entry point — this is the only one the recipient runs.
   ./launch.sh --demo              Starts with the bundled dummy documents loaded.
   ./launch.sh --add               Shows a screen for choosing a folder to read, and adds it.
   ./launch.sh --list              Lists the folders that are currently added.
-  ./launch.sh --remove<名前>     Removes an added folder (the name is the one shown by --list).
+  ./launch.sh --remove <name>     Removes an added folder (the name is the one shown by --list).
                                   * You can also add / see / remove them from the screen at
                                     設定 (Settings) → 取り込み元 (ingest sources).
 
@@ -22,7 +22,7 @@ Cynovela entry point — this is the only one the recipient runs.
                                   Decides in advance where python is prepared (used with --setup).
 
 ● Others
-  ./launch.sh --port<番号>       Changes the number it listens on (default 8765).
+  ./launch.sh --port <number>     Changes the number it listens on (default 8765).
                                   With nothing attached, it chooses a free number itself.
   ./launch.sh --local-only        Limits listening to the inside of your own machine only.
   bash stop.sh                    Stops it.
@@ -38,6 +38,8 @@ Cynovela entry point — this is the only one the recipient runs.
 The shared conda environment 'cynovela' is only read, never rewritten.
 
 Specifications for testing and development can be seen with ./launch.sh --help-all.
+
+Ingest and scan can also be driven from the terminal with cynovela-cli.py (for details, see section 8 of START-HERE.md).
 
 === 日本語 ===
 
@@ -76,3 +78,5 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 共有の conda 環境 'cynovela' は読むだけで、書き換えません。
 
 試験・開発のための指定は ./launch.sh --help-all で見られます。
+
+取り込みや走査はターミナルの cynovela-cli.py からもできます (詳しくは START-HERE.md の 8 節)。

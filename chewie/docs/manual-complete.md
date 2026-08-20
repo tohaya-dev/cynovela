@@ -442,13 +442,18 @@ python server.py --demo
 
 ## 6-2. MCP integration
 
-Cynovela publishes 11 tools as an MCP server.
+Cynovela publishes 25 tools as an MCP server (22 visible by default; 3 admin tools appear only when CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 is set).
 
 | Category | Tools |
 |---|---|
 | RAG search (4) | `search_collection`, `search_across_collections`, `rag_with_role`, `rag_general` |
-| Information retrieval (4) | `list_workspaces`, `get_workspace_info`, `get_collection_info`, `get_audit_logs` |
-| Management (3) | `list_sources`, `publish_collection`, `create_workspace` |
+| Viewing (6) | `list_workspaces`, `get_workspace_info`, `get_collection_info`, `get_audit_logs`, `list_sources`, `server_status` |
+| Ingestion and progress (3) | `ingest_source`, `get_job_status`, `cancel_scan` |
+| Publishing and creation (4) | `publish_collection`, `create_collection`, `publish_control`, `create_workspace` |
+| Settings (5) | `settings_show`, `settings_models`, `settings_test`, `settings_set`, `settings_providers` |
+| Admin (3, hidden by default) | `delete_item`, `manage_users`, `manage_backups` |
+
+The 3 admin tools appear only when `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` is set in the MCP server's env. `settings_set` is enabled with `CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`, as before. `publish_collection` now starts publishing and immediately returns a `job_id`; check progress with `get_job_status`.
 
 You can connect from an MCP client such as LM Studio. As a restriction specific to the conda environment, the path of the Python executable must be specified with the `CYNOVELA_MCP_PYTHON` environment variable.
 
@@ -1005,13 +1010,18 @@ python server.py --demo
 
 ## 6-2. MCP 連携
 
-Cynovela は MCP サーバーとして 11 ツールを公開しています。
+Cynovela は MCP サーバーとして 25 個の道具を公開しています（既定で見えるのは 22 個。管理系の 3 個は CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を設定したときだけ現れます）。
 
 | カテゴリ | ツール |
 |---|---|
-| RAG 検索系（4） | `search_collection`、`search_across_collections`、`rag_with_role`、`rag_general` |
-| 情報取得系（4） | `list_workspaces`、`get_workspace_info`、`get_collection_info`、`get_audit_logs` |
-| 管理系（3） | `list_sources`、`publish_collection`、`create_workspace` |
+| RAG 検索（4） | `search_collection`、`search_across_collections`、`rag_with_role`、`rag_general` |
+| 見る（6） | `list_workspaces`、`get_workspace_info`、`get_collection_info`、`get_audit_logs`、`list_sources`、`server_status` |
+| 入れる・進み具合（3） | `ingest_source`、`get_job_status`、`cancel_scan` |
+| 公開と作成（4） | `publish_collection`、`create_collection`、`publish_control`、`create_workspace` |
+| 設定（5） | `settings_show`、`settings_models`、`settings_test`、`settings_set`、`settings_providers` |
+| 管理系（3・既定で非表示） | `delete_item`、`manage_users`、`manage_backups` |
+
+管理系の 3 個は、MCP サーバーの env に `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を書いたときだけ現れます。`settings_set` は従来どおり `CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1` で有効になります。`publish_collection` は公開を始めて `job_id` を即返す形になり、進み具合は `get_job_status` で確認します。
 
 LM Studio などの MCP クライアントから接続できます。conda 環境固有の制限として、`CYNOVELA_MCP_PYTHON` 環境変数で Python 実行ファイルパスを指定する必要があります。
 

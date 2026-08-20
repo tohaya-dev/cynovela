@@ -227,12 +227,15 @@ fi
 
 echo "[3/4] この配布物のための conda 環境を消します"
 if [ "$_have_conda_env" = "1" ]; then
+    _conda_err=""
     if [ -n "$CONDA_BIN" ]; then
-        "$CONDA_BIN" env remove -n "$DIST_ENV" --yes >/dev/null 2>&1 || true
+        # A-6 (DD-CYN-0142 §5-F): 結果を捨てない。失敗の理由を受け取って出す。
+        _conda_err="$("$CONDA_BIN" env remove -n "$DIST_ENV" --yes 2>&1 >/dev/null || true)"
     fi
     if [ -d "$CONDA_ENV_DIR" ]; then
         echo "      消せませんでした: ${DIST_ENV} (${CONDA_ENV_DIR})"
-        echo "      手で消す場合: conda env remove -n ${DIST_ENV}"
+        [ -n "$_conda_err" ] && printf '%s\n' "$_conda_err" | head -3 | sed 's/^/      理由: /'
+        echo "      次の一手: 手で消す場合は conda env remove -n ${DIST_ENV}"
     else
         echo "      消しました: ${DIST_ENV}"
     fi
@@ -246,16 +249,45 @@ echo "      ${REPO}"
 # 自分が読み終わったあとに動く別の仕組み (osascript) へ渡す。
 # Finder に頼むため、別のディスクに置かれている場合も、そのディスクのゴミ箱へ入る。
 # .venv-cynovela と .mas-env と store/ は、このフォルダの中に在るので一緒に入る。
-/usr/bin/osascript -e "tell application \"Finder\" to move POSIX file \"${REPO}\" to trash" >/dev/null 2>&1
+# A-6 (DD-CYN-0142 §5-F): Finder へ渡した結果 (終了コードと標準エラー) を捨てずに受け取り、
+# 失敗したときは理由と次の一手を出す。成否の最終判定は従来どおり「実際に消えたか」で行う。
+_trash_err="$(/usr/bin/osascript -e "tell application \"Finder\" to move POSIX file \"${REPO}\" to trash" 2>&1 >/dev/null)"
+_trash_rc=$?
+_TRASH_OK=1
 if [ -d "$REPO" ]; then
-    echo "      ゴミ箱へ入れられませんでした。手で移してください: ${REPO}"
+    _TRASH_OK=0
+    echo "      ゴミ箱へ入れられませんでした。"
+    if [ -n "$_trash_err" ] || [ "$_trash_rc" != "0" ]; then
+        echo "      Finder が返した理由: ${_trash_err:-終了コード ${_trash_rc}}"
+    fi
+    case "$_trash_err" in
+        *"-1743"*|*"not allowed"*|*"許可"*)
+            echo "      見立て: ターミナルから Finder を操作する許可がありません。"
+            echo "      次の一手: システム設定 > プライバシーとセキュリティ > オートメーション で"
+            echo "                ターミナルに Finder の操作を許可し、もう一度 bash uninstall.sh を実行してください。"
+            ;;
+        *)
+            echo "      次の一手: Finder でこのフォルダを手でゴミ箱へ移してください: ${REPO}"
+            ;;
+    esac
+    case "$REPO" in
+        *"/Library/Mobile Documents"*|*"/Library/CloudStorage"*|*"/Dropbox/"*|*"/OneDrive"*|*"/Google Drive"*|*"/GoogleDrive"*)
+            echo "      注意: このフォルダはクラウド同期の下にあります。同期がファイルの実体を手元から"
+            echo "            退避している (雲マークのファイルがある) と、ゴミ箱への移動が終わらないことが"
+            echo "            あります。先に同期側で実体をこの機械へ戻すか、同期の管理画面から削除してください。"
+            ;;
+    esac
 else
     echo "      ゴミ箱へ入れました"
 fi
 
 echo ""
 echo "------------------------------------------------------------"
-echo " 終わりました"
+if [ "$_TRASH_OK" = "1" ]; then
+    echo " 終わりました"
+else
+    echo " 一部が残っています (上の [4/4] の理由と次の一手を見てください)"
+fi
 echo "------------------------------------------------------------"
 echo "  ディスクの容量は、ゴミ箱を空にするまで戻りません。"
 echo "  conda はそのまま残しています。取り除く場合は、お使いの入れ方に合わせて行ってください。"

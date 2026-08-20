@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cynovela MCP Server v3.0 — protocol 2026-07-28 (stdio).
+"""Cynovela MCP Server v3.1 — protocol 2026-07-28 (stdio).
 
 DD-CYN-0140 §5-K: 2024-11-05 世代の手書き JSON-RPC を現行仕様へ作り直した。
   - `server/discover` に応える。initialize/initialized の握手も Mcp-Session-Id も
@@ -36,12 +36,22 @@ PROTOCOL_VERSION = "2026-07-28"
 # 自分の版より古い・同じなら、その版で応える。本実装が出すのは全版共通の部分集合
 # (tools のみ) なので、旧版のクライアントにもそのまま通じる。未来の版は名乗らない。
 _REV_RE = r"^\d{4}-\d{2}-\d{2}$"
-SERVER_INFO = {"name": "cynovela-mcp", "version": "3.0"}
+SERVER_INFO = {"name": "cynovela-mcp", "version": "3.1"}
 JSON_SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 
 # ─────────────────────────────────────────
-# ツール定義 (16本。全て実在する REST の口だけを叩く — DD-CYN-0140 §4 Agent D 実測、
-#             設定系5本は DD-CYN-0141 §5-C)
+# ツール定義 (25本 = 開放22 + 既定閉3。全て実在する REST の口だけを叩く。
+#             16本は DD-CYN-0140/0141、9本は DD-CYN-0142 §5-A で作業の単位で追加)
+#   追加分 (DD-CYN-0142):
+#   server_status → GET /api/health + /api/collections (稼働と索引の状態)
+#   ingest_source → POST /api/ingest-roots + /api/sources + /api/sources/{id}/scan/async (1道具)
+#   get_job_status → GET /api/jobs/{job_id} (走査と公開の進み具合)
+#   cancel_scan → POST /api/sources/{id}/scan/cancel
+#   create_collection → POST /api/collections (+ link-files)
+#   publish_control → POST /api/collections/{id}/publish/{stop|recover}
+#   delete_item / manage_users / manage_backups
+#     → 既定で閉じる。CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 のときだけ tools/list に現れる
+#   (publish_collection は publish/async を叩き job_id を即返す形へ変更)
 #   search_collection / search_across_collections / rag_with_role / rag_general
 #     → POST /api/chat
 #   list_workspaces → GET /api/workspaces + GET /api/collections
@@ -354,7 +364,8 @@ TOOLS = [
     {
         "name": "publish_collection",
         "description": (
-            "指定コレクションをPublish（公開）します。"
+            "指定コレクションのPublish（公開）を始めます。開始した時点で job_id を返して"
+            "すぐ戻ります (待ちません)。進み具合は get_job_status で job_id を渡して見ます。"
             "Publish後はRAG Chatで検索可能になります。既にready状態でも再Publishが可能です。"
         ),
         "inputSchema": {
@@ -371,6 +382,7 @@ TOOLS = [
             "properties": {
                 "ok": {"type": "boolean"},
                 "collection_id": {"type": "string"},
+                "job_id": {"type": ["string", "null"]},
                 "status": {"type": ["string", "null"]},
                 "message": {"type": ["string", "null"]},
             },
@@ -518,6 +530,244 @@ TOOLS = [
                 "count": {"type": "integer"},
             },
             "required": ["providers", "count"],
+        },
+    },
+    # ─── DD-CYN-0142 §5-A: 作業の単位で足した道具 (開放6) ───
+    {
+        "name": "server_status",
+        "description": "サーバの稼働と索引の状態を見ます (GET /api/health と、まとまりごとの塊の数)。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "up": {"type": "boolean"},
+                "version": {"type": ["string", "null"]},
+                "collections": {"type": "array", "items": {"type": "object"}},
+                "total_chunks": {"type": "integer"},
+            },
+            "required": ["up"],
+        },
+    },
+    {
+        "name": "ingest_source",
+        "description": (
+            "資料を入れます: 取り込み元を足し、資料として登録し、走査を始める、を1道具で行います。"
+            "走査は始めた時点で job_id を返してすぐ戻ります。進み具合は get_job_status で見ます。"
+            "workspace_id を渡すと、その作業場所へも結び付けます。"
+        ),
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "取り込むフォルダの絶対パス"},
+                "name": {"type": "string", "description": "資料の名前 (省略時: フォルダ名)"},
+                "workspace_id": {"type": "string", "description": "結び付ける作業場所 (任意)"},
+            },
+            "required": ["path"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "source_id": {"type": ["string", "null"]},
+                "job_id": {"type": ["string", "null"]},
+                "steps": {"type": "array", "items": {"type": "object"}},
+            },
+            "required": ["ok"],
+        },
+    },
+    {
+        "name": "get_job_status",
+        "description": "走査 (scan) と公開 (publish) の進み具合を見ます。job_id は ingest_source / publish_collection が返した値です。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "job_id": {"type": "string", "description": "ジョブID"},
+            },
+            "required": ["job_id"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "kind": {"type": ["string", "null"]},
+                "status": {"type": ["string", "null"]},
+                "stage": {"type": ["string", "null"]},
+                "progress": {"type": ["integer", "null"]},
+                "total": {"type": ["integer", "null"]},
+                "message": {"type": ["string", "null"]},
+                "error": {"type": ["string", "null"]},
+            },
+            "required": ["status"],
+        },
+    },
+    {
+        "name": "cancel_scan",
+        "description": "走行中の走査に中止を要求します。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "source_id": {"type": "string", "description": "取り込み元 (source) のID"},
+            },
+            "required": ["source_id"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "status": {"type": ["string", "null"]},
+            },
+            "required": ["ok"],
+        },
+    },
+    {
+        "name": "create_collection",
+        "description": (
+            "作業場所の中にまとまり (collection) を作ります。source_id を渡すと、その資料の"
+            "全ファイルを結び付けます (公開は publish_collection で別に始めます)。"
+        ),
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "workspace_id": {"type": "string", "description": "作業場所のID"},
+                "name": {"type": "string", "description": "まとまりの名前"},
+                "source_id": {"type": "string", "description": "この資料の全ファイルを結び付ける (任意)"},
+            },
+            "required": ["workspace_id", "name"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "id": {"type": ["string", "null"]},
+                "name": {"type": ["string", "null"]},
+                "linked_files": {"type": "integer"},
+            },
+            "required": ["ok"],
+        },
+    },
+    {
+        "name": "publish_control",
+        "description": "公開 (publish) を止める・固着から復旧する。action に stop か recover を渡します。",
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "collection_id": {"type": "string", "description": "コレクションID"},
+                "action": {"type": "string", "enum": ["stop", "recover"]},
+            },
+            "required": ["collection_id", "action"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "action": {"type": "string"},
+                "result": {"type": "object"},
+            },
+            "required": ["ok", "action"],
+        },
+    },
+    # ─── DD-CYN-0142 §5-A: 既定で閉じる道具 (3)。CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 の
+    #     ときだけ tools/list に現れる。閉じたまま呼ばれた場合も実行しない (二重の守り)。
+    #     これは機能差ではなく、資料の中身に引きずられた AI の暴発を止める仕掛け (§0-2 C)。───
+    {
+        "name": "delete_item",
+        "description": (
+            "資料 (source)・まとまり (collection)・作業場所 (workspace) を消します。"
+            "既定で閉じています: MCP サーバの env に CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を書いたときだけ使えます。"
+        ),
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "kind": {"type": "string", "enum": ["source", "collection", "workspace"]},
+                "id": {"type": "string", "description": "消す対象のID"},
+            },
+            "required": ["kind", "id"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "kind": {"type": "string"},
+                "id": {"type": "string"},
+            },
+            "required": ["ok"],
+        },
+    },
+    {
+        "name": "manage_users",
+        "description": (
+            "利用者を管理します (list / create / update / delete / reset_password)。"
+            "既定で閉じています: MCP サーバの env に CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を書いたときだけ使えます。"
+        ),
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["list", "create", "update", "delete", "reset_password"]},
+                "user_id": {"type": "string", "description": "update / delete / reset_password の対象"},
+                "username": {"type": "string", "description": "create のログイン名"},
+                "password": {"type": "string", "description": "create / reset_password の合言葉 (8文字以上)"},
+                "role": {"type": "string", "description": "create / update の役割 (admin / viewer)"},
+                "display_name": {"type": "string", "description": "create / update の表示名"},
+                "is_active": {"type": "boolean", "description": "update の有効/無効"},
+            },
+            "required": ["action"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "action": {"type": "string"},
+                "users": {"type": "array", "items": {"type": "object"}},
+                "result": {"type": "object"},
+            },
+            "required": ["ok", "action"],
+        },
+    },
+    {
+        "name": "manage_backups",
+        "description": (
+            "控えを扱います (list / create / restore / delete)。restore はいまのデータを控えの中身に置き換えます。"
+            "既定で閉じています: MCP サーバの env に CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を書いたときだけ使えます。"
+        ),
+        "inputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["list", "create", "restore", "delete"]},
+                "name": {"type": "string", "description": "restore / delete の控えの名前"},
+                "label": {"type": "string", "description": "create の短い札 (任意)"},
+            },
+            "required": ["action"],
+        },
+        "outputSchema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "ok": {"type": "boolean"},
+                "action": {"type": "string"},
+                "backups": {"type": "array", "items": {"type": "object"}},
+                "result": {"type": "object"},
+            },
+            "required": ["ok", "action"],
         },
     },
 ]
@@ -808,16 +1058,18 @@ def _tool_list_sources(a):
 
 
 def _tool_publish_collection(a):
-    # §6-6-2: Publish は埋め込みの計算を伴い 120 秒を超えることがある
-    _st, d = _api("POST", f"/api/collections/{a['collection_id']}/publish", body={}, timeout=600)
+    # DD-CYN-0142 §5-B: 開始だけを返す口 (publish/async) を叩き、job_id を即返す。
+    # 進み具合は get_job_status。以前の同期版は埋め込みの計算で数分待たせていた。
+    _st, d = _api("POST", f"/api/collections/{a['collection_id']}/publish/async", body={}, timeout=60)
     d = d if isinstance(d, dict) else {}
     structured = {
         "ok": True,
         "collection_id": a["collection_id"],
+        "job_id": d.get("job_id"),
         "status": d.get("status"),
-        "message": d.get("message", "Publish成功"),
+        "message": "公開を始めました。進み具合は get_job_status に job_id を渡して見てください。",
     }
-    return structured, f"Publish 完了: {a['collection_id']} ({structured['status']})"
+    return structured, f"Publish 開始: {a['collection_id']} (job {structured['job_id']})"
 
 
 def _tool_create_workspace(a):
@@ -929,6 +1181,175 @@ def _tool_settings_providers(a):
     return structured, f"プリセット {len(rows)}件"
 
 
+# ─── DD-CYN-0142 §5-A: 作業の単位で足した道具の実装 ───
+def _tool_server_status(_a):
+    up, version = False, None
+    try:
+        _st, h = _api("GET", "/api/health", timeout=5)
+        up = isinstance(h, dict) and h.get("status") == "ok"
+        version = (h or {}).get("version") if isinstance(h, dict) else None
+    except ToolFailure:
+        structured = {"up": False, "version": None, "collections": [], "total_chunks": 0}
+        return structured, "サーバは応答しません (起動していない可能性)"
+    cols_out, total = [], 0
+    try:
+        _st2, cols = _api("GET", "/api/collections", timeout=15)
+        for c in (cols if isinstance(cols, list) else []):
+            n = int(c.get("chunk_count") or 0)
+            total += n
+            cols_out.append({"id": c.get("id"), "name": c.get("name"),
+                             "status": c.get("status"), "chunk_count": n})
+    except (NotFoundError, ToolFailure):
+        pass
+    structured = {"up": up, "version": version, "collections": cols_out, "total_chunks": total}
+    return structured, f"稼働中 (v{version}) / まとまり{len(cols_out)}件・合計{total}塊"
+
+
+def _tool_ingest_source(a):
+    steps = []
+    # 1) 取り込み元を足す (登録済み already / 容器形態では 400 → 資料の登録は続ける)
+    try:
+        _st, d_r = _api("POST", "/api/ingest-roots", body={"path": a["path"]}, timeout=30)
+        steps.append({"step": "ingest-root", "ok": True, "result": d_r})
+    except (NotFoundError, ToolFailure) as e:
+        steps.append({"step": "ingest-root", "ok": False, "detail": str(e)[:200]})
+    # 2) 資料として登録 (走査は 4 で開始だけを返す口を使う)
+    name = a.get("name") or os.path.basename(a["path"].rstrip("/")) or a["path"]
+    _st, d_s = _api("POST", "/api/sources",
+                    body={"name": name, "path": a["path"], "auto_scan": False}, timeout=30)
+    sid = (d_s or {}).get("id")
+    steps.append({"step": "source", "ok": True, "id": sid, "name": name})
+    # 3) 作業場所へ結び付け (任意)。PUT の source_ids は全置換のため現在の一覧に足して送る。
+    if a.get("workspace_id"):
+        _st, d_l = _api("GET", f"/api/sources?workspace_id={a['workspace_id']}", timeout=30)
+        existing = [s.get("id") for s in (d_l if isinstance(d_l, list) else [])]
+        ids = existing + ([sid] if sid not in existing else [])
+        _api("PUT", f"/api/workspaces/{a['workspace_id']}", body={"source_ids": ids}, timeout=30)
+        steps.append({"step": "workspace-link", "ok": True, "workspace_id": a["workspace_id"]})
+    # 4) 走査を始める (開始だけを返す口)
+    _st, d_j = _api("POST", f"/api/sources/{sid}/scan/async", timeout=30)
+    job_id = (d_j or {}).get("job_id")
+    steps.append({"step": "scan", "ok": True, "job_id": job_id})
+    structured = {"ok": True, "source_id": sid, "job_id": job_id, "steps": steps}
+    return structured, f"資料を登録し走査を始めました: source {sid} / job {job_id} (進み具合は get_job_status)"
+
+
+def _tool_get_job_status(a):
+    _st, d = _api("GET", f"/api/jobs/{a['job_id']}", timeout=15)
+    d = d if isinstance(d, dict) else {}
+    structured = {k: d.get(k) for k in ("kind", "status", "stage", "progress", "total", "message", "error")}
+    return structured, (f"{structured.get('kind')} {structured.get('status')} "
+                        f"{structured.get('progress')}/{structured.get('total')} {structured.get('message') or ''}")
+
+
+def _tool_cancel_scan(a):
+    _st, d = _api("POST", f"/api/sources/{a['source_id']}/scan/cancel", timeout=15)
+    d = d if isinstance(d, dict) else {}
+    structured = {"ok": bool(d.get("ok")), "status": d.get("status")}
+    return structured, "走査に中止を要求しました"
+
+
+def _tool_create_collection(a):
+    _st, d = _api("POST", "/api/collections",
+                  body={"name": a["name"], "workspace_id": a["workspace_id"]}, timeout=60)
+    d = d if isinstance(d, dict) else {}
+    cid = d.get("id")
+    linked = 0
+    if a.get("source_id") and cid:
+        _st2, files = _api("GET", f"/api/sources/{a['source_id']}/files", timeout=60)
+        fids = [f.get("id") for f in (files if isinstance(files, list) else [])
+                if isinstance(f, dict) and not f.get("missing")]
+        if fids:
+            _api("POST", f"/api/collections/{cid}/link-files", body={"file_ids": fids}, timeout=60)
+            linked = len(fids)
+    structured = {"ok": True, "id": cid, "name": d.get("name"), "linked_files": linked}
+    return structured, f"まとまりを作りました: {cid} (結び付けたファイル {linked}件)"
+
+
+def _tool_publish_control(a):
+    action = a["action"]
+    _st, d = _api("POST", f"/api/collections/{a['collection_id']}/publish/{action}", timeout=60)
+    structured = {"ok": True, "action": action, "result": d if isinstance(d, dict) else {}}
+    return structured, f"publish {action}: " + json.dumps(structured["result"], ensure_ascii=False)
+
+
+# ─── 既定で閉じる道具 (DD-CYN-0142 §5-A)。settings_set と同じ形の env 門。───
+_ADMIN_WRITE_TOOLS = ("delete_item", "manage_users", "manage_backups")
+
+
+def _require_admin_write_open():
+    if os.environ.get("CYNOVELA_MCP_ALLOW_ADMIN_WRITE", "").strip() != "1":
+        raise ToolFailure(
+            "この道具は既定で閉じています。MCP サーバの起動設定 (mcpServers の env) に "
+            "CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を書いたときだけ実行できます。"
+            "見る道具はこの守りの対象外です。"
+        )
+
+
+def _tool_delete_item(a):
+    _require_admin_write_open()
+    path = {"source": "/api/sources/{id}", "collection": "/api/collections/{id}",
+            "workspace": "/api/workspaces/{id}"}[a["kind"]].format(id=a["id"])
+    _api("DELETE", path, timeout=120)
+    structured = {"ok": True, "kind": a["kind"], "id": a["id"]}
+    return structured, f"{a['kind']} {a['id']} を消しました"
+
+
+def _tool_manage_users(a):
+    _require_admin_write_open()
+    action = a["action"]
+    if action == "list":
+        _st, d = _api("GET", "/api/admin/users", timeout=30)
+        users = [{k: u.get(k) for k in ("id", "username", "role", "is_active")}
+                 for u in (d if isinstance(d, list) else [])]
+        return {"ok": True, "action": action, "users": users}, f"利用者 {len(users)}件"
+    if action == "create":
+        body = {k: a[k] for k in ("username", "password", "role", "display_name") if a.get(k)}
+        _st, d = _api("POST", "/api/admin/users", body=body, timeout=30)
+        return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
+                f"利用者を作りました: {a.get('username')}")
+    if action == "update":
+        body = {}
+        for src_k, dst_k in (("role", "role"), ("display_name", "display_name"), ("is_active", "is_active")):
+            if src_k in a:
+                body[dst_k] = a[src_k]
+        _st, d = _api("PATCH", f"/api/admin/users/{a['user_id']}", body=body, timeout=30)
+        return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
+                f"利用者を変えました: {a.get('user_id')}")
+    if action == "delete":
+        _st, d = _api("DELETE", f"/api/admin/users/{a['user_id']}", timeout=30)
+        return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
+                f"利用者を消しました: {a.get('user_id')}")
+    if action == "reset_password":
+        _st, d = _api("POST", f"/api/admin/users/{a['user_id']}/reset-password",
+                      body={"password": a.get("password") or ""}, timeout=30)
+        return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
+                f"合言葉を出し直しました: {a.get('user_id')}")
+    raise ToolFailure(f"未知の action: {action}")
+
+
+def _tool_manage_backups(a):
+    _require_admin_write_open()
+    action = a["action"]
+    if action == "list":
+        _st, d = _api("GET", "/api/admin/backups", timeout=30)
+        items = d if isinstance(d, list) else (d or {}).get("items") or []
+        return {"ok": True, "action": action, "backups": items}, f"控え {len(items)}件"
+    if action == "create":
+        _st, d = _api("POST", "/api/admin/backup", body={"label": a.get("label") or ""}, timeout=300)
+        return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
+                f"控えを取りました: {(d or {}).get('name')}")
+    if action == "restore":
+        _st, d = _api("POST", f"/api/admin/backups/{a['name']}/restore", timeout=600)
+        return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
+                f"控えを戻しました: {a.get('name')}")
+    if action == "delete":
+        _st, d = _api("DELETE", f"/api/admin/backups/{a['name']}", timeout=60)
+        return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
+                f"控えを消しました: {a.get('name')}")
+    raise ToolFailure(f"未知の action: {action}")
+
+
 _TOOL_IMPL = {
     "search_collection": _tool_search_collection,
     "search_across_collections": _tool_search_across_collections,
@@ -946,6 +1367,15 @@ _TOOL_IMPL = {
     "settings_test": _tool_settings_test,
     "settings_set": _tool_settings_set,
     "settings_providers": _tool_settings_providers,
+    "server_status": _tool_server_status,
+    "ingest_source": _tool_ingest_source,
+    "get_job_status": _tool_get_job_status,
+    "cancel_scan": _tool_cancel_scan,
+    "create_collection": _tool_create_collection,
+    "publish_control": _tool_publish_control,
+    "delete_item": _tool_delete_item,
+    "manage_users": _tool_manage_users,
+    "manage_backups": _tool_manage_backups,
 }
 
 _TOOL_DEFS = {t["name"]: t for t in TOOLS}
@@ -1009,7 +1439,12 @@ def handle(req: dict):
         return {"jsonrpc": "2.0", "id": rid, "result": {}}
 
     if method == "tools/list":
-        return {"jsonrpc": "2.0", "id": rid, "result": {"tools": TOOLS}}
+        # DD-CYN-0142 §5-A: 既定で閉じる道具は、開けたときだけ一覧に現れる。
+        if os.environ.get("CYNOVELA_MCP_ALLOW_ADMIN_WRITE", "").strip() == "1":
+            visible = TOOLS
+        else:
+            visible = [t for t in TOOLS if t["name"] not in _ADMIN_WRITE_TOOLS]
+        return {"jsonrpc": "2.0", "id": rid, "result": {"tools": visible}}
 
     if method == "tools/call":
         params = req.get("params", {}) or {}

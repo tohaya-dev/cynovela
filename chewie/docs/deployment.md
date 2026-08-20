@@ -209,7 +209,7 @@ CYNOVELA_NONINTERACTIVE=1 python server.py --mode text
 
 ### Overriding the model path
 
-If you want to place the models in a synced folder such as OneDrive, you can specify the path in the `models` section of `cynovela.yaml`.
+Placing the models under a cloud-synced folder such as OneDrive is not recommended (when the sync moves the actual files out, loading fails). Pointing to a different, non-synced location with the `models` section of `cynovela.yaml` is still possible.
 
 ```yaml
 models:
@@ -524,7 +524,7 @@ CYNOVELA_NONINTERACTIVE=1 python server.py --mode text
 
 ### モデルパスの上書き
 
-OneDrive 等の同期フォルダにモデルを置きたい場合は `cynovela.yaml` の `models` セクションでパスを指定できます。
+OneDrive 等のクラウド同期の下にモデルを置くことは勧めません（同期が実体を退避すると読み込みが失敗します）。同期の外の別の場所を `cynovela.yaml` の `models` セクションで指す使い方は可能です。
 
 ```yaml
 models:
