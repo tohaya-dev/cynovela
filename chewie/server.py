@@ -1491,18 +1491,18 @@ def _do_scan(source_id: str, job_id: str | None = None, skip_unchanged: bool = F
                         )
                     file_count = 1
             elif os.path.isdir(src_path):
+                # DD-CYN-0142: 中止はループの外で一括処理する。旧実装は内側の break だけで
+                # 抜けると完了経路へ落ち、部分走査のまま status='completed' が記録され、
+                # 走査に達しなかった既存ファイルへ missing=1 が誤って立っていた。
+                _cancelled = False
                 for root, dirs, filenames in os.walk(src_path):
                     # BLOCK B-6: cancel flag をループ毎に確認して即時中断
                     if _scan_cancel_flags.get(source_id):
-                        conn.execute("UPDATE sources SET status = 'failed' WHERE id = ?", (source_id,))
-                        conn.commit()
-                        _job_write(conn, status="stopped", stage="stopped", progress=file_count,
-                                   message="中止しました")
-                        _scan_cancel_flags.pop(source_id, None)
-                        conn.close()
-                        return
+                        _cancelled = True
+                        break
                     for fname in filenames:
                         if _scan_cancel_flags.get(source_id):
+                            _cancelled = True
                             break
                         ext = os.path.splitext(fname)[1].lower()
                         if ext not in SUPPORTED_EXTENSIONS:
@@ -1595,6 +1595,15 @@ def _do_scan(source_id: str, job_id: str | None = None, skip_unchanged: bool = F
                         file_count += 1
                         if job_id and file_count % 25 == 0:
                             _job_write(conn, progress=file_count, message="走査中")
+
+                if _cancelled:
+                    conn.execute("UPDATE sources SET status = 'failed' WHERE id = ?", (source_id,))
+                    conn.commit()
+                    _job_write(conn, status="stopped", stage="stopped", progress=file_count,
+                               message=f"中止しました ({file_count} ファイルまで走査済み)")
+                    _scan_cancel_flags.pop(source_id, None)
+                    conn.close()
+                    return
 
             # intake-togo-v2-20260705 (Fix 7): disk 上から消えたファイルは削除せず missing=1 を立てる（非破壊）。
             # 旧実装の DELETE は collection_files を CASCADE で消し、scan のみ実行時に chunks/Chroma が
