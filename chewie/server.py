@@ -1210,7 +1210,17 @@ def _create_backup(label: str = "") -> dict:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     safe_label = "".join(c for c in (label or "") if c.isalnum() or c in "-_")[:32]
     name = f"backup-{ts}" + (f"-{safe_label}" if safe_label else "")
+    # DD-CYN-0146 §150-1: 控えの名前が秒単位の時刻だけで作られていたため、同じ秒に2回作ると
+    # 2回目が既存ディレクトリへ書き込もうとして失敗（copytree の FileExistsError → 500）していた。
+    # 既に同名が在るときは連番を足して衝突を避け、失敗させない。
     backup_dir = BACKUP_BASE / name
+    if backup_dir.exists():
+        _base_name = name
+        for _seq in range(2, 1000):
+            name = f"{_base_name}-{_seq}"
+            backup_dir = BACKUP_BASE / name
+            if not backup_dir.exists():
+                break
     backup_dir.mkdir(parents=True, exist_ok=True)
     # SQLite WALチェックポイント後コピー
     try:
