@@ -1,82 +1,95 @@
-# How to assemble the split packages / 分割ファイルのつなぎ方
+# How to download and assemble / 落とし方とつなぎ方
 
 **日本語版はこちら → [日本語](#日本語)**
 
 ## English
 
-The all-in-one packages are too large for a single download, so they are split
-into parts of 1,500,000,000 bytes each. Do this once, before you start the tool.
+This release has 3 forms of the chewie (application) build. Pick ONE:
 
-1. Download **every** part of the package you picked, plus `SHA256SUMS`, into
-   the same folder. If one part is missing, the result will be broken.
+| Form | Files to download | AI models |
+|---|---|---|
+| **Package edition** (Apple silicon Macs — ready to use, no Python, no conda) | `cynovela-chewie-package-1.0.7.tar.gz` (single file) | **also download the models parts** (below) |
+| **Source edition, all-in-one** | `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`–`part02` (split) | already inside |
+| **Source edition, model-separate** | `cynovela-chewie-lightweight-1.0.7.tar.gz` (single file) | **also download the models parts** (below) |
 
-2. Join the parts in order:
+The AI models: `cynovela-chewie-models-1.0.7.tar.gz.part00`–`part02` (split).
 
-       cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part00 cynovela-falcon-all-in-one-1.0.3.tar.gz.part01 cynovela-falcon-all-in-one-1.0.3.tar.gz.part02 > cynovela-falcon-all-in-one-1.0.3.tar.gz
+Always download `SHA256SUMS` into the same folder as well.
 
-       cat cynovela-chewie-all-in-one-1.0.3.tar.gz.part00 cynovela-chewie-all-in-one-1.0.3.tar.gz.part01 cynovela-chewie-all-in-one-1.0.3.tar.gz.part02 > cynovela-chewie-all-in-one-1.0.3.tar.gz
+### 1. Join the split files (only the ones you downloaded)
 
-   (`cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part* > cynovela-falcon-all-in-one-1.0.3.tar.gz`
-   does the same, because the shell sorts the part names.)
+    cat cynovela-chewie-all-in-one-1.0.7.tar.gz.part00 cynovela-chewie-all-in-one-1.0.7.tar.gz.part01 cynovela-chewie-all-in-one-1.0.7.tar.gz.part02 > cynovela-chewie-all-in-one-1.0.7.tar.gz
 
-3. Check the result:
+    cat cynovela-chewie-models-1.0.7.tar.gz.part00 cynovela-chewie-models-1.0.7.tar.gz.part01 cynovela-chewie-models-1.0.7.tar.gz.part02 > cynovela-chewie-models-1.0.7.tar.gz
 
-       shasum -a 256 --ignore-missing -c SHA256SUMS
+(`cat ...part* > ...` does the same, because the shell sorts the part names.)
 
-   Every line it prints should say `OK`.
+### 2. Check the result
 
-4. Unpack it:
+    shasum -a 256 --ignore-missing -c SHA256SUMS
 
-       tar -xzf cynovela-falcon-all-in-one-1.0.3.tar.gz
+Every line it prints should say `OK`. If not, one part did not download completely — download that part again and repeat from step 1. Do not start the tool with a package that failed the check.
 
-       tar -xzf cynovela-chewie-all-in-one-1.0.3.tar.gz
+### 3. Unpack
 
-If step 3 does not say `OK`: one of the parts did not download completely.
-Download that part again and repeat from step 2. Do not start the tool with a
-package that failed the check.
+    tar -xzf cynovela-chewie-package-1.0.7.tar.gz        # or the form you picked
 
-The two lightweight packages are single files and are not split. Unpack them
-directly with `tar -xzf`.
+If you use the **package edition** or the **model-separate edition**, unpack the models **inside the unpacked `chewie` folder**:
 
-For what to do next, see `STARTUP.md` in the folder you unpacked. If this is
-your first time, `HAJIMETE.md` in the same folder is the gentler starting point.
+    cd chewie
+    tar -xzf ../cynovela-chewie-models-1.0.7.tar.gz      # creates store/models/
+
+### 4. What to read next
+
+Open **`START-HERE.md`** in the unpacked folder. It is the only entry document — setup, restart, reinstall and uninstall are all there.
+
+If you have never used Terminal before, open **`docs/first-run.md`** instead. It goes from the downloaded file to your first answer without skipping a keystroke.
+
+> Package edition note: it runs as is with `./launch.sh`. The Python environment it needs is already inside the folder, under `.venv-cynovela/`. Nothing is installed on your Mac.
 
 ---
 
 # 日本語
 
-全部入りは1つのファイルに収まらない大きさのため、片（1つ 1,500,000,000 バイト）に
-割ってあります。使い始める前に、一度だけ次の作業をしてください。
+このリリースの chewie（アプリ版）は3つの形があります。**どれか1つ**を選んでください。
 
-1. 選んだ形の片を **全部** と、`SHA256SUMS` を、同じフォルダへ落とします。
-   1つでも欠けると、つないだ結果が壊れます。
+| 形 | 落とすファイル | AIモデル |
+|---|---|---|
+| **パッケージ版**（M系 Mac・すぐ使える形。Python も conda も不要） | `cynovela-chewie-package-1.0.7.tar.gz`（1本） | **下の models の片も落とします** |
+| **ソース版・全部入り** | `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`〜`part02`（分割） | 入っています |
+| **ソース版・モデル別取得版** | `cynovela-chewie-lightweight-1.0.7.tar.gz`（1本） | **下の models の片も落とします** |
 
-2. 片を順番につなぎます。
+AIモデル: `cynovela-chewie-models-1.0.7.tar.gz.part00`〜`part02`（分割）。
 
-       cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part00 cynovela-falcon-all-in-one-1.0.3.tar.gz.part01 cynovela-falcon-all-in-one-1.0.3.tar.gz.part02 > cynovela-falcon-all-in-one-1.0.3.tar.gz
+`SHA256SUMS` も必ず同じフォルダへ落としてください。
 
-       cat cynovela-chewie-all-in-one-1.0.3.tar.gz.part00 cynovela-chewie-all-in-one-1.0.3.tar.gz.part01 cynovela-chewie-all-in-one-1.0.3.tar.gz.part02 > cynovela-chewie-all-in-one-1.0.3.tar.gz
+### 1. 分割ファイルをつなぐ（落とした形のぶんだけ）
 
-   （`cat cynovela-falcon-all-in-one-1.0.3.tar.gz.part* > cynovela-falcon-all-in-one-1.0.3.tar.gz`
-   でも同じです。片の名前の順につながります。）
+    cat cynovela-chewie-all-in-one-1.0.7.tar.gz.part00 cynovela-chewie-all-in-one-1.0.7.tar.gz.part01 cynovela-chewie-all-in-one-1.0.7.tar.gz.part02 > cynovela-chewie-all-in-one-1.0.7.tar.gz
 
-3. つないだ結果を確かめます。
+    cat cynovela-chewie-models-1.0.7.tar.gz.part00 cynovela-chewie-models-1.0.7.tar.gz.part01 cynovela-chewie-models-1.0.7.tar.gz.part02 > cynovela-chewie-models-1.0.7.tar.gz
 
-       shasum -a 256 --ignore-missing -c SHA256SUMS
+（`cat ...part* > ...` でも同じです。片の名前の順につながります。）
 
-   出てきた行が `OK` と出れば成功です。
+### 2. つないだ結果を確かめる
 
-4. 取り出します。
+    shasum -a 256 --ignore-missing -c SHA256SUMS
 
-       tar -xzf cynovela-falcon-all-in-one-1.0.3.tar.gz
+出てきた行が全部 `OK` なら成功です。`OK` と出ない場合、どれかの片が最後まで落ちていません。その片を落とし直し、1 からやり直してください。確かめに通らなかったものを使い始めないでください。
 
-       tar -xzf cynovela-chewie-all-in-one-1.0.3.tar.gz
+### 3. 取り出す
 
-3 で `OK` と出ない場合、どれかの片が最後まで落ちていません。その片を落とし直し、
-2 からやり直してください。確かめに通らなかったものを使い始めないでください。
+    tar -xzf cynovela-chewie-package-1.0.7.tar.gz        # 選んだ形のファイルで
 
-軽量版の2本は1つのファイルのままで、割ってありません。そのまま `tar -xzf` で
-取り出せます。
+**パッケージ版**と**モデル別取得版**の方は、models を**取り出した `chewie` フォルダの中で**展開します。
 
-以後の起動手順は、展開したフォルダの `STARTUP.md` をご覧ください。はじめての方は、
-同じフォルダの `HAJIMETE.md` から読むほうが分かりやすいです。
+    cd chewie
+    tar -xzf ../cynovela-chewie-models-1.0.7.tar.gz      # store/models/ ができます
+
+### 4. 次に読むもの
+
+展開したフォルダの **`START-HERE.md`** を開いてください。唯一の入口の文書で、セットアップ・再起動・再インストール・アンインストールはすべてそこにあります。
+
+ターミナルを開いたことが一度も無い方は、代わりに **`docs/first-run.md`** を開いてください。落としたファイルから最初の答えが返るまでを、打つ文字を省かずに書いてあります。
+
+> パッケージ版の補足: `./launch.sh` だけでそのまま動きます。動かすのに要る Python の環境は、フォルダの中の `.venv-cynovela/` に既に入っています。この Mac には何も入れません。

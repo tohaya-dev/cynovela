@@ -437,7 +437,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <p>The MCP server authenticates to the API of the Cynovela main body with the<code>Authorization: Bearer &lt;token&gt;</code> header. The token is passed by an environment variable on the client side.</p>
 <ul>
 <li>Authentication uses the JWT issued by<code>POST /api/auth/login</code>. The old<code>Bearer demo-token-&lt;user_id&gt;</code> form has been removed and is not accepted.</li>
-<li>The token expires after 8 hours; issue a new one with the same login call when it does.</li>
+<li>The token does not expire unless the login call asked for an expiry (<code>expires_in_hours</code>). Issue a new one with the same login call whenever you need to.</li>
 </ul>
 <h3>5-2. Role permissions</h3>
 <p>Calls through MCP also pass the same role (admin / curator / viewer) permission checks as the API of the main body. In particular, administration tools such as<code>create_workspace</code> and<code>publish_collection</code> may require admin permission.</p>
@@ -705,7 +705,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <p>MCP サーバーは Cynovela 本体 API に対して<code>Authorization: Bearer &lt;token&gt;</code> ヘッダーで認証します。トークンはクライアント側の環境変数で渡します。</p>
 <ul>
 <li>認証は<code>POST /api/auth/login</code> が発行する JWT です。旧<code>Bearer demo-token-&lt;user_id&gt;</code> 形式は廃止済みで受理しません。</li>
-<li>トークンは 8 時間で切れます。切れたら同じログインの呼び出しで新しく発行してください。</li>
+<li>トークンは、ログインの呼び出しで期間（<code>expires_in_hours</code>）を渡さないかぎり切れません。要るときは同じ呼び出しで発行し直してください。</li>
 </ul>
 <h3>5-2. ロール権限</h3>
 <p>MCP 経由の呼び出しも本体 API と同じロール（admin / curator / viewer）の権限チェックを通過します。特に<code>create_workspace</code> や<code>publish_collection</code> などの管理系ツールは admin 権限を要する場合があります。</p>

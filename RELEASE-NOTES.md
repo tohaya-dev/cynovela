@@ -2,6 +2,110 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
+## 1.0.7 (2026-08-22)
+
+A fix release. Nothing about your ingested material, settings or keys changes —
+a 1.0.6 installation can be replaced in place.
+
+### Read this first if you are on 1.0.6
+
+**1.0.6 could be stopped by a single API call.** Registering an ingest folder
+whose name could not be assigned made the server exit — one ordinary
+`POST /api/ingest-roots` was enough, and the whole server went down with it,
+taking any scan or publish in flight with it. If you run 1.0.6 with the API or
+the CLI reachable by anyone else, replace it. This release fixes it.
+
+**1.0.6 showed a `confidential` collection to a viewer.** The collection list did
+not filter by access level for non-administrators, and a search restricted to
+particular collections could still reach outside that set through its keyword
+half. Both are fixed here.
+
+### What changed
+
+**1. A single API call could stop the server (fix)**
+
+Names for ingest folders are now assigned so that the part that makes a name
+unique always survives the 32-character limit. When no name is free, the request
+is refused with a readable message instead of the server exiting.
+
+**2. A `confidential` collection was visible to a viewer (fix)**
+
+Collections marked `confidential` are no longer listed to non-administrators,
+and a search restricted to given collections stays inside that set.
+
+**3. The pass no longer expires after 8 hours**
+
+Signing in used to hand you a pass that stopped working 8 hours later, with no
+way to ask for anything else. Now the pass has no expiry unless you ask for one
+(`expires_in_hours` or `expires_in_seconds` on sign-in). If you hand a pass to
+something you do not control, ask for an expiry. Note that signing out does not
+make an already-issued pass stop working — the pass is checked by its signature
+alone. This is written up in "What this tool cannot do", section 11.
+
+**4. Signing in from the terminal**
+
+`cynovela-cli login` signs you in and remembers the pass for you, in a file only
+you can read. The password is taken from standard input or from the terminal, so
+it does not sit in your shell history, and the pass is never printed.
+`cynovela-cli logout` forgets it again.
+
+**5. Exporting a workspace could produce an empty package (fix)**
+
+If a collection held files from a folder that was not linked to the workspace,
+the export wrote the file ids but not the files themselves. Importing that
+package produced a collection with nothing in it — and said it had succeeded.
+The export now collects the files a collection holds, wherever they came from,
+and an import that ends up with an empty collection says so instead of
+reporting success.
+
+**6. An imported workspace can be asked questions straight away (fix)**
+
+Importing restores the search vectors, but the identifiers stored inside them
+still pointed at the workspace they were exported from, and searching filters on
+exactly those. So an imported workspace answered nothing until it was published
+again — which the note on screen said was unnecessary. The identifiers are now
+rewritten during the import.
+
+**7. Removing a person for good**
+
+Deleting a user used to switch the account off and leave the row in place. You
+can now remove it for good, from the screen's API, from the terminal
+(`users delete --purge`) and from MCP. Audit log entries are kept either way.
+
+**8. The same folder can no longer be registered twice**
+
+Registering a folder that is already registered under another name is refused,
+comparing the real path.
+
+**9. Two scans of the same folder can no longer run at once**
+
+The check used to be on one entry point only. It now sits in the scan itself, so
+the synchronous route, the automatic scan when a folder is registered, and the
+scan at start-up are all covered.
+
+**10. The timeout message now says what happened**
+
+It used to suggest reducing a number of referenced documents that has no setting
+anywhere. It now says the wait is 120 seconds per call, that this cannot be
+changed, and what you can actually do about it.
+
+**11. Source numbers match the answer**
+
+The `[1]`, `[2]` markers in an answer and the numbered list of sources beneath it
+are now the same numbers in the terminal and over MCP, as they already were on
+the screen.
+
+**12. Documents**
+
+New: how to run it for the first time if you have never opened Terminal; how to
+stop and start it again; which of the four downloads to take; a full reference
+for every terminal command; a full reference for all 25 MCP tools. The API
+reference was replaced by a list of every endpoint, read out of the code rather
+than written by hand. "What this tool cannot do" gained a new section covering
+restoring a backup, what a backup does and does not hold, the fixed dimension
+number in an export, the context length with Ollama, and what an imported
+workspace cannot do.
+
 ## 1.0.3 (2026-08-17)
 
 A fix and usability release. Nothing about your ingested material, settings or
@@ -180,6 +284,103 @@ from the old folder into the new one before starting.
 ---
 
 # 日本語
+
+## 1.0.7（2026-08-22）
+
+不具合を直す版です。読み込んだ資料・設定・鍵には何も起きません。1.0.6 の入れ物は
+そのまま置き換えられます。
+
+### 1.0.6 をお使いの方は先にこれを
+
+**1.0.6 は、API を1回叩くだけで止まることがありました。** 取り込み元のフォルダを
+登録するとき、名前を割り当てられないとサーバーが終了していました。ふつうの
+`POST /api/ingest-roots` 1回で足り、サーバー全体が落ち、走っていた走査や公開も
+道連れになりました。API や CLI に他の人が届く形で 1.0.6 を動かしているなら、
+置き換えてください。この版で直っています。
+
+**1.0.6 は、`confidential` のまとまりを閲覧者に見せていました。** まとまりの一覧が
+管理者以外に対して公開の度合いで絞っておらず、まとまりを指定した検索でも、
+キーワード側だけがその外へ届く経路が残っていました。どちらもこの版で直っています。
+
+### 変わったこと
+
+**1. API を1回叩くだけでサーバーが止まる件（修正）**
+
+取り込み元の名前の付け方を改め、名前を一意にするための部分が32文字の枠から
+必ず落ちないようにしました。空きが無いときは、サーバーが終了するのではなく、
+読める文言で断ります。
+
+**2. `confidential` のまとまりが閲覧者に見えていた件（修正）**
+
+`confidential` の印が付いたまとまりは管理者以外の一覧に出さなくなりました。
+まとまりを指定した検索も、その集合の外へは出ません。
+
+**3. 通行証が8時間で切れなくなりました**
+
+これまでは、ログインすると8時間で使えなくなる通行証が渡され、それ以外を頼む道が
+ありませんでした。いまは、頼まないかぎり期限がつきません（ログインのときに
+`expires_in_hours` か `expires_in_seconds` を渡すと、その長さで切れます）。
+自分の手の届かないところへ渡すときは、期限を頼んでください。
+なお、ログアウトしても、既に出ている通行証は使えなくなりません。通行証は署名だけで
+確かめられるためです。これは「このツールにできないこと」の第11節に書いてあります。
+
+**4. ターミナルからのログイン**
+
+`cynovela-cli login` でログインでき、通行証は自分だけが読めるファイルに覚えさせます。
+合言葉は標準入力かターミナルから受け取るので、ターミナルの履歴には残りません。
+通行証そのものは画面に出しません。`cynovela-cli logout` で忘れさせます。
+
+**5. 作業場所の書き出しが空の包みになることがあった件（修正）**
+
+まとまりが持つ資料の出どころのフォルダが、その作業場所に結ばれていない場合、
+書き出しには資料の番号だけが入り、資料そのものが入りませんでした。その包みを
+取り込むと、中身の空のまとまりができ、しかも成功と表示していました。
+書き出しは、まとまりが持つ資料をどこから来たものでも集めるようになり、
+取り込みは、中身が空になったときにそう言うようになりました。
+
+**6. 取り込んだ作業場所にすぐ質問できる件（修正）**
+
+取り込みは探すためのベクターを戻しますが、その中に残っている番号は書き出し元の
+作業場所を指したままでした。探す側はまさにその番号で絞ります。∴ 取り込んだ作業場所は、
+もう一度公開するまで何も答えませんでした。画面の知らせは「公開は要りません」と
+言っていたのにです。取り込みのときに番号を書き換えるようにしました。
+
+**7. 利用者を完全に消す**
+
+これまでの削除は、その利用者を使えなくして行を残すだけでした。いまは行そのものを
+消せます。画面の API からも、ターミナル（`users delete --purge`）からも、MCP からも
+できます。監査の記録はどちらの場合も残ります。
+
+**8. 同じフォルダを二重に登録できなくなりました**
+
+既に登録されているフォルダを別の名前で登録しようとすると断ります。見分けは
+実体のパスで行います。
+
+**9. 同じフォルダの走査が2本同時に走らなくなりました**
+
+これまで確かめていたのは入口の1つだけでした。走査そのものの中で確かめるようにしたので、
+同期の道も、フォルダを登録したときの自動の走査も、起動のときの走査も、すべて覆います。
+
+**10. 時間切れの知らせが、起きたことを言うようになりました**
+
+これまでは、どこにも設定の無い「参照ドキュメント数」を減らせと言っていました。
+いまは、待ち時間が1回の呼び出しにつき 120秒 であること、それは変えられないこと、
+そして実際に打てる手を言います。
+
+**11. 出典の番号が本文と合うようになりました**
+
+答えの中の `[1]`・`[2]` と、その下に並ぶ出典の番号が、ターミナルでも MCP でも
+同じ番号になりました（画面では前から同じでした）。
+
+**12. 文書**
+
+新しく用意したもの: ターミナルを開いたことが無い方のための、はじめての起動の手順。
+止め方と起こし直し方。4つの落とし物のどれを選ぶか。ターミナルの命令の全数の一覧。
+MCP の道具25件の全数の一覧。API の一覧は、手で書いたものではなく、コードから
+起こした全ての口の一覧に差し替えました。「このツールにできないこと」には、
+控えへの戻し方、控えに入るもの・入らないもの、書き出しに書かれる決め打ちの次元の数、
+Ollama を使うときの文脈の長さ、取り込んだ作業場所にできないことを、新しい節として
+足しました。
 
 ## 1.0.3 (2026-08-17)
 

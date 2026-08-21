@@ -16,6 +16,49 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## v1.0.7 (2026-08-22)
+
+- **A single API call could stop the whole server. It cannot any more.** Registering an
+  ingest folder whose name could not be assigned raised `SystemExit`, which took the
+  server down — one ordinary `POST /api/ingest-roots` was enough. Names are now assigned
+  so that the disambiguating suffix always survives the 32-character limit, and the
+  exhausted case answers 409 instead of exiting.
+- **A `confidential` collection was listed to a viewer.** The collection list now hides
+  `confidential` collections from non-administrators, and a search restricted to given
+  `collection_ids` no longer lets the BM25 half reach outside that set.
+- **The pass no longer expires after 8 hours.** `POST /api/auth/login` issues a pass with
+  no expiry unless the caller passes `expires_in_hours` or `expires_in_seconds`; the same
+  applies to `POST /api/auth/refresh`. See `known-limitations.md` §11 for what that means
+  for a leaked pass.
+- **`cynovela-cli login` and `logout`.** `login` takes the password from standard input or
+  from the terminal (never from the command line by default), stores the pass in
+  `~/.cynovela_cli.env` readable only by you, and never prints it. `logout` removes it.
+- **Full Export could produce an empty `files.json`.** When a collection held files from a
+  folder that was not linked to the workspace, the export listed the file ids but not the
+  files, and the import then produced a collection with nothing in it — while reporting
+  success. Both halves are fixed, and an import that ends up hollow now says so.
+- **An imported workspace can be asked questions without publishing it again.** The import
+  now rewrites the ids stored inside the restored vectors, which retrieval filters on.
+- **A user can be removed for good**, not only switched off:
+  `DELETE /api/admin/users/{id}?purge=true`, `cynovela-cli users delete --purge`,
+  MCP `manage_users` with `purge: true`. Audit log entries are kept.
+- **The same folder can no longer be registered twice** under two names.
+- **Two scans of one folder can no longer run at once.** The guard used to sit on one
+  endpoint; it now sits in the scan itself, so every way in is covered.
+- **The generation-timeout message says what actually happened** — the wait is 120 seconds
+  per call and cannot be configured — instead of suggesting a document count that has no
+  setting anywhere.
+- **Citation numbers match the answer.** The `[N]` in the text and the numbers printed
+  beside the sources are now the same numbers in the CLI and in MCP, as they already were
+  on the screen.
+- **Documents**: new `docs/cli-reference.md` (every command and argument), `docs/mcp-reference.md`
+  (all 25 tools), `docs/first-run.md` (from the download to the first answer, for someone who
+  has never opened Terminal), `docs/restart.md`, `docs/editions.md` (which of the four
+  downloads to take). `docs/api-reference.md` was replaced by a list of all 186 endpoints
+  read out of the code. `docs/known-limitations.md` gained section 11.
+- The same repairs were carried into falcon wherever its code is identical; where it is not,
+  `known-limitations.md` §11.7 says so.
+
 ## v1.0.6 (2026-08-20)
 
 - **The CLI now covers the same work as the screen.** Added: `sources` / `audit-logs` / `chat` /
@@ -183,6 +226,47 @@ Beta GA is a milestone under consideration whose goal is "a state that can withs
 Cynovela の主要な変更内容を時系列で記録します。
 
 ---
+
+## v1.0.7（2026-08-22）
+
+- **API を1回叩くだけでサーバー全体が止まることがあった。もう止まらない。** 取り込み元の
+  フォルダを登録するとき、名前を割り当てられないと `SystemExit` が投げられ、サーバーごと
+  落ちていた。ふつうの `POST /api/ingest-roots` 1回で足りた。名前の付け方を改め、
+  避けるための印が32文字の枠から必ず落ちないようにし、探し尽くしたときは終了ではなく
+  409 で断るようにした。
+- **`confidential` のまとまりが閲覧者の一覧に出ていた。** まとまりの一覧は管理者以外へ
+  `confidential` を出さないようにし、`collection_ids` で絞った検索でも BM25 側だけが
+  その外へ届いてしまう経路を塞いだ。
+- **通行証が8時間で切れなくなった。** `POST /api/auth/login` は、呼ぶ側が
+  `expires_in_hours` か `expires_in_seconds` を渡さないかぎり期限の無い通行証を出す。
+  `POST /api/auth/refresh` も同じ。漏れたときにどうなるかは `known-limitations.md` の
+  §11 に書いた。
+- **`cynovela-cli login` と `logout` を足した。** `login` は合言葉を標準入力かターミナルから
+  受け取り（既定では命令の行に書かせない）、通行証を自分だけが読める形で
+  `~/.cynovela_cli.env` へ書く。通行証そのものは画面に出さない。`logout` はそれを消す。
+- **フルエクスポートの `files.json` が空になることがあった。** まとまりが持つ資料の出どころの
+  フォルダが作業場所に結ばれていないと、書き出しには資料の番号だけが並んで資料そのものが
+  入らず、取り込むと中身の空のまとまりができた。しかも成功と表示していた。書き出す側と
+  取り込む側の両方を直し、中身が空になった取り込みはそう言うようにした。
+- **取り込んだ作業場所は、再度の公開なしで質問できる。** 取り込みのときに、戻したベクターの
+  中に残っている番号を書き換えるようにした。探す側はその番号で絞っているためである。
+- **利用者を完全に消せるようにした。** 使えなくするだけでなく、行そのものを消す道:
+  `DELETE /api/admin/users/{id}?purge=true`・`cynovela-cli users delete --purge`・
+  MCP の `manage_users` に `purge: true`。監査の記録は残る。
+- **同じフォルダを、名前を変えて二重に登録できなくなった。**
+- **同じフォルダの走査が2本同時に走らなくなった。** これまで断っていたのは1つの口だけだった。
+  走査の本体側で締めたので、どの入口から来ても効く。
+- **時間切れの文言が実態を言うようになった。** 待ち時間は1回の呼び出しにつき 120秒 で、
+  設定から変えられない。従来はどこにも設定の無い「参照ドキュメント数」を減らせと言っていた。
+- **出典の番号が本文と対応するようになった。** 本文の `[N]` と、出典の並びに付く番号が、
+  CLI でも MCP でも同じ番号になった（画面では前から同じだった）。
+- **文書**: `docs/cli-reference.md`（全ての命令と引数）・`docs/mcp-reference.md`（道具25件）・
+  `docs/first-run.md`（ターミナルを開いたことが無い方向けに、落とすところから最初の答えまで）・
+  `docs/restart.md`・`docs/editions.md`（4つのうちどれを落とすか）を新設。
+  `docs/api-reference.md` は、コードから起こした全186件の口の一覧に差し替えた。
+  `docs/known-limitations.md` に第11節を足した。
+- 同じ直しは、コードが同じ箇所であれば falcon へも当てた。当てていない箇所は
+  `known-limitations.md` の §11.7 に書いた。
 
 ## v1.0.6（2026-08-20）
 

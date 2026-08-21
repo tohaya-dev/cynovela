@@ -16,7 +16,7 @@ This document describes what Cynovela **cannot** do. Explanations of what it can
 `README.md` and `quickstart.md`. Only the things that will disappoint you if you expect them
 are written here.
 
-The version is `1.0.6` (`APP_VERSION` in `core/version.py` is the only source, and
+The version is `1.0.7` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -396,6 +396,19 @@ is built (because if it were shared, a pass issued elsewhere would be accepted).
 If saving the key fails, the key is valid only for that one run.
 In that case, restarting invalidates any issued passes (logging in again works).
 
+**Since 1.0.7 the pass does not expire unless the caller asks it to.** Before,
+every pass stopped working 8 hours after it was issued. Now `POST /api/auth/login`
+issues a pass with no expiry unless you pass `expires_in_hours` or
+`expires_in_seconds`. Two consequences you should know about:
+
+- **Signing out does not make the pass stop working.** `POST /api/auth/logout`
+  removes the refresh token and the in-memory session, but the pass itself is
+  checked by its signature alone, so a copy of it keeps working. Previously the
+  8-hour limit put a floor under this; now there is none. If a pass leaks, the
+  only way to invalidate it is to delete `store/db/jwt/secret.key` and restart,
+  which invalidates **every** pass.
+- Pass `expires_in_hours` when you hand a pass to something you do not control.
+
 ### Pitfalls
 
 - ChromaDB's `PersistentClient` does not error even when you pass it the wrong path.
@@ -403,6 +416,101 @@ In that case, restarting invalidates any issued passes (logging in again works).
   first suspect whether the index location is correct.**
 - Do not pass `max_tokens` to the LM Studio API.
   With a reasoning-type model, it will use up the tokens it needs for thinking.
+
+
+## 11. Things recorded in 1.0.7
+
+These were measured while preparing 1.0.7. They are written here because they
+will bite you if you do not know them, not because they are about to change.
+
+### 11.1 Restoring a backup through the API does not reliably give you the backup
+
+`POST /api/admin/backups/{name}/restore` copies the saved `cynovela.db` over the
+live database file **while the server is still running**. SQLite is in WAL mode,
+so the running process still holds `cynovela.db-wal` and `cynovela.db-shm` from
+before the copy, and those companions can write the old content back over the
+file you just restored. The endpoint answers `{"ok": true}` either way.
+
+**The route that works:** stop the server (`bash stop.sh`), put the files back by
+hand, then start it again.
+
+```
+bash stop.sh
+cd store/db
+mv cynovela.db     cynovela.db.aside
+mv cynovela.db-wal cynovela.db-wal.aside   # if it exists
+mv cynovela.db-shm cynovela.db-shm.aside   # if it exists
+cp ../backups/<the backup>/cynovela.db .
+rm -rf ../vector/default/chroma
+cp -R ../backups/<the backup>/chroma ../vector/default/chroma
+cd ../..
+./launch.sh
+```
+
+**Move the `-wal` and `-shm` companions aside together with the database.** If
+you move only `cynovela.db`, SQLite finds a WAL that does not belong to the file
+next to it, and the result is neither the old data nor the new.
+
+### 11.2 A backup holds data, not settings
+
+`_create_backup` copies exactly two things: the database (`cynovela.db`) and the
+search index (`chroma`). It does **not** copy:
+
+- `cynovela.yaml` — every setting that lives in the file, including the LLM
+  endpoint, the masking mode and the paths
+- `store/db/jwt/secret.key` — the key that signs the pass
+
+So restoring gives you your documents, users and index back. It does not give
+you your configuration back, and every pass issued before is still valid because
+the key never moved. Copy `cynovela.yaml` yourself if you want it kept.
+
+### 11.3 The "dimension" written into an export is a fixed number
+
+`_meta.json` inside a full export carries `"embedding_dim": 1024`. That number is
+written into `routers/chat.py` directly; nothing measures the vectors. It is
+correct for BGE-M3, which is what ships. If you replace the embedding model with
+one of a different width, the file will say 1024 and be wrong. The model **name**
+in the same file is read from the running configuration and is correct.
+
+### 11.4 With Ollama, the context length is whatever Ollama defaults to
+
+Cynovela never sends `num_ctx` to Ollama. The parameters it does send are
+`top_p`, `top_k`, `max_tokens`, `repeat_penalty`, `seed` and `think`. Ollama
+therefore uses its own default context window and **silently drops** whatever
+does not fit — you get an answer that ignores the passages that were cut. Set the
+context length on the Ollama side (a Modelfile with `PARAMETER num_ctx`, or
+`OLLAMA_CONTEXT_LENGTH`) to match the material you feed it.
+
+### 11.5 An imported workspace searches by vector only
+
+`POST /api/workspaces/import` restores the vectors, and since 1.0.7 it also
+rewrites the ids inside them so the imported workspace answers without being
+published again. What it does **not** restore is the `chunks` table, from which
+the BM25 keyword index is built. So an imported workspace is searched by vector
+similarity and reranking only; the keyword half of the hybrid search contributes
+nothing (you can see this as `bm25_score: 0.0` on every hit). Publish the
+collection again if you want the keyword half back.
+
+### 11.6 Not measured: the package edition on a Mac without conda
+
+The package edition is meant to need neither Python nor conda. That it starts
+from its bundled environment was measured on the build machine — but that machine
+has conda installed, so this run cannot tell you that a Mac with **no** conda at
+all behaves the same. Treat "no conda required" as designed-for and checked on a
+machine that happens to have conda, not as measured on a machine without it.
+
+### 11.7 Fixed in chewie, not in falcon
+
+The following were repaired in the application build (chewie) and deliberately
+**not** carried into the container build (falcon), because falcon's code differs
+at those places and this release does not rewrite falcon to match:
+
+| What | Why not |
+|---|---|
+| The scan of one folder cannot start twice | falcon has no `scan_jobs` table and its `_do_scan` takes different arguments |
+| The generation-timeout wording | falcon has no `_timeout_answer`; the old sentence sits inline in two places |
+| Citation numbers carried through to MCP | falcon's MCP server is an older build (11 tools against 25) |
+| The CLI, including `login` / `logout` | falcon ships no `cynovela-cli.py` |
 
 ---
 
@@ -420,7 +528,7 @@ In that case, restarting invalidates any issued passes (logging in again works).
 この文書は、Cynovela に **できないこと** を書いたものです。できることの説明は
 `README.md` と `quickstart.md` にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.0.6` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `1.0.7` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
@@ -778,6 +886,19 @@ MCP のツールには `search_across_collections`（複数のコレクション
 鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります。
 この場合、再起動すると発行済みの通行証は無効になります（再ログインで通ります）。
 
+**1.0.7 から、通行証は呼ぶ側が頼まないかぎり期限を持ちません。** 従来は発行から
+8時間で必ず使えなくなっていました。いまは `POST /api/auth/login` に
+`expires_in_hours` か `expires_in_seconds` を渡さないかぎり、期限の入っていない
+通行証が出ます。承知しておくべきことが2つあります。
+
+- **ログアウトしても、その通行証は使えなくなりません。** `POST /api/auth/logout` は
+  リフレッシュトークンと記憶の中の入室記録を消しますが、通行証そのものは署名だけで
+  確かめられるので、写しを持っている側は使い続けられます。従来は8時間という下限が
+  ありましたが、いまはありません。漏れた通行証を無効にする道は、
+  `store/db/jwt/secret.key` を消して起動し直すことだけで、そのときは**すべての**
+  通行証が無効になります。
+- 自分の手の届かないところへ通行証を渡すときは、`expires_in_hours` を渡してください。
+
 ### 落とし穴
 
 - ChromaDB の `PersistentClient` は、間違ったパスを渡してもエラーになりません。
@@ -785,5 +906,99 @@ MCP のツールには `search_across_collections`（複数のコレクション
   まずインデックスの場所が合っているかを疑ってください。**
 - LM Studio の API に `max_tokens` を渡さないでください。
   思考する型のモデルで、考えるためのトークンを使い切ってしまいます。
+
+---
+
+## 11. 1.0.7 で分かったこと
+
+1.0.7 を用意する過程で実際に測ったものです。近く変わるからではなく、知らないと
+つまずくのでここに書いてあります。
+
+### 11.1 API から控えに戻しても、控えの中身になるとはかぎらない
+
+`POST /api/admin/backups/{name}/restore` は、保存してある `cynovela.db` を、
+**サーバが動いたまま**、いまのデータベースのファイルへ上書きします。SQLite は
+WAL の形で動いているので、動いているプロセスは上書きの前から
+`cynovela.db-wal` と `cynovela.db-shm` を握ったままです。∴ その相方が、戻した
+ばかりの中身の上へ古い中身を書き戻すことがあります。口はどちらの場合も
+`{"ok": true}` を返します。
+
+**通る道:** サーバを止め（`bash stop.sh`）、ファイルを手で置き直してから起こし直します。
+
+```
+bash stop.sh
+cd store/db
+mv cynovela.db     cynovela.db.aside
+mv cynovela.db-wal cynovela.db-wal.aside   # 在れば
+mv cynovela.db-shm cynovela.db-shm.aside   # 在れば
+cp ../backups/<控えの名前>/cynovela.db .
+rm -rf ../vector/default/chroma
+cp -R ../backups/<控えの名前>/chroma ../vector/default/chroma
+cd ../..
+./launch.sh
+```
+
+**`-wal` と `-shm` の相方も、データベースと一緒に退けてください。** `cynovela.db`
+だけを退けると、SQLite は隣にあるファイルのものではない WAL を見つけることになり、
+出来上がりは古い中身でも新しい中身でもなくなります。
+
+### 11.2 控えに入るのはデータであって、設定ではない
+
+`_create_backup` が写すのはちょうど2つ、データベース（`cynovela.db`）と索引
+（`chroma`）だけです。次は**写しません**。
+
+- `cynovela.yaml` — ファイルに書いてある設定の全部。LLM の宛先、伏字の強さ、
+  置き場所の指定を含みます
+- `store/db/jwt/secret.key` — 通行証に署名する鍵
+
+∴ 戻して返ってくるのは、資料・利用者・索引です。設定は戻りません。鍵が動いていない
+ので、前に発行した通行証も全部そのまま通ります。設定も残したいなら
+`cynovela.yaml` は自分で写してください。
+
+### 11.3 書き出しに書かれる「次元」は、決め打ちの数である
+
+フルエクスポートの `_meta.json` には `"embedding_dim": 1024` が入ります。この数は
+`routers/chat.py` に直に書かれていて、ベクターを測ってはいません。同梱の BGE-M3 に
+対しては正しい値です。幅の違う埋め込みモデルに差し替えると、この行は 1024 のまま
+事実と食い違います。同じファイルのモデルの**名前**のほうは、動いている設定から
+読んでいるので正しい値です。
+
+### 11.4 Ollama を使うと、文脈の長さは Ollama の既定のままになる
+
+Cynovela は `num_ctx` を Ollama へ送りません。送っているのは `top_p`・`top_k`・
+`max_tokens`・`repeat_penalty`・`seed`・`think` です。∴ Ollama は自分の既定の
+文脈の窓を使い、入りきらなかったぶんを**黙って捨てます**。捨てられた断片を無視した
+答えが返ってきます。渡す材料に見合う長さを Ollama 側で決めてください
+（Modelfile の `PARAMETER num_ctx`、または `OLLAMA_CONTEXT_LENGTH`）。
+
+### 11.5 取り込んだ作業場所は、ベクターだけで探される
+
+`POST /api/workspaces/import` はベクターを戻します。1.0.7 からは、その中の番号も
+書き換えるので、取り込んだ作業場所は再度の公開なしで答えられます。戻**さない**のは
+`chunks` の表で、BM25 のキーワード索引はここから作られます。∴ 取り込んだ作業場所は、
+ベクターの近さと再並べ替えだけで探されます。合わせ技のうちキーワード側は効いていません
+（当たりの `bm25_score` が全て `0.0` になることで見えます）。キーワード側も効かせたい
+ときは、そのまとまりをもう一度公開してください。
+
+### 11.6 測っていないこと: conda の入っていない Mac でのパッケージ版
+
+パッケージ版は Python も conda も要らない形として作られています。同梱の環境から
+起き上がることは作った機械の上で測りましたが、その機械には conda が入っています。
+∴ conda が**まったく**入っていない Mac で同じになるかは、この走行では言えません。
+「conda 不要」は、そう作られていて、conda の在る機械で確かめた、という意味に
+とどめてください。conda の無い機械で測った、ではありません。
+
+### 11.7 chewie では直し、falcon では直していないもの
+
+次はアプリ版（chewie）で直し、コンテナ版（falcon）へは**わざと**当てていません。
+falcon はその箇所のコードが違っており、この版では falcon を書き換えて合わせることを
+していないためです。
+
+| 何 | 当てなかった理由 |
+|---|---|
+| 同じフォルダの走査を2本同時に始められない件 | falcon には `scan_jobs` の表が無く、`_do_scan` の引数も違う |
+| 時間切れの文言 | falcon に `_timeout_answer` が無く、古い文が本文中の2か所に置かれている |
+| 出典の番号を MCP まで通すこと | falcon の MCP サーバは版が古い（道具 11件・chewie は 25件） |
+| `login` / `logout` を含む CLI | falcon に `cynovela-cli.py` が無い |
 
 ---

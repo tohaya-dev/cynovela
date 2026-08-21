@@ -128,6 +128,8 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 | Command | What it does |
 |---|---|
+| `login --username <name>` | Signs in and remembers the token in `~/.cynovela_cli.env` (mode 600). Reads the password from the terminal, or from standard input with `--password-stdin`. The token has no expiry unless `--hours` / `--seconds` is given. The token itself is never printed |
+| `logout` | Forgets the remembered token and tells the server |
 | `doctor` | What is missing right now: Python version, models, inference server (LM Studio / Ollama), **whether the configured model is actually loaded**, port, database, conda |
 | `status` | Is the server up |
 | `workspaces` | List. Also: `create --name <name>` / `update --workspace <id> [--name] [--description] [--add-source <source_id>]` / `archive` / `unarchive` |
@@ -147,7 +149,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | `settings models` / `settings test` / `settings providers` | Models at the endpoint / test the LLM connection / selectable presets (admin token) |
 | `settings set [name] --set KEY=VALUE` | Changes server settings. Shows before → after, then does nothing unless `--yes` is added; `--dry-run` previews only (admin token) |
 
-Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes: **0** = OK, **1** = bad input, **2** = server unreachable, **3** = authentication failed, **4** = server error. Commands other than `doctor`/`status` need the token issued at web sign-in: pass it with `--token`, or write `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` into `~/.cynovela_cli.env`. (The `./launch.sh` flags themselves are covered in `docs/USE-FROM-TERMINAL.txt` — a different topic.)
+Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes: **0** = OK, **1** = bad input, **2** = server unreachable, **3** = authentication failed, **4** = server error. Commands other than `doctor`/`status` need a token. The shortest way to get one is `cynovela-cli login --username cynovela`, which writes it into `~/.cynovela_cli.env` for you. You can also pass one with `--token`, or write `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` into that file by hand. The full list of commands and arguments is in `docs/cli-reference.md`. (The `./launch.sh` flags themselves are covered in `docs/USE-FROM-TERMINAL.txt` — a different topic.)
 
 **MCP — connecting an AI client.** `mcp_server.py` exposes Cynovela's tools to MCP clients (protocol revision 2026-07-28, stdio): searching, viewing, bringing material in (`ingest_source`, progress via `get_job_status`), publishing, and settings — 25 tools, of which 22 are visible by default. The three admin tools (`delete_item` / `manage_users` / `manage_backups`) appear only when the MCP server's env sets `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1`. Point your client at it like this (the same snippet is served signed-in at `/api/mcp/config`):
 
@@ -159,7 +161,7 @@ Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes
 }}}
 ```
 
-What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two things people trip over: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token expires after 8 hours. The full walkthrough, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/mcp-guide.md`.
+What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two things people trip over: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token does not expire unless the caller asked for an expiry when signing in (see `docs/api-reference.md`). The full walkthrough, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/mcp-guide.md`.
 
 ---
 
@@ -176,6 +178,12 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 | File | What it covers (how it differs from the others) |
 |---|---|
 | `README.md` | What this tool is, what it can and cannot do, and the environment it runs in |
+| `docs/first-run.md` | Never opened Terminal? From the downloaded file to the first answer, nothing skipped |
+| `docs/restart.md` | Stopping it, starting it again, and why `--demo` has to stay the same |
+| `docs/editions.md` | Which of the four downloads to take, on one page |
+| `docs/cli-reference.md` | Every terminal command and every argument |
+| `docs/mcp-reference.md` | All 25 MCP tools: what you hand each one, what comes back |
+| `docs/api-reference.md` | Every HTTP endpoint (186), read out of the code |
 | `docs/HAJIMETE.md` | The gentlest walkthrough, from opening the package to the first answer (screen-first) |
 | `docs/GETTING-STARTED.md` | The same first run in more detail, step by step, with what each step prints |
 | `docs/quickstart.md` | The short version for people in a hurry (includes the manual, non-launcher route) |
@@ -317,6 +325,8 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 | 命令 | すること |
 |---|---|
+| `login --username <名前>` | ログインして、トークンを `~/.cynovela_cli.env` へ覚えさせます（自分だけが読める権限）。合言葉はターミナルから、または `--password-stdin` で標準入力から受け取ります。`--hours` / `--seconds` を渡さないかぎりトークンに期限はつきません。トークンそのものは画面に出しません |
+| `logout` | 覚えているトークンを忘れ、サーバにも伝えます |
 | `doctor` | いま何が足りないか: Python の版・モデル・推論サーバ（LM Studio / Ollama）・**設定されたモデルが実際に読み込まれているか**・番号・データベース・conda |
 | `status` | サーバが起きているか |
 | `workspaces` | 一覧。ほかに: `create --name <名前>` / `update --workspace <id> [--name] [--description] [--add-source <資料のid>]` / `archive` / `unarchive` |
@@ -336,7 +346,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 | `settings models` / `settings test` / `settings providers` | 接続先のモデル一覧 / LLM 接続の確認 / 選べるプリセット（管理者トークン） |
 | `settings set [対象] --set KEY=VALUE` | サーバの設定を変えます。変更前 → 変更後を見せてから、`--yes` を足さない限り何もしません。`--dry-run` は確認だけ（管理者トークン） |
 
-全命令に `--json`（機械で読める形）と `--lang en|ja` があります。終了コード: **0** = 正常、**1** = 入力の誤り、**2** = サーバへ到達できない、**3** = 認証に失敗、**4** = サーバが誤りを返した。`doctor`・`status` 以外は、画面のログインで発行されたトークンが要ります: `--token` で渡すか、`~/.cynovela_cli.env` に `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` を書いてください。（`./launch.sh` 自体のフラグは別の話で、`docs/USE-FROM-TERMINAL.txt` にあります。）
+全命令に `--json`（機械で読める形）と `--lang en|ja` があります。終了コード: **0** = 正常、**1** = 入力の誤り、**2** = サーバへ到達できない、**3** = 認証に失敗、**4** = サーバが誤りを返した。`doctor`・`status` 以外はトークンが要ります。いちばん短い道は `cynovela-cli login --username cynovela` で、これが `~/.cynovela_cli.env` へ書いてくれます。`--token` で渡すことも、そのファイルへ自分で `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` を書くこともできます。命令と引数の全数は `docs/cli-reference.md` にあります。（`./launch.sh` 自体のフラグは別の話で、`docs/USE-FROM-TERMINAL.txt` にあります。）
 
 **MCP — AI クライアントを繋ぐ。** `mcp_server.py` が Cynovela の道具を MCP クライアントへ出します（プロトコル版 2026-07-28・stdio）: 検索・見る・資料を入れる（`ingest_source`。進み具合は `get_job_status`）・公開・設定の 25 個で、既定で見えるのは 22 個です。管理系の 3 個（`delete_item` / `manage_users` / `manage_backups`）は、MCP サーバの env に `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を書いたときだけ現れます。クライアントには次の形で指します（同じスニペットはログイン後の `/api/mcp/config` でも取れます）:
 
@@ -348,7 +358,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 }}}
 ```
 
-繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。つまずきやすい点が2つあります: LM Studio で書くファイルは `mcp.json` です（**Program** パネル → **Install** → **Edit mcp.json** から開けます）。そして登録した後も、**LM Studio は道具の呼び出しごとに画面で許可を求めます** — 許可を出すまで道具は一度も動きません。トークンは 8 時間で切れます。手順の全体・設定系の道具・書き込みの守り（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）は `docs/mcp-guide.md` にあります。
+繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。つまずきやすい点が2つあります: LM Studio で書くファイルは `mcp.json` です（**Program** パネル → **Install** → **Edit mcp.json** から開けます）。そして登録した後も、**LM Studio は道具の呼び出しごとに画面で許可を求めます** — 許可を出すまで道具は一度も動きません。トークンは、ログインのときに期間を渡さないかぎり切れません（`docs/api-reference.md` を参照）。手順の全体・設定系の道具・書き込みの守り（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）は `docs/mcp-guide.md` にあります。
 
 ---
 
@@ -365,6 +375,12 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 | ファイル | 何が書いてあるか（他とどう違うか） |
 |---|---|
 | `README.md` | このツールが何か・できること できないこと・動作環境 |
+| `docs/first-run.md` | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし |
+| `docs/restart.md` | 止め方と起こし直し方。`--demo` を毎回そろえる理由 |
+| `docs/editions.md` | 4つの落とし物のどれを選ぶか。1枚 |
+| `docs/cli-reference.md` | ターミナルの命令と引数の全数 |
+| `docs/mcp-reference.md` | MCP の道具25件。何を渡すと何が返るか |
+| `docs/api-reference.md` | HTTP の口の全数（186件）。コードから起こしたもの |
 | `docs/HAJIMETE.md` | いちばんやさしいガイド。開いてから最初の答えが返るまで（画面中心） |
 | `docs/GETTING-STARTED.md` | 同じ初回の道のりをより詳しく、順を追って。各段で画面に出るものつき |
 | `docs/quickstart.md` | 急ぐ方向けの短い手順（launch.sh を使わない手動の道も含む） |
