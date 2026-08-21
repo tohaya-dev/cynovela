@@ -95,6 +95,8 @@ TOOLS = [
                     "items": {
                         "type": "object",
                         "properties": {
+                            "index": {"type": "integer",
+                                      "description": "回答本文の [N] と同じ番号"},
                             "file_name": {"type": "string"},
                             "score": {"type": "number"},
                             "text": {"type": "string"},
@@ -138,6 +140,8 @@ TOOLS = [
                     "items": {
                         "type": "object",
                         "properties": {
+                            "index": {"type": "integer",
+                                      "description": "回答本文の [N] と同じ番号"},
                             "file_name": {"type": "string"},
                             "score": {"type": "number"},
                             "text": {"type": "string"},
@@ -714,6 +718,7 @@ TOOLS = [
         "name": "manage_users",
         "description": (
             "利用者を管理します (list / create / update / delete / reset_password)。"
+            "delete は既定では使えなくするだけです。purge=true で行そのものを消します。"
             "既定で閉じています: MCP サーバの env に CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を書いたときだけ使えます。"
         ),
         "inputSchema": {
@@ -727,6 +732,9 @@ TOOLS = [
                 "role": {"type": "string", "description": "create / update の役割 (admin / viewer)"},
                 "display_name": {"type": "string", "description": "create / update の表示名"},
                 "is_active": {"type": "boolean", "description": "update の有効/無効"},
+                "purge": {"type": "boolean",
+                          "description": "delete のとき true にすると、行そのものを消します "
+                                         "(既定は false = 使えなくするだけ)。監査の記録は残ります。"},
             },
             "required": ["action"],
         },
@@ -854,13 +862,16 @@ def _chat_fragments(d: dict, limit: int) -> list:
     """出典の断片。/api/chat の "sources" はファイル名の文字列一覧で、断片の本文と
     スコアは "citations" (source_filename / chunk_preview / score) に入っている。
     citations を優先し、無ければ sources に倒す。"""
+    # DD-CYN-0151 §7: index を落とさずに渡す。回答本文の [N] はこの番号であり、
+    #   受け取った側が一覧を数え直すと本文と食い違う (従来はここで番号を捨てていた)。
     frags = [
         {
+            "index": int(c.get("index") or (n + 1)),
             "file_name": str(c.get("source_filename") or "?"),
             "score": float(c.get("score") or 0),
             "text": str(c.get("chunk_preview") or "")[:300],
         }
-        for c in (d.get("citations") or [])[:limit]
+        for n, c in enumerate((d.get("citations") or [])[:limit])
         if isinstance(c, dict)
     ]
     if frags:
@@ -1317,9 +1328,12 @@ def _tool_manage_users(a):
         return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
                 f"利用者を変えました: {a.get('user_id')}")
     if action == "delete":
-        _st, d = _api("DELETE", f"/api/admin/users/{a['user_id']}", timeout=30)
+        # DD-CYN-0151 §7: purge=true で完全に消す。既定は従来どおり使えなくするだけ。
+        _purge = bool(a.get("purge"))
+        _qs = "?purge=true" if _purge else ""
+        _st, d = _api("DELETE", f"/api/admin/users/{a['user_id']}{_qs}", timeout=30)
         return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
-                f"利用者を消しました: {a.get('user_id')}")
+                ("利用者を完全に消しました: " if _purge else "利用者を使えなくしました: ") + str(a.get("user_id")))
     if action == "reset_password":
         _st, d = _api("POST", f"/api/admin/users/{a['user_id']}/reset-password",
                       body={"password": a.get("password") or ""}, timeout=30)

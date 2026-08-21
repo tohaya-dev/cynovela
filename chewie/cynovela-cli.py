@@ -590,9 +590,11 @@ def cmd_search(ctx: Ctx, args) -> int:
     # /api/chat の "sources" はファイル名の文字列一覧。断片の本文とスコアは
     # "citations" (source_filename / chunk_preview / score) に入っている。
     frags = []
-    for c in data.get("citations") or []:
+    # DD-CYN-0151 §7: index も渡す (回答本文の [N] と同じ番号)。
+    for _n, c in enumerate(data.get("citations") or []):
         if isinstance(c, dict):
             frags.append({
+                "index": int(c.get("index") or (_n + 1)),
                 "file_name": str(c.get("source_filename") or "?"),
                 "score": float(c.get("score") or 0),
                 "text": str(c.get("chunk_preview") or "")[:300],
@@ -609,7 +611,7 @@ def cmd_search(ctx: Ctx, args) -> int:
                 frags.append({"file_name": str(s)[:200], "score": 0.0, "text": ""})
     lines = [_m("search_note", ctx.lang)]
     for i, f in enumerate(frags):
-        lines.append(f"[{i+1}] {f['file_name']} (score={f['score']:.3f})")
+        lines.append(f"[{f.get('index', i + 1)}] {f['file_name']} (score={f['score']:.3f})")
         if f["text"]:
             lines.append(f"    {f['text']}")
     lines.append(f"({len(frags)} source fragments)" if ctx.lang == "en" else f"（出典の断片 {len(frags)}件）")
@@ -703,11 +705,34 @@ def cmd_chat(ctx: Ctx, args) -> int:
     data = data if isinstance(data, dict) else {}
     answer = str(data.get("answer") or "")
     sources = [str(s) for s in (data.get("sources") or [])]
+    # DD-CYN-0151 §7: 出典の番号は citations[].index を使う。これが回答本文の [N] と同じ番号で、
+    #   画面もこの値を使っている。従来は sources (ファイル名を重複なくまとめた一覧) を
+    #   1 から数え直していたため、本文の [N] と一覧の番号が食い違っていた。
+    citations = [
+        {
+            "index": int(c.get("index") or (n + 1)),
+            "file_name": str(c.get("source_filename") or "?"),
+            "score": float(c.get("score") or 0),
+            "text": str(c.get("chunk_preview") or "")[:300],
+        }
+        for n, c in enumerate(data.get("citations") or [])
+        if isinstance(c, dict)
+    ]
     lines = [answer, ""]
-    for i, s in enumerate(sources):
-        lines.append(f"[{i+1}] {s}")
-    lines.append(_T(ctx, f"({len(sources)} sources)", f"（出典 {len(sources)}件）"))
-    return _ok(ctx, "chat", {"answer": answer, "sources": sources, "error": data.get("error")}, lines)
+    if citations:
+        for c in citations:
+            lines.append(f"[{c['index']}] {c['file_name']}")
+        lines.append(_T(ctx, f"({len(citations)} citations; the numbers match the [N] in the answer)",
+                        f"（出典 {len(citations)}件・番号は本文の [N] と同じです）"))
+    else:
+        for i, s in enumerate(sources):
+            lines.append(f"[{i+1}] {s}")
+        lines.append(_T(ctx, f"({len(sources)} sources; the answer carried no [N] numbers)",
+                        f"（出典 {len(sources)}件・本文に [N] の番号はありません）"))
+    return _ok(ctx, "chat",
+               {"answer": answer, "citations": citations, "sources": sources,
+                "error": data.get("error")},
+               lines)
 
 
 def cmd_ingest(ctx: Ctx, args) -> int:
@@ -970,10 +995,18 @@ def cmd_users(ctx: Ctx, args) -> int:
             return _fail(ctx, "users update", status, data)
         return _ok(ctx, "users update", data, lines + [_T(ctx, "updated.", "変えました。")])
     if sub == "delete":
-        lines = [_T(ctx, f"delete user: {args.id}", f"利用者を消します: {args.id}")]
+        # DD-CYN-0151 §7: --purge で完全に消す。付けなければ従来どおり止めるだけ。
+        purge = bool(getattr(args, "purge", False))
+        lines = [_T(ctx, f"delete user: {args.id}", f"利用者を消します: {args.id}"),
+                 _T(ctx,
+                    "the row is removed for good; audit log entries are kept" if purge
+                    else "the account is only switched off (is_active=0); the row stays",
+                    "行そのものを消します。監査の記録は残ります" if purge
+                    else "使えなくするだけです (is_active=0)。行は残ります")]
         if not args.yes:
-            return _need_yes(ctx, "users delete", lines, {"id": args.id})
-        status, data = _request(ctx, "DELETE", f"/api/admin/users/{args.id}", timeout=30)
+            return _need_yes(ctx, "users delete", lines, {"id": args.id, "purge": purge})
+        qs = "?purge=true" if purge else ""
+        status, data = _request(ctx, "DELETE", f"/api/admin/users/{args.id}{qs}", timeout=30)
         if status != 200:
             return _fail(ctx, "users delete", status, data)
         return _ok(ctx, "users delete", data, lines + [_T(ctx, "deleted.", "消しました。")])
@@ -1356,8 +1389,11 @@ def build_parser() -> Parser:
     u_u.add_argument("--display-name", dest="display_name")
     u_u.add_argument("--active", help="true / false")
     u_u.add_argument("--yes", action="store_true", help="actually change")
-    u_d = us_sub.add_parser("delete", help="delete a user")
+    u_d = us_sub.add_parser("delete", help="delete a user (switch off, or --purge to remove for good)")
     u_d.add_argument("id", help="user_id")
+    u_d.add_argument("--purge", action="store_true",
+                     help="remove the user row for good instead of only switching it off "
+                          "(audit log entries are kept)")
     u_d.add_argument("--yes", action="store_true", help="actually delete")
     u_r = us_sub.add_parser("reset-password", help="issue a new password for a user")
     u_r.add_argument("id", help="user_id")

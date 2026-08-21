@@ -436,7 +436,21 @@ async def _timeout_answer(adapter, configured_model: str) -> str:
             "次の一手: LM Studio でこのモデルを読み込むか、設定（画面の Settings / "
             "cynovela-cli settings set llm / MCP settings_set）で読み込み済みのモデルを選んでください。"
         )
-    return "回答の生成に時間がかかり、タイムアウトしました。参照ドキュメント数を減らすか、しばらくしてから再度お試しください。"
+    # DD-CYN-0151 §7: 文言を実態に合わせた。
+    #   従来の「参照ドキュメント数を減らすか」は、画面にその設定が無いため打つ手にならなかった。
+    #   実際の待ち時間は llm_adapter の読み取り待ち 120秒 で、設定から変えられない。
+    #   ∴ 待った長さを数で示し、いま本当に打てる手だけを並べる。
+    #   先頭の一文は変えない: adaptive_rag.py がこの文字列で「答えになっていない」を見分けている。
+    return (
+        "回答の生成に時間がかかり、タイムアウトしました。"
+        "推論サーバへの1回の呼び出しにつき 120秒 待って、返事が来なかったためです。"
+        "この待ち時間は設定から変えられません。"
+        "1回の質問で呼び出しが2回以上になることがあり、そのときは画面が返るまでの時間はこれより長くなります。"
+        "打てる手: (1) LM Studio などで、そのモデルをあらかじめ読み込んでおく"
+        "（読み込みの時間もこの 120秒 に含まれます）。"
+        "(2) もっと小さいモデルに変える（画面の Settings / cynovela-cli settings set llm / MCP settings_set）。"
+        "(3) 質問を短くする。"
+    )
 
 
 def _get_llm_params_overrides(temperature_default: float = 0.1, prefix: str = "llm"):

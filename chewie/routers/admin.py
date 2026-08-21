@@ -155,8 +155,16 @@ async def admin_update_user(user_id: str, request: Request):
 
 
 @router.delete("/api/admin/users/{user_id}", response_model=None)
-def admin_delete_user(user_id: str, request: Request):
-    """論理削除のみ（is_active=0）。物理削除はaudit保持のため避ける。
+def admin_delete_user(user_id: str, request: Request, purge: bool = False):
+    """既定は論理削除（is_active=0）。`?purge=true` を付けたときだけ完全に消す。
+
+    DD-CYN-0151 §7: 「利用者の削除が論理削除のまま」に対する口。
+      purge を付けない  … 従来どおり is_active=0 にするだけ。行は残る。
+      purge=true        … users の行そのものを消す。作業場所の割り当てと
+                          リフレッシュトークンは FK の ON DELETE CASCADE で一緒に消え、
+                          画面の入室記録 (sessions) もここで消す。
+                          監査の記録 (audit_logs) は消さない。誰が何をしたかを
+                          残すためであり、消せば監査が成り立たなくなる。
 
     fix-security-batch-v2 (2026-05-28) Sub-2G-1 (CRIT-3): 削除と同時に state.sessions から
     該当ユーザーの全エントリを除去する。defense-in-depth として core/auth.py:get_user_from_token
@@ -171,11 +179,18 @@ def admin_delete_user(user_id: str, request: Request):
         user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
         if not user:
             raise HTTPException(404, "User not found")
-        conn.execute(
-            "UPDATE users SET is_active = 0, updated_at = ? WHERE id = ?",
-            (datetime.now().isoformat(timespec="seconds"), user_id),
-        )
-        _log_audit(conn, "user_deactivated", user_id, user["username"] or user["name"])
+        if purge:
+            # 監査の記録は残す。行を消しても audit_logs.user_id には FK が無い。
+            conn.execute("PRAGMA foreign_keys = ON")
+            conn.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+            _log_audit(conn, "user_purged", user_id, user["username"] or user["name"])
+        else:
+            conn.execute(
+                "UPDATE users SET is_active = 0, updated_at = ? WHERE id = ?",
+                (datetime.now().isoformat(timespec="seconds"), user_id),
+            )
+            _log_audit(conn, "user_deactivated", user_id, user["username"] or user["name"])
         conn.commit()
     finally:
         conn.close()
@@ -189,7 +204,7 @@ def admin_delete_user(user_id: str, request: Request):
     except Exception:
         # sessions 消去失敗は削除自体を巻き戻さない（get_user_from_token の is_active チェックで救済）
         pass
-    return {"ok": True}
+    return {"ok": True, "purged": bool(purge)}
 
 
 @router.post("/api/admin/users/{user_id}/reset-password", response_model=None)

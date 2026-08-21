@@ -161,6 +161,19 @@ async def create_source(request: Request):
     sid = new_id()
     conn = get_db()
     try:
+        # DD-CYN-0151 §7: 同じ場所を二重に登録させない。
+        #   従来 UNIQUE が効いていたのは name だけだったため、名前を変えれば同じフォルダを
+        #   何本でも登録でき、走査も公開も二重に走っていた。
+        #   場所の見分けは実体のパス (シンボリックリンクと末尾の / を解いたもの) で行う。
+        _want = os.path.realpath(os.path.expanduser(_normalized))
+        for _row in conn.execute("SELECT id, name, path FROM sources").fetchall():
+            _have = os.path.realpath(os.path.expanduser(os.path.normpath(_row["path"] or "")))
+            if _have and _have == _want:
+                raise HTTPException(
+                    409,
+                    f"この場所は既に登録されています: {_row['name']} (id={_row['id']})。"
+                    "同じフォルダを二重に登録することはできません。",
+                )
         conn.execute(
             "INSERT INTO sources (id, name, path) VALUES (?, ?, ?)",
             (sid, name, path),
@@ -285,6 +298,29 @@ def scan_source(request: Request, source_id: str):
         conn.close()
     if not source:
         raise HTTPException(404, "Source not found")
+
+    # DD-CYN-0151 §7: 同期の走査にも、非同期と同じ「走査中なら断る」を付ける。
+    #   本体 (_do_scan) 側でも締めているが、そこで黙って戻ると呼んだ側は
+    #   「走ったのに何も起きなかった」と見えてしまう。∴ ここで理由を返す。
+    import server as _srv
+    if source_id in getattr(_srv, "_scan_running", set()):
+        raise HTTPException(
+            409, "この取り込み元は走査中です。終わるのを待つか /scan/cancel で止めてください。"
+        )
+    conn = get_db()
+    try:
+        _running = conn.execute(
+            "SELECT id FROM scan_jobs WHERE source_id = ? AND status IN ('pending','running')",
+            (source_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    if _running:
+        raise HTTPException(
+            409,
+            f"この取り込み元は走査中です (job_id={_running['id']})。"
+            "終わるのを待つか /scan/cancel で止めてください。",
+        )
 
     _do_scan(source_id)
 

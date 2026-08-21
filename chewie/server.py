@@ -1344,6 +1344,15 @@ _scan_cancel_flags: dict[str, bool] = {}
 # /api/sources/{source_id}/scan/cancel は routers/sources.py に移動済み
 
 
+# DD-CYN-0151 §7: 同じ取り込み元に対する走査を、同時に2本走らせない。
+#   これまで 409 で断っていたのは /api/sources/{id}/scan/async の1か所だけだった。
+#   同期の /scan・取り込み元を作ったときの自動走査・起動時走査はどれも素通しで、
+#   同じフォルダを2本同時に舐めると files への書き込みが競合した。
+#   ∴ 走査の本体 (_do_scan) 側で締める。どの入口から来ても効く。
+_scan_running_lock = threading.Lock()
+_scan_running: set[str] = set()
+
+
 def _do_scan(source_id: str, job_id: str | None = None, skip_unchanged: bool = False):
     """Execute scan on a source: walk directory, register files, classify.
 
@@ -1352,6 +1361,37 @@ def _do_scan(source_id: str, job_id: str | None = None, skip_unchanged: bool = F
     skip_unchanged: 起動時走査用。前回走査以降に変わっていないファイルは本文抽出を
     行わない (登録済み扱いで数だけ進める)。
     """
+    # DD-CYN-0151 §7: 同じ取り込み元の走査が既に走っていたら、始めずに戻る。
+    with _scan_running_lock:
+        if source_id in _scan_running:
+            logger.warning(f"scan already running for source={source_id}; this call is skipped")
+            if job_id:
+                try:
+                    _c = get_db()
+                    try:
+                        _c.execute(
+                            "UPDATE scan_jobs SET status = 'failed', stage = 'error', "
+                            "error = 'already_running', "
+                            "message = 'この取り込み元は既に走査中です。終わるのを待ってください。', "
+                            "updated_at = datetime('now') WHERE id = ?",
+                            (job_id,),
+                        )
+                        _c.commit()
+                    finally:
+                        _c.close()
+                except Exception as _le:
+                    logger.warning(f"scan job update failed job={job_id}: {_le}")
+            return
+        _scan_running.add(source_id)
+    try:
+        _do_scan_body(source_id, job_id=job_id, skip_unchanged=skip_unchanged)
+    finally:
+        with _scan_running_lock:
+            _scan_running.discard(source_id)
+
+
+def _do_scan_body(source_id: str, job_id: str | None = None, skip_unchanged: bool = False):
+    """DD-CYN-0151 §7: 走査の本体。排他は _do_scan が持つ。"""
     # BLOCK B-6: スキャン開始時にcancel flagをクリア
     _scan_cancel_flags.pop(source_id, None)
 
