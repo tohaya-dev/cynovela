@@ -3314,19 +3314,57 @@ def full_export_workspace(request: Request, workspace_id: str):
                 "SELECT policy_id FROM workspace_policies WHERE workspace_id = ?", (workspace_id,)
             ).fetchall()
         ]
-        sources_snapshot = []
-        if ws_sources:
-            ph = ",".join("?" for _ in ws_sources)
-            for r in conn.execute(f"SELECT * FROM sources WHERE id IN ({ph})", ws_sources).fetchall():
-                sources_snapshot.append(dict(r))
+        # DD-CYN-0151 §6-2: 資料の記述の集め方。
+        #   従来は「作業場所 → workspace_sources → sources → files」の経路だけを辿っていた。
+        #   まとまりが持つ資料 (collection_files) が、作業場所に結ばれていない取り込み元の
+        #   ものだった場合、collections.json には file_ids が並ぶのに files.json と
+        #   sources.json が空になり、取り込み側で資料が1つも作れなかった。
+        #   ∴ まとまりが持つ資料の番号からも集め、取り込み元の経路と重複なくまとめる。
+        collection_file_ids: list[str] = []
+        _seen_fid: set[str] = set()
+        for col in collections:
+            for _fid in col.get("file_ids") or []:
+                if _fid not in _seen_fid:
+                    _seen_fid.add(_fid)
+                    collection_file_ids.append(_fid)
+
         files_snapshot = []
+        _seen_file_rows: set[str] = set()
+
+        def _add_file_rows(rows):
+            for r in rows:
+                d = dict(r)
+                if d["id"] in _seen_file_rows:
+                    continue
+                _seen_file_rows.add(d["id"])
+                files_snapshot.append(d)
+
         if ws_sources:
             ph = ",".join("?" for _ in ws_sources)
-            for r in conn.execute(
-                f"SELECT * FROM files WHERE source_id IN ({ph})",
-                ws_sources,
-            ).fetchall():
-                files_snapshot.append(dict(r))
+            _add_file_rows(
+                conn.execute(f"SELECT * FROM files WHERE source_id IN ({ph})", ws_sources).fetchall()
+            )
+        # SQLite の変数の上限 (既定 999) に触れないよう、番号は小分けにして問い合わせる。
+        for _i in range(0, len(collection_file_ids), 500):
+            _chunk = collection_file_ids[_i : _i + 500]
+            ph = ",".join("?" for _ in _chunk)
+            _add_file_rows(conn.execute(f"SELECT * FROM files WHERE id IN ({ph})", _chunk).fetchall())
+
+        # 取り込み元も同じ考え方で集める。作業場所に結ばれたものに加えて、
+        # 上で集めた資料が属している取り込み元も入れる (入れないと取り込み側で資料を作れない)。
+        source_ids_needed: list[str] = list(ws_sources)
+        _seen_sid = set(ws_sources)
+        for f in files_snapshot:
+            _sid = f.get("source_id")
+            if _sid and _sid not in _seen_sid:
+                _seen_sid.add(_sid)
+                source_ids_needed.append(_sid)
+        sources_snapshot = []
+        for _i in range(0, len(source_ids_needed), 500):
+            _chunk = source_ids_needed[_i : _i + 500]
+            ph = ",".join("?" for _ in _chunk)
+            for r in conn.execute(f"SELECT * FROM sources WHERE id IN ({ph})", _chunk).fetchall():
+                sources_snapshot.append(dict(r))
         policies_snapshot = []
         if ws_policies:
             ph = ",".join("?" for _ in ws_policies)
@@ -3441,6 +3479,48 @@ def full_export_workspace(request: Request, workspace_id: str):
         media_type="application/zip",
         headers={"Content-Disposition": f"attachment; filename=workspace_{workspace_id}_full.zip"},
     )
+
+
+def _remap_ids_in_text(text, replacements: dict) -> str:
+    """DD-CYN-0151 §6-3: 文字列の中に混ざった古い番号を、新しい番号へ置き換える。
+
+    vector_id / parent_id / logical_chunk_id は「まとまり#取り込み元#資料#…」の形で
+    番号を連ねた文字列である。∴ 番号そのものを置き換えるしかない。
+    長いものから当てることで、短い番号が長い番号の一部に一致して壊すのを避ける。
+    """
+    if not isinstance(text, str) or not text:
+        return text
+    for old in sorted(replacements, key=len, reverse=True):
+        new = replacements[old]
+        if old and new and old != new and old in text:
+            text = text.replace(old, new)
+    return text
+
+
+def _remap_vector_metadata(meta: dict, old_cid: str, new_cid: str, new_ws_id: str,
+                           source_id_map: dict, file_id_map: dict) -> dict:
+    """DD-CYN-0151 §6-3: ベクターの覚えに残る番号を、取り込み先の番号へ揃える。
+
+    探す側は where={"workspace_id": ...} で絞る (rag.py)。∴ ここを書き換えないと、
+    取り込んだ作業場所では 1件も当たらない。
+    """
+    out = dict(meta)
+    out["workspace_id"] = new_ws_id
+    if out.get("collection_id"):
+        out["collection_id"] = new_cid
+    _sid = out.get("source_id")
+    if _sid and _sid in source_id_map:
+        out["source_id"] = source_id_map[_sid]
+    _fid = out.get("file_id")
+    if _fid and _fid in file_id_map:
+        out["file_id"] = file_id_map[_fid]
+    _repl = {old_cid: new_cid}
+    _repl.update(source_id_map)
+    _repl.update(file_id_map)
+    for key in ("vector_id", "parent_id", "logical_chunk_id", "chunk_id"):
+        if out.get(key):
+            out[key] = _remap_ids_in_text(out[key], _repl)
+    return out
 
 
 @router.post("/api/workspaces/import", response_model=None)
@@ -3620,6 +3700,9 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
         target_status = "ready" if include_vectors else "draft"
         new_collection_ids: list[str] = []
         col_id_map: dict[str, str] = {}
+        # DD-CYN-0151 §6-2: 「資料が1つも作れなかった」を掴んでおく置き場。
+        empty_collections: list[dict] = []
+        collection_link_report: list[dict] = []
         for col in collections:
             ncid = new_id()
             col_id_map[col["id"]] = ncid
@@ -3635,13 +3718,22 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
                     col.get("allowed_roles_json"),
                 ),
             )
-            for old_fid in col.get("file_ids") or []:
+            # DD-CYN-0151 §6-2: 資料を1つも作れなかったまとまりを数える。
+            _declared = list(col.get("file_ids") or [])
+            _linked = 0
+            for old_fid in _declared:
                 nfid = file_id_map.get(old_fid)
                 if nfid:
                     conn.execute(
                         "INSERT OR IGNORE INTO collection_files (collection_id, file_id) VALUES (?, ?)",
                         (ncid, nfid),
                     )
+                    _linked += 1
+            if _declared and _linked == 0:
+                empty_collections.append({"name": col.get("name") or "", "declared": len(_declared)})
+            collection_link_report.append(
+                {"name": col.get("name") or "", "declared": len(_declared), "linked": _linked}
+            )
             new_collection_ids.append(ncid)
 
         _log_audit(
@@ -3677,6 +3769,11 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
             # スキップし、再 publish でマスキング済みベクターを作り直してもらう (note でガイド)。
             from providers.vector_store import chroma_name_for_tier as _cnt_restore
             ccol = chroma.get_or_create_collection(name=_cnt_restore(new_cid, "masked"))
+            # DD-CYN-0151 §6-3: 番号の入れ替え表。長い番号から順に当てる
+            # (短い番号が長い番号の一部に含まれていても、取り違えないため)。
+            _id_replacements = {old_cid: new_cid}
+            _id_replacements.update(source_id_map)
+            _id_replacements.update(file_id_map)
             ids_buf, embs_buf, docs_buf, metas_buf = [], [], [], []
             _cid_failed = {"v": False}
 
@@ -3712,7 +3809,14 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
                 # masked-only §9-1: tier='masked' のレコードだけ復元する (raw は捨てる)。
                 if (_rec_meta.get("tier") or "raw") != "masked":
                     continue
-                ids_buf.append(rec.get("id"))
+                # DD-CYN-0151 §6-3: 覚えに残っている番号を、いま作った番号へ書き換える。
+                #   従来は書き出したときのままの番号 (作業場所・まとまり・取り込み元・資料) を
+                #   そのまま入れていた。探す側は where={"workspace_id": ...} で絞るため、
+                #   取り込んだ作業場所では 1件も当たらず、再度の公開なしには答えが返らなかった。
+                _rec_meta = _remap_vector_metadata(
+                    _rec_meta, old_cid, new_cid, new_ws_id, source_id_map, file_id_map
+                )
+                ids_buf.append(_remap_ids_in_text(rec.get("id"), _id_replacements))
                 embs_buf.append(rec.get("embedding") or [])
                 docs_buf.append(rec.get("document") or "")
                 metas_buf.append(_rec_meta)
@@ -3731,11 +3835,29 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
         if include_vectors
         else "ベクターデータは含まれていません。各 Collection の再 Publish が必要です。"
     )
+
+    # DD-CYN-0151 §6-2: まとまりに紐付く資料が1つも作れなかったときは、成功と表示しない。
+    #   書き出し物の files.json が空 (または資料の番号が1つも合わない) と、まとまりは
+    #   出来ても中身が空になる。従来はこの場合でも ok=True と「すぐに使えます」を返していた。
+    warnings: list[str] = []
+    ok = True
+    if empty_collections:
+        ok = False
+        _names = "・".join(c["name"] for c in empty_collections if c["name"]) or "(名前なし)"
+        warnings.append(
+            f"次のまとまりに資料が1つも入りませんでした: {_names}。"
+            "書き出し物の files.json が空です。書き出した側で、まとまりが持つ資料の"
+            "取り込み元が作業場所に結ばれているかを確かめ、書き出しをやり直してください。"
+        )
+        note = "取り込みは終わりましたが、まとまりの中身が空です。" + warnings[0]
+
     return {
-        "ok": True,
+        "ok": ok,
         "workspace_id": new_ws_id,
         "collections": new_collection_ids,
         "include_vectors": include_vectors,
         "restored_vectors": restored_vectors,
         "note": note,
+        "warnings": warnings,
+        "collection_files": collection_link_report,
     }
