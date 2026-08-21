@@ -3715,6 +3715,12 @@ async def rag_retrieve(
         ids = _bm25_chunk_ids[_bm25k]
         texts = _bm25_chunk_texts.get(_bm25k, [])
         sources = _bm25_chunk_source.get(_bm25k, [])
+        # DD-CYN-0145 §148-2: BM25 インデックスは (workspace_id, tier) 単位で、
+        # ワークスペース内の全 collection の chunk を含む。従来はここで collection_ids に
+        # よる絞り込みをせず、指定外（例: 別の public や confidential）の chunk まで
+        # マージしていた（ベクター経路は collection_ids でスコープ済みなのに BM25 だけ素通し）。
+        # chunk_id は "<collection_id>#..." 形式なので、先頭要素で collection を判定して絞る。
+        _scope_cids = {str(c) for c in (collection_ids or [])}
         ordered_bm25_indices = sorted(
             range(len(ids)),
             key=lambda i: bm25_scores.get(ids[i], 0.0),
@@ -3724,6 +3730,8 @@ async def rag_retrieve(
             cid = ids[i]
             if cid in merged:
                 continue
+            if _scope_cids and str(cid).split("#", 1)[0] not in _scope_cids:
+                continue  # 指定 collection 外の chunk は BM25 でも除外
             merged[cid] = {
                 "chunk_id": cid,
                 "source_doc": sources[i] if i < len(sources) else "",

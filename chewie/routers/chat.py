@@ -1340,6 +1340,17 @@ async def chat(request: Request):
             (workspace_id, *access_levels),
         ).fetchall()
 
+        # DD-CYN-0145 §148-2: クライアントが collection_ids を指定したら、その集合に絞る。
+        # 従来は body の collection_ids を読まず黙殺し、WS内の許可 collection 全体へ倒れていた
+        # （閲覧者が confidential を名指ししても public 全体が検索された）。ここで
+        # 「アクセス権のある集合(collections)」と「指定された集合」の積をとる。指定 id が
+        # 許可集合外（例: 閲覧者が confidential を名指し）なら結果は空となり、下の
+        # not collections 分岐が空で返す。未指定なら従来どおり許可集合全体＝完全後方互換。
+        _req_cids = body.get("collection_ids")
+        if isinstance(_req_cids, list) and _req_cids:
+            _req_set = {str(x) for x in _req_cids}
+            collections = [c for c in collections if c["id"] in _req_set]
+
         if not collections:
             conn.close()
             return {
