@@ -92,6 +92,45 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector
 - Deleting a source / workspace / collection is implemented so that both SQLite and ChromaDB are cleaned up. Keep this principle of "both from the same snapshot" in backup operations as well.
 - Starting with `--demo` uses `db/demo.db` and `vector/demo/chroma`; starting without it, for production, uses `db/cynovela.db` and `vector/default/chroma`. Neither one is wiped on every startup — what you write stays as it is. Do not mix them up with production operation.
 
+### Whole-store Backup (recommended)
+
+`python3 cynovela-cli.py backup create --yes` makes a backup. In addition, copy the whole `store` folder with `tar`: a backup alone still needs some manual assembly when you restore, whereas a `tar` copy restores in one step.
+
+```bash
+bash stop.sh
+tar -czf <destination>/cynovela-store-$(date +%Y%m%d).tar.gz -C <the Cynovela folder> store
+./launch.sh
+```
+
+### Restore from a Whole-store Copy (do it with Cynovela stopped)
+
+Do restore operations with Cynovela stopped. Do not restore while it is running.
+
+```bash
+bash stop.sh
+mv store store.old            # move the current store aside under another name
+tar -xzf <destination>/cynovela-store-YYYYMMDD.tar.gz
+./launch.sh
+```
+
+Do not use any restore control from the screen or the API. Reason: it swaps the foundation out from under a running server, so no response comes back and a restart is required anyway.
+
+### Moving to Another Mac
+
+Make a ZIP including vectors with full-export, and import it on the destination. The embedding model on the destination must be the same as on the source.
+
+```bash
+# On the source (admin token in $CYNOVELA_TOKEN)
+curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
+  "http://127.0.0.1:8765/api/workspaces/<workspace_id>/full-export" \
+  -o cynovela-migration.zip
+
+# On the destination (admin token in $CYNOVELA_TOKEN)
+curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
+  -F "file=@cynovela-migration.zip" \
+  "http://127.0.0.1:8765/api/workspaces/import"
+```
+
 ---
 
 ## 3. Log Files
@@ -373,6 +412,45 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector
 - SQLite と ChromaDB は **必ず一緒にバックアップ・復元**してください。片方だけ復元すると `chunks` テーブルとベクター ID の整合性が崩れます。
 - ソース／ワークスペース／コレクション削除では SQLite と ChromaDB の両方をクリーンアップする実装になっています。バックアップ運用でもこの「両方を同じスナップショット」原則を守ってください。
 - `--demo` 起動は `db/demo.db` と `vector/demo/chroma` を、付けない本番起動は `db/cynovela.db` と `vector/default/chroma` を使います。どちらも起動のたびに消えることはなく、書いたものはそのまま残ります。取り違えないよう本運用と混ぜないでください。
+
+### store を丸ごと控える（推奨）
+
+`python3 cynovela-cli.py backup create --yes` で控えを作れます。加えて、`store` フォルダを丸ごと `tar` で写しておいてください。控えだけでは戻すときに手で組み立てる作業が要りますが、`tar` の写しなら一手で戻せます。
+
+```bash
+bash stop.sh
+tar -czf <保存先>/cynovela-store-$(date +%Y%m%d).tar.gz -C <Cynovela のフォルダ> store
+./launch.sh
+```
+
+### store の写しから戻す（Cynovela を止めた状態で行う）
+
+戻す操作は Cynovela を止めた状態で行ってください。動かしたまま戻さないでください。
+
+```bash
+bash stop.sh
+mv store store.old            # いまの store を別の名前へ退ける
+tar -xzf <保存先>/cynovela-store-YYYYMMDD.tar.gz
+./launch.sh
+```
+
+画面や API から戻す口は使わないでください。理由: 動いている最中に土台を差し替えるため、応答が返らず、起動し直しが要るためです。
+
+### 別の Mac へ移す
+
+full-export でベクター込みの ZIP を作り、移した先で import します。移す先の埋め込みのモデルが、元と同じである必要があります。
+
+```bash
+# 元の Mac で（管理者トークンを $CYNOVELA_TOKEN に入れておく）
+curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
+  "http://127.0.0.1:8765/api/workspaces/<workspace_id>/full-export" \
+  -o cynovela-migration.zip
+
+# 移した先の Mac で（管理者トークンを $CYNOVELA_TOKEN に入れておく）
+curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
+  -F "file=@cynovela-migration.zip" \
+  "http://127.0.0.1:8765/api/workspaces/import"
+```
 
 ---
 

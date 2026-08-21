@@ -3573,9 +3573,24 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
                 policy_id_map[p["id"]] = npid
 
         # Workspace 本体
+        # DD-CYN-0147 §151-2: workspaces.name は UNIQUE。従来は常に「元の名前 (imported)」で
+        # 作っていたため、同じ書き出しを2回持ち込むと2回目が UNIQUE 制約に触れて 500 になった。
+        # 既に同名が在るときは (imported 2)・(imported 3)… と番号を足して空いている名前を探す。
+        # 探し尽くしたときは通常の例外を投げ、API に読める文言で断らせる（サーバは落とさない）。
+        _imp_base = (ws_dict.get("name") or "imported") + " (imported)"
+        _imp_name = _imp_base
+        if conn.execute("SELECT 1 FROM workspaces WHERE name = ?", (_imp_name,)).fetchone():
+            _imp_name = None
+            for _seq in range(2, 1000):
+                _cand = f"{_imp_base[:-1]} {_seq})" if _imp_base.endswith(")") else f"{_imp_base} ({_seq})"
+                if not conn.execute("SELECT 1 FROM workspaces WHERE name = ?", (_cand,)).fetchone():
+                    _imp_name = _cand
+                    break
+            if _imp_name is None:
+                raise HTTPException(409, "持ち込み先の作業場所の名前を割り当てられませんでした")
         conn.execute(
             "INSERT INTO workspaces (id, name) VALUES (?, ?)",
-            (new_ws_id, (ws_dict.get("name") or "imported") + " (imported)"),
+            (new_ws_id, _imp_name),
         )
         # links 復元
         for old_sid in links.get("source_ids") or []:
