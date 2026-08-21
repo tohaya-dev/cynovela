@@ -60,7 +60,7 @@ Cynovela's data is stored under `~/.cynovela/`.
 | SQLite DB (demo) | `~/.cynovela/db/demo.db` | `CYNOVELA_DB` |
 | ChromaDB (normal) | `~/.cynovela/vector/default/chroma` | `CYNOVELA_CHROMA` |
 | ChromaDB (demo) | `~/.cynovela/vector/demo/chroma` | `CYNOVELA_CHROMA` |
-| Backups | `~/.cynovela/backups` | `CYNOVELA_BACKUP_DIR` |
+| Backups | `store/backups` under the folder where the package was extracted | `CYNOVELA_BACKUP_DIR` |
 | Models | `~/.cynovela/models` | (can be specified individually with `cynovela.yaml.models.*.path`) |
 | Logs | `~/.cynovela` | `CYNOVELA_LOG_DIR` |
 
@@ -92,6 +92,23 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector
 - Deleting a source / workspace / collection is implemented so that both SQLite and ChromaDB are cleaned up. Keep this principle of "both from the same snapshot" in backup operations as well.
 - Starting with `--demo` uses `db/demo.db` and `vector/demo/chroma`; starting without it, for production, uses `db/cynovela.db` and `vector/default/chroma`. Neither one is wiped on every startup — what you write stays as it is. Do not mix them up with production operation.
 
+### Backups Taken in the App (`backup create`) — Where They Go
+
+```bash
+python3 cynovela-cli.py backup create --yes          # take a backup
+python3 cynovela-cli.py backup list                  # list what you have
+```
+
+Backups are written under `store/backups` inside the folder where the package was extracted, for example `store/backups/backup-20260821-225606`. Nothing is written under your home folder. Each backup folder holds `cynovela.db` (a copy of the database actually in use — the name inside the backup is always `cynovela.db`, whether or not you started with `--demo`), a `chroma` folder, and `meta.json`.
+
+To keep a copy somewhere else, pack that one folder and record its fingerprint:
+
+```bash
+BK=store/backups/backup-20260821-225606
+tar -czf <destination>/$(basename $BK).tar.gz -C store/backups $(basename $BK)
+shasum -a 256 <destination>/$(basename $BK).tar.gz
+```
+
 ### Whole-store Backup (recommended)
 
 `python3 cynovela-cli.py backup create --yes` makes a backup. In addition, copy the whole `store` folder with `tar`: a backup alone still needs some manual assembly when you restore, whereas a `tar` copy restores in one step.
@@ -113,7 +130,34 @@ tar -xzf <destination>/cynovela-store-YYYYMMDD.tar.gz
 ./launch.sh
 ```
 
-Do not use any restore control from the screen or the API. Reason: it swaps the foundation out from under a running server, so no response comes back and a restart is required anyway.
+Do not use any restore control from the screen or the API. Reason: it swaps the foundation out from under a running server, so no response comes back and a restart is required anyway. The restore control has been removed from the screen: the backup list now shows this note in its place. The API endpoint still exists, but do not use it for the same reason.
+
+### Restore from a Backup Taken in the App (do it with Cynovela stopped)
+
+```bash
+bash stop.sh
+BK=store/backups/backup-20260821-225606          # the backup you want to go back to
+mkdir -p store/aside
+mv store/db/demo.db store/aside/                 # move aside only the database file
+mv store/db/demo.db-wal store/aside/ 2>/dev/null # and its journal, if there is one
+mv store/db/demo.db-shm store/aside/ 2>/dev/null
+mv store/vector/demo/chroma store/aside/chroma   # and only the vector folder
+cp "$BK/cynovela.db" store/db/demo.db            # without --demo, use store/db/cynovela.db
+cp -R "$BK/chroma" store/vector/demo/chroma      # without --demo, use store/vector/default/chroma
+./launch.sh --demo
+```
+
+Move aside only the database file and the vector folder, as shown above. Do not move the whole `store/db` folder: it also holds the sign-in key under `store/db/jwt`, which a backup does not contain. If you move that away, the key is lost, a new one is generated at startup, and everyone has to sign in again.
+
+Move the journal files (`demo.db-wal` / `demo.db-shm`) aside together with the database file. They belong to the database you are replacing. If you leave them behind, they are replayed onto the restored file at startup and the restore silently has no effect.
+
+Then check that what you expected is back, and only after that delete what you moved aside:
+
+```bash
+python3 cynovela-cli.py workspaces
+python3 cynovela-cli.py collections
+rm -rf store/aside
+```
 
 ### Moving to Another Mac
 
@@ -381,7 +425,7 @@ Cynovela のデータは `~/.cynovela/` 配下に格納されます。
 | SQLite DB（demo） | `~/.cynovela/db/demo.db` | `CYNOVELA_DB` |
 | ChromaDB（通常） | `~/.cynovela/vector/default/chroma` | `CYNOVELA_CHROMA` |
 | ChromaDB（demo） | `~/.cynovela/vector/demo/chroma` | `CYNOVELA_CHROMA` |
-| バックアップ | `~/.cynovela/backups` | `CYNOVELA_BACKUP_DIR` |
+| バックアップ | 配布物を展開したフォルダ配下の `store/backups` | `CYNOVELA_BACKUP_DIR` |
 | モデル | `~/.cynovela/models` | （`cynovela.yaml.models.*.path` で個別指定可） |
 | ログ | `~/.cynovela` | `CYNOVELA_LOG_DIR` |
 
@@ -413,6 +457,23 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector
 - ソース／ワークスペース／コレクション削除では SQLite と ChromaDB の両方をクリーンアップする実装になっています。バックアップ運用でもこの「両方を同じスナップショット」原則を守ってください。
 - `--demo` 起動は `db/demo.db` と `vector/demo/chroma` を、付けない本番起動は `db/cynovela.db` と `vector/default/chroma` を使います。どちらも起動のたびに消えることはなく、書いたものはそのまま残ります。取り違えないよう本運用と混ぜないでください。
 
+### アプリで取る控え（`backup create`）と、その置き場
+
+```bash
+python3 cynovela-cli.py backup create --yes          # 控えを取る
+python3 cynovela-cli.py backup list                  # 取ってある控えを並べる
+```
+
+控えは、配布物を展開したフォルダ配下の `store/backups` へ書かれます（例: `store/backups/backup-20260821-225606`）。ホームフォルダの下には何も書きません。ひとつの控えのフォルダには、`cynovela.db`（実際に使われているデータベースの写し。控えの中の名前は `--demo` の有無によらず常に `cynovela.db` です）、`chroma` フォルダ、`meta.json` が入ります。
+
+別の場所へ保管する場合は、その控えのフォルダを固め、指紋を控えておきます。
+
+```bash
+BK=store/backups/backup-20260821-225606
+tar -czf <保存先>/$(basename $BK).tar.gz -C store/backups $(basename $BK)
+shasum -a 256 <保存先>/$(basename $BK).tar.gz
+```
+
 ### store を丸ごと控える（推奨）
 
 `python3 cynovela-cli.py backup create --yes` で控えを作れます。加えて、`store` フォルダを丸ごと `tar` で写しておいてください。控えだけでは戻すときに手で組み立てる作業が要りますが、`tar` の写しなら一手で戻せます。
@@ -434,7 +495,34 @@ tar -xzf <保存先>/cynovela-store-YYYYMMDD.tar.gz
 ./launch.sh
 ```
 
-画面や API から戻す口は使わないでください。理由: 動いている最中に土台を差し替えるため、応答が返らず、起動し直しが要るためです。
+画面や API から戻す口は使わないでください。理由: 動いている最中に土台を差し替えるため、応答が返らず、起動し直しが要るためです。 画面から戻す押しボタンは無くなりました。控えの一覧には、代わりにこの案内が出ます。API の口は残っていますが、同じ理由から使わないでください。
+
+### アプリで取った控えから戻す（Cynovela を止めた状態で行う）
+
+```bash
+bash stop.sh
+BK=store/backups/backup-20260821-225606          # 戻したい控え
+mkdir -p store/aside
+mv store/db/demo.db store/aside/                 # データベースのファイルだけを退ける
+mv store/db/demo.db-wal store/aside/ 2>/dev/null # その日誌も退ける（無いこともある）
+mv store/db/demo.db-shm store/aside/ 2>/dev/null
+mv store/vector/demo/chroma store/aside/chroma   # ベクターのフォルダだけを退ける
+cp "$BK/cynovela.db" store/db/demo.db            # --demo を付けない場合は store/db/cynovela.db
+cp -R "$BK/chroma" store/vector/demo/chroma      # --demo を付けない場合は store/vector/default/chroma
+./launch.sh --demo
+```
+
+退けるのは、上のとおりデータベースのファイルとベクターのフォルダだけにしてください。`store/db` を丸ごと退けてはいけません。`store/db/jwt` の下には入り口の鍵が置かれており、控えはこれを含みません。丸ごと退けると鍵が失われ、起動のときに新しい鍵が作られ、全員が入り直すことになります。
+
+日誌のファイル（`demo.db-wal` / `demo.db-shm`）は、データベースのファイルと一緒に退けてください。これらは差し替える前のデータベースのものです。残したままにすると、起動のときに復元したファイルへ書き戻され、戻したことが黙って打ち消されます。
+
+戻したいものが戻ったことを確かめ、確かめてから、退けたものを消します。
+
+```bash
+python3 cynovela-cli.py workspaces
+python3 cynovela-cli.py collections
+rm -rf store/aside
+```
 
 ### 別の Mac へ移す
 
