@@ -9,6 +9,11 @@ Commands are grouped by the unit of work (DD-CYN-0142 §5-A). Dangerous
 operations (delete / users / backup / settings set) never run without an
 explicit --yes: without it they show what would happen and stop.
 
+  Sign in:
+    login         Sign in with a username and password, and remember the token
+                  in ~/.cynovela_cli.env so the other commands just work.
+                  The token never expires unless --hours / --seconds is given.
+    logout        Forget the remembered token (and tell the server about it).
   See:
     doctor        What is missing right now, and the one line to run next.
                   Works even when the server is not running.
@@ -49,7 +54,8 @@ Exit codes:  0 = OK   1 = bad user input   2 = server unreachable
 Configuration (checked in this order):
   --url / --token flags  >  ~/.cynovela_cli.env (CYNOVELA_URL= / CYNOVELA_TOKEN=)
   Default URL: http://127.0.0.1:8765
-  The token is the value issued when you sign in on the web screen.
+  The token is the value issued at sign-in — either by `login` here, or on the
+  web screen. `login` writes it to ~/.cynovela_cli.env (mode 600) for you.
 
 Language: --lang en|ja (default: ja when LANG/LC_ALL contains "ja", else en).
 """
@@ -57,6 +63,7 @@ Language: --lang en|ja (default: ja when LANG/LC_ALL contains "ja", else en).
 from __future__ import annotations
 
 import argparse
+import getpass
 import json
 import os
 import re
@@ -145,6 +152,43 @@ def _load_env_file(path: Path) -> dict:
     except Exception:
         pass
     return out
+
+
+def _save_env_file(path: Path, updates: dict) -> None:
+    """DD-CYN-0151 §5: rewrite ~/.cynovela_cli.env keeping every other line.
+
+    A value of None removes the key. The file is left readable by its owner
+    only, because it holds a bearer token.
+    """
+    existing: list = []
+    if path.is_file():
+        try:
+            existing = path.read_text(encoding="utf-8").splitlines()
+        except Exception:
+            existing = []
+    seen = set()
+    out: list = []
+    for line in existing:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            out.append(line)
+            continue
+        key = stripped.split("=", 1)[0].strip()
+        if key in updates:
+            seen.add(key)
+            if updates[key] is not None:
+                out.append(f"{key}={updates[key]}")
+            # None: drop the line
+        else:
+            out.append(line)
+    for key, value in updates.items():
+        if key not in seen and value is not None:
+            out.append(f"{key}={value}")
+    path.write_text("\n".join(out).rstrip("\n") + "\n", encoding="utf-8")
+    try:
+        os.chmod(path, 0o600)
+    except Exception:
+        pass
 
 
 # ─── tiny cynovela.yaml reader (doctor only; no yaml dependency) ─
@@ -403,6 +447,105 @@ def cmd_doctor(ctx: Ctx, _args) -> int:
 
 
 # ─── read-only server commands ─────────────────────────────────
+# ─── login / logout (DD-CYN-0151 §5) ───────────────────────────
+CLI_ENV_PATH = Path.home() / ".cynovela_cli.env"
+
+
+def _read_password(args, lang: str) -> str:
+    """Take the password without leaving it in the shell history or in `ps`.
+
+    --password-stdin reads one line from standard input; otherwise the terminal
+    asks for it and does not echo. --password is accepted but discouraged.
+    """
+    if getattr(args, "password_stdin", False):
+        return sys.stdin.readline().rstrip("\n")
+    if getattr(args, "password", None):
+        return args.password
+    prompt = "Password: " if lang == "en" else "パスワード: "
+    return getpass.getpass(prompt)
+
+
+def cmd_login(ctx: Ctx, args) -> int:
+    username = (args.username or "").strip()
+    if not username:
+        print("--username is required" if ctx.lang == "en" else "--username を指定してください",
+              file=sys.stderr)
+        return EXIT_INPUT
+    password = _read_password(args, ctx.lang)
+    if not password:
+        print("password is empty" if ctx.lang == "en" else "パスワードが空です", file=sys.stderr)
+        return EXIT_INPUT
+
+    body = {"username": username, "password": password}
+    if args.hours is not None:
+        body["expires_in_hours"] = args.hours
+    if args.seconds is not None:
+        body["expires_in_seconds"] = args.seconds
+
+    status, data = _request(ctx, "POST", "/api/auth/login", body=body, timeout=30)
+    if status != 200 or not isinstance(data, dict):
+        return _fail(ctx, "login", status, data)
+    token = data.get("access_token") or data.get("token") or ""
+    if not token:
+        return _fail(ctx, "login", 500, "no access_token in the response")
+
+    try:
+        _save_env_file(CLI_ENV_PATH, {"CYNOVELA_URL": ctx.url, "CYNOVELA_TOKEN": token})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return EXIT_SERVER
+
+    expires_in = data.get("expires_in")
+    if expires_in in (None, ""):
+        life_en, life_ja = "the token does not expire", "トークンに期限はありません"
+    else:
+        life_en = f"the token expires in {expires_in} second(s)"
+        life_ja = f"トークンは {expires_in} 秒後に切れます"
+    role = data.get("role") or ""
+    must_change = bool(data.get("must_change_password"))
+    if ctx.lang == "en":
+        lines = [f"signed in as {username} (role: {role})", life_en,
+                 f"token saved to {CLI_ENV_PATH}"]
+        if must_change:
+            lines.append("this account must change its password before admin operations")
+    else:
+        lines = [f"{username} としてログインしました（役割: {role}）", life_ja,
+                 f"トークンを {CLI_ENV_PATH} に書きました"]
+        if must_change:
+            lines.append("この利用者は、管理の操作の前にパスワードの変更が必要です")
+    # The token itself is never printed: it is a credential.
+    return _ok(ctx, "login",
+               {"username": username, "role": role, "expires_in": expires_in,
+                "env_file": str(CLI_ENV_PATH), "must_change_password": must_change},
+               lines)
+
+
+def cmd_logout(ctx: Ctx, _args) -> int:
+    told_server = False
+    server_status = None
+    if ctx.token:
+        server_status, _ = _request(ctx, "POST", "/api/auth/logout", body={}, timeout=15)
+        told_server = server_status == 200
+    had_token = bool(ctx.token)
+    try:
+        _save_env_file(CLI_ENV_PATH, {"CYNOVELA_TOKEN": None})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return EXIT_SERVER
+    if ctx.lang == "en":
+        lines = [f"token removed from {CLI_ENV_PATH}" if had_token
+                 else f"there was no token in {CLI_ENV_PATH}",
+                 "the server was told" if told_server else "the server was not told (it was not reachable, or the token was already invalid)"]
+    else:
+        lines = [f"{CLI_ENV_PATH} からトークンを消しました" if had_token
+                 else f"{CLI_ENV_PATH} にトークンはありませんでした",
+                 "サーバにも伝えました" if told_server else "サーバには伝わっていません（届かないか、トークンが既に無効）"]
+    return _ok(ctx, "logout",
+               {"had_token": had_token, "server_notified": told_server,
+                "server_status": server_status, "env_file": str(CLI_ENV_PATH)},
+               lines)
+
+
 def cmd_status(ctx: Ctx, _args) -> int:
     status, data = _request(ctx, "GET", "/api/health", timeout=5)
     if status != 200:
@@ -1105,6 +1248,17 @@ def build_parser() -> Parser:
     p.add_argument("--lang", choices=["en", "ja"], help="message language (default: from LANG)")
     sub = p.add_subparsers(dest="cmd", required=True)
 
+    p_li = sub.add_parser("login", help="sign in and remember the token in ~/.cynovela_cli.env")
+    p_li.add_argument("--username", required=True, help="user name")
+    p_li.add_argument("--password", help="password (discouraged: it stays in the shell history)")
+    p_li.add_argument("--password-stdin", action="store_true",
+                      help="read the password from standard input instead")
+    p_li.add_argument("--hours", type=float,
+                      help="make the token expire after this many hours (default: it never expires)")
+    p_li.add_argument("--seconds", type=float,
+                      help="make the token expire after this many seconds (default: it never expires)")
+    sub.add_parser("logout", help="forget the remembered token")
+
     sub.add_parser("doctor", help="what is missing right now (works without the server)")
     sub.add_parser("status", help="is the server up (GET /api/health)")
 
@@ -1253,6 +1407,8 @@ def main(argv=None) -> int:
         as_json=bool(args.json),
     )
     dispatch = {
+        "login": cmd_login,
+        "logout": cmd_logout,
         "doctor": cmd_doctor,
         "status": cmd_status,
         "workspaces": cmd_workspaces2,
