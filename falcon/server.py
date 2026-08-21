@@ -1136,7 +1136,14 @@ from pathlib import Path as _Path
 
 # FIX-4 (Critical): Mock版や独立配置のため、CYNOVELA_BACKUP_DIR / CYNOVELA_DB 環境変数を尊重
 # alpha §9-A-7: バックアップ対象 DB を実 DB と一致させる (パッケージ配下 db/cynovela.db)
-BACKUP_BASE = _Path(os.path.expanduser(os.environ.get("CYNOVELA_BACKUP_DIR", "~/.cynovela/backups")))
+# DD-CYN-0148 §4-A: 既定値がホームの下 (~/.cynovela/backups) を指していたが、実際の置き場は
+# 起動時に cynovela.yaml の paths から組み立てた <展開フォルダ>/store/backups である (上の
+# CYNOVELA_BACKUP_DIR の入れ直しを参照)。∴ この既定値は到達しない。読んだ人が誤解する元を
+# 消すため、既定値も store の下を指す形へ揃える。動きは変わらない。
+BACKUP_BASE = _Path(os.path.expanduser(os.environ.get(
+    "CYNOVELA_BACKUP_DIR",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "store", "backups"),
+)))
 _SRV_APP_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH_FOR_BACKUP = _Path(os.path.expanduser(os.environ.get("CYNOVELA_DB", os.path.join(_SRV_APP_DIR, "db", "cynovela.db"))))
 
@@ -1168,7 +1175,17 @@ def _create_backup(label: str = "") -> dict:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     safe_label = "".join(c for c in (label or "") if c.isalnum() or c in "-_")[:32]
     name = f"backup-{ts}" + (f"-{safe_label}" if safe_label else "")
+    # DD-CYN-0146 §150-1: 控えの名前が秒単位の時刻だけで作られていたため、同じ秒に2回作ると
+    # 2回目が既存ディレクトリへ書き込もうとして失敗（copytree の FileExistsError → 500）していた。
+    # 既に同名が在るときは連番を足して衝突を避け、失敗させない。
     backup_dir = BACKUP_BASE / name
+    if backup_dir.exists():
+        _base_name = name
+        for _seq in range(2, 1000):
+            name = f"{_base_name}-{_seq}"
+            backup_dir = BACKUP_BASE / name
+            if not backup_dir.exists():
+                break
     backup_dir.mkdir(parents=True, exist_ok=True)
     # SQLite WALチェックポイント後コピー
     try:

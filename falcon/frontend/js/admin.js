@@ -100,18 +100,9 @@ async function createBackupNow() {
   } catch (e) { showToast(lj(`Backup failed: ${e.message}`,`バックアップ失敗: ${e.message}`), 'error'); }
 }
 
-function restoreBackup(name) {
-  confirmAction(lj('Confirm restore', 'リストア確認'),
-    lj(`Restore from “${name}”.\nThe current state will be automatically backed up before being overwritten. Continue?`, `「${name}」から復元します。\n現在の状態は自動でバックアップしてから上書きします。続行しますか？`),
-    '↩', async () => {
-      try {
-        const r = await API.post(`/api/admin/backups/${encodeURIComponent(name)}/restore`, {});
-        showToast(lj(`Restore complete (current state saved to ${r.auto_backup_before_restore})`,`復元完了 (現状を ${r.auto_backup_before_restore} に保存)`), 'success');
-        await refreshAllData();
-        renderBackupList();
-      } catch (e) { showToast(lj(`Restore failed: ${e.message}`,`リストア失敗: ${e.message}`), 'error'); }
-    });
-}
+// DD-CYN-0148 §4-D: 押すと壊れる restoreBackup の処理を取り除いた。動いている最中に
+// 土台を差し替えるため、応答が返らず起動し直しが要る。復元は Cynovela を停止した状態で
+// 行う（手順は docs/operations.md）。API の口 /api/admin/backups/{name}/restore は残している。
 
 async function loadProcessingLogsSection() {
   const host = document.getElementById('processing-logs-host');

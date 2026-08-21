@@ -91,14 +91,31 @@ def name_for(host_path: str, taken) -> str:
     parts = [p for p in host_path.rstrip("/").split("/") if p]
     toks = [t for t in (_sanitize(p) for p in parts[-2:]) if t]
     base = "-".join(toks)
-    if not base or base in taken:
-        code = hashlib.sha256(host_path.encode("utf-8")).hexdigest()[:8]
-        base = (base + "-" + code) if base else ("src-" + code)
-    base = base[:32]
-    # 符号を足してもなお衝突する場合は末尾を数字で置き換えず ANDON 相当のエラーにする
-    if base in taken:
-        raise SystemExit(f"name collision unresolved for: {host_path}")
-    return base
+    # DD-CYN-0146 §150: 従来は「符号(8桁)を足してから base[:32] で切り詰め」ていたため、
+    # 道筋の末尾が長いと避けるための符号ごと切り落とされ、再び衝突→SystemExit→サーバ全停止
+    # になっていた。順序を改め「先に枠へ収めてから符号/連番を足す」ことで、避ける印が必ず
+    # 32文字の枠に残るようにする。SystemExit もやめ、探し尽くしたときだけ通常の例外を投げて
+    # 呼び出し側 (API) が読める文言で断れるようにする（サーバは落とさない）。
+    # まず 32 文字の枠へ収めた形で衝突を判定する（従来は切り詰め前の base で判定し、
+    # 切り詰め後に衝突する取りこぼしがあった）。
+    base32 = base[:32]
+    if base32 and base32 not in taken:
+        return base32
+    # 衝突する / 空 のときは、まず 8 桁の符号を「先に詰めた base」の後ろに足す。
+    code = hashlib.sha256(host_path.encode("utf-8")).hexdigest()[:8]
+    stem = base[: 32 - 1 - len(code)] if base else "src"
+    candidate = f"{stem}-{code}"
+    if candidate not in taken:
+        return candidate
+    # なお衝突するなら、末尾を連番で置き換えて空きを探す（枠内に必ず番号が残る）。
+    for _i in range(1, 10000):
+        suffix = f"-{_i}"
+        head = candidate[: 32 - len(suffix)]
+        alt = f"{head}{suffix}"
+        if alt not in taken:
+            return alt
+    # ここまで空きが無いのは異常。SystemExit ではなく通常の例外にし、API に断らせる。
+    raise ValueError(f"取り込み元の名前を割り当てられませんでした: {host_path}")
 
 
 def used_map(data: dict) -> dict:

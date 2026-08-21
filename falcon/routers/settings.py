@@ -684,17 +684,33 @@ async def set_pii_mode(request: Request):
 
         set_pii_detection_mode(mode)
         # cynovela.yaml の pii_mode キーに永続化（次回起動でも反映）
+        # DD-CYN-0145 §148-3: 従来は safe_load→dict→safe_dump の往復で、ファイル冒頭・各節の
+        # 説明コメントと値の引用符が全て失われていた（設定の置き場はこのファイル1本という運用で
+        # コメントは受け取り手向けの案内を兼ねる）。tools/conf.sh / tools/build-dist.sh と同じく
+        # 「その行だけを書き替える」行単位置換に改める。値は上で lite/standard に限定済みのため
+        # エスケープ不要。新規依存は足さない（標準ライブラリの re のみ）。
         try:
-            import yaml as _yaml
+            import re as _re
             from pathlib import Path as _P
 
             _yaml_path = _P(__file__).resolve().parent.parent / "cynovela.yaml"
             if _yaml_path.exists():
                 with open(_yaml_path, "r", encoding="utf-8") as f:
-                    _cfg = _yaml.safe_load(f) or {}
-                _cfg["pii_mode"] = mode
-                with open(_yaml_path, "w", encoding="utf-8") as f:
-                    _yaml.safe_dump(_cfg, f, allow_unicode=True, sort_keys=False)
+                    _text = f.read()
+                # トップレベルの pii_mode 行（行頭・インデントなし）だけを差し替える。
+                # 行末の注釈があれば残す。
+                _pat = _re.compile(r"(?m)^(pii_mode:[ \t]*)([^\n#]*)(\s*(?:#.*)?)$")
+                _new_text, _n = _pat.subn(lambda m: f"{m.group(1)}{mode}{m.group(3)}", _text)
+                if _n == 0:
+                    # キーが無ければ末尾へ1行追記（既存内容は一切触らない）
+                    _sep = "" if _text.endswith("\n") else "\n"
+                    _new_text = _text + _sep + f"pii_mode: {mode}\n"
+                elif _n > 1:
+                    # 想定外に複数一致したら書き換えず警告（フェイルクローズ）
+                    raise ValueError(f"pii_mode line matched {_n} times; refusing to write")
+                if _new_text != _text:
+                    with open(_yaml_path, "w", encoding="utf-8") as f:
+                        f.write(_new_text)
         except Exception as _ye:
             logger.warning(f"pii_mode yaml persist failed (continue): {_ye}")
         return {"mode": mode, "status": "ok"}

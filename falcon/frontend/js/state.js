@@ -2937,7 +2937,10 @@ async function renderBackupList() {
         <td>${(b.created_at||'').slice(0,16).replace('T',' ')}</td>
         <td>${_fmtBytes((b.db_size||0)+(b.chroma_size||0))}</td>
         <td class="btn-row">
-          <button class="btn btn-sm btn-primary" onclick="restoreBackup('${b.name}')">↩ リストア</button>
+          <!-- DD-CYN-0148 §4-D: 押すと壊れる「↩ リストア」の押しボタンを画面から外した。
+               動いている最中に土台を差し替えるため、応答が返らず起動し直しが要る。
+               API の口そのものは残している。外したのは画面からの入口だけである。 -->
+          <span style="font-size:14px;color:var(--text-4)">${bi('Restore is done with Cynovela stopped. See docs/operations.md for the procedure.', '復元は Cynovela を停止した状態で行います。手順は docs/operations.md を参照してください。')}</span>
           <button class="btn btn-sm btn-danger" onclick="deleteBackup('${b.name}')">🗑</button>
         </td>
       </tr>`).join('') + '</tbody></table><div id="backup-pager"></div>';

@@ -198,6 +198,19 @@ async def create_source(request: Request):
     # 全書き込みが busy_timeout(30s) 超過の "database is locked" になっていた
     # (フロントでは「追加失敗: Failed to fetch」)。同名 source は 409 で穏当に弾く。
     try:
+        # DD-CYN-0151 §7: 同じ場所を二重に登録させない。
+        #   従来 UNIQUE が効いていたのは name だけだったため、名前を変えれば同じフォルダを
+        #   何本でも登録でき、走査も公開も二重に走っていた。
+        #   場所の見分けは実体のパス (シンボリックリンクと末尾の / を解いたもの) で行う。
+        _want = os.path.realpath(os.path.expanduser(_normalized))
+        for _row in conn.execute("SELECT id, name, path FROM sources").fetchall():
+            _have = os.path.realpath(os.path.expanduser(os.path.normpath(_row["path"] or "")))
+            if _have and _have == _want:
+                raise HTTPException(
+                    409,
+                    f"この場所は既に登録されています: {_row['name']} (id={_row['id']})。"
+                    "同じフォルダを二重に登録することはできません。",
+                )
         conn.execute(
             "INSERT INTO sources (id, name, path) VALUES (?, ?, ?)",
             (sid, name, path),
@@ -594,7 +607,12 @@ async def add_ingest_root(request: Request):
     for _r in _data["roots"]:
         if _r.get("host_path") == _real:
             return {"ok": True, "name": _r.get("name"), "already": True}
-    _name = _h.assign_name(_data, _real)
+    # DD-CYN-0146 §150: 名前の割り当てが尽きた場合、name_for は SystemExit ではなく
+    # ValueError を投げる（サーバは落とさない）。ここで受けて読める文言で断る。
+    try:
+        _name = _h.assign_name(_data, _real)
+    except ValueError as _ne:
+        raise HTTPException(409, f"取り込み元の名前を付けられませんでした: {_ne}") from _ne
     _label = os.path.basename(_real.rstrip("/")) or _real
     _data["roots"].append({"name": _name, "host_path": _real, "label": _label})
     _h._save(_f, _data)

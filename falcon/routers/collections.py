@@ -168,6 +168,10 @@ def list_collections(
         if (user or {}).get("role") != "admin":
             where_parts.append("workspace_id IN (SELECT workspace_id FROM workspace_users WHERE user_id = ?)")
             params.append((user or {}).get("id"))
+            # DD-CYN-0145 §148-1: 非admin には confidential の collection を一覧に出さない。
+            # 従来は access_level を WHERE に含めておらず、所属WS内なら confidential も
+            # メタデータごと閲覧者に返っていた。手本: catalog.py の viewer 絞り込みと同一述語。
+            where_parts.append("(access_level IS NULL OR access_level != 'confidential')")
         if not include_archived:
             where_parts.append("archived_at IS NULL")
         if q:

@@ -43,6 +43,31 @@ def _auth_rate_limit():
     return _noop
 
 
+def _requested_expiry_seconds(body) -> int | None:
+    """DD-CYN-0151 §5: 呼ぶ側が期間を渡したときだけ、その期間で切れるようにする。
+
+    受け取る形は2つ。どちらも省略できる。
+      expires_in_hours    : 時間で渡す（小数可）
+      expires_in_seconds  : 秒で渡す
+
+    どちらも無い/空なら None を返す。None は「有効期限を入れない」を意味する。
+    0 以下や数に読めない値は 400 で断る（黙って無制限にしない）。
+    """
+    if not isinstance(body, dict):
+        return None
+    raw_h = body.get("expires_in_hours")
+    raw_s = body.get("expires_in_seconds")
+    if raw_h in (None, "") and raw_s in (None, ""):
+        return None
+    try:
+        secs = int(float(raw_s)) if raw_s not in (None, "") else int(float(raw_h) * 3600)
+    except (TypeError, ValueError):
+        raise HTTPException(400, "expires_in_hours / expires_in_seconds には数を指定してください")
+    if secs <= 0:
+        raise HTTPException(400, "expires_in_hours / expires_in_seconds には 0 より大きい数を指定してください")
+    return secs
+
+
 @router.get("/api/auth/users", response_model=None)
 def list_users(request: Request):
     # 2026-05-23 sec4 v4.1 項目①: 旧 fix060 B の demo 未認証許可を撤廃。常時 admin 認証必須。
@@ -106,15 +131,18 @@ async def login(request: Request):
         _audit_auth_failure(request, "bad_password")
         raise HTTPException(401, "ユーザー名またはパスワードが正しくありません")
 
-    # Batch-B S1-3: JWT アクセストークン（8時間）
+    # DD-CYN-0151 §5: アクセストークンの既定を無制限にした（従来は 8時間 固定）。
+    # 呼ぶ側が expires_in_hours / expires_in_seconds を渡したときだけ exp を入れる。
     from core.auth import _get_jwt_secret
     now = datetime.now(_tz.utc)
+    _exp_secs = _requested_expiry_seconds(body)
     access_payload = {
         "sub": str(user["id"]),
         "role": user["role"],
         "iat": int(now.timestamp()),
-        "exp": int((now + _td(hours=8)).timestamp()),
     }
+    if _exp_secs is not None:
+        access_payload["exp"] = int((now + _td(seconds=_exp_secs)).timestamp())
     access_token = _pyjwt.encode(
         access_payload, _get_jwt_secret(), algorithm="HS256"
     )
@@ -160,6 +188,8 @@ async def login(request: Request):
         "user_id": str(user["id"]),
         "role": user["role"],
         "must_change_password": must_change,
+        # DD-CYN-0151 §5: 期限なしなら null。渡された期間で切れるなら、その秒数。
+        "expires_in": _exp_secs,
     }
 
 
@@ -297,8 +327,16 @@ async def update_auth_session_config(request: Request):
 
 
 @router.post("/api/auth/refresh", response_model=None)
-def refresh_access_token(refresh_token: str = Body(..., embed=True)):
-    """Batch-B S1-3: リフレッシュトークンで新しいアクセストークンを発行する。"""
+def refresh_access_token(
+    refresh_token: str = Body(..., embed=True),
+    expires_in_hours: float | None = Body(None, embed=True),
+    expires_in_seconds: float | None = Body(None, embed=True),
+):
+    """Batch-B S1-3: リフレッシュトークンで新しいアクセストークンを発行する。
+
+    DD-CYN-0151 §5: 既定は無制限（exp を入れない）。login と同じで、
+    expires_in_hours / expires_in_seconds を渡したときだけ、その期間で切れる。
+    """
     from core.auth import _get_jwt_secret
     token_hash = _hashlib.sha256(refresh_token.encode()).hexdigest()
     conn = get_db()
@@ -316,15 +354,20 @@ def refresh_access_token(refresh_token: str = Body(..., embed=True)):
     if not row or not row["is_active"]:
         raise HTTPException(401, "Invalid or expired refresh token")
     now = datetime.now(_tz.utc)
+    _exp_secs = _requested_expiry_seconds(
+        {"expires_in_hours": expires_in_hours, "expires_in_seconds": expires_in_seconds}
+    )
     payload = {
         "sub": row["user_id"],
         "role": row["role"],
         "iat": int(now.timestamp()),
-        "exp": int((now + _td(hours=8)).timestamp()),
     }
+    if _exp_secs is not None:
+        payload["exp"] = int((now + _td(seconds=_exp_secs)).timestamp())
     return {
         "access_token": _pyjwt.encode(payload, _get_jwt_secret(), algorithm="HS256"),
         "token_type": "bearer",
+        "expires_in": _exp_secs,
     }
 
 

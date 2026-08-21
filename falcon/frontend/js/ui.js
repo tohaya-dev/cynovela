@@ -433,6 +433,17 @@ async function importWorkspace() {
       body: form,
     });
     if (!res.ok) throw new Error(await res.text());
+    // DD-CYN-0151 §6-2: サーバが ok:false を返したときは成功と表示しない。
+    // まとまりに資料が1つも入らなかった場合がこれに当たる (書き出し物の files.json が空)。
+    const data = await res.json().catch(() => null);
+    if (data && data.ok === false) {
+      const why = (data.warnings && data.warnings[0]) || data.note || '';
+      if (el) el.textContent = lj('Incomplete', '中身が空です');
+      showToast(lj('Imported, but the collection has no documents. ' + why,
+                   '取り込みましたが、まとまりに資料が入っていません。' + why), 'warning');
+      if (typeof refreshAllData === 'function') refreshAllData();
+      return;
+    }
     if (el) el.textContent = lj('Done', '完了');
     showToast(lj('Import complete. Please publish the collection.', 'インポートが完了しました。コレクションをPublishしてください。'), 'success');
     if (typeof refreshAllData === 'function') refreshAllData();
