@@ -91,8 +91,9 @@ conf_pick_py() {  # F-c / R-1
     for _c in "$@"; do
         if _conf_py_meets "$_c"; then printf '%s\n' "$_c"; return 0; fi
     done
-    # この配布物の中に作られる保存先 (形態によって名前が違うので両方見る)
-    for _c in "$_root/.venv-cynovela/bin/python3" "$_root/.mas-env/bin/python3"; do
+    # この配布物の中に作られる保存先 (形態によって名前が違うので全部見る。
+    # Package edition (.condapack-cynovela) の利用者が多数のため先に探す)
+    for _c in "$_root/.condapack-cynovela/bin/python3" "$_root/.venv-cynovela/bin/python3" "$_root/.mas-env/bin/python3"; do
         if _conf_py_meets "$_c"; then printf '%s\n' "$_c"; return 0; fi
     done
     # 配布物専用の conda 環境。名前が python なので、版を実測しないと当てられない。

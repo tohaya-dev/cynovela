@@ -4,7 +4,7 @@
 #
 # 使い方:
 #   bash tools/check-cli-mcp.sh <python> [base_url] [token]
-#     <python>   使う Python (例: ./.venv-cynovela/bin/python3)
+#     <python>   使う Python (例: ./.condapack-cynovela/bin/python3)
 #     [base_url] 既定 http://127.0.0.1:8765
 #     [token]    ログインで発行されたトークン。無ければ認証つき命令は
 #                「認証失敗(3)を正しく返すか」の検査に切り替わる。

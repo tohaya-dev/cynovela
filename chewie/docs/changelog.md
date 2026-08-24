@@ -16,6 +16,28 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## v1.1.0 (2026-08-25)
+
+- **The package edition's bundled environment now has its own name, separate from the
+  venv the source edition creates.** Both used to share the name `.venv-cynovela` and the
+  internal label `FORM_SEL="venv"`, even though they are technically different things: the
+  package edition ships a pre-built `conda-pack` environment, while the source edition's
+  choice 2 creates a real `venv` from scratch with `python -m venv`. The bundled
+  `conda-pack` environment is now named `.condapack-cynovela` (`FORM_SEL="condapack"`)
+  everywhere — `launch.sh`'s auto-detection (which skips the selection screen when a
+  working bundled environment is already there), `tools/conf.sh`'s Python search order,
+  `tools/check-cli-mcp.sh`, `uninstall.sh`'s inventory and confirmation screens, and the
+  published documents. The source edition's real `venv` keeps its existing name
+  `.venv-cynovela` and `FORM_SEL="venv"` unchanged — nothing about how it is built or
+  where it lives has changed.
+- **Compatibility note (why this is a minor version, not a patch):** `START-HERE.md` and
+  `docs/mcp-guide.md` used to show the package edition's own Python as a direct path —
+  `./.venv-cynovela/bin/python3 cynovela-cli.py doctor`, or
+  `export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3`. Anyone who copied one
+  of those commands into a script or shell alias will find it points at a path that no
+  longer exists; the package edition's Python is now at `.condapack-cynovela/bin/python3`.
+  The documents have been corrected to the new path.
+
 ## v1.0.7 (2026-08-22)
 
 - **A single API call could stop the whole server. It cannot any more.** Registering an
@@ -226,6 +248,26 @@ Beta GA is a milestone under consideration whose goal is "a state that can withs
 Cynovela の主要な変更内容を時系列で記録します。
 
 ---
+
+## v1.1.0（2026-08-25）
+
+- **パッケージ版に同梱の環境が、ソース版が作る venv とは別の名前を持つようになった。**
+  それまでは技術的に別物であるにもかかわらず、両方とも `.venv-cynovela` という名前・
+  `FORM_SEL="venv"` という内部の呼び名を共有していた: パッケージ版は `conda-pack` で
+  固めた既製の環境を同梱しているのに対し、ソース版の選択肢2は `python -m venv` で
+  その場から新規に本物の `venv` を作る。同梱の `conda-pack` 済み環境は、`launch.sh` の
+  自動検出（同梱の環境が既に動くときは選択画面を出さない仕組み）・`tools/conf.sh` の
+  Python 探索順・`tools/check-cli-mcp.sh`・`uninstall.sh` の一覧と確認画面・公開文書の
+  すべてで、新しい名前 `.condapack-cynovela`（`FORM_SEL="condapack"`）に統一した。
+  ソース版が作る本物の `venv` の名前 `.venv-cynovela`・`FORM_SEL="venv"` は変えていない。
+  作り方も置き場所も、これまでどおりである。
+- **互換性についての注記（パッチ版ではなくマイナー版へ上げた理由）：** `START-HERE.md` と
+  `docs/mcp-guide.md` は、パッケージ版が用意した Python を、直書きのパスとして
+  `./.venv-cynovela/bin/python3 cynovela-cli.py doctor` や
+  `export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3` の形で示していた。
+  このコマンドをスクリプトやシェルのエイリアスへそのまま写した方は、指す先が
+  無くなっていることに気づくはずである。パッケージ版の Python は、いまは
+  `.condapack-cynovela/bin/python3` に在る。文書は新しいパスへ直してある。
 
 ## v1.0.7（2026-08-22）
 

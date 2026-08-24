@@ -19,7 +19,8 @@ setting up the answering LLM (LM Studio etc.) separately.
 
 To run the external inference server, you need a python that has the 4 items `torch` / `sentence-transformers` / `fastapi` / `uvicorn`.
 **A bare `python` most often does not have these 4 items.**
-Separately from the environment that runs the application body (conda's `cynovela-dist` or `.venv-cynovela`),
+Separately from the environment that runs the application body (conda's `cynovela-dist`,
+the source edition's `.venv-cynovela`, or the package edition's bundled `.condapack-cynovela`),
 please create a place for the external inference server inside this package, and then set it up.
 
 ```bash
@@ -141,7 +142,8 @@ Supplement: the image endpoint remains only an entry point for future use and is
 
 外部の推論サーバを動かすには、`torch` / `sentence-transformers` / `fastapi` / `uvicorn` の4件が入った
 python が要ります。**裸の `python` にはこの4件が入っていないことがほとんどです。**
-アプリ本体を動かす環境 (conda の `cynovela-dist` または `.venv-cynovela`) とは別に、
+アプリ本体を動かす環境 (conda の `cynovela-dist`、ソース版の `.venv-cynovela`、
+またはパッケージ版に同梱の `.condapack-cynovela`) とは別に、
 外部の推論サーバ用の場所をこの配布物の中に作ってから立ててください。
 
 ```bash

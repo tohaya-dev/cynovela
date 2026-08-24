@@ -30,7 +30,7 @@ Notes before the first start:
 - Do not place the package under a cloud-synced folder (iCloud Drive, Dropbox, OneDrive,
   Google Drive). `./launch.sh` detects this before starting and shows a warning (it goes
   on without stopping).
-- When the bundled environment (`.venv-cynovela`) is already there and works, `./launch.sh`
+- When the bundled environment (`.condapack-cynovela`) is already there and works, `./launch.sh`
   starts as it is, without showing the screen for choosing the base (the choice screen
   appears only when it is broken).
 
@@ -247,7 +247,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
   自分で落とします。手動で行うなら `xattr -rc <フォルダ>` です。
 - クラウド同期（iCloud Drive・Dropbox・OneDrive・Google Drive）の下に配布物を置かないで
   ください。`./launch.sh` が起動前に検知して注意を出します（止めずに進みます）。
-- 同梱の環境（`.venv-cynovela`）が既に在って動くときは、`./launch.sh` は土台の選択画面を
+- 同梱の環境（`.condapack-cynovela`）が既に在って動くときは、`./launch.sh` は土台の選択画面を
   出さずにそのまま起動します（壊れているときだけ選択画面が出ます）。
 
 `launch.sh` を通さず手でサーバーを起動する場合（環境が既に在ることが前提です。専用の名前は `cynovela-dist`。共有の環境は作らない・書き換えないでください）:

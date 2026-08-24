@@ -12,7 +12,8 @@ them: what you hand it, and what comes back.
 It speaks over standard input and output. Point your MCP client at:
 
 ```
-<the folder you extracted>/.venv-cynovela/bin/python  <the folder you extracted>/mcp_server.py
+<the folder you extracted>/.condapack-cynovela/bin/python  <the folder you extracted>/mcp_server.py
+(source edition: .venv-cynovela/bin/python instead)
 ```
 
 and give it two settings in its environment:
@@ -381,7 +382,8 @@ Cynovela の MCP サーバが持つ道具は **25件** です。ここに全部�
 標準入力と標準出力でやりとりします。お使いの MCP クライアントに、次を実行させてください。
 
 ```
-<展開したフォルダ>/.venv-cynovela/bin/python  <展開したフォルダ>/mcp_server.py
+<展開したフォルダ>/.condapack-cynovela/bin/python  <展開したフォルダ>/mcp_server.py
+（ソース版の場合: .venv-cynovela/bin/python）
 ```
 
 そのうえで、環境に次の2つを入れてください。

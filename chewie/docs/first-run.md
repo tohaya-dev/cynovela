@@ -126,7 +126,7 @@ because the startup messages are only in Japanese:
   動いているものは 0個 でした。
 このまま進みます。
 
-同梱の環境 (.venv-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。
+同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。
 記録はこのファイルへ書きます: /Users/…/Downloads/chewie/store/launch-app.log
 起動しています (本体はこのターミナルから切り離して動かします)
 ```
@@ -228,14 +228,14 @@ single most common reason people think the tool is broken when it is not.
 #### Why the package edition needs no Python and no conda
 
 The folder you unpacked already contains its own Python and every library it
-needs, in a directory called `.venv-cynovela`. It starts with a dot, so Finder
+needs, in a directory called `.condapack-cynovela`. It starts with a dot, so Finder
 hides it — that is a macOS convention for "not for you to touch", not a sign
 that something went wrong. (Press **⌘ + shift + .** in Finder to show hidden
 items, and again to hide them.) Because everything lives inside the folder,
 nothing is written anywhere else on your Mac, and deleting the folder removes
 the tool completely.
 
-That is also why step 9 prints *"同梱の環境 (.venv-cynovela) が見つかりました"*
+That is also why step 9 prints *"同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました"*
 and does **not** ask you to choose how to build an environment. The source
 editions do ask, because they have no environment yet.
 
@@ -399,7 +399,7 @@ tar -xzf ../cynovela-chewie-models-1.0.7.tar.gz
   動いているものは 0個 でした。
 このまま進みます。
 
-同梱の環境 (.venv-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。
+同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。
 記録はこのファイルへ書きます: /Users/…/Downloads/chewie/store/launch-app.log
 起動しています (本体はこのターミナルから切り離して動かします)
 ```
@@ -500,14 +500,14 @@ Unix の命令は互いにつなぎ合わせて使うために作られたので
 #### なぜパッケージ版は Python も conda も要らないのか
 
 取り出したフォルダの中に、そのフォルダ専用の Python と、必要な部品一式が
-`.venv-cynovela` という入れ物で既に入っているからです。名前が点で始まるので
+`.condapack-cynovela` という入れ物で既に入っているからです。名前が点で始まるので
 Finder は隠します。これは「触らなくてよいもの」という macOS の決まりであって、
 何かがおかしい印ではありません。（Finder で **⌘ + shift + .** を押すと隠れている
 ものが出ます。もう一度押すと戻ります。）
 全部がフォルダの中で完結しているので、この Mac の他の場所には何も書きません。
 フォルダごと消せば、それで完全に取り除いたことになります。
 
-手順9で *「同梱の環境 (.venv-cynovela) が見つかりました」* と出て、環境の作り方を
+手順9で *「同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました」* と出て、環境の作り方を
 **聞かれない**のもこれが理由です。ソース版は環境をまだ持っていないので聞きます。
 
 #### なぜ最初の起動だけ遅いのか

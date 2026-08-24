@@ -118,10 +118,10 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 ### 8. Using it from the terminal (CLI), and connecting an AI client (MCP)
 
-**CLI — `cynovela-cli.py`.** It talks only to the running server's API. The commands cover the same work the screen can do: see, ask, bring material in, publish, clean up, manage people, and back up. Dangerous operations (`delete` / `users` / `backup` / `settings set`) always show what would happen first and never run without an explicit `--yes`. Standard library only — no extra installs. Run it with the Python this package prepared (package edition: `./.venv-cynovela/bin/python3`; source edition choice 1: `conda run -n cynovela-dist python3`; or any Python 3.12+):
+**CLI — `cynovela-cli.py`.** It talks only to the running server's API. The commands cover the same work the screen can do: see, ask, bring material in, publish, clean up, manage people, and back up. Dangerous operations (`delete` / `users` / `backup` / `settings set`) always show what would happen first and never run without an explicit `--yes`. Standard library only — no extra installs. Run it with the Python this package prepared (package edition: `./.condapack-cynovela/bin/python3`; source edition choice 1: `conda run -n cynovela-dist python3`; or any Python 3.12+):
 
 ```
-./.venv-cynovela/bin/python3 cynovela-cli.py doctor
+./.condapack-cynovela/bin/python3 cynovela-cli.py doctor
 ```
 
 **Run `doctor` first.** It works even when the server is not running, and for every missing piece it prints the one line to run next.
@@ -315,10 +315,10 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 ### 8. 端末から使う（CLI）と、AI クライアントを繋ぐ（MCP）
 
-**CLI — `cynovela-cli.py`。** 稼働中のサーバの API だけを叩きます。命令は画面でできる作業と同じ範囲を覆います: 見る・探す・資料を入れる・公開する・片づける・利用者を管理する・控えを取る。危険な操作（`delete` / `users` / `backup` / `settings set`）は必ず「何が起きるか」を先に見せ、明示的な `--yes` なしには決して実行しません。標準ライブラリのみで、追加の導入は不要です。この配布物が用意した Python で叩きます（パッケージ版: `./.venv-cynovela/bin/python3`、ソース版の選択肢1: `conda run -n cynovela-dist python3`、または任意の Python 3.12 以上）:
+**CLI — `cynovela-cli.py`。** 稼働中のサーバの API だけを叩きます。命令は画面でできる作業と同じ範囲を覆います: 見る・探す・資料を入れる・公開する・片づける・利用者を管理する・控えを取る。危険な操作（`delete` / `users` / `backup` / `settings set`）は必ず「何が起きるか」を先に見せ、明示的な `--yes` なしには決して実行しません。標準ライブラリのみで、追加の導入は不要です。この配布物が用意した Python で叩きます（パッケージ版: `./.condapack-cynovela/bin/python3`、ソース版の選択肢1: `conda run -n cynovela-dist python3`、または任意の Python 3.12 以上）:
 
 ```
-./.venv-cynovela/bin/python3 cynovela-cli.py doctor
+./.condapack-cynovela/bin/python3 cynovela-cli.py doctor
 ```
 
 **最初に `doctor` を叩いてください。** サーバが起きていなくても動き、足りないものごとに「次に打つ1行」を出します。

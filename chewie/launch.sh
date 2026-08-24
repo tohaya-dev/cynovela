@@ -294,7 +294,7 @@ HAVE_PY=0
 FOUND_PY=""
 FOUND_PY="$(_find_python)" && HAVE_PY=1
 
-FORM_SEL=""      # conda / venv / custom
+FORM_SEL=""      # conda / venv / condapack / custom
 FORM_DISP=""     # 画面に出す名前
 CUSTOM_PY=""
 choose_form() {
@@ -319,7 +319,8 @@ choose_form() {
         echo "  1) conda に専用の環境を作る"
         echo "     残るもの: conda の環境1つ（約 3.9 GB・名前: ${DIST_ENV}）"
         echo "     消し方  : bash uninstall.sh"
-        echo "  2) この配布物の中だけに作る（Mac を汚しません）"
+        echo "  2) この配布物の中に venv を新規に作る（Mac を汚しません）"
+        echo "     ※ conda-pack 済みの環境が同梱されている場合は、この画面自体が出ません"
         echo "     残るもの: このフォルダの中に約 2.2 GB"
         echo "     消し方  : bash uninstall.sh"
         echo "  3) 自分で指定する"
@@ -385,9 +386,13 @@ SEL_PY=""
 _compute_selection() {
     NEED_SETUP=0
     case "$FORM_SEL" in
-        conda)  SEL_PY="$CONDA_BASE/envs/$DIST_ENV/bin/python"; [ -x "$SEL_PY" ] || NEED_SETUP=1 ;;
-        venv)   SEL_PY="$WRAP_DIR/.venv-cynovela/bin/python";   [ -x "$SEL_PY" ] || NEED_SETUP=1 ;;
-        custom) SEL_PY="$CUSTOM_PY" ;;
+        conda)     SEL_PY="$CONDA_BASE/envs/$DIST_ENV/bin/python"; [ -x "$SEL_PY" ] || NEED_SETUP=1 ;;
+        venv)      SEL_PY="$WRAP_DIR/.venv-cynovela/bin/python";   [ -x "$SEL_PY" ] || NEED_SETUP=1 ;;
+        condapack) SEL_PY="$WRAP_DIR/.condapack-cynovela/bin/python"; [ -x "$SEL_PY" ] || {
+                       echo "conda-pack 済みの環境が壊れています。配布物を作り直す必要があります。"
+                       exit 1
+                   } ;;
+        custom)    SEL_PY="$CUSTOM_PY" ;;
     esac
 }
 confirm_launch() {
@@ -418,6 +423,13 @@ confirm_launch() {
             fi
             line_where="このフォルダの中に約 2.2 GB"
             line_del="bash uninstall.sh"
+            ;;
+        condapack)
+            line_use="conda-pack 済みの環境（.condapack-cynovela）をそのまま使います"
+            line_make="ありません（既に在る conda-pack 済みの環境を使います）"
+            line_where="このフォルダの中に約 2.2 GB"
+            line_del="bash uninstall.sh"
+            line_first="待ちはほとんどありません"
             ;;
         custom)
             line_use="$CUSTOM_PY"
@@ -462,10 +474,13 @@ confirm_launch() {
 # ── 実行の順 (N-6 → N-1 → N-3) ──────────────────────────────
 running_menu
 
-# ── A-5 (DD-CYN-0142 §5-E): 同梱の環境 (.venv-cynovela) が既に在り、その python が
-#    動くときは、選択の画面を出さずにそのまま使う。在るのに壊れているときだけ選択へ。
-_BUNDLED_PY="$WRAP_DIR/.venv-cynovela/bin/python"
-[ -x "$_BUNDLED_PY" ] || _BUNDLED_PY="$WRAP_DIR/.venv-cynovela/bin/python3"
+# ── A-5 (DD-CYN-0142 §5-E / DD-CYN-0162 §1-2): 同梱の conda-pack 済み環境
+#    (.condapack-cynovela) が既に在り、その python が動くときは、選択の画面を
+#    出さずにそのまま使う。在るのに壊れているときだけ選択へ。
+#    ( .venv-cynovela は Source edition が --setup でその場に新規作成する本物の
+#      venv であり、この自動検出の対象ではない。)
+_BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python"
+[ -x "$_BUNDLED_PY" ] || _BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python3"
 _BUNDLED_OK=0
 if [ -x "$_BUNDLED_PY" ] \
    && "$_BUNDLED_PY" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1; then
@@ -473,13 +488,13 @@ if [ -x "$_BUNDLED_PY" ] \
 fi
 if [ "$_BUNDLED_OK" = "1" ]; then
     echo ""
-    echo "同梱の環境 (.venv-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。"
-    FORM_SEL="venv"; FORM_DISP="この配布物の中の Python"
+    echo "同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。"
+    FORM_SEL="condapack"; FORM_DISP="同梱の conda-pack 環境"
     SEL_PY="$_BUNDLED_PY"; NEED_SETUP=0; CONFIRM="yes"
 else
-    if [ -d "$WRAP_DIR/.venv-cynovela" ]; then
+    if [ -d "$WRAP_DIR/.condapack-cynovela" ]; then
         echo ""
-        echo "同梱の環境 (.venv-cynovela) は在りますが、壊れているようです (python が動きません)。選択の画面を出します。"
+        echo "同梱の conda-pack 環境 (.condapack-cynovela) は在りますが、壊れているようです (python が動きません)。選択の画面を出します。"
     fi
     while true; do
         choose_form

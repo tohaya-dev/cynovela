@@ -248,14 +248,14 @@ tools behind an explicit, human confirmation in its own window:
 
 ## 4. Which Python runs the MCP server
 
-`mcp_server.py` uses the standard library only — it has no external dependencies, so **any Python 3.12 or later can run it**; no environment needs to be activated. The natural choice is the Python this package prepared (package edition: `.venv-cynovela/bin/python3`; source edition choice 1: the `cynovela-dist` conda environment).
+`mcp_server.py` uses the standard library only — it has no external dependencies, so **any Python 3.12 or later can run it**; no environment needs to be activated. The natural choice is the Python this package prepared (package edition: `.condapack-cynovela/bin/python3`; source edition choice 1: the `cynovela-dist` conda environment).
 
 ### 4-1. Specifying the Python path
 
 The environment variable `CYNOVELA_MCP_PYTHON` can specify the absolute path of the Python that the `/api/mcp/config` snippet points clients at.
 
 ```bash
-export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3
+export CYNOVELA_MCP_PYTHON=/path/to/.condapack-cynovela/bin/python3
 ```
 
 ---
@@ -554,14 +554,14 @@ curl -s -X POST http://127.0.0.1:8765/api/auth/login \
 
 ## 4. MCP サーバーを動かす Python
 
-`mcp_server.py` は標準ライブラリのみで動きます — 外部依存が無いため、**Python 3.12 以上ならどれでも動きます**。環境のアクティブ化も要りません。自然な選択は、この配布物が用意した Python です（パッケージ版: `.venv-cynovela/bin/python3`、ソース版の選択肢1: conda 環境 `cynovela-dist`）。
+`mcp_server.py` は標準ライブラリのみで動きます — 外部依存が無いため、**Python 3.12 以上ならどれでも動きます**。環境のアクティブ化も要りません。自然な選択は、この配布物が用意した Python です（パッケージ版: `.condapack-cynovela/bin/python3`、ソース版の選択肢1: conda 環境 `cynovela-dist`）。
 
 ### 4-1. Python パスの指定
 
 環境変数 `CYNOVELA_MCP_PYTHON` で、`/api/mcp/config` のスニペットがクライアントへ示す Python の絶対パスを指定できます。
 
 ```bash
-export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3
+export CYNOVELA_MCP_PYTHON=/path/to/.condapack-cynovela/bin/python3
 ```
 
 ---

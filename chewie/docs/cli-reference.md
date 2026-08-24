@@ -11,7 +11,8 @@ Every one of them is on this page, with every argument it takes.
 
 ```
 cd <the folder you extracted>
-./.venv-cynovela/bin/python cynovela-cli.py <command>
+./.condapack-cynovela/bin/python cynovela-cli.py <command>
+# (source edition: ./.venv-cynovela/bin/python instead)
 ```
 
 It only talks to the server over HTTP. It never opens the database or `store/`
@@ -464,7 +465,8 @@ selectable provider presets (GET /api/llm/presets)
 
 ```
 cd <展開したフォルダ>
-./.venv-cynovela/bin/python cynovela-cli.py <命令>
+./.condapack-cynovela/bin/python cynovela-cli.py <命令>
+# (ソース版の場合: ./.venv-cynovela/bin/python)
 ```
 
 この道具はサーバと HTTP で話すだけです。サーバの背中側で データベースや `store/` を

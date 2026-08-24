@@ -42,6 +42,7 @@ SHARED_ENV="$(/usr/bin/sed -n 's/^SHARED_ENV="\(.*\)"$/\1/p' "$REPO/launch.sh" 2
 [ -n "$SHARED_ENV" ] || SHARED_ENV="cynovela"
 
 VENV_DIR="$REPO/.venv-cynovela"
+CONDAPACK_DIR="$REPO/.condapack-cynovela"
 MAS_ENV_DIR="$REPO/.mas-env"
 DATA_DIR="$(conf_get_or paths data_dir "$REPO/store")"
 case "$DATA_DIR" in ./*) DATA_DIR="$REPO/${DATA_DIR#./}" ;; esac
@@ -79,6 +80,8 @@ fi
 
 _have_venv=0
 [ -d "$VENV_DIR" ] && _have_venv=1
+_have_condapack=0
+[ -d "$CONDAPACK_DIR" ] && _have_condapack=1
 _have_masenv=0
 [ -d "$MAS_ENV_DIR" ] && _have_masenv=1
 
@@ -119,7 +122,8 @@ echo "============================================================"
 echo ""
 echo "読み取った名前:"
 echo "  この配布物のための conda 環境 : ${DIST_ENV}"
-echo "  この配布物の中の保存先        : ${VENV_DIR}"
+echo "  この配布物の中の保存先(venv)      : ${VENV_DIR}"
+echo "  この配布物の中の保存先(conda-pack) : ${CONDAPACK_DIR}"
 echo "  このフォルダ                 : ${REPO}"
 echo ""
 echo "実際に在るものと突き合わせた結果:"
@@ -144,6 +148,11 @@ if [ "$_have_venv" = "1" ]; then
     echo "  保存先 .venv-cynovela : 在ります → 下のフォルダごとゴミ箱へ入ります"
 else
     echo "  保存先 .venv-cynovela : ありません → 何もしません"
+fi
+if [ "$_have_condapack" = "1" ]; then
+    echo "  保存先 .condapack-cynovela : 在ります → 下のフォルダごとゴミ箱へ入ります"
+else
+    echo "  保存先 .condapack-cynovela : ありません → 何もしません"
 fi
 if [ "$_have_masenv" = "1" ]; then
     echo "  外部の推論サーバの python の環境 .mas-env : 在ります → 下のフォルダごとゴミ箱へ入ります"
@@ -248,7 +257,7 @@ echo "      ${REPO}"
 # この道そのものがゴミ箱へ入る対象に含まれる。∴ 走っている shell から切り離し、
 # 自分が読み終わったあとに動く別の仕組み (osascript) へ渡す。
 # Finder に頼むため、別のディスクに置かれている場合も、そのディスクのゴミ箱へ入る。
-# .venv-cynovela と .mas-env と store/ は、このフォルダの中に在るので一緒に入る。
+# .venv-cynovela と .condapack-cynovela と .mas-env と store/ は、このフォルダの中に在るので一緒に入る。
 # A-6 (DD-CYN-0142 §5-F): Finder へ渡した結果 (終了コードと標準エラー) を捨てずに受け取り、
 # 失敗したときは理由と次の一手を出す。成否の最終判定は従来どおり「実際に消えたか」で行う。
 _trash_err="$(/usr/bin/osascript -e "tell application \"Finder\" to move POSIX file \"${REPO}\" to trash" 2>&1 >/dev/null)"

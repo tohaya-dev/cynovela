@@ -29,7 +29,7 @@ Always download **`SHA256SUMS`** as well, whichever you pick.
 ### Read the table this way
 
 * **"Python and conda are not needed" is only true of the package edition.**
-  It carries its own Python inside the folder, in `.venv-cynovela/`.
+  It carries its own Python inside the folder, in `.condapack-cynovela/`.
 * **Only the all-in-one carries the AI models.** With the package edition and
   the lightweight edition you must download the `models` parts too and unpack
   them inside the folder. Without them, searching and ingesting fail.
@@ -86,7 +86,10 @@ file name, those parts are not conda packages.
 ### この表の読み方
 
 * **「Python も conda も要らない」のはパッケージ版だけです。**
-  フォルダの中の `.venv-cynovela/` に、自分用の Python を持っているからです。
+  フォルダの中の `.condapack-cynovela/` に、自分用の Python を持っているからです。
+  `Package edition` に同梱されている環境は、`conda-pack` で固めた `conda` 環境です。
+  `Python` の `venv` 機能とは別のものであり、`.condapack-cynovela` という名前で
+  区別しています。
 * **AIモデルが入っているのは全部入りだけです。** パッケージ版と軽量版は、
   `models` の片も落として、フォルダの中で展開する必要があります。置かないまま
   起動すると、探すところ・取り込むところで失敗します。
