@@ -21,7 +21,7 @@ constellation of the Sail).
 
 | Directory | What it is | Distribution package |
 |---|---|---|
-| `chewie` | Runs directly on macOS. | Published on GitHub Releases (v1.0.7). |
+| `chewie` | Runs directly on macOS. | Published on GitHub Releases (v1.1.0). |
 | `falcon` | Runs inside a container (Podman). | Built from the source in this repository. No distribution package is provided. |
 | `falcon-docker-beta` | Runs inside a container (Docker; in-development beta, no bundled models). | Built from the source in this repository. No distribution package is provided. |
 
@@ -46,7 +46,7 @@ You only need one of them. They are three ways of running the same thing.
 
 ## Downloads
 
-Everything is on GitHub Releases (v1.0.7):
+Everything is on GitHub Releases (v1.1.0):
 https://github.com/tohaya-dev/cynovela/releases
 
 The one-page answer to "which of these do I take" is in
@@ -54,10 +54,10 @@ The one-page answer to "which of these do I take" is in
 
 | Edition | Runs as | Models bundled | Download shape | What it needs |
 |---|---|---|---|---|
-| **Package edition** `cynovela-chewie-package-1.0.7.tar.gz` | directly on macOS | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
-| **Source edition, all-in-one** `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`–`part02` | directly on macOS | yes | split into parts — needs assembling | Python 3.12 or later |
-| **Source edition, lightweight** `cynovela-chewie-lightweight-1.0.7.tar.gz` | directly on macOS | no — take the AI models as well | single file | Python 3.12 or later |
-| **AI models** `cynovela-chewie-models-1.0.7.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
+| **Package edition** `cynovela-chewie-package-1.1.0.tar.gz` | directly on macOS | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
+| **Source edition, all-in-one** `cynovela-chewie-all-in-one-1.1.0.tar.gz.part00`–`part02` | directly on macOS | yes | split into parts — needs assembling | Python 3.12 or later |
+| **Source edition, lightweight** `cynovela-chewie-lightweight-1.1.0.tar.gz` | directly on macOS | no — take the AI models as well | single file | Python 3.12 or later |
+| **AI models** `cynovela-chewie-models-1.1.0.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
 
 Take the **Package edition** if you want the fewest requirements: extract it,
 add the AI models, and run `./launch.sh`.

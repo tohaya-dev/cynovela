@@ -20,7 +20,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
-| `chewie` | Mac の上で直に動く形 | GitHub Releases (v1.0.7) で公開しています |
+| `chewie` | Mac の上で直に動く形 | GitHub Releases (v1.1.0) で公開しています |
 | `falcon` | コンテナの中で動く形（Podman） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 | `falcon-docker-beta` | コンテナの中で動く形（Docker・開発中のベータ・モデル同梱なし） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 
@@ -42,7 +42,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 ## 落とすもの
 
-すべて GitHub Releases (v1.0.7) にあります。
+すべて GitHub Releases (v1.1.0) にあります。
 https://github.com/tohaya-dev/cynovela/releases
 
 「どれを落とすか」の1枚での答えは
@@ -50,10 +50,10 @@ https://github.com/tohaya-dev/cynovela/releases
 
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
-| **パッケージ版** `cynovela-chewie-package-1.0.7.tar.gz` | Mac の上で直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
-| **ソース版・全部入り** `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`〜`part02` | Mac の上で直に | 入っています | 分割ファイル（組み立てが要る） | Python 3.12 以降 |
-| **ソース版・軽量** `cynovela-chewie-lightweight-1.0.7.tar.gz` | Mac の上で直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | Python 3.12 以降 |
-| **AIモデル** `cynovela-chewie-models-1.0.7.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
+| **パッケージ版** `cynovela-chewie-package-1.1.0.tar.gz` | Mac の上で直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
+| **ソース版・全部入り** `cynovela-chewie-all-in-one-1.1.0.tar.gz.part00`〜`part02` | Mac の上で直に | 入っています | 分割ファイル（組み立てが要る） | Python 3.12 以降 |
+| **ソース版・軽量** `cynovela-chewie-lightweight-1.1.0.tar.gz` | Mac の上で直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | Python 3.12 以降 |
+| **AIモデル** `cynovela-chewie-models-1.1.0.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
 要件がいちばん少ないのは **パッケージ版** です。展開し、AIモデルを重ねて
 `./launch.sh` を叩きます。
