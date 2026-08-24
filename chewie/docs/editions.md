@@ -13,7 +13,7 @@ is the AI models, which two of the three do not carry.
 
 | | **Package edition** | **Source, all-in-one** | **Source, lightweight** | **AI models** |
 |---|---|---|---|---|
-| File | `cynovela-chewie-package-1.0.7.tar.gz` | `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`–`part02` | `cynovela-chewie-lightweight-1.0.7.tar.gz` | `cynovela-chewie-models-1.0.7.tar.gz.part00`–`part02` |
+| File | `cynovela-chewie-package-1.1.0.tar.gz` | `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`–`part02` | `cynovela-chewie-lightweight-1.0.7.tar.gz` | `cynovela-chewie-models-1.1.0.tar.gz.part00`–`part02` |
 | How many files | 1 | 3 (join them) | 1 | 3 (join them) |
 | Download size | about 830 MB | about 3.1 GB | about 2.4 MB | about 3.1 GB |
 | Size once unpacked | about 3.1 GB | about 5.2 GB | about 8 MB | 4.84 GB |
@@ -25,6 +25,14 @@ is the AI models, which two of the three do not carry.
 | First start | run `./launch.sh` | `./launch.sh` builds an environment first | `./launch.sh` builds an environment first | — |
 
 Always download **`SHA256SUMS`** as well, whichever you pick.
+
+**Two release pages, not one.** The package edition and the AI models were
+rebuilt for 1.1.0 and live on the
+[v1.1.0 release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.0).
+The all-in-one and lightweight source editions were not — their own content
+did not change in 1.1.0, so they remain the files published on the
+[v1.0.7 release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.0.7).
+See `docs/changelog.md` for what 1.1.0 actually changed.
 
 ### Read the table this way
 
@@ -70,7 +78,7 @@ file name, those parts are not conda packages.
 
 | | **パッケージ版** | **ソース版・全部入り** | **ソース版・軽量** | **AIモデル** |
 |---|---|---|---|---|
-| ファイル | `cynovela-chewie-package-1.0.7.tar.gz` | `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`〜`part02` | `cynovela-chewie-lightweight-1.0.7.tar.gz` | `cynovela-chewie-models-1.0.7.tar.gz.part00`〜`part02` |
+| ファイル | `cynovela-chewie-package-1.1.0.tar.gz` | `cynovela-chewie-all-in-one-1.0.7.tar.gz.part00`〜`part02` | `cynovela-chewie-lightweight-1.0.7.tar.gz` | `cynovela-chewie-models-1.1.0.tar.gz.part00`〜`part02` |
 | 本数 | 1本 | 3本（つなぐ） | 1本 | 3本（つなぐ） |
 | 落とす大きさ | 約 830 MB | 約 3.1 GB | 約 2.4 MB | 約 3.1 GB |
 | 展開後の大きさ | 約 3.1 GB | 約 5.2 GB | 約 8 MB | 4.84 GB |
@@ -82,6 +90,14 @@ file name, those parts are not conda packages.
 | 最初の起動 | `./launch.sh` を叩くだけ | `./launch.sh` が先に環境を作ります | `./launch.sh` が先に環境を作ります | — |
 
 どれを選んでも、**`SHA256SUMS`** も一緒に落としてください。
+
+**リリースのページは2つあります。** パッケージ版とAIモデルは 1.1.0 用に作り直し、
+[v1.1.0 のリリース](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.0)
+に置いてあります。全部入り版と軽量版は作り直していません
+（中身そのものは 1.1.0 で変わっていないため）— 引き続き
+[v1.0.7 のリリース](https://github.com/tohaya-dev/cynovela/releases/tag/v1.0.7)
+に置いてある物をお使いください。1.1.0 で実際に変わった点は `docs/changelog.md` を
+ご覧ください。
 
 ### この表の読み方
 
