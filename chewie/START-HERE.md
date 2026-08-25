@@ -79,8 +79,16 @@ Setup is needed only once. From then on:
 Two different situations, two different routes:
 
 - **Rebuild only the environment** (it broke, or you want it fresh — your ingested documents and settings are kept):
-  1. Remove the old environment: conda form → `conda env remove -n cynovela-dist`; in-folder form → delete the `.venv-cynovela` folder.
+  1. Remove the old environment. Which one you have depends on how you started:
+     source edition, conda form → `conda env remove -n cynovela-dist`;
+     source edition, in-folder form → delete the `.venv-cynovela` folder.
   2. Run `./launch.sh --setup`, then start as usual.
+
+  **Package edition:** this route does not apply. Its Python lives in the bundled
+  `.condapack-cynovela` folder, which comes with the download rather than being built
+  here, so `./launch.sh --setup` cannot recreate it. If it is broken, extract the
+  downloaded archive again (your `store/` folder holds the ingested documents and
+  settings — copy it across before you replace the folder).
 - **Reinstall from scratch** (everything goes, including ingested documents and settings):
   1. Run `bash uninstall.sh` (see section 6 — the folder goes to the Trash).
   2. Extract the downloaded archive again and do section 3 from the top.
@@ -155,7 +163,7 @@ Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes
 
 ```json
 {"mcpServers": {"cynovela": {
-  "command": "/path/to/.venv-cynovela/bin/python3",
+  "command": "/path/to/.condapack-cynovela/bin/python3",
   "args": ["/path/to/mcp_server.py", "--cynovela-url", "http://127.0.0.1:8765"],
   "env": {"CYNOVELA_TOKEN": "<token issued at web sign-in>"}
 }}}
@@ -276,8 +284,16 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 状況が2つ、道も2つあります。
 
 - **環境だけ作り直す**（環境が壊れた・作り直したい。取り込んだ資料と設定は残ります）:
-  1. 古い環境を消します。conda の形 → `conda env remove -n cynovela-dist`。フォルダ内の形 → `.venv-cynovela` フォルダを削除。
+  1. 古い環境を消します。どちらを持っているかは、どの形で始めたかで決まります。
+     ソース版・conda の形 → `conda env remove -n cynovela-dist`。
+     ソース版・フォルダ内の形 → `.venv-cynovela` フォルダを削除。
   2. `./launch.sh --setup` を実行し、あとは普段どおり起動します。
+
+  **パッケージ版はこの道を使えません。** パッケージ版の Python は、同梱の
+  `.condapack-cynovela` フォルダに入っています。ここで作るものではなく落とした物に
+  最初から入っているため、`./launch.sh --setup` では作り直せません。壊れているときは、
+  落とした配布物をもう一度展開してください（取り込んだ資料と設定は `store/` フォルダに
+  入っています。フォルダを入れ替える前に、こちらを写しておいてください）。
 - **まっさらから入れ直す**（取り込んだ資料・設定も含めて全部消えます）:
   1. `bash uninstall.sh` を実行します（6節参照。フォルダはゴミ箱へ入ります）。
   2. 落とした配布物をもう一度展開し、3節を最初からやり直します。
@@ -352,7 +368,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 ```json
 {"mcpServers": {"cynovela": {
-  "command": "/path/to/.venv-cynovela/bin/python3",
+  "command": "/path/to/.condapack-cynovela/bin/python3",
   "args": ["/path/to/mcp_server.py", "--cynovela-url", "http://127.0.0.1:8765"],
   "env": {"CYNOVELA_TOKEN": "<画面のログインで発行されたトークン>"}
 }}}

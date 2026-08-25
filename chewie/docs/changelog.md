@@ -18,6 +18,10 @@ This records the main changes to Cynovela in chronological order.
 
 ## v1.1.0 (2026-08-25)
 
+- **The distributables for this version were rebuilt and replaced on 2026-08-25.** The
+  ones published first carried an older copy of the bundled documents. The behaviour of
+  the tool is unchanged; only the documents inside the package differ. If you downloaded
+  before that date, download again.
 - **The package edition's bundled environment now has its own name, separate from the
   venv the source edition creates.** Both used to share the name `.venv-cynovela` and the
   internal label `FORM_SEL="venv"`, even though they are technically different things: the
@@ -251,6 +255,9 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ## v1.1.0（2026-08-25）
 
+- **この版の配布物は 2026-08-25 に作り直して差し替えた。** 最初に公開した配布物には、
+  同梱の文書が古いまま入っていた。道具の動きは変わっていない。違うのは配布物の中の
+  文書だけである。その日より前に落とされた方は、落とし直してください。
 - **パッケージ版に同梱の環境が、ソース版が作る venv とは別の名前を持つようになった。**
   それまでは技術的に別物であるにもかかわらず、両方とも `.venv-cynovela` という名前・
   `FORM_SEL="venv"` という内部の呼び名を共有していた: パッケージ版は `conda-pack` で
