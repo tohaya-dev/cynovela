@@ -317,10 +317,19 @@ def cancel_scan(request: Request, source_id: str):
     # connleak-fix-20260709: 例外時も必ず close する
     try:
         src = conn.execute("SELECT id FROM sources WHERE id = ?", (source_id,)).fetchone()
+        if not src:
+            raise HTTPException(404, "Source not found")
+        # 欠陥修正: 上のフラグはプロセス内メモリのみで、監視するスレッドが既に
+        # 死んでいれば何も起きない。falcon には scan_jobs テーブルが存在しない
+        # ため（chewie とは異なる。実装確認済み）、sources.status のみを直接
+        # idle へ戻す。
+        conn.execute(
+            "UPDATE sources SET status='idle' WHERE id = ? AND status='scanning'",
+            (source_id,),
+        )
+        conn.commit()
     finally:
         conn.close()
-    if not src:
-        raise HTTPException(404, "Source not found")
     return {"ok": True, "status": "cancel_requested", "source_id": source_id}
 
 

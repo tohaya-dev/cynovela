@@ -254,6 +254,12 @@ async def lifespan(app_instance):
         await _startup_rebuild_bm25()
     except Exception as _e:
         logger.warning(f"BM25 startup rebuild failed at lifespan: {_e}")
+    # 欠陥修正（DD-CYN-0166 派生）: 直後の _startup_scan_sources が「走査中」の
+    # 誤判定に阻まれないよう、残骸の scan_jobs/sources を先に片付ける。
+    try:
+        await _startup_reset_residual_scan_jobs()
+    except Exception as _e:
+        logger.warning(f"residual scan job reset failed at lifespan: {_e}")
     # A-10(a) DD-CYN-0142: 起動のたびに登録済みの取り込み元を1回走査する
     # (変更の無いファイルは読み直さない)。起動を待たせないよう別スレッドで直列に回す。
     try:
@@ -826,6 +832,39 @@ async def _startup_reset_residual_publish_jobs():
             _startup_conn.close()
     except Exception as _e:
         logger.warning(f"residual publish job reset failed: {_e}")
+
+
+async def _startup_reset_residual_scan_jobs():
+    """起動時に、サーバー異常終了で残った scanning 状態を回復する。
+
+    DD-CYN-0166 派生の欠陥修正（会社支給の Mac で「走査中」「既に登録されています」
+    が再起動後も消えないと報告された件）: _startup_reset_residual_publish_jobs と
+    同じ回復処理が publish_jobs/collections にはあるが、scan_jobs/sources には
+    無かった。そのため異常終了（強制終了・スリープ・launch.sh メニュー画面での
+    固まり等）で pending/running のまま残った行が、再起動後も /scan/cancel でも
+    永久に消えなかった（cancel_scan は server._scan_cancel_flags というプロセス内
+    メモリのフラグを立てるだけで scan_jobs.status を書き換えないため、プロセスが
+    一度落ちるとそのフラグごと消え、以後は効かない）。
+
+    - scan_jobs: pending/running → failed (error='server_restarted')
+    - sources:   scanning → idle
+    """
+    try:
+        _startup_conn = get_db()
+        try:
+            _startup_conn.execute(
+                "UPDATE scan_jobs SET status='failed', "
+                "error=COALESCE(error, 'server_restarted'), "
+                "updated_at=datetime('now') "
+                "WHERE status IN ('pending','running')"
+            )
+            _startup_conn.execute("UPDATE sources SET status='idle' WHERE status='scanning'")
+            _startup_conn.commit()
+            logger.info("Residual scan jobs reset to idle/failed")
+        finally:
+            _startup_conn.close()
+    except Exception as _e:
+        logger.warning(f"residual scan job reset failed: {_e}")
 
 
 def _startup_scan_sources():

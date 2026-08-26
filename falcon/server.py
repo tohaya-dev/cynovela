@@ -236,6 +236,11 @@ async def lifespan(app_instance):
         await _startup_reset_residual_publish_jobs()
     except Exception as _e:
         logger.warning(f"residual publish job reset failed at lifespan: {_e}")
+    # 欠陥修正（chewie 側 §179 と同一原因）: scan_jobs/sources の残骸を片付ける。
+    try:
+        await _startup_reset_residual_scan_jobs()
+    except Exception as _e:
+        logger.warning(f"residual scan job reset failed at lifespan: {_e}")
     # Batch-B S1-3: 期限切れリフレッシュトークンを削除
     try:
         _startup_db = get_db()
@@ -820,6 +825,31 @@ async def _startup_reset_residual_publish_jobs():
             _startup_conn.close()
     except Exception as _e:
         logger.warning(f"residual publish job reset failed: {_e}")
+
+
+async def _startup_reset_residual_scan_jobs():
+    """起動時に、サーバー異常終了で残った scanning 状態を回復する。
+
+    chewie 側で発見・修正した欠陥（会社支給の Mac で「走査中」「既に登録されて
+    います」が再起動後も消えないと報告された件）と同じ根本原因がここにもある。
+    ただし falcon には chewie と違って scan_jobs テーブルが存在せず（実装を
+    grep して確認済み。falcon は sources.status だけで状態を持つ）、
+    _do_scan は開始時に status='scanning'、終了時に 'completed'/'failed' を
+    書く設計である。異常終了（強制終了・スリープ等）でこの書き戻しが起きな
+    かった場合、status='scanning' のまま永久に残る。
+
+    - sources: scanning → idle （scan_jobs は falcon に存在しないため触らない）
+    """
+    try:
+        _startup_conn = get_db()
+        try:
+            _startup_conn.execute("UPDATE sources SET status='idle' WHERE status='scanning'")
+            _startup_conn.commit()
+            logger.info("Residual scanning sources reset to idle")
+        finally:
+            _startup_conn.close()
+    except Exception as _e:
+        logger.warning(f"residual scan job reset failed: {_e}")
 
 
 async def _startup_rebuild_bm25():

@@ -242,10 +242,26 @@ def cancel_scan(request: Request, source_id: str):
     conn = get_db()
     try:
         src = conn.execute("SELECT id FROM sources WHERE id = ?", (source_id,)).fetchone()
+        if not src:
+            raise HTTPException(404, "Source not found")
+        # 欠陥修正（DD-CYN-0166 派生）: 上のフラグはプロセス内メモリのみで、
+        # それを監視しているスレッドが既に死んでいる（またはこの後プロセスごと
+        # 再起動される）場合は何も起きない。scan_jobs.status を直接書き換える
+        # ことで、生きたスレッドの有無に関わらずキャンセルを確定させる。
+        conn.execute(
+            "UPDATE scan_jobs SET status='cancelled', "
+            "error=COALESCE(error, 'cancelled_by_user'), "
+            "updated_at=datetime('now') "
+            "WHERE source_id = ? AND status IN ('pending','running')",
+            (source_id,),
+        )
+        conn.execute(
+            "UPDATE sources SET status='idle' WHERE id = ? AND status='scanning'",
+            (source_id,),
+        )
+        conn.commit()
     finally:
         conn.close()
-    if not src:
-        raise HTTPException(404, "Source not found")
     return {"ok": True, "status": "cancel_requested", "source_id": source_id}
 
 
