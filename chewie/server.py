@@ -152,11 +152,28 @@ except Exception:
 #   従来は setdefault だったため、外から環境変数を与えると設定より強く効いた。
 #   ここで必ず入れ直し、外からの上書きを効かせない。
 #   なお下の4つは、この走りの中でデータ層へ渡すための受け渡しであり、設定の口ではない。
-os.environ["CYNOVELA_DB"]         = os.path.join(_data_dir_root, _demo_db_rel)
-os.environ["CYNOVELA_CHROMA"]     = os.path.join(_data_dir_root, _chroma_rel)
-os.environ["CYNOVELA_BACKUP_DIR"] = os.path.join(_data_dir_root, _backup_rel)
-os.environ["CYNOVELA_LOG_DIR"]    = os.path.join(_data_dir_root, _log_rel)
-os.environ["CYNOVELA_DATA_DIR"]   = _data_dir_root
+# DD-CYN-0172 (欠陥§184): この本体は 1 回の走りで 2 度実行される。1 度目は
+#   `python server.py` の __main__ として2 度目は routers 等の `from server import ...`
+#   による module `server` としてである。`python server.py` の sys.path[0] は記号リンクを
+#   解いた実体の道になるため、木が記号リンクで組まれていると 2 度目の __file__ だけが
+#   リンク先を指し、_data_dir_root が 1 度目と食い違う。従来はここが無条件の代入だったので、
+#   2 度目が CYNOVELA_DB / CYNOVELA_CHROMA を別の場所へ書き換えていた。
+#   早い時点で環境変数を読む側 (rag.CHROMA_PATH ・ db) は 1 度目の場所を、
+#   あとから遅れて作られる側 (rag._get_vs() の ChromaDBVectorStore など) は 2 度目の場所を掴む。
+#   ∴ 起動時に表示した場所には器だけが作られ、要素は別の場所へ入り、検索は当たらない。
+#   done は関係層だけから数を作るので、画面には健全な chunk 数と ready が出る。
+#   1 度目に決めた場所をこの走りの正とし、2 度目では決め直さない。
+#   PID を併記するのは、親から引き継いだ環境変数を「1 度目」と誤認しないためである
+#   (外からの上書きを効かせない、という上の意図はそのまま保つ)。
+if os.environ.get("_CYNOVELA_PATHS_PID") == str(os.getpid()) and os.environ.get("CYNOVELA_DATA_DIR"):
+    _data_dir_root = os.environ["CYNOVELA_DATA_DIR"]
+else:
+    os.environ["CYNOVELA_DB"]         = os.path.join(_data_dir_root, _demo_db_rel)
+    os.environ["CYNOVELA_CHROMA"]     = os.path.join(_data_dir_root, _chroma_rel)
+    os.environ["CYNOVELA_BACKUP_DIR"] = os.path.join(_data_dir_root, _backup_rel)
+    os.environ["CYNOVELA_LOG_DIR"]    = os.path.join(_data_dir_root, _log_rel)
+    os.environ["CYNOVELA_DATA_DIR"]   = _data_dir_root
+    os.environ["_CYNOVELA_PATHS_PID"] = str(os.getpid())
 try:
     for _d in [os.path.dirname(os.environ["CYNOVELA_DB"]),
                os.environ["CYNOVELA_CHROMA"],
