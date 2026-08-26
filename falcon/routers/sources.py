@@ -235,7 +235,11 @@ async def create_source(request: Request):
         conn.close()
     if _existing is not None:
         # DD-CYN-0168: 既に在る source を返す。auto_scan が真なら、その source を
-        #   走査し直す (走査が既に走っていれば _do_scan 側の排他が黙って戻す)。
+        #   `scan` し直す。
+        # DD-CYN-0169 (欠陥§181): 発行時点の `falcon` の _do_scan には排他が無く、
+        #   「既に走っていれば黙って戻す」という上の前提は成り立っていなかった
+        #   (`chewie` にしか排他が無かった)。DD-CYN-0169 で `falcon/server.py` の
+        #   _do_scan へ排他を移したため、いまは成り立つ。
         if auto_scan:
             threading.Thread(target=_do_scan, args=(_existing["id"],), daemon=True).start()
         return {

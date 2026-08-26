@@ -1332,8 +1332,38 @@ _scan_cancel_flags: dict[str, bool] = {}
 # /api/sources/{source_id}/scan/cancel は routers/sources.py に移動済み
 
 
+_scan_running_lock = threading.Lock()
+_scan_running: set[str] = set()
+
+
 def _do_scan(source_id: str):
-    """Execute scan on a source: walk directory, register files, classify."""
+    """Execute scan on a source: walk directory, register files, classify.
+
+    DD-CYN-0169 (欠陥§181): 同じ `source` の `scan` が既に走っていたら、始めずに戻る。
+      `chewie` の _do_scan は DD-CYN-0151 §7 でこの排他を得たが、`falcon` には
+      移されていなかった。`falcon` の呼び口は
+        - routers/sources.py の create_source (auto_scan・再登録の経路を含む)
+        - routers/sources.py の scan_source (POST /api/sources/{id}/scan・ガード無し)
+        - routers/workspaces.py の2箇所
+        - server.py 内の2箇所
+      と複数あり、いずれも排他が無いため重なって走り得た。`falcon` には
+      scan_jobs テーブルが無いので、`chewie` にある job_id への書き戻しは移さない
+      (構造が違うものへ同じ形を当てない・欠陥§179-4／§181 の定め)。
+    """
+    with _scan_running_lock:
+        if source_id in _scan_running:
+            logger.warning(f"scan already running for source={source_id}; this call is skipped")
+            return
+        _scan_running.add(source_id)
+    try:
+        _do_scan_body(source_id)
+    finally:
+        with _scan_running_lock:
+            _scan_running.discard(source_id)
+
+
+def _do_scan_body(source_id: str):
+    """DD-CYN-0169 (欠陥§181): `scan` の本体。排他は _do_scan が持つ。"""
     # BLOCK B-6: スキャン開始時にcancel flagをクリア
     _scan_cancel_flags.pop(source_id, None)
     conn = get_db()
