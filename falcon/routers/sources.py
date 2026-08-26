@@ -190,6 +190,7 @@ async def create_source(request: Request):
     if ".." in path.split(os.sep):
         raise HTTPException(400, "relative path traversal is not allowed")
     sid = new_id()
+    _existing = None
     conn = get_db()
     # connleak-fix-20260709 (アプリ版検証済み修正の逐語ポート):
     # 旧実装は INSERT が例外 (例: UNIQUE constraint failed: sources.name) を投げると
@@ -202,21 +203,29 @@ async def create_source(request: Request):
         #   従来 UNIQUE が効いていたのは name だけだったため、名前を変えれば同じフォルダを
         #   何本でも登録でき、走査も公開も二重に走っていた。
         #   場所の見分けは実体のパス (シンボリックリンクと末尾の / を解いたもの) で行う。
+        # DD-CYN-0168 (欠陥§179 版3 / §181): 同じ場所が既に在るときに 409 で断ると、
+        #   クイックスタートも `source` の追加もそこで行き止まりになり、画面には
+        #   「この場所は既に登録されています」だけが残っていた。二重登録を防ぐ目的は
+        #   「新しい行を作らない」ことで足りる。∴ 断らずに、既に在る source をそのまま
+        #   返す (冪等)。UI 側の再利用判定は path の文字列一致で行うため、実体パスは
+        #   同じでも文字列が違う (末尾の / ・~ ・シンボリックリンク) と再利用に乗らず、
+        #   ここへ落ちてくる。
         _want = os.path.realpath(os.path.expanduser(_normalized))
         for _row in conn.execute("SELECT id, name, path FROM sources").fetchall():
             _have = os.path.realpath(os.path.expanduser(os.path.normpath(_row["path"] or "")))
             if _have and _have == _want:
-                raise HTTPException(
-                    409,
-                    f"この場所は既に登録されています: {_row['name']} (id={_row['id']})。"
-                    "同じフォルダを二重に登録することはできません。",
-                )
-        conn.execute(
-            "INSERT INTO sources (id, name, path) VALUES (?, ?, ?)",
-            (sid, name, path),
-        )
-        _log_audit(conn, "source_created", sid, name)
-        conn.commit()
+                _existing = {"id": _row["id"], "name": _row["name"], "path": _row["path"]}
+                break
+        if _existing is not None:
+            _log_audit(conn, "source_reused", _existing["id"], _existing["name"])
+            conn.commit()
+        else:
+            conn.execute(
+                "INSERT INTO sources (id, name, path) VALUES (?, ?, ?)",
+                (sid, name, path),
+            )
+            _log_audit(conn, "source_created", sid, name)
+            conn.commit()
     except sqlite3.IntegrityError as e:
         raise HTTPException(409, f"同名のソースが既に存在します: {name}") from e
     # 例外で接続を開いたまま抜けると暗黙BEGINの書き込みトランザクションが残留し、
@@ -224,6 +233,18 @@ async def create_source(request: Request):
     # finally で必ず close する (close は未コミットの変更をロールバックする)。
     finally:
         conn.close()
+    if _existing is not None:
+        # DD-CYN-0168: 既に在る source を返す。auto_scan が真なら、その source を
+        #   走査し直す (走査が既に走っていれば _do_scan 側の排他が黙って戻す)。
+        if auto_scan:
+            threading.Thread(target=_do_scan, args=(_existing["id"],), daemon=True).start()
+        return {
+            "id": _existing["id"],
+            "name": _existing["name"],
+            "path": _existing["path"],
+            "auto_scan": auto_scan,
+            "already_registered": True,
+        }
     if auto_scan:
         threading.Thread(target=_do_scan, args=(sid,), daemon=True).start()
     return {"id": sid, "name": name, "path": path, "auto_scan": auto_scan}

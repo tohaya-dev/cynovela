@@ -8,6 +8,7 @@ import sqlite3
 import subprocess
 import sys
 import threading
+import time
 
 from core.api_schema import parse_body_pydantic
 from fastapi import APIRouter, HTTPException, Request
@@ -20,6 +21,12 @@ from core.audit import _log_audit
 # /api/sources/upload を撤去した。取り込みは取り込みフォルダ経由に一本化する。
 
 router = APIRouter(tags=["sources"])
+
+# DD-CYN-0168 (欠陥§181): 同期の走査要求が「走査中」に当たったときに待つ上限と、
+#   その間の見に行く間隔。起動時の `scan` (_startup_scan_sources) は登録済みの `source` を
+#   直列に処理するため、`file` が多いほどここで待つ時間が延びる。値の是非は Tocchi の裁定事項。
+_SCAN_WAIT_SEC = 300.0
+_SCAN_WAIT_POLL_SEC = 0.5
 
 
 @router.get("/api/sources", response_model=None)
@@ -159,33 +166,54 @@ async def create_source(request: Request):
     if ".." in path.split(os.sep):
         raise HTTPException(400, "relative path traversal is not allowed")
     sid = new_id()
+    _existing = None
     conn = get_db()
     try:
         # DD-CYN-0151 §7: 同じ場所を二重に登録させない。
         #   従来 UNIQUE が効いていたのは name だけだったため、名前を変えれば同じフォルダを
         #   何本でも登録でき、走査も公開も二重に走っていた。
         #   場所の見分けは実体のパス (シンボリックリンクと末尾の / を解いたもの) で行う。
+        # DD-CYN-0168 (欠陥§179 版3 / §181): 同じ場所が既に在るときに 409 で断ると、
+        #   クイックスタートも `source` の追加もそこで行き止まりになり、画面には
+        #   「この場所は既に登録されています」だけが残っていた。二重登録を防ぐ目的は
+        #   「新しい行を作らない」ことで足りる。∴ 断らずに、既に在る source をそのまま
+        #   返す (冪等)。UI 側の再利用判定は path の文字列一致で行うため、実体パスは
+        #   同じでも文字列が違う (末尾の / ・~ ・シンボリックリンク) と再利用に乗らず、
+        #   ここへ落ちてくる。
         _want = os.path.realpath(os.path.expanduser(_normalized))
         for _row in conn.execute("SELECT id, name, path FROM sources").fetchall():
             _have = os.path.realpath(os.path.expanduser(os.path.normpath(_row["path"] or "")))
             if _have and _have == _want:
-                raise HTTPException(
-                    409,
-                    f"この場所は既に登録されています: {_row['name']} (id={_row['id']})。"
-                    "同じフォルダを二重に登録することはできません。",
-                )
-        conn.execute(
-            "INSERT INTO sources (id, name, path) VALUES (?, ?, ?)",
-            (sid, name, path),
-        )
-        _log_audit(conn, "source_created", sid, name)
-        conn.commit()
+                _existing = {"id": _row["id"], "name": _row["name"], "path": _row["path"]}
+                break
+        if _existing is not None:
+            _log_audit(conn, "source_reused", _existing["id"], _existing["name"])
+            conn.commit()
+        else:
+            conn.execute(
+                "INSERT INTO sources (id, name, path) VALUES (?, ?, ?)",
+                (sid, name, path),
+            )
+            _log_audit(conn, "source_created", sid, name)
+            conn.commit()
     except sqlite3.IntegrityError as e:
         raise HTTPException(409, f"同名のソースが既に存在します: {name}") from e
     finally:
         # 例外で接続を開いたまま抜けると暗黙BEGINの書き込みトランザクションが残留し、
         # 以後の全書き込みが busy_timeout(30s) 超過の "database is locked" になる
         conn.close()
+    if _existing is not None:
+        # DD-CYN-0168: 既に在る source を返す。auto_scan が真なら、その source を
+        #   走査し直す (走査が既に走っていれば _do_scan 側の排他が黙って戻す)。
+        if auto_scan:
+            threading.Thread(target=_do_scan, args=(_existing["id"],), daemon=True).start()
+        return {
+            "id": _existing["id"],
+            "name": _existing["name"],
+            "path": _existing["path"],
+            "auto_scan": auto_scan,
+            "already_registered": True,
+        }
     if auto_scan:
         threading.Thread(target=_do_scan, args=(sid,), daemon=True).start()
     return {"id": sid, "name": name, "path": path, "auto_scan": auto_scan}
@@ -319,18 +347,40 @@ def scan_source(request: Request, source_id: str):
     #   本体 (_do_scan) 側でも締めているが、そこで黙って戻ると呼んだ側は
     #   「走ったのに何も起きなかった」と見えてしまう。∴ ここで理由を返す。
     import server as _srv
+
+    # DD-CYN-0168 (欠陥§181): ここで即 409 を返すと、クイックスタートの
+    #   「④ Source スキャン」がそこで行き止まりになる。起動のたびに走る
+    #   _startup_scan_sources() は登録済みの `source` を skip_unchanged=True で
+    #   直列に `scan` するため、起動直後にクイックスタートを押すと、残骸が無くても
+    #   この経路に当たる (起動時走査は job_id を渡さないので scan_jobs には行が
+    #   無く、当たるのは server._scan_running の方である)。
+    #   409 の本文は元々「終わるのを待つか /scan/cancel で止めてください」であり、
+    #   待てば済む。∴ 呼んだ側に待たせるのではなく、ここで待つ。
+    #   _SCAN_WAIT_SEC を過ぎても終わらないときだけ、従来どおり 409 を返す。
+    _waited = 0.0
+    while _waited < _SCAN_WAIT_SEC and source_id in getattr(_srv, "_scan_running", set()):
+        time.sleep(_SCAN_WAIT_POLL_SEC)
+        _waited += _SCAN_WAIT_POLL_SEC
     if source_id in getattr(_srv, "_scan_running", set()):
         raise HTTPException(
             409, "この取り込み元は走査中です。終わるのを待つか /scan/cancel で止めてください。"
         )
-    conn = get_db()
-    try:
-        _running = conn.execute(
-            "SELECT id FROM scan_jobs WHERE source_id = ? AND status IN ('pending','running')",
-            (source_id,),
-        ).fetchone()
-    finally:
-        conn.close()
+
+    def _running_job():
+        _c = get_db()
+        try:
+            return _c.execute(
+                "SELECT id FROM scan_jobs WHERE source_id = ? AND status IN ('pending','running')",
+                (source_id,),
+            ).fetchone()
+        finally:
+            _c.close()
+
+    _running = _running_job()
+    while _waited < _SCAN_WAIT_SEC and _running:
+        time.sleep(_SCAN_WAIT_POLL_SEC)
+        _waited += _SCAN_WAIT_POLL_SEC
+        _running = _running_job()
     if _running:
         raise HTTPException(
             409,
