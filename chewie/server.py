@@ -1728,6 +1728,50 @@ def _do_scan_body(source_id: str, job_id: str | None = None, skip_unchanged: boo
                 if old_path not in seen_paths:
                     conn.execute("UPDATE files SET missing = 1 WHERE source_id = ? AND path = ?", (source_id, old_path))
 
+            # DD-CYN-0175 (欠陥§183-1): scan で新しく見つかった file を、その source を
+            #   既に使っている collection へ結び付ける。
+            #   従来 collection_files へ行を足すのは POST /api/collections (作成時)・
+            #   PUT /api/collections/{id}・POST /api/collections/{id}/link-files の3つだけで、
+            #   scan は1行も足さなかった。∴ 「同じフォルダへ file を1本足す → 再 scan →
+            #   再 publish」を通しても、collection_files は増えないまま publish が走り、
+            #   結び付いている file は sha256 が変わらないので全て「変更なしスキップ」になる。
+            #   publish は 1 秒未満で done を返し、chunk は 1 本目のときのまま増えない。
+            #   画面は ready と出るため、受け取り手には足した file が載っていないことが判らない。
+            #   結び付ける相手は「その source の file を既に1つ以上含む collection」だけとする。
+            #   source を共有していない collection へ勝手に足さないためである。
+            try:
+                _cols_using_source = [
+                    r["collection_id"]
+                    for r in conn.execute(
+                        "SELECT DISTINCT cf.collection_id FROM collection_files cf "
+                        "JOIN files f ON f.id = cf.file_id WHERE f.source_id = ?",
+                        (source_id,),
+                    ).fetchall()
+                ]
+                _linked_total = 0
+                for _cid in _cols_using_source:
+                    _cur = conn.execute(
+                        "INSERT OR IGNORE INTO collection_files (collection_id, file_id) "
+                        "SELECT ?, f.id FROM files f "
+                        "WHERE f.source_id = ? AND f.missing = 0 "
+                        "  AND f.id NOT IN (SELECT file_id FROM collection_files WHERE collection_id = ?)",
+                        (_cid, source_id, _cid),
+                    )
+                    if _cur.rowcount and _cur.rowcount > 0:
+                        _linked_total += _cur.rowcount
+                        logger.info(
+                            f"[Cynovela] scan: 新しい file {_cur.rowcount} 件を collection {_cid} へ結び付けた "
+                            f"(src={source_id})"
+                        )
+                if _linked_total:
+                    _log_audit(
+                        conn, "scan_files_linked", target=source_id,
+                        detail=f"{_linked_total} 件を {len(_cols_using_source)} 個の collection へ結び付けた",
+                    )
+            except Exception as _le:
+                # 結び付けに失敗しても走査そのものは完了させる (非破壊)。
+                logger.warning(f"[Cynovela] scan: collection への結び付けに失敗 src={source_id}: {_le}")
+
             conn.execute(
                 "UPDATE sources SET status = 'completed', file_count = ?, last_scanned = ? WHERE id = ?",
                 (file_count, datetime.now().isoformat(), source_id),
