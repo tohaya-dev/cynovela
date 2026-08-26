@@ -2028,15 +2028,20 @@ def _publish_collection_iter_impl(
                             _missing_ids = json.loads(_missing_hash.get("chunk_ids", "[]"))
                         except Exception:
                             _missing_ids = []
-                        retained_chunk_ids.extend(_missing_ids)
-                        missing_retained_count += 1
-                        yield {
-                            "stage": "chunking",
-                            "current": idx,
-                            "total": total_files,
-                            "message": f"実体なし(温存): {fname} {idx}/{total_files}",
-                        }
-                        continue
+                        # DD-CYN-0171 (欠陥§183): 上と同じ理由。温存する中身が無い記録を
+                        #   「実体なし(温存)」に数えると、total_chunks が 0 のまま done へ抜け、
+                        #   しかも全滅判定 (processed=0 かつ retained=0 かつ missing_retained=0)
+                        #   にも当たらないため error にすらならない。
+                        if _missing_ids:
+                            retained_chunk_ids.extend(_missing_ids)
+                            missing_retained_count += 1
+                            yield {
+                                "stage": "chunking",
+                                "current": idx,
+                                "total": total_files,
+                                "message": f"実体なし(温存): {fname} {idx}/{total_files}",
+                            }
+                            continue
                     skipped_files.append(fpath)
                     skipped_details.append({"file": fname, "reason": "読めない(実体が見つからない等)"})
                     yield {
@@ -2059,15 +2064,24 @@ def _publish_collection_iter_impl(
                         old_ids = json.loads(existing.get("chunk_ids", "[]"))
                     except Exception:
                         old_ids = []
-                    retained_chunk_ids.extend(old_ids)
-                    retained_count += 1
-                    yield {
-                        "stage": "chunking",
-                        "current": idx,
-                        "total": total_files,
-                        "message": f"変更なしスキップ: {fname} {idx}/{total_files}",
-                    }
-                    continue
+                    # DD-CYN-0171 (欠陥§183): chunk_ids が空の file_hashes 行を「温存」に
+                    #   数えると、retained_chunk_ids が増えないまま retained_count だけが増え、
+                    #   total_chunks が 0 のまま done へ抜ける (= collections.chunk_count が 0、
+                    #   状態は ready、所要は 1 秒台)。空の記録は温存する中身を持たないので、
+                    #   温存ではなく「変更あり」として作り直す。
+                    if old_ids:
+                        retained_chunk_ids.extend(old_ids)
+                        retained_count += 1
+                        yield {
+                            "stage": "chunking",
+                            "current": idx,
+                            "total": total_files,
+                            "message": f"変更なしスキップ: {fname} {idx}/{total_files}",
+                        }
+                        continue
+                    _log.warning(
+                        f"[Cynovela] file_hashes に chunk_ids が空の記録がある。作り直す: {fpath}"
+                    )
 
                 # 変更あり or 新規 → 旧チャンクを削除してから再登録（下でupsert）
                 if existing:
@@ -2872,6 +2886,20 @@ def _publish_collection_iter_impl(
         "unchanged_count": retained_count,
         "missing_count": missing_retained_count,
         "skipped_count": len(skipped_files),
+        # DD-CYN-0171 (欠陥§183): 0 チャンクで「完了」を出すのは、ポリシーで全除外された
+        #   ときだけが正当である。それ以外で 0 になったら、受領書と保存された状態が
+        #   食い違ったまま ready になる。呼ぶ側 (publish_jobs のメッセージ・取り込み操作
+        #   ログ・同期版の応答) がそのまま出せるよう、ここで理由つきの一言を付ける。
+        "zero_chunk_warning": (
+            (
+                f"⚠ 0 チャンクで完了しました (対象 {len(file_paths)} ファイル / "
+                f"新規{processed_count}・温存{retained_count}・実体なし{missing_retained_count}・"
+                f"飛ばし{len(skipped_files)}・除外{len(excluded_files)})。"
+                "取り込めた中身がありません。"
+            )
+            if (total_chunks == 0 and not excluded_files)
+            else ""
+        ),
         # C: 飛ばしたファイルの一覧 (ファイル名+理由・additive)
         "skipped_details": skipped_details[:50],
         "excluded_count": len(excluded_files),

@@ -633,14 +633,30 @@ def publish_diff(request: Request, col_id: str):
             ).fetchall()
         }
         current_fs: dict[str, str] = {}
+        # DD-CYN-0171 (欠陥§183): 実体が無い / 開けない file を、理由つきで呼ぶ側へ返す。
+        #   従来はどちらも黙って continue しており、deleted_files に混ざるだけだった。
+        #   ∴ 画面は「実体の無い file が在る」ことを知らないまま Publish を押せてしまい、
+        #   publish の中で初めて「実体なし(温存)」「スキップ(読めず)」の道へ入っていた。
+        #   存在の判定は os.path.exists と os.stat だけで行い、中身は読まない
+        #   (雲の上にしか無い file を読むと、その場で取得が走る恐れがあるため)。
+        unreadable_details: list[dict] = []
         for f in files:
             fpath = f["path"]
-            if not fpath or not _os.path.exists(fpath):
+            if not fpath:
+                continue
+            if not _os.path.exists(fpath):
+                unreadable_details.append({"path": fpath, "reason": "実体がありません"})
+                continue
+            try:
+                _os.stat(fpath)
+            except Exception as _se:
+                unreadable_details.append({"path": fpath, "reason": f"状態を読めません: {type(_se).__name__}"})
                 continue
             try:
                 with open(fpath, "rb") as fp:
                     current_fs[fpath] = _hl.sha256(fp.read()).hexdigest()
-            except Exception:
+            except Exception as _oe:
+                unreadable_details.append({"path": fpath, "reason": f"開けません: {type(_oe).__name__}"})
                 continue
         new_files = sum(1 for p in current_fs if p not in stored)
         modified_files = sum(1 for p, h in current_fs.items() if p in stored and stored[p] != h)
@@ -650,6 +666,9 @@ def publish_diff(request: Request, col_id: str):
             "new_files": new_files,
             "modified_files": modified_files,
             "deleted_files": deleted_files,
+            # 追加の項目のみ。既存の4つの意味は変えていない。
+            "unreadable_files": len(unreadable_details),
+            "unreadable_details": unreadable_details[:50],
         }
     finally:
         conn.close()
@@ -860,6 +879,10 @@ def publish(request: Request, col_id: str):
     # vision-placeholder-warn-20260727: 同期版 publish でも、中身が入らなかったファイルを
     #   応答へ返し、取り込み操作ログへ残す (publish-summary はここから読む)。
     _ph_files = list((_done_event or {}).get("placeholder_only_files") or [])
+    # DD-CYN-0171 (欠陥§183): 同期版の応答にも 0 チャンク完了の一言を載せる (追加の項目のみ)。
+    _zcw = str((_done_event or {}).get("zero_chunk_warning") or "")
+    if _zcw:
+        result["zero_chunk_warning"] = _zcw
     result["placeholder_only_count"] = len(_ph_files)
     result["placeholder_only_files"] = _ph_files
     if (_done_event or {}).get("placeholder_warning"):

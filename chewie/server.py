@@ -2512,7 +2512,12 @@ def _run_publish_background(
                 stage="done",
                 progress=chunk_count,
                 total=chunk_count,
-                message=f"Published with {chunk_count} chunks",
+                message=(
+                    # DD-CYN-0171 (欠陥§183): 0 チャンクで終わったのに「完了」とだけ出すのを止める。
+                    #   done イベントが理由つきの一言を運んでくるので、そのまま画面へ渡す。
+                    str(final_event.get("zero_chunk_warning") or "")  # pyright: ignore[reportOptionalMemberAccess]
+                    or f"Published with {chunk_count} chunks"
+                ),
             )
             # intake-togo-v2-20260705 (Fix 7): 差分スキャン結果（新規/変更/スキップ/消滅）を操作ログへ1行
             _diff = {
@@ -2527,6 +2532,8 @@ def _run_publish_background(
                 level="success", job_id=job_id,
                 metadata={
                     "stage": "done", "chunk_count": chunk_count, "collection_id": col_id, "diff": _diff,
+                    # DD-CYN-0171 (欠陥§183): 0 チャンク完了の理由を取り込み操作ログにも残す。
+                    "zero_chunk_warning": str((final_event or {}).get("zero_chunk_warning") or ""),
                     # vision-placeholder-warn-20260727: 中身が1文字も入らなかったファイル。
                     #   平文がある取り込みの瞬間にしか判定できない (インデックスの本文は暗号文) ため、
                     #   ここで残して publish-summary から読み出す。
