@@ -2377,7 +2377,12 @@ async def rag_query(request: Request):
     内部的に /api/chat の最小サブセットを呼び出し citations 付き応答を返す。
     workspace_id 省略時はユーザーがアクセス可能な先頭 workspace を自動選択。
     """
-    _require_admin(request)
+    # DD-CYN-0179 (欠陥§185): 入口の資格を委譲先 /api/chat と揃える。本 EP は下で
+    # chat() を呼ぶだけであり、所属 (require_ws_membership)・collection の access_level・
+    # マスキング層 (_effective_send_tier)・監査は全て chat() 側が委譲後のリクエストの
+    # トークンから引き直す。ここで admin を要求すると、閲覧者が自分に許された公開
+    # データを引くだけでも 403 になっていた。
+    user = _require_authenticated(request)
     try:
         body = await parse_body_pydantic(request)
     except Exception:
@@ -2391,8 +2396,21 @@ async def rag_query(request: Request):
         raise HTTPException(413, "query は 4000 文字以下にしてください")
     workspace_id = (body.get("workspace_id") or "").strip() or None
     if not workspace_id:
+        # DD-CYN-0179 (欠陥§185): 入口を開いたので、省略時の自動選択も呼び出し元で絞る。
+        # 従来は全 workspace から最古の 1 件を無条件に選んでおり、docstring の
+        # 「ユーザーがアクセス可能な先頭 workspace」と実装が食い違っていた。
+        # admin は従来どおり広域 (挙動を変えない)。非 admin は workspace_users の所属に限る。
         with contextlib.closing(get_db()) as conn:
-            row = conn.execute("SELECT id FROM workspaces WHERE archived_at IS NULL ORDER BY created_at LIMIT 1").fetchone()
+            if (user or {}).get("role") == "admin":
+                row = conn.execute("SELECT id FROM workspaces WHERE archived_at IS NULL ORDER BY created_at LIMIT 1").fetchone()
+            else:
+                row = conn.execute(
+                    "SELECT w.id AS id FROM workspaces w"
+                    " JOIN workspace_users wu ON wu.workspace_id = w.id"
+                    " WHERE w.archived_at IS NULL AND wu.user_id = ?"
+                    " ORDER BY w.created_at LIMIT 1",
+                    ((user or {}).get("id"),),
+                ).fetchone()
         workspace_id = row["id"] if row else None
     if not workspace_id:
         raise HTTPException(404, "利用可能な workspace が見つかりません")
