@@ -27,6 +27,21 @@
 set -u
 WRAP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BODY="$WRAP_DIR/tools/launch-body.sh"
+
+# ── DD-CYN-0181 (欠陥§187): 同梱の conda-pack 環境を見つける処理は、ここ 1 箇所だけに置く。
+#   従来はこの判定が「透過の道」(端末が無いときの exec) より後ろに在ったため、端末が
+#   無い起動 (launchd / 切り離し / 時刻起動) では判定へ到達せず、同梱環境が在るのに
+#   機械側の conda 環境で立ち上がっていた。判定そのものは変えていない。
+#   _BUNDLED_OK=1 のとき _BUNDLED_PY が使える python を指す。
+_detect_bundled_py() {
+    _BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python"
+    [ -x "$_BUNDLED_PY" ] || _BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python3"
+    _BUNDLED_OK=0
+    if [ -x "$_BUNDLED_PY" ] \
+       && "$_BUNDLED_PY" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1; then
+        _BUNDLED_OK=1
+    fi
+}
 LOG="$WRAP_DIR/store/launch-app.log"
 SHARED_ENV="cynovela"
 DIST_ENV="cynovela-dist"
@@ -89,6 +104,20 @@ for _a in "$@"; do
     esac
 done
 if [ "$_PASSTHRU" = "1" ] || [ ! -t 0 ] || [ ! -t 1 ]; then
+    # DD-CYN-0181 (欠陥§187): 透過で本体へ渡すときも、同梱環境が在れば
+    #   それを使う。画面が出せないだけであって、同梱環境を捨てる理由はない。
+    #   呼び出し側が --python を既に指定しているときは、その指定を尊重して足さない。
+    #   同梱環境が無い配布形態 (all-in-one / lightweight) では何も足さない。
+    _dd_has_python_arg=0
+    for _a in "$@"; do
+        [ "$_a" = "--python" ] && _dd_has_python_arg=1 && break
+    done
+    if [ "$_dd_has_python_arg" = "0" ]; then
+        _detect_bundled_py
+        if [ "$_BUNDLED_OK" = "1" ]; then
+            exec bash "$BODY" "$@" --python "$_BUNDLED_PY"
+        fi
+    fi
     exec bash "$BODY" "$@"
 fi
 
@@ -479,13 +508,7 @@ running_menu
 #    出さずにそのまま使う。在るのに壊れているときだけ選択へ。
 #    ( .venv-cynovela は Source edition が --setup でその場に新規作成する本物の
 #      venv であり、この自動検出の対象ではない。)
-_BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python"
-[ -x "$_BUNDLED_PY" ] || _BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python3"
-_BUNDLED_OK=0
-if [ -x "$_BUNDLED_PY" ] \
-   && "$_BUNDLED_PY" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1; then
-    _BUNDLED_OK=1
-fi
+_detect_bundled_py
 if [ "$_BUNDLED_OK" = "1" ]; then
     echo ""
     echo "同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。"
