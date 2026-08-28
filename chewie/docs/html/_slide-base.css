@@ -156,7 +156,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;

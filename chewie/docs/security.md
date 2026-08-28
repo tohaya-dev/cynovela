@@ -18,6 +18,66 @@ Cynovela is a learning tool, and it does not meet the security requirements of p
 
 ---
 
+**Contents**
+
+- [1. Disclaimers (4 points)](#1-disclaimers-4-points)
+  - [1-1. Learning purpose, unofficial implementation](#1-1-learning-purpose-unofficial-implementation)
+  - [1-2. Absence of any official position](#1-2-absence-of-any-official-position)
+  - [1-3. Production operation is out of scope](#1-3-production-operation-is-out-of-scope)
+  - [1-4. Possibility of specification changes](#1-4-possibility-of-specification-changes)
+- [2. Overall construction](#2-overall-construction)
+  - [2.1 Three principles of the security design](#21-three-principles-of-the-security-design)
+  - [2.2 Separation layers per workspace](#22-separation-layers-per-workspace)
+  - [2.3 Separation in ChromaDB (vector search)](#23-separation-in-chromadb-vector-search)
+  - [2.4 ACL (access control list) filter](#24-acl-access-control-list-filter)
+  - [2.5 Known limitations of the separation](#25-known-limitations-of-the-separation)
+  - [2.6 Audit log](#26-audit-log)
+  - [2.7 Network control: IP allow list](#27-network-control-ip-allow-list)
+  - [2.8 Network control: restriction on the LM Studio URL](#28-network-control-restriction-on-the-lm-studio-url)
+  - [2.9 Known limitations of the current construction](#29-known-limitations-of-the-current-construction)
+- [3. Roles and permissions (RBAC)](#3-roles-and-permissions-rbac)
+  - [3.1 Role definitions (3 roles)](#31-role-definitions-3-roles)
+  - [3.2 Role check helpers](#32-role-check-helpers)
+  - [3.3 Main endpoints by role (admin only)](#33-main-endpoints-by-role-admin-only)
+  - [3.4 Access control per workspace](#34-access-control-per-workspace)
+  - [3.5 Differences in answer style by role](#35-differences-in-answer-style-by-role)
+  - [3.6 Limitations of the role implementation](#36-limitations-of-the-role-implementation)
+- [4. Guardrails](#4-guardrails)
+  - [4.1 How the guardrail works](#41-how-the-guardrail-works)
+  - [4.2 Entry points](#42-entry-points)
+  - [4.3 The triple of policy x classification x action](#43-the-triple-of-policy-x-classification-x-action)
+  - [4.4 Categories (classification classes)](#44-categories-classification-classes)
+  - [4.5 Initial policies (seeds)](#45-initial-policies-seeds)
+  - [4.6 Action types](#46-action-types)
+  - [4.7 Prompt injection countermeasures (3-layer defense)](#47-prompt-injection-countermeasures-3-layer-defense)
+  - [4.8 Placement of the system prompt](#48-placement-of-the-system-prompt)
+  - [4.9 Audit logs of guardrail events (audit_logs)](#49-audit-logs-of-guardrail-events-audit_logs)
+  - [4.10 How to add a custom detector](#410-how-to-add-a-custom-detector)
+- [5. PII detection and masking](#5-pii-detection-and-masking)
+  - [5.1 Design principle: put only masked text into the vector DB](#51-design-principle-put-only-masked-text-into-the-vector-db)
+  - [5.2 Tier1: masking at ingest time](#52-tier1-masking-at-ingest-time)
+  - [5.3 Tier2: masking at answer time](#53-tier2-masking-at-answer-time)
+  - [5.4 Dispatch by role](#54-dispatch-by-role)
+  - [5.5 How it looks by role](#55-how-it-looks-by-role)
+  - [5.6 Fernet encryption (vault)](#56-fernet-encryption-vault)
+  - [5.7 All PII categories](#57-all-pii-categories)
+  - [5.8 Differences between `pii_mode` values](#58-differences-between-pii_mode-values)
+  - [5.9 Aggregation of detection counts](#59-aggregation-of-detection-counts)
+  - [5.10 Migration from the old implementation](#510-migration-from-the-old-implementation)
+- [6. Ways of use that are not recommended](#6-ways-of-use-that-are-not-recommended)
+  - [6-1. Publishing directly to the internet](#6-1-publishing-directly-to-the-internet)
+  - [6-2. Production operation with confidential documents](#6-2-production-operation-with-confidential-documents)
+  - [6-3. LAN sharing with users you cannot trust](#6-3-lan-sharing-with-users-you-cannot-trust)
+  - [6-4. Editing the audit log directly in the DB](#6-4-editing-the-audit-log-directly-in-the-db)
+  - [6-5. Forcing multiple simultaneous Publishes](#6-5-forcing-multiple-simultaneous-publishes)
+  - [6-6. Checking quality in mock mode](#6-6-checking-quality-in-mock-mode)
+  - [6-7. Adding new `INSERT OR REPLACE` statements](#6-7-adding-new-insert-or-replace-statements)
+- [7. Recommended operation configurations](#7-recommended-operation-configurations)
+  - [7-1. Fully local operation (the narrowest exposure)](#7-1-fully-local-operation-the-narrowest-exposure)
+  - [7-2. Local LLM operation](#7-2-local-llm-operation)
+  - [7-3. Operation via a personal VPN](#7-3-operation-via-a-personal-vpn)
+- [8. Vulnerability reports](#8-vulnerability-reports)
+
 ## 1. Disclaimers (4 points)
 
 ### 1-1. Learning purpose, unofficial implementation
@@ -436,7 +496,7 @@ With this construction, the leakage paths are narrowed in situations such as the
 
 To achieve this, Cynovela adopts a double defense of masking at ingest time (Tier1) and masking at answer time (Tier2).
 
-> **Abolished: ingest without masking (`collections.raw_only = 1`)** — the ingest that bypasses masking (Raw mode) was abolished on 2026-07-24. If you specify it now, it is rejected with HTTP 400 (measured 2026-08-02). Only collections created in the past with `raw_only = 1` can remain in a state without a masked layer (for details see metadata-engine.md §6).
+> **Abolished: ingest without masking (`collections.raw_only = 1`)** — the ingest that bypasses masking (Raw mode) was abolished on 2026-07-24. If you specify it now, it is rejected with HTTP 400 (measured 2026-08-02). Only collections created in the past with `raw_only = 1` can remain in a state without a masked layer (for details see [architecture.md](architecture.md) §3.5.1 "Abolished: `raw_only`").
 
 ### 5.2 Tier1: masking at ingest time
 
@@ -789,6 +849,66 @@ Cynovela は、社内ドキュメントを RAG（検索拡張生成）で扱う�
 Cynovela は学習用ツールであり、本番運用のセキュリティ要件を満たすものではありません。Cynovela 全体の既知の制限は `docs/limits.md` にまとめています。
 
 ---
+
+**目次**
+
+- [1. 免責（4 点）](#1-免責4-点)
+  - [1-1. 学習目的・非公式実装](#1-1-学習目的非公式実装)
+  - [1-2. 公式見解の不在](#1-2-公式見解の不在)
+  - [1-3. 本番運用は想定外](#1-3-本番運用は想定外)
+  - [1-4. 仕様変更の可能性](#1-4-仕様変更の可能性)
+- [2. 全体の作り](#2-全体の作り)
+  - [2.1 セキュリティ設計 3 原則](#21-セキュリティ設計-3-原則)
+  - [2.2 ワークスペース単位の分離レイヤー](#22-ワークスペース単位の分離レイヤー)
+  - [2.3 ChromaDB（ベクター検索）の分離](#23-chromadbベクター検索の分離)
+  - [2.4 ACL（アクセス制御リスト）フィルター](#24-aclアクセス制御リストフィルター)
+  - [2.5 分離の既知制限](#25-分離の既知制限)
+  - [2.6 監査ログ](#26-監査ログ)
+  - [2.7 ネットワーク制御：IP アローリスト](#27-ネットワーク制御ip-アローリスト)
+  - [2.8 ネットワーク制御：LM Studio URL の制限](#28-ネットワーク制御lm-studio-url-の制限)
+  - [2.9 現在の作りの既知の制限](#29-現在の作りの既知の制限)
+- [3. 役割と権限（RBAC）](#3-役割と権限rbac)
+  - [3.1 ロール定義（3 ロール）](#31-ロール定義3-ロール)
+  - [3.2 ロール検査ヘルパー](#32-ロール検査ヘルパー)
+  - [3.3 ロール別 主要エンドポイント（admin 限定）](#33-ロール別-主要エンドポイントadmin-限定)
+  - [3.4 ワークスペース単位のアクセス制御](#34-ワークスペース単位のアクセス制御)
+  - [3.5 ロール別 回答スタイルの違い](#35-ロール別-回答スタイルの違い)
+  - [3.6 ロール実装の制限](#36-ロール実装の制限)
+- [4. ガードレール](#4-ガードレール)
+  - [4.1 ガードレールの仕組み](#41-ガードレールの仕組み)
+  - [4.2 入口](#42-入口)
+  - [4.3 ポリシー × 分類 × アクションの三項](#43-ポリシー-分類-アクションの三項)
+  - [4.4 カテゴリ（分類クラス）](#44-カテゴリ分類クラス)
+  - [4.5 初期ポリシー（シード）](#45-初期ポリシーシード)
+  - [4.6 アクション種別](#46-アクション種別)
+  - [4.7 プロンプトインジェクション対策（3 層防御）](#47-プロンプトインジェクション対策3-層防御)
+  - [4.8 システムプロンプトの配置](#48-システムプロンプトの配置)
+  - [4.9 ガードレールの監査ログ（audit_logs）](#49-ガードレールの監査ログaudit_logs)
+  - [4.10 カスタム検出器の追加方法](#410-カスタム検出器の追加方法)
+- [5. PII の検出とマスキング](#5-pii-の検出とマスキング)
+  - [5.1 設計思想：ベクター DB にはマスク済みのみ入れる](#51-設計思想ベクター-db-にはマスク済みのみ入れる)
+  - [5.2 Tier1：取込時マスキング](#52-tier1取込時マスキング)
+  - [5.3 Tier2：回答時マスキング](#53-tier2回答時マスキング)
+  - [5.4 ロール別の振り分け](#54-ロール別の振り分け)
+  - [5.5 ロール別の見え方](#55-ロール別の見え方)
+  - [5.6 Fernet 暗号化（vault）](#56-fernet-暗号化vault)
+  - [5.7 PII カテゴリ全件](#57-pii-カテゴリ全件)
+  - [5.8 `pii_mode` の違い](#58-pii_mode-の違い)
+  - [5.9 検出件数の集計](#59-検出件数の集計)
+  - [5.10 旧実装からの移行](#510-旧実装からの移行)
+- [6. 推奨しない使用方法](#6-推奨しない使用方法)
+  - [6-1. インターネットへの直接公開](#6-1-インターネットへの直接公開)
+  - [6-2. 機密文書での本番運用](#6-2-機密文書での本番運用)
+  - [6-3. 信頼できないユーザーへの LAN 共有](#6-3-信頼できないユーザーへの-lan-共有)
+  - [6-4. 監査ログの DB 直接編集](#6-4-監査ログの-db-直接編集)
+  - [6-5. 同時複数 Publish の強制実行](#6-5-同時複数-publish-の強制実行)
+  - [6-6. モックモードでの品質確認](#6-6-モックモードでの品質確認)
+  - [6-7. `INSERT OR REPLACE` 文の新規追加](#6-7-insert-or-replace-文の新規追加)
+- [7. 推奨運用構成](#7-推奨運用構成)
+  - [7-1. 完全ローカル運用（露出が最も狭い構成）](#7-1-完全ローカル運用露出が最も狭い構成)
+  - [7-2. ローカル LLM 運用](#7-2-ローカル-llm-運用)
+  - [7-3. 個人 VPN 経由運用](#7-3-個人-vpn-経由運用)
+- [8. 脆弱性報告](#8-脆弱性報告)
 
 ## 1. 免責（4 点）
 
@@ -1208,7 +1328,7 @@ PII（Personally Identifiable Information：個人情報・社外秘情報）対
 
 これを実現するため、Cynovela は取込時マスキング（Tier1）と回答時マスキング（Tier2）の二重防御を採用しています。
 
-> **廃止済み: マスキングなし取り込み（`collections.raw_only = 1`）** — マスキングを迂回する取り込み（Raw モード）は 2026-07-24 に廃止しました。いま指定すると HTTP 400 で拒否されます（2026-08-02 実測）。過去に作られた `raw_only = 1` のコレクションだけが masked 層を持たない状態で残り得ます（詳細は metadata-engine.md §6）。
+> **廃止済み: マスキングなし取り込み（`collections.raw_only = 1`）** — マスキングを迂回する取り込み（Raw モード）は 2026-07-24 に廃止しました。いま指定すると HTTP 400 で拒否されます（2026-08-02 実測）。過去に作られた `raw_only = 1` のコレクションだけが masked 層を持たない状態で残り得ます（詳細は [architecture.md](architecture.md) §3.5.1「廃止済み: `raw_only`」）。
 
 ### 5.2 Tier1：取込時マスキング
 

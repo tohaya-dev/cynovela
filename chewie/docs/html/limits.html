@@ -163,7 +163,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;
@@ -211,12 +211,14 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">English — About this document</span>
+<span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
     <p><strong>日本語版はこちら → 日本語</strong></p>
     <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that one individual could understand the concepts behind AI infrastructure tools by working through them by hand. It is not a commercial product and not an official implementation. The implementation is entirely original, built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.</blockquote>
     <p>This document describes what Cynovela <strong>cannot</strong> do, and what to watch out for. Explanations of what it can do are in <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> and <a href="concept.html" target="_blank" rel="noopener">concept.md</a>. Only the things that will disappoint you if you expect them are written here.</p>
     <p>The version is <code>1.1.1</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
+    <p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -224,6 +226,97 @@ a:hover { text-decoration: underline; }
 </div>
 </div>
 <div class="slide" id="slide-3">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">English — About this document</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-6">1. What masking cannot do</a>
+      <ul>
+      <li><a href="#slide-6">1.1 Rules can only catch the 13 types that have a fixed shape</a></li>
+      <li><a href="#slide-9">1.2 Personal names and addresses depend on language analysis; with <code>lite</code> nothing is masked at all</a></li>
+      <li><a href="#slide-11">1.3 Organisation names and place names exist in name only, with nothing behind them</a></li>
+      <li><a href="#slide-11">1.4 Without a language model, even <code>standard</code> degrades to rules only</a></li>
+      <li><a href="#slide-12">1.5 Passwords and API keys are cut off by whitespace, Japanese text, or newlines</a></li>
+      <li><a href="#slide-13">1.6 Whitespace can enter text extracted from a PDF, letting an email escape masking</a></li>
+      <li><a href="#slide-15">1.7 Whether an administrator can see the original text depends on the key and the destination</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-18">2. Document formats that cannot be read</a></li>
+    <li><a href="#slide-21">3. Speaking to it by voice</a></li>
+    <li><a href="#slide-22">4. There is no endpoint for uploading documents</a></li>
+    <li><a href="#slide-23">5. Conditions under which sending to the outside is stopped</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">English — About this document</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-25">6. Constraints when used concurrently</a></li>
+    <li><a href="#slide-26">7. Constraints on replacing models</a></li>
+    <li><a href="#slide-28">8. Features that are only a skeleton with nothing inside</a></li>
+    <li><a href="#slide-32">9. The Kubernetes set does not work as-is</a></li>
+    <li><a href="#slide-33">10. Other limitations and notes</a>
+      <ul>
+      <li><a href="#slide-33">Startup forms and where data lives</a></li>
+      <li><a href="#slide-34">Cross-collection search</a></li>
+      <li><a href="#slide-35">Workspace separation</a></li>
+      <li><a href="#slide-36">MCP</a></li>
+      <li><a href="#slide-37">How answers are built</a></li>
+      <li><a href="#slide-38">Removed features</a></li>
+      <li><a href="#slide-39">The pass (login token)</a></li>
+      <li><a href="#slide-40">Pitfalls</a></li>
+      </ul>
+    </li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">English — About this document</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-41">11. Things recorded in 1.0.7</a>
+      <ul>
+      <li><a href="#slide-41">11.1 Restoring a backup through the API does not reliably give you the backup</a></li>
+      <li><a href="#slide-43">11.2 A backup holds data, not settings</a></li>
+      <li><a href="#slide-44">11.3 The "dimension" written into an export is a fixed number</a></li>
+      <li><a href="#slide-45">11.4 With Ollama, the context length is whatever Ollama defaults to</a></li>
+      <li><a href="#slide-46">11.5 An imported workspace searches by vector only</a></li>
+      <li><a href="#slide-47">11.6 Not measured: the package edition on a Mac without conda</a></li>
+      <li><a href="#slide-47">11.7 Fixed in chewie, not in falcon</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-49">12. Authentication, authorization and communication</a></li>
+    <li><a href="#slide-50">13. Linkages that are defined but not integrated</a></li>
+    <li><a href="#slide-51">14. Areas skipped in the tests</a></li>
+    <li><a href="#slide-52">15. Items that are not complete</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -239,7 +332,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-7">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -267,7 +360,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-8">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -288,7 +381,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-9">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -305,7 +398,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-10">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -324,7 +417,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-11">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -342,7 +435,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-12">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -360,7 +453,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-13">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -381,7 +474,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-14">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -402,7 +495,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-15">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -417,7 +510,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-16">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -435,7 +528,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-17">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. What masking cannot do</span>
@@ -449,7 +542,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-18">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">2. Document formats that cannot be read</span>
@@ -474,7 +567,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-19">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">2. Document formats that cannot be read</span>
@@ -500,7 +593,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-20">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">2. Document formats that cannot be read</span>
@@ -519,7 +612,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-18">
+<div class="slide" id="slide-21">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">3. Speaking to it by voice</span>
@@ -535,7 +628,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-19">
+<div class="slide" id="slide-22">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">4. There is no endpoint for uploading documents</span>
@@ -549,7 +642,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-20">
+<div class="slide" id="slide-23">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">5. Conditions under which sending to the outside is stopped</span>
@@ -563,7 +656,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-21">
+<div class="slide" id="slide-24">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">5. Conditions under which sending to the outside is stopped</span>
@@ -583,7 +676,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-22">
+<div class="slide" id="slide-25">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">6. Constraints when used concurrently</span>
@@ -601,7 +694,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-23">
+<div class="slide" id="slide-26">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">7. Constraints on replacing models</span>
@@ -615,7 +708,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-24">
+<div class="slide" id="slide-27">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">7. Constraints on replacing models</span>
@@ -635,7 +728,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-25">
+<div class="slide" id="slide-28">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
@@ -649,7 +742,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-26">
+<div class="slide" id="slide-29">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
@@ -674,7 +767,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-27">
+<div class="slide" id="slide-30">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
@@ -695,7 +788,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-28">
+<div class="slide" id="slide-31">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
@@ -716,7 +809,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-29">
+<div class="slide" id="slide-32">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">9. The Kubernetes set does not work as-is</span>
@@ -733,7 +826,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-30">
+<div class="slide" id="slide-33">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -753,7 +846,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-31">
+<div class="slide" id="slide-34">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -768,7 +861,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-32">
+<div class="slide" id="slide-35">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -787,7 +880,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-33">
+<div class="slide" id="slide-36">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -806,7 +899,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-34">
+<div class="slide" id="slide-37">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -825,7 +918,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-35">
+<div class="slide" id="slide-38">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -851,7 +944,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-36">
+<div class="slide" id="slide-39">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -868,7 +961,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-37">
+<div class="slide" id="slide-40">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. Other limitations and notes</span>
@@ -890,7 +983,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-38">
+<div class="slide" id="slide-41">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -907,7 +1000,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-39">
+<div class="slide" id="slide-42">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -931,7 +1024,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-40">
+<div class="slide" id="slide-43">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -951,7 +1044,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-41">
+<div class="slide" id="slide-44">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -966,7 +1059,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-42">
+<div class="slide" id="slide-45">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -981,7 +1074,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-43">
+<div class="slide" id="slide-46">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -996,7 +1089,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-44">
+<div class="slide" id="slide-47">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -1013,7 +1106,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-45">
+<div class="slide" id="slide-48">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. Things recorded in 1.0.7</span>
@@ -1035,7 +1128,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-46">
+<div class="slide" id="slide-49">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">12. Authentication, authorization and communication</span>
@@ -1055,7 +1148,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-47">
+<div class="slide" id="slide-50">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">13. Linkages that are defined but not integrated</span>
@@ -1075,7 +1168,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-48">
+<div class="slide" id="slide-51">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">14. Areas skipped in the tests</span>
@@ -1092,7 +1185,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-49">
+<div class="slide" id="slide-52">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">15. Items that are not complete</span>
@@ -1114,22 +1207,115 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-50">
+<div class="slide" id="slide-53">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
     <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
     <p>この文書は、Cynovela に <strong>できないこと</strong>、および気をつけることを書いたものです。できることの説明は <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> と<a href="concept.html" target="_blank" rel="noopener">concept.md</a> にあります。ここには、期待すると外れることだけを書きます。</p>
     <p>版は <code>1.1.1</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
+    <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-51">
+<div class="slide" id="slide-54">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-57">1. マスキング（マスキング）でできないこと</a>
+      <ul>
+      <li><a href="#slide-57">1.1 決まった形をした 13 種類しか、規則では取れない</a></li>
+      <li><a href="#slide-60">1.2 氏名と住所は言語解析まかせ。<code>lite</code> にすると一切マスキングされない</a></li>
+      <li><a href="#slide-61">1.3 組織名と地名は、名前だけあって中身がない</a></li>
+      <li><a href="#slide-62">1.4 言語モデルが入っていないと、<code>standard</code> でも規則だけに退行する</a></li>
+      <li><a href="#slide-63">1.5 パスワードと API キーは、空白・日本語・改行で切れる</a></li>
+      <li><a href="#slide-64">1.6 PDF から取り出した文字に空白が入り、電子メールがマスキングを逃れることがある</a></li>
+      <li><a href="#slide-65">1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-67">2. 読み込めない資料の形式</a></li>
+    <li><a href="#slide-69">3. 音声で話しかけること</a></li>
+    <li><a href="#slide-70">4. 資料をアップロードする受け口はない</a></li>
+    <li><a href="#slide-71">5. 外部への送出が止まる条件</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-55">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-73">6. 同時に使うときの制約</a></li>
+    <li><a href="#slide-74">7. モデルの差し替えの制約</a></li>
+    <li><a href="#slide-76">8. 骨組みだけで中身がない機能</a></li>
+    <li><a href="#slide-80">9. Kubernetes 一式は、そのままでは動かない</a></li>
+    <li><a href="#slide-81">10. その他の制限と注意</a>
+      <ul>
+      <li><a href="#slide-81">起動の形態とデータの場所</a></li>
+      <li><a href="#slide-81">横断検索</a></li>
+      <li><a href="#slide-82">workspace の分離</a></li>
+      <li><a href="#slide-36">MCP</a></li>
+      <li><a href="#slide-84">回答の作り</a></li>
+      <li><a href="#slide-85">廃止した機能</a></li>
+      <li><a href="#slide-86">通行証（ログイン用のトークン）</a></li>
+      <li><a href="#slide-87">落とし穴</a></li>
+      </ul>
+    </li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-56">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-88">11. 1.0.7 で分かったこと</a>
+      <ul>
+      <li><a href="#slide-88">11.1 API から控えに戻しても、控えの中身になるとはかぎらない</a></li>
+      <li><a href="#slide-90">11.2 控えに入るのはデータであって、設定ではない</a></li>
+      <li><a href="#slide-91">11.3 書き出しに書かれる「次元」は、決め打ちの数である</a></li>
+      <li><a href="#slide-91">11.4 Ollama を使うと、文脈の長さは Ollama の既定のままになる</a></li>
+      <li><a href="#slide-92">11.5 取り込んだ作業場所は、ベクターだけで探される</a></li>
+      <li><a href="#slide-92">11.6 測っていないこと: conda の入っていない Mac でのパッケージ版</a></li>
+      <li><a href="#slide-93">11.7 chewie では直し、falcon では直していないもの</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-94">12. 認証・認可と通信</a></li>
+    <li><a href="#slide-95">13. 定義はあるが統合されていない連携</a></li>
+    <li><a href="#slide-96">14. テストでスキップされている領域</a></li>
+    <li><a href="#slide-97">15. 完了していない事項</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-57">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1145,7 +1331,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-52">
+<div class="slide" id="slide-58">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1173,7 +1359,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-53">
+<div class="slide" id="slide-59">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1194,7 +1380,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-54">
+<div class="slide" id="slide-60">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1216,7 +1402,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-55">
+<div class="slide" id="slide-61">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1233,7 +1419,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-56">
+<div class="slide" id="slide-62">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1251,7 +1437,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-57">
+<div class="slide" id="slide-63">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1272,7 +1458,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-58">
+<div class="slide" id="slide-64">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1295,7 +1481,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-59">
+<div class="slide" id="slide-65">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1315,7 +1501,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-60">
+<div class="slide" id="slide-66">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">1. マスキング（マスキング）でできないこと</span>
@@ -1329,7 +1515,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-61">
+<div class="slide" id="slide-67">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">2. 読み込めない資料の形式</span>
@@ -1360,7 +1546,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-62">
+<div class="slide" id="slide-68">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">2. 読み込めない資料の形式</span>
@@ -1386,7 +1572,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-63">
+<div class="slide" id="slide-69">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">3. 音声で話しかけること</span>
@@ -1402,7 +1588,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-64">
+<div class="slide" id="slide-70">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">4. 資料をアップロードする受け口はない</span>
@@ -1416,7 +1602,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-65">
+<div class="slide" id="slide-71">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">5. 外部への送出が止まる条件</span>
@@ -1430,7 +1616,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-66">
+<div class="slide" id="slide-72">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">5. 外部への送出が止まる条件</span>
@@ -1450,7 +1636,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-67">
+<div class="slide" id="slide-73">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">6. 同時に使うときの制約</span>
@@ -1468,7 +1654,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-68">
+<div class="slide" id="slide-74">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">7. モデルの差し替えの制約</span>
@@ -1482,7 +1668,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-69">
+<div class="slide" id="slide-75">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">7. モデルの差し替えの制約</span>
@@ -1502,7 +1688,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-70">
+<div class="slide" id="slide-76">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. 骨組みだけで中身がない機能</span>
@@ -1516,7 +1702,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-71">
+<div class="slide" id="slide-77">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. 骨組みだけで中身がない機能</span>
@@ -1541,7 +1727,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-72">
+<div class="slide" id="slide-78">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. 骨組みだけで中身がない機能</span>
@@ -1562,7 +1748,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-73">
+<div class="slide" id="slide-79">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">8. 骨組みだけで中身がない機能</span>
@@ -1583,7 +1769,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-74">
+<div class="slide" id="slide-80">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">9. Kubernetes 一式は、そのままでは動かない</span>
@@ -1600,7 +1786,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-75">
+<div class="slide" id="slide-81">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. その他の制限と注意</span>
@@ -1622,7 +1808,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-76">
+<div class="slide" id="slide-82">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. その他の制限と注意</span>
@@ -1641,7 +1827,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-77">
+<div class="slide" id="slide-83">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. その他の制限と注意</span>
@@ -1660,7 +1846,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-78">
+<div class="slide" id="slide-84">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. その他の制限と注意</span>
@@ -1679,7 +1865,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-79">
+<div class="slide" id="slide-85">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. その他の制限と注意</span>
@@ -1705,7 +1891,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-80">
+<div class="slide" id="slide-86">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. その他の制限と注意</span>
@@ -1722,7 +1908,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-81">
+<div class="slide" id="slide-87">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">10. その他の制限と注意</span>
@@ -1744,7 +1930,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-82">
+<div class="slide" id="slide-88">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. 1.0.7 で分かったこと</span>
@@ -1761,7 +1947,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-83">
+<div class="slide" id="slide-89">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. 1.0.7 で分かったこと</span>
@@ -1785,7 +1971,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-84">
+<div class="slide" id="slide-90">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. 1.0.7 で分かったこと</span>
@@ -1805,7 +1991,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-85">
+<div class="slide" id="slide-91">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. 1.0.7 で分かったこと</span>
@@ -1822,7 +2008,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-86">
+<div class="slide" id="slide-92">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. 1.0.7 で分かったこと</span>
@@ -1839,7 +2025,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-87">
+<div class="slide" id="slide-93">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">11. 1.0.7 で分かったこと</span>
@@ -1863,7 +2049,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-88">
+<div class="slide" id="slide-94">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">12. 認証・認可と通信</span>
@@ -1883,7 +2069,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-89">
+<div class="slide" id="slide-95">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">13. 定義はあるが統合されていない連携</span>
@@ -1903,7 +2089,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-90">
+<div class="slide" id="slide-96">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">14. テストでスキップされている領域</span>
@@ -1920,7 +2106,7 @@ cd ../..
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-91">
+<div class="slide" id="slide-97">
 <div class="slide-header">
 <span class="doc-name">limits</span>
 <span class="slide-title">15. 完了していない事項</span>
@@ -1945,7 +2131,7 @@ cd ../..
 </div>
 <nav class="nav-bar">
 <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-<span id="slide-counter">1 / 91</span>
+<span id="slide-counter">1 / 97</span>
 <button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>

@@ -163,7 +163,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;
@@ -211,7 +211,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">English — About this document</span>
-<span class="continued">(1/2)</span>
+<span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
     <p><strong>日本語版はこちら → 日本語</strong></p>
@@ -228,7 +228,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">English — About this document</span>
-<span class="continued">(2/2)</span>
+<span class="continued">(2/4)</span>
 </div>
 <div class="slide-body">
     <ol>
@@ -248,6 +248,7 @@ a:hover { text-decoration: underline; }
     <li>Changing the port</li>
     <li>Operational notes</li>
     </ol>
+    <p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -255,6 +256,142 @@ a:hover { text-decoration: underline; }
 </div>
 </div>
 <div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">operations</span>
+<span class="slide-title">English — About this document</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-6">1. Normal Startup and Shutdown</a>
+      <ul>
+      <li><a href="#slide-6">1-1. Startup</a></li>
+      <li><a href="#slide-7">1-2. Shutdown</a></li>
+      <li><a href="#slide-7">1-3. Background Startup</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-8">2. Installing and Placing</a>
+      <ul>
+      <li><a href="#slide-8">2-1. Verified Environments</a></li>
+      <li><a href="#slide-9">2-2. Setting Up the Environment</a></li>
+      <li><a href="#slide-11">2-3. List of Startup Flags</a></li>
+      <li><a href="#slide-15">2-4. <code>--mode</code> Selection Guide</a></li>
+      <li><a href="#slide-16">2-5. First-Time Model Download Procedure</a></li>
+      <li><a href="#slide-20">2-6. Main Environment Variables</a></li>
+      <li><a href="#slide-26">2-7. Overall Startup Flow Diagram</a></li>
+      <li><a href="#slide-28">2-8. Setting Up an External Inference Server</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-38">3. Connecting an LLM Provider</a>
+      <ul>
+      <li><a href="#slide-38">3-1. Connection Architecture</a></li>
+      <li><a href="#slide-39">3-2. Setting the Provider from the Screen</a></li>
+      <li><a href="#slide-42">3-3. Connecting to LM Studio</a></li>
+      <li><a href="#slide-45">3-4. Connecting to Ollama</a></li>
+      <li><a href="#slide-47">3-5. Connecting to an LLM on a Remote Machine</a></li>
+      <li><a href="#slide-48">3-6. List of Supported Providers</a></li>
+      <li><a href="#slide-51">3-7. Related Environment Variables</a></li>
+      <li><a href="#slide-52">3-8. Reranker Providers</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-54">4. Using Cynovela from External Tools with MCP</a>
+      <ul>
+      <li><a href="#slide-54">4-1. What MCP is</a></li>
+      <li><a href="#slide-55">4-2. MCP tools Cynovela exposes (25 in total)</a></li>
+      <li><a href="#slide-68">4-3. Connecting from LM Studio</a></li>
+      <li><a href="#slide-75">4-4. Which Python Runs the MCP Server</a></li>
+      <li><a href="#slide-76">4-5. Notes on Authentication</a></li>
+      <li><a href="#slide-80">4-6. Troubleshooting</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-82">5. Sharing over a LAN</a>
+      <ul>
+      <li><a href="#slide-82">5-1. Default behaviour</a></li>
+      <li><a href="#slide-83">5-2. LAN sharing mode</a></li>
+      <li><a href="#slide-85">5-3. Tailscale sharing mode</a></li>
+      <li><a href="#slide-87">5-4. Security notes</a></li>
+      <li><a href="#slide-90">5-5. Summary of related startup flags</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-91">6. backup and restore</a>
+      <ul>
+      <li><a href="#slide-91">6-1. Default Storage Locations</a></li>
+      <li><a href="#slide-92">6-2. What <code>store/</code> Holds</a></li>
+      <li><a href="#slide-92">6-3. Manual Backup</a></li>
+      <li><a href="#slide-93">6-4. Restore</a></li>
+      <li><a href="#slide-94">6-5. Points to Note</a></li>
+      <li><a href="#slide-95">6-6. Backups Taken in the App (<code>backup create</code>) — Where They Go</a></li>
+      <li><a href="#slide-96">6-7. Whole-store Backup (recommended)</a></li>
+      <li><a href="#slide-97">6-8. Restore from a Whole-store Copy (do it with Cynovela stopped)</a></li>
+      <li><a href="#slide-98">6-9. Restore from a Backup Taken in the App (do it with Cynovela stopped)</a></li>
+      <li><a href="#slide-100">6-10. Moving to Another Mac</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-101">7. Logs</a>
+      <ul>
+      <li><a href="#slide-101">7-1. Log Level</a></li>
+      <li><a href="#slide-101">7-2. Request ID</a></li>
+      <li><a href="#slide-102">7-3. Preflight Log</a></li>
+      <li><a href="#slide-102">7-4. Watching the Server Log</a></li>
+      </ul>
+    </li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">operations</span>
+<span class="slide-title">English — About this document</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-103">8. Exporting the Audit Log</a>
+      <ul>
+      <li><a href="#slide-103">8-1. What the Audit Log Is</a></li>
+      <li><a href="#slide-103">8-2. Tamper Prevention</a></li>
+      <li><a href="#slide-104">8-3. Viewing from the GUI</a></li>
+      <li><a href="#slide-104">8-4. Via the API</a></li>
+      <li><a href="#slide-104">8-5. Extracting Directly from SQLite</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-106">9. User Management</a>
+      <ul>
+      <li><a href="#slide-106">9-1. Roles</a></li>
+      <li><a href="#slide-107">9-2. The Initial Administrator</a></li>
+      <li><a href="#slide-107">9-3. Login Information of the Shipped demo.db</a></li>
+      <li><a href="#slide-108">9-4. Adding and Deleting Users, and Changing Passwords</a></li>
+      <li><a href="#slide-109">9-5. Vault Access and Masking by Role</a></li>
+      <li><a href="#slide-110">9-6. Authentication</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-111">10. Health Checks and Monitoring</a>
+      <ul>
+      <li><a href="#slide-111">10-1. Main Health Endpoints</a></li>
+      <li><a href="#slide-111">10-2. Publish History</a></li>
+      <li><a href="#slide-112">10-3. Circuit Breaker</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-114">11. Notifications (Email)</a></li>
+    <li><a href="#slide-115">12. Changing the Port</a>
+      <ul>
+      <li><a href="#slide-115">12-1. Ports and Access Control</a></li>
+      <li><a href="#slide-116">12-2. Changing the Port Number</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-118">13. Operational Notes</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">1. Normal Startup and Shutdown</span>
@@ -274,7 +411,7 @@ python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-7">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">1. Normal Startup and Shutdown</span>
@@ -292,7 +429,7 @@ python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-8">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -317,7 +454,7 @@ python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-9">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -338,7 +475,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-10">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -365,7 +502,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-11">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -380,7 +517,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-12">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -406,7 +543,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-13">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -427,7 +564,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-14">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -450,7 +587,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-15">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -474,7 +611,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-16">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -499,7 +636,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-17">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -522,7 +659,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-18">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -546,7 +683,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-19">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -566,7 +703,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-18">
+<div class="slide" id="slide-20">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -588,7 +725,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-19">
+<div class="slide" id="slide-21">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -612,7 +749,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-20">
+<div class="slide" id="slide-22">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -640,7 +777,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-21">
+<div class="slide" id="slide-23">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -660,7 +797,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-22">
+<div class="slide" id="slide-24">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -684,7 +821,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-23">
+<div class="slide" id="slide-25">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -706,7 +843,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-24">
+<div class="slide" id="slide-26">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -732,7 +869,7 @@ build AppConfig (reflecting mode / demo / mock)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-25">
+<div class="slide" id="slide-27">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -757,7 +894,7 @@ start FastAPI with Uvicorn</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-26">
+<div class="slide" id="slide-28">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -777,7 +914,7 @@ start FastAPI with Uvicorn</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-27">
+<div class="slide" id="slide-29">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -792,7 +929,7 @@ start FastAPI with Uvicorn</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-28">
+<div class="slide" id="slide-30">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -819,7 +956,7 @@ python3.12 -m venv .mas-env
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-29">
+<div class="slide" id="slide-31">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -834,7 +971,7 @@ python3.12 -m venv .mas-env
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-30">
+<div class="slide" id="slide-32">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -853,7 +990,7 @@ python3.12 -m venv .mas-env
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-31">
+<div class="slide" id="slide-33">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -874,7 +1011,7 @@ python3.12 -m venv .mas-env
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-32">
+<div class="slide" id="slide-34">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -901,7 +1038,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-33">
+<div class="slide" id="slide-35">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -922,7 +1059,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-34">
+<div class="slide" id="slide-36">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -940,7 +1077,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-35">
+<div class="slide" id="slide-37">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. Installing and Placing</span>
@@ -961,7 +1098,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-36">
+<div class="slide" id="slide-38">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -982,7 +1119,7 @@ Cynovela server (guardrails → returned to the user)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-37">
+<div class="slide" id="slide-39">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1010,7 +1147,7 @@ Cynovela server (guardrails → returned to the user)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-38">
+<div class="slide" id="slide-40">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1024,7 +1161,7 @@ Cynovela server (guardrails → returned to the user)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-39">
+<div class="slide" id="slide-41">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1045,7 +1182,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-40">
+<div class="slide" id="slide-42">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1064,7 +1201,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-41">
+<div class="slide" id="slide-43">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1091,7 +1228,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-42">
+<div class="slide" id="slide-44">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1113,7 +1250,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-43">
+<div class="slide" id="slide-45">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1132,7 +1269,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-44">
+<div class="slide" id="slide-46">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1155,7 +1292,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-45">
+<div class="slide" id="slide-47">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1173,7 +1310,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-46">
+<div class="slide" id="slide-48">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1189,7 +1326,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-47">
+<div class="slide" id="slide-49">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1210,7 +1347,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-48">
+<div class="slide" id="slide-50">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1233,7 +1370,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-49">
+<div class="slide" id="slide-51">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1249,7 +1386,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-50">
+<div class="slide" id="slide-52">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1274,7 +1411,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-51">
+<div class="slide" id="slide-53">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. Connecting an LLM Provider</span>
@@ -1298,7 +1435,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-52">
+<div class="slide" id="slide-54">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1315,7 +1452,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-53">
+<div class="slide" id="slide-55">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1336,7 +1473,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-54">
+<div class="slide" id="slide-56">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1362,7 +1499,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-55">
+<div class="slide" id="slide-57">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1386,7 +1523,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-56">
+<div class="slide" id="slide-58">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1410,7 +1547,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-57">
+<div class="slide" id="slide-59">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1439,7 +1576,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-58">
+<div class="slide" id="slide-60">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1464,7 +1601,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-59">
+<div class="slide" id="slide-61">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1487,7 +1624,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-60">
+<div class="slide" id="slide-62">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1512,7 +1649,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-61">
+<div class="slide" id="slide-63">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1538,7 +1675,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-62">
+<div class="slide" id="slide-64">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1561,7 +1698,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-63">
+<div class="slide" id="slide-65">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1585,7 +1722,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-64">
+<div class="slide" id="slide-66">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1610,7 +1747,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-65">
+<div class="slide" id="slide-67">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1635,7 +1772,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-66">
+<div class="slide" id="slide-68">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1652,7 +1789,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-67">
+<div class="slide" id="slide-69">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1677,7 +1814,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-68">
+<div class="slide" id="slide-70">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1700,7 +1837,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-69">
+<div class="slide" id="slide-71">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1720,7 +1857,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-70">
+<div class="slide" id="slide-72">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1747,7 +1884,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-71">
+<div class="slide" id="slide-73">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1767,7 +1904,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-72">
+<div class="slide" id="slide-74">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1785,7 +1922,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-73">
+<div class="slide" id="slide-75">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1803,7 +1940,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-74">
+<div class="slide" id="slide-76">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1823,7 +1960,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-75">
+<div class="slide" id="slide-77">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1842,7 +1979,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-76">
+<div class="slide" id="slide-78">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1860,7 +1997,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-77">
+<div class="slide" id="slide-79">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1875,7 +2012,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-78">
+<div class="slide" id="slide-80">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1897,7 +2034,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-79">
+<div class="slide" id="slide-81">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. Using Cynovela from External Tools with MCP</span>
@@ -1919,7 +2056,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-80">
+<div class="slide" id="slide-82">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -1940,7 +2077,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-81">
+<div class="slide" id="slide-83">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -1959,7 +2096,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-82">
+<div class="slide" id="slide-84">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -1978,7 +2115,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-83">
+<div class="slide" id="slide-85">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -1997,7 +2134,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-84">
+<div class="slide" id="slide-86">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -2024,7 +2161,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-85">
+<div class="slide" id="slide-87">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -2046,7 +2183,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-86">
+<div class="slide" id="slide-88">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -2063,7 +2200,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-87">
+<div class="slide" id="slide-89">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -2085,7 +2222,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-88">
+<div class="slide" id="slide-90">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. Sharing over a LAN</span>
@@ -2109,7 +2246,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-89">
+<div class="slide" id="slide-91">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2136,7 +2273,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-90">
+<div class="slide" id="slide-92">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2154,7 +2291,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-91">
+<div class="slide" id="slide-93">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2176,7 +2313,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-92">
+<div class="slide" id="slide-94">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2195,7 +2332,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-93">
+<div class="slide" id="slide-95">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2213,7 +2350,7 @@ python3 cynovela-cli.py backup list                  # list what you have</code>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-94">
+<div class="slide" id="slide-96">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2235,7 +2372,7 @@ tar -czf &lt;destination&gt;/cynovela-store-$(date +%Y%m%d).tar.gz -C &lt;the Cy
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-95">
+<div class="slide" id="slide-97">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2257,7 +2394,7 @@ tar -xzf &lt;destination&gt;/cynovela-store-YYYYMMDD.tar.gz
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-96">
+<div class="slide" id="slide-98">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2281,7 +2418,7 @@ cp -R "$BK/chroma" store/vector/demo/chroma      # without --demo, use store/vec
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-97">
+<div class="slide" id="slide-99">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2300,7 +2437,7 @@ rm -rf store/aside</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-98">
+<div class="slide" id="slide-100">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup and restore</span>
@@ -2324,7 +2461,7 @@ curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-99">
+<div class="slide" id="slide-101">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">7. Logs</span>
@@ -2344,7 +2481,7 @@ curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-100">
+<div class="slide" id="slide-102">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">7. Logs</span>
@@ -2363,7 +2500,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-101">
+<div class="slide" id="slide-103">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">8. Exporting the Audit Log</span>
@@ -2389,7 +2526,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-102">
+<div class="slide" id="slide-104">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">8. Exporting the Audit Log</span>
@@ -2412,7 +2549,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-103">
+<div class="slide" id="slide-105">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">8. Exporting the Audit Log</span>
@@ -2427,7 +2564,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-104">
+<div class="slide" id="slide-106">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. User Management</span>
@@ -2450,7 +2587,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-105">
+<div class="slide" id="slide-107">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. User Management</span>
@@ -2474,7 +2611,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-106">
+<div class="slide" id="slide-108">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. User Management</span>
@@ -2496,7 +2633,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-107">
+<div class="slide" id="slide-109">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. User Management</span>
@@ -2516,7 +2653,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-108">
+<div class="slide" id="slide-110">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. User Management</span>
@@ -2531,7 +2668,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-109">
+<div class="slide" id="slide-111">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">10. Health Checks and Monitoring</span>
@@ -2555,7 +2692,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-110">
+<div class="slide" id="slide-112">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">10. Health Checks and Monitoring</span>
@@ -2577,7 +2714,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-111">
+<div class="slide" id="slide-113">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">10. Health Checks and Monitoring</span>
@@ -2594,7 +2731,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-112">
+<div class="slide" id="slide-114">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">11. Notifications (Email)</span>
@@ -2620,7 +2757,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-113">
+<div class="slide" id="slide-115">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">12. Changing the Port</span>
@@ -2643,7 +2780,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-114">
+<div class="slide" id="slide-116">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">12. Changing the Port</span>
@@ -2664,7 +2801,7 @@ python server.py --mode text --port 8900</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-115">
+<div class="slide" id="slide-117">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">12. Changing the Port</span>
@@ -2681,7 +2818,7 @@ python server.py --mode text --port 8900</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-116">
+<div class="slide" id="slide-118">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">13. Operational Notes</span>
@@ -2699,11 +2836,11 @@ python server.py --mode text --port 8900</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-117">
+<div class="slide" id="slide-119">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">日本語 — このドキュメントについて</span>
-<span class="continued">(1/2)</span>
+<span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
     <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
@@ -2715,11 +2852,11 @@ python server.py --mode text --port 8900</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-118">
+<div class="slide" id="slide-120">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">日本語 — このドキュメントについて</span>
-<span class="continued">(2/2)</span>
+<span class="continued">(2/4)</span>
 </div>
 <div class="slide-body">
     <ol>
@@ -2739,13 +2876,150 @@ python server.py --mode text --port 8900</code></pre>
     <li>ポートを変える</li>
     <li>運用上の注意</li>
     </ol>
+    <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-119">
+<div class="slide" id="slide-121">
+<div class="slide-header">
+<span class="doc-name">operations</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-123">1. 通常の起動と停止</a>
+      <ul>
+      <li><a href="#slide-123">1-1. 起動</a></li>
+      <li><a href="#slide-124">1-2. 停止</a></li>
+      <li><a href="#slide-124">1-3. バックグラウンド起動</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-125">2. 入れ方・置き方</a>
+      <ul>
+      <li><a href="#slide-125">2-1. 動作確認済み環境</a></li>
+      <li><a href="#slide-126">2-2. 環境セットアップ</a></li>
+      <li><a href="#slide-128">2-3. 起動フラグ一覧</a></li>
+      <li><a href="#slide-132">2-4. <code>--mode</code> 選択ガイド</a></li>
+      <li><a href="#slide-133">2-5. 初回モデルダウンロード手順</a></li>
+      <li><a href="#slide-137">2-6. 主要な環境変数</a></li>
+      <li><a href="#slide-142">2-7. 起動フロー全体図</a></li>
+      <li><a href="#slide-144">2-8. 外部の推論サーバを立てる</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-153">3. LLM プロバイダーを繋ぐ</a>
+      <ul>
+      <li><a href="#slide-153">3-1. 接続アーキテクチャ</a></li>
+      <li><a href="#slide-154">3-2. 画面から設定する</a></li>
+      <li><a href="#slide-156">3-3. LM Studio との接続</a></li>
+      <li><a href="#slide-160">3-4. Ollama との接続</a></li>
+      <li><a href="#slide-162">3-5. リモートマシン上の LLM への接続</a></li>
+      <li><a href="#slide-163">3-6. 対応プロバイダー一覧</a></li>
+      <li><a href="#slide-166">3-7. 関連する環境変数</a></li>
+      <li><a href="#slide-167">3-8. Reranker（再ランク付け）プロバイダー</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-168">4. MCP で外部ツールから使う</a>
+      <ul>
+      <li><a href="#slide-168">4-1. MCP とは</a></li>
+      <li><a href="#slide-169">4-2. Cynovela が公開する MCP ツール（全 25 件）</a></li>
+      <li><a href="#slide-181">4-3. LM Studio からの接続</a></li>
+      <li><a href="#slide-187">4-4. MCP サーバーを動かす Python</a></li>
+      <li><a href="#slide-188">4-5. 認証の注意</a></li>
+      <li><a href="#slide-192">4-6. トラブルシューティング</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-194">5. LAN で分け合う</a>
+      <ul>
+      <li><a href="#slide-194">5-1. 既定の動作</a></li>
+      <li><a href="#slide-195">5-2. LAN 共有モード</a></li>
+      <li><a href="#slide-197">5-3. Tailscale 共有モード</a></li>
+      <li><a href="#slide-199">5-4. セキュリティ上の注意</a></li>
+      <li><a href="#slide-202">5-5. 関連する起動フラグまとめ</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-203">6. backup と restore</a>
+      <ul>
+      <li><a href="#slide-203">6-1. 既定の保存場所</a></li>
+      <li><a href="#slide-204">6-2. <code>store/</code> に入っているもの</a></li>
+      <li><a href="#slide-204">6-3. 手動バックアップ</a></li>
+      <li><a href="#slide-205">6-4. 復元</a></li>
+      <li><a href="#slide-206">6-5. 注意点</a></li>
+      <li><a href="#slide-206">6-6. アプリで取る控え（<code>backup create</code>）と、その置き場</a></li>
+      <li><a href="#slide-207">6-7. store を丸ごと控える（推奨）</a></li>
+      <li><a href="#slide-208">6-8. store の写しから戻す（Cynovela を止めた状態で行う）</a></li>
+      <li><a href="#slide-210">6-9. アプリで取った控えから戻す（Cynovela を止めた状態で行う）</a></li>
+      <li><a href="#slide-211">6-10. 別の Mac へ移す</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-213">7. ログ</a>
+      <ul>
+      <li><a href="#slide-213">7-1. ログレベル</a></li>
+      <li><a href="#slide-101">7-2. Request ID</a></li>
+      <li><a href="#slide-213">7-3. Preflight ログ</a></li>
+      <li><a href="#slide-214">7-4. サーバーログを流しながら見る</a></li>
+      </ul>
+    </li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-122">
+<div class="slide-header">
+<span class="doc-name">operations</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-215">8. 監査ログの Export</a>
+      <ul>
+      <li><a href="#slide-215">8-1. 監査ログとは</a></li>
+      <li><a href="#slide-215">8-2. 改ざん防止</a></li>
+      <li><a href="#slide-216">8-3. GUI からの参照</a></li>
+      <li><a href="#slide-216">8-4. API 経由</a></li>
+      <li><a href="#slide-216">8-5. SQLite から直接抽出</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-218">9. 利用者の管理</a>
+      <ul>
+      <li><a href="#slide-218">9-1. ロール</a></li>
+      <li><a href="#slide-219">9-2. 初期 admin</a></li>
+      <li><a href="#slide-219">9-3. 出荷 demo.db のログイン情報</a></li>
+      <li><a href="#slide-220">9-4. ユーザー追加・削除・パスワード変更</a></li>
+      <li><a href="#slide-221">9-5. ロール別の保管庫アクセスとマスキング</a></li>
+      <li><a href="#slide-221">9-6. 認証</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-222">10. 健全性の確認と監視</a>
+      <ul>
+      <li><a href="#slide-222">10-1. 主要なヘルスエンドポイント</a></li>
+      <li><a href="#slide-222">10-2. Publish 履歴</a></li>
+      <li><a href="#slide-223">10-3. サーキットブレーカー</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-224">11. 通知（メール）</a></li>
+    <li><a href="#slide-225">12. ポートを変える</a>
+      <ul>
+      <li><a href="#slide-225">12-1. ポートとアクセス制御</a></li>
+      <li><a href="#slide-225">12-2. ポート番号の変更</a></li>
+      </ul>
+    </li>
+    <li><a href="#slide-228">13. 運用上の注意</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-123">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">1. 通常の起動と停止</span>
@@ -2765,7 +3039,7 @@ python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-120">
+<div class="slide" id="slide-124">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">1. 通常の起動と停止</span>
@@ -2783,7 +3057,7 @@ python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-121">
+<div class="slide" id="slide-125">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2808,7 +3082,7 @@ python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-122">
+<div class="slide" id="slide-126">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2827,7 +3101,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-123">
+<div class="slide" id="slide-127">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2843,7 +3117,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-124">
+<div class="slide" id="slide-128">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2871,7 +3145,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-125">
+<div class="slide" id="slide-129">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2897,7 +3171,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-126">
+<div class="slide" id="slide-130">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2918,7 +3192,7 @@ conda activate cynovela-dist</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-127">
+<div class="slide" id="slide-131">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2941,7 +3215,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-128">
+<div class="slide" id="slide-132">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2969,7 +3243,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-129">
+<div class="slide" id="slide-133">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -2995,7 +3269,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-130">
+<div class="slide" id="slide-134">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3021,7 +3295,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-131">
+<div class="slide" id="slide-135">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3042,7 +3316,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-132">
+<div class="slide" id="slide-136">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3064,7 +3338,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-133">
+<div class="slide" id="slide-137">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3090,7 +3364,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-134">
+<div class="slide" id="slide-138">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3119,7 +3393,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-135">
+<div class="slide" id="slide-139">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3138,7 +3412,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-136">
+<div class="slide" id="slide-140">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3162,7 +3436,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-137">
+<div class="slide" id="slide-141">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3184,7 +3458,7 @@ python server.py --demo --mode lite</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-138">
+<div class="slide" id="slide-142">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3210,7 +3484,7 @@ AppConfig 構築（mode / demo / mock 反映）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-139">
+<div class="slide" id="slide-143">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3235,7 +3509,7 @@ Uvicorn で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-140">
+<div class="slide" id="slide-144">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3255,7 +3529,7 @@ Uvicorn で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-141">
+<div class="slide" id="slide-145">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3270,7 +3544,7 @@ Uvicorn で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-142">
+<div class="slide" id="slide-146">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3297,7 +3571,7 @@ python3.12 -m venv .mas-env
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-143">
+<div class="slide" id="slide-147">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3318,7 +3592,7 @@ python3.12 -m venv .mas-env
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-144">
+<div class="slide" id="slide-148">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3339,7 +3613,7 @@ python3.12 -m venv .mas-env
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-145">
+<div class="slide" id="slide-149">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3366,7 +3640,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-146">
+<div class="slide" id="slide-150">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3387,7 +3661,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-147">
+<div class="slide" id="slide-151">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3405,7 +3679,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-148">
+<div class="slide" id="slide-152">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">2. 入れ方・置き方</span>
@@ -3426,7 +3700,7 @@ embedding:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-149">
+<div class="slide" id="slide-153">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3447,7 +3721,7 @@ Cynovela サーバー（ガードレール → ユーザーへ返却）</code></
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-150">
+<div class="slide" id="slide-154">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3475,7 +3749,7 @@ Cynovela サーバー（ガードレール → ユーザーへ返却）</code></
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-151">
+<div class="slide" id="slide-155">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3492,7 +3766,7 @@ Cynovela サーバー（ガードレール → ユーザーへ返却）</code></
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-152">
+<div class="slide" id="slide-156">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3511,7 +3785,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-153">
+<div class="slide" id="slide-157">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3533,7 +3807,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-154">
+<div class="slide" id="slide-158">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3553,7 +3827,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-155">
+<div class="slide" id="slide-159">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3575,7 +3849,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-156">
+<div class="slide" id="slide-160">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3594,7 +3868,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-157">
+<div class="slide" id="slide-161">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3617,7 +3891,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-158">
+<div class="slide" id="slide-162">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3635,7 +3909,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-159">
+<div class="slide" id="slide-163">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3651,7 +3925,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-160">
+<div class="slide" id="slide-164">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3672,7 +3946,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-161">
+<div class="slide" id="slide-165">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3695,7 +3969,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-162">
+<div class="slide" id="slide-166">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3721,7 +3995,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-163">
+<div class="slide" id="slide-167">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">3. LLM プロバイダーを繋ぐ</span>
@@ -3747,7 +4021,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-164">
+<div class="slide" id="slide-168">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3769,7 +4043,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-165">
+<div class="slide" id="slide-169">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3792,7 +4066,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-166">
+<div class="slide" id="slide-170">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3817,7 +4091,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-167">
+<div class="slide" id="slide-171">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3841,7 +4115,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-168">
+<div class="slide" id="slide-172">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3870,7 +4144,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-169">
+<div class="slide" id="slide-173">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3893,7 +4167,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-170">
+<div class="slide" id="slide-174">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3918,7 +4192,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-171">
+<div class="slide" id="slide-175">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3942,7 +4216,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-172">
+<div class="slide" id="slide-176">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3972,7 +4246,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-173">
+<div class="slide" id="slide-177">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -3997,7 +4271,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-174">
+<div class="slide" id="slide-178">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4021,7 +4295,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-175">
+<div class="slide" id="slide-179">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4046,7 +4320,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-176">
+<div class="slide" id="slide-180">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4071,7 +4345,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-177">
+<div class="slide" id="slide-181">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4088,7 +4362,7 @@ ollama pull qwen3:8b</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-178">
+<div class="slide" id="slide-182">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4113,7 +4387,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-179">
+<div class="slide" id="slide-183">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4136,7 +4410,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-180">
+<div class="slide" id="slide-184">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4156,7 +4430,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-181">
+<div class="slide" id="slide-185">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4183,7 +4457,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-182">
+<div class="slide" id="slide-186">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4203,7 +4477,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-183">
+<div class="slide" id="slide-187">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4223,7 +4497,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-184">
+<div class="slide" id="slide-188">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4242,7 +4516,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-185">
+<div class="slide" id="slide-189">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4263,7 +4537,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-186">
+<div class="slide" id="slide-190">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4283,7 +4557,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-187">
+<div class="slide" id="slide-191">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4298,7 +4572,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-188">
+<div class="slide" id="slide-192">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4321,7 +4595,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-189">
+<div class="slide" id="slide-193">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">4. MCP で外部ツールから使う</span>
@@ -4342,7 +4616,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-190">
+<div class="slide" id="slide-194">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4363,7 +4637,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-191">
+<div class="slide" id="slide-195">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4382,7 +4656,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-192">
+<div class="slide" id="slide-196">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4401,7 +4675,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-193">
+<div class="slide" id="slide-197">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4420,7 +4694,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-194">
+<div class="slide" id="slide-198">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4447,7 +4721,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-195">
+<div class="slide" id="slide-199">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4469,7 +4743,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-196">
+<div class="slide" id="slide-200">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4488,7 +4762,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-197">
+<div class="slide" id="slide-201">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4508,7 +4782,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-198">
+<div class="slide" id="slide-202">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">5. LAN で分け合う</span>
@@ -4532,7 +4806,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-199">
+<div class="slide" id="slide-203">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4559,7 +4833,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-200">
+<div class="slide" id="slide-204">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4577,7 +4851,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-201">
+<div class="slide" id="slide-205">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4599,7 +4873,7 @@ cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-202">
+<div class="slide" id="slide-206">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4621,7 +4895,7 @@ python3 cynovela-cli.py backup list                  # 取ってある控えを�
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-203">
+<div class="slide" id="slide-207">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4641,7 +4915,7 @@ shasum -a 256 &lt;保存先&gt;/$(basename $BK).tar.gz</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-204">
+<div class="slide" id="slide-208">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4662,7 +4936,7 @@ cp -r store/ ~/cynovela-backup-$(date +%Y%m%d)/</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-205">
+<div class="slide" id="slide-209">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4680,7 +4954,7 @@ tar -xzf &lt;保存先&gt;/cynovela-store-YYYYMMDD.tar.gz
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-206">
+<div class="slide" id="slide-210">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4705,7 +4979,7 @@ cp -R "$BK/chroma" store/vector/demo/chroma      # --demo を付けない場合�
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-207">
+<div class="slide" id="slide-211">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4725,7 +4999,7 @@ rm -rf store/aside</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-208">
+<div class="slide" id="slide-212">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">6. backup と restore</span>
@@ -4747,7 +5021,7 @@ curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-209">
+<div class="slide" id="slide-213">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">7. ログ</span>
@@ -4769,7 +5043,7 @@ curl -s -H "Authorization: Bearer $CYNOVELA_TOKEN" \
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-210">
+<div class="slide" id="slide-214">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">7. ログ</span>
@@ -4786,7 +5060,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-211">
+<div class="slide" id="slide-215">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">8. 監査ログの Export</span>
@@ -4812,7 +5086,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-212">
+<div class="slide" id="slide-216">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">8. 監査ログの Export</span>
@@ -4835,7 +5109,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-213">
+<div class="slide" id="slide-217">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">8. 監査ログの Export</span>
@@ -4850,7 +5124,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-214">
+<div class="slide" id="slide-218">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. 利用者の管理</span>
@@ -4873,7 +5147,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-215">
+<div class="slide" id="slide-219">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. 利用者の管理</span>
@@ -4897,7 +5171,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-216">
+<div class="slide" id="slide-220">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. 利用者の管理</span>
@@ -4919,7 +5193,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-217">
+<div class="slide" id="slide-221">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">9. 利用者の管理</span>
@@ -4941,7 +5215,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-218">
+<div class="slide" id="slide-222">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">10. 健全性の確認と監視</span>
@@ -4965,7 +5239,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-219">
+<div class="slide" id="slide-223">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">10. 健全性の確認と監視</span>
@@ -4991,7 +5265,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-220">
+<div class="slide" id="slide-224">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">11. 通知（メール）</span>
@@ -5017,7 +5291,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-221">
+<div class="slide" id="slide-225">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">12. ポートを変える</span>
@@ -5042,7 +5316,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-222">
+<div class="slide" id="slide-226">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">12. ポートを変える</span>
@@ -5064,7 +5338,7 @@ python server.py --mode text --port 8900</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-223">
+<div class="slide" id="slide-227">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">12. ポートを変える</span>
@@ -5078,7 +5352,7 @@ python server.py --mode text --port 8900</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-224">
+<div class="slide" id="slide-228">
 <div class="slide-header">
 <span class="doc-name">operations</span>
 <span class="slide-title">13. 運用上の注意</span>
@@ -5099,7 +5373,7 @@ python server.py --mode text --port 8900</code></pre>
 </div>
 <nav class="nav-bar">
 <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-<span id="slide-counter">1 / 224</span>
+<span id="slide-counter">1 / 228</span>
 <button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>

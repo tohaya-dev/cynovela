@@ -19,6 +19,44 @@ shape of an answer, and the main categories of the API.
 
 ---
 
+**Contents**
+
+- [1. Overview](#1-overview)
+  - [1.1 Component Overview Diagram](#11-component-overview-diagram)
+  - [1.2 Role of Each Layer](#12-role-of-each-layer)
+  - [1.3 Workspace and Collection](#13-workspace-and-collection)
+  - [1.4 Component Changes by Startup Mode](#14-component-changes-by-startup-mode)
+- [2. List of Confirmed Implemented Features](#2-list-of-confirmed-implemented-features)
+  - [2.1 RAG (Retrieval-Augmented Generation) Pipeline](#21-rag-retrieval-augmented-generation-pipeline)
+  - [2.2 Guardrails / Security](#22-guardrails-security)
+  - [2.3 Smart Ingestion (Ingest and Classification)](#23-smart-ingestion-ingest-and-classification)
+  - [2.4 Surrounding Features](#24-surrounding-features)
+- [3. How Ingest and Classification Work (Smart Ingestion)](#3-how-ingest-and-classification-work-smart-ingestion)
+  - [3.1 The Concept of Smart Ingestion](#31-the-concept-of-smart-ingestion)
+  - [3.2 The 14 Category Definitions (All of Them)](#32-the-14-category-definitions-all-of-them)
+  - [3.3 The 3-Stage Classification Engine](#33-the-3-stage-classification-engine)
+  - [3.4 Hash Based Differential Sync (DataSyncService)](#34-hash-based-differential-sync-datasyncservice)
+  - [3.5 Ingest Without Masking (raw_only) and the Old Raw Mode](#35-ingest-without-masking-raw_only-and-the-old-raw-mode)
+  - [3.6 Chunk Splitting Strategy](#36-chunk-splitting-strategy)
+  - [3.7 Compatibility With the Old Classification](#37-compatibility-with-the-old-classification)
+- [4. How Search Works (the RAG Pipeline)](#4-how-search-works-the-rag-pipeline)
+  - [4.1 Pipeline Flow](#41-pipeline-flow)
+  - [4.2 Hybrid Search (Vector + BM25)](#42-hybrid-search-vector-bm25)
+  - [4.3 The Role of the Reranker](#43-the-role-of-the-reranker)
+  - [4.4 Advanced Search Options (Advanced RAG)](#44-advanced-search-options-advanced-rag)
+  - [4.5 The Parameters of the `rag` Section](#45-the-parameters-of-the-rag-section)
+- [5. How to Read the Scores](#5-how-to-read-the-scores)
+  - [5.1 The 3 Kinds of Score](#51-the-3-kinds-of-score)
+  - [5.2 What Each Score Means](#52-what-each-score-means)
+  - [5.3 Confidence Threshold (confidence_threshold)](#53-confidence-threshold-confidence_threshold)
+- [6. The Shape of an Answer](#6-the-shape-of-an-answer)
+  - [6.1 Strictness Modes (2 Kinds)](#61-strictness-modes-2-kinds)
+  - [6.2 Answer Style by Role](#62-answer-style-by-role)
+  - [6.3 RAG Presets (5 in Total)](#63-rag-presets-5-in-total)
+  - [6.4 The 3 RAG Modes](#64-the-3-rag-modes)
+  - [6.5 Answer Format](#65-answer-format)
+- [7. Main Categories of API Endpoints](#7-main-categories-of-api-endpoints)
+
 ## 1. Overview
 
 ### 1.1 Component Overview Diagram
@@ -907,6 +945,44 @@ For the individual endpoints, see [reference/api.md](reference/api.md).
 このドキュメントは、中がどう動いているかを知りたい人のためのものです。全体像、確認済みの実装機能、取り込みと分類のしくみ、検索のしくみ、スコアの読み方、回答のかたち、API の主要カテゴリを扱います。
 
 ---
+
+**目次**
+
+- [1. 全体像](#1-全体像)
+  - [1.1 コンポーネント全体図](#11-コンポーネント全体図)
+  - [1.2 各レイヤーの役割](#12-各レイヤーの役割)
+  - [1.3 Workspace と Collection](#13-workspace-と-collection)
+  - [1.4 起動モードによるコンポーネント変化](#14-起動モードによるコンポーネント変化)
+- [2. 確認済みの実装機能の一覧](#2-確認済みの実装機能の一覧)
+  - [2.1 RAG（検索拡張生成）パイプライン](#21-rag検索拡張生成パイプライン)
+  - [2.2 ガードレール / セキュリティ](#22-ガードレール-セキュリティ)
+  - [2.3 Smart Ingestion（取り込み・分類）](#23-smart-ingestion取り込み分類)
+  - [2.4 周辺機能](#24-周辺機能)
+- [3. 取り込みと分類のしくみ（Smart Ingestion）](#3-取り込みと分類のしくみsmart-ingestion)
+  - [3.1 Smart Ingestion の概念](#31-smart-ingestion-の概念)
+  - [3.2 14 カテゴリ定義（全件）](#32-14-カテゴリ定義全件)
+  - [3.3 分類エンジン 3 段構え](#33-分類エンジン-3-段構え)
+  - [3.4 ハッシュ差分同期（DataSyncService）](#34-ハッシュ差分同期datasyncservice)
+  - [3.5 マスキングなし取り込み（raw_only）と旧 raw モード](#35-マスキングなし取り込みraw_onlyと旧-raw-モード)
+  - [3.6 チャンク分割戦略](#36-チャンク分割戦略)
+  - [3.7 旧分類との互換性](#37-旧分類との互換性)
+- [4. 検索のしくみ（RAG パイプライン）](#4-検索のしくみrag-パイプライン)
+  - [4.1 パイプラインのフロー](#41-パイプラインのフロー)
+  - [4.2 ハイブリッド検索（ベクター + BM25）](#42-ハイブリッド検索ベクター-bm25)
+  - [4.3 Reranker の役割](#43-reranker-の役割)
+  - [4.4 高度な検索オプション（Advanced RAG）](#44-高度な検索オプションadvanced-rag)
+  - [4.5 `rag` 節のパラメータ](#45-rag-節のパラメータ)
+- [5. スコアの読み方](#5-スコアの読み方)
+  - [5.1 スコア 3 種の違い](#51-スコア-3-種の違い)
+  - [5.2 それぞれのスコアの意味](#52-それぞれのスコアの意味)
+  - [5.3 信頼度閾値（confidence_threshold）](#53-信頼度閾値confidence_threshold)
+- [6. 回答のかたち](#6-回答のかたち)
+  - [6.1 厳格度モード（2 種類）](#61-厳格度モード2-種類)
+  - [6.2 ロール別 回答スタイル](#62-ロール別-回答スタイル)
+  - [6.3 RAG プリセット（全 5 件）](#63-rag-プリセット全-5-件)
+  - [6.4 RAG モード 3 種](#64-rag-モード-3-種)
+  - [6.5 回答の形式](#65-回答の形式)
+- [7. API エンドポイントの主要カテゴリ](#7-api-エンドポイントの主要カテゴリ)
 
 ## 1. 全体像
 

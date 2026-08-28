@@ -136,9 +136,11 @@ becomes its own slide as a single `<blockquote>` right after the cover slide.
 </div>
 ```
 
-### Rule 6: for manual-complete.md only
-Add one chapter title slide before each `## 見出し`.
-Chapter detection uses the heading text (prefixes such as "S-1", "G-1", "D-1", or "Stage" / "Guide" / "Deep").
+### Rule 6: chapter title slides (optional, not used at present)
+When a document is long enough that it wants a visible break between chapters, a
+chapter title slide may be put before a `##` heading. The style for it is in
+`_slide-base.css` (`chapter-slide` / `chapter-title`). None of the eight documents
+generated today uses this, so leave it out unless a document asks for it.
 
 ```html
 <div class="slide chapter-slide" id="slide-N">
@@ -154,6 +156,22 @@ Put a `slide-footer` at the end of every non-cover slide:
 <span>非公式・個人学習目的</span>
 </div>
 ```
+
+### Rule 8: table of contents
+The markdown carries a table of contents in each language section: a
+`**Contents**` / `**目次**` line followed by a list of `- [heading](#slug)`
+entries (`###` entries are indented by two spaces).
+
+When converting:
+- Render those list items as links, not as plain text.
+- Rewrite each `href` from the markdown anchor `#slug` to `#slide-N`, where N is
+  the slide that carries that heading — the slide whose `slide-title` matches it,
+  or the slide whose body contains the matching `<h3>` / `<h4>`.
+- Do not put `target="_blank"` on an in-page anchor; it would open a new tab.
+- Do not add a heading for the table of contents. It is a bold line, so that the
+  chapter structure of the markdown stays exactly as it is.
+- Match the heading text after stripping tags, so that a heading containing
+  `` `code` `` still matches (in the html it has become `<code>`).
 
 ## Counter initialisation
 After generating all slides, write the actual number of slides into the N of
@@ -310,9 +328,10 @@ Markdownの先頭にある `> **このドキュメントについて**` など�
 </div>
 ```
 
-### ルール6: manual-complete.md 専用
-`## 見出し` の前に章タイトルスライドを1枚追加する。
-章の判定は見出しテキスト（"S-1", "G-1", "D-1" 等のプレフィックス、または "Stage" / "Guide" / "Deep" 等）で行う。
+### ルール6: 章タイトルスライド（任意・現在は使っていない）
+章の切れ目を目に見える形で置きたいほど長い文書では、`##` 見出しの前に章タイトル
+スライドを置いてよい。体裁は `_slide-base.css` の `chapter-slide` / `chapter-title`
+に在る。今回生成する8本はどれも使っていないので、必要になるまで入れない。
 
 ```html
 <div class="slide chapter-slide" id="slide-N">
@@ -328,6 +347,21 @@ Markdownの先頭にある `> **このドキュメントについて**` など�
 <span>非公式・個人学習目的</span>
 </div>
 ```
+
+### ルール8: 目次
+`.md` は言語節ごとに目次を持っています。`**Contents**` / `**目次**` の行に続いて
+`- [見出し](#slug)` の並びが来ます（`###` の項目は空白2つで字下げ）。
+
+変換のとき:
+- この並びを平文ではなくリンクとして描くこと。
+- `href` を `.md` のアンカー `#slug` から `#slide-N` へ書き替えること。N は
+  その見出しを載せているスライド（`slide-title` が一致するもの、または本文に
+  一致する `<h3>` / `<h4>` を持つもの）。
+- ページ内アンカーに `target="_blank"` を付けないこと。別タブで開いてしまう。
+- 目次のために見出しを作らないこと。太字の行にしてある。`.md` の章立てを
+  そのまま保つためである。
+- 見出しの突き合わせはタグを外してから行うこと。`` `code` `` を含む見出しは
+  html では `<code>` になっているためである。
 
 ## カウンタ初期化
 全スライド生成後、`<span id="slide-counter">1 / N</span>` の N に実際のスライド枚数を書く。

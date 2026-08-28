@@ -163,7 +163,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;
@@ -225,9 +225,11 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">English</span>
+<span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
 <p>This document describes what Cynovela is, what it is for, and what it is not. For how the pieces are put together and how to read the scores that come out of search, see <a href="architecture.html" target="_blank" rel="noopener">architecture.md</a>. For what it cannot do, see <a href="limits.html" target="_blank" rel="noopener">limits.md</a>.</p>
+<p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -235,6 +237,48 @@ a:hover { text-decoration: underline; }
 </div>
 </div>
 <div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">concept</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-7">1. Core message</a></li><li><a href="#slide-8">2. The problems Cynovela solves</a><ul><li><a href="#slide-10">2.1 The three risks of AI security and governance</a></li></ul></li><li><a href="#slide-14">3. How it works (3 steps)</a></li><li><a href="#slide-16">4. Design principles</a></li><li><a href="#slide-20">5. What "local first" means</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">concept</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-25">6. The concepts behind it</a><ul><li><a href="#slide-25">6.1 The concept of RAG</a></li><li><a href="#slide-29">6.2 Why data cannot be sent to the cloud (data sovereignty)</a></li><li><a href="#slide-31">6.3 PII protection</a></li><li><a href="#slide-34">6.4 RBAC (Role-Based Access Control)</a></li><li><a href="#slide-36">6.5 Audit logs</a></li><li><a href="#slide-37">6.6 Smart Ingestion</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
+<div class="slide-header">
+<span class="doc-name">concept</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-40">7. Significance by industry</a><ul><li><a href="#slide-40">7.1 Finance</a></li><li><a href="#slide-41">7.2 Healthcare</a></li><li><a href="#slide-42">7.3 Manufacturing</a></li><li><a href="#slide-43">7.4 Research and development</a></li></ul></li><li><a href="#slide-44">8. Basis for the independent implementation</a></li><li><a href="#slide-47">9. Differences from the AI infrastructure tools it refers to</a></li><li><a href="#slide-52">10. Current standing</a></li><li><a href="#slide-55">11. Disclaimer</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-7">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">1. Core message</span>
@@ -247,7 +291,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-8">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. The problems Cynovela solves</span>
@@ -263,7 +307,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-9">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. The problems Cynovela solves（続き）</span>
@@ -280,7 +324,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-10">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. The problems Cynovela solves（続き）</span>
@@ -295,7 +339,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-11">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. The problems Cynovela solves（続き）</span>
@@ -309,7 +353,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-12">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. The problems Cynovela solves（続き）</span>
@@ -323,7 +367,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-13">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. The problems Cynovela solves（続き）</span>
@@ -337,7 +381,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-14">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">3. How it works (3 steps)</span>
@@ -351,7 +395,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-15">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">3. How it works (3 steps)（続き）</span>
@@ -365,7 +409,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-16">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. Design principles</span>
@@ -382,7 +426,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-17">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. Design principles（続き）</span>
@@ -397,7 +441,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-18">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. Design principles（続き）</span>
@@ -413,7 +457,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-19">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. Design principles（続き）</span>
@@ -428,7 +472,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-20">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. What "local first" means</span>
@@ -442,7 +486,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-18">
+<div class="slide" id="slide-21">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. What "local first" means（続き）</span>
@@ -456,7 +500,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-19">
+<div class="slide" id="slide-22">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. What "local first" means（続き）</span>
@@ -470,7 +514,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-20">
+<div class="slide" id="slide-23">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. What "local first" means（続き）</span>
@@ -484,7 +528,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-21">
+<div class="slide" id="slide-24">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. What "local first" means（続き）</span>
@@ -498,7 +542,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-22">
+<div class="slide" id="slide-25">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it</span>
@@ -515,7 +559,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-23">
+<div class="slide" id="slide-26">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -529,7 +573,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-24">
+<div class="slide" id="slide-27">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -543,7 +587,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-25">
+<div class="slide" id="slide-28">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -559,7 +603,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-26">
+<div class="slide" id="slide-29">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -574,7 +618,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-27">
+<div class="slide" id="slide-30">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -588,7 +632,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-28">
+<div class="slide" id="slide-31">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -606,7 +650,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-29">
+<div class="slide" id="slide-32">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -623,7 +667,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-30">
+<div class="slide" id="slide-33">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -640,7 +684,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-31">
+<div class="slide" id="slide-34">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -658,7 +702,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-32">
+<div class="slide" id="slide-35">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -673,7 +717,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-33">
+<div class="slide" id="slide-36">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -690,7 +734,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-34">
+<div class="slide" id="slide-37">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -709,7 +753,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-35">
+<div class="slide" id="slide-38">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -724,7 +768,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-36">
+<div class="slide" id="slide-39">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. The concepts behind it（続き）</span>
@@ -739,7 +783,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-37">
+<div class="slide" id="slide-40">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. Significance by industry</span>
@@ -755,7 +799,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-38">
+<div class="slide" id="slide-41">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. Significance by industry（続き）</span>
@@ -770,7 +814,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-39">
+<div class="slide" id="slide-42">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. Significance by industry（続き）</span>
@@ -785,7 +829,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-40">
+<div class="slide" id="slide-43">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. Significance by industry（続き）</span>
@@ -800,7 +844,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-41">
+<div class="slide" id="slide-44">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">8. Basis for the independent implementation</span>
@@ -815,7 +859,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-42">
+<div class="slide" id="slide-45">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">8. Basis for the independent implementation（続き）</span>
@@ -829,7 +873,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-43">
+<div class="slide" id="slide-46">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">8. Basis for the independent implementation（続き）</span>
@@ -843,7 +887,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-44">
+<div class="slide" id="slide-47">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. Differences from the AI infrastructure tools it refers to</span>
@@ -857,7 +901,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-45">
+<div class="slide" id="slide-48">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. Differences from the AI infrastructure tools it refers to（続き）</span>
@@ -871,7 +915,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-46">
+<div class="slide" id="slide-49">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. Differences from the AI infrastructure tools it refers to（続き）</span>
@@ -885,7 +929,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-47">
+<div class="slide" id="slide-50">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. Differences from the AI infrastructure tools it refers to（続き）</span>
@@ -899,7 +943,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-48">
+<div class="slide" id="slide-51">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. Differences from the AI infrastructure tools it refers to（続き）</span>
@@ -913,7 +957,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-49">
+<div class="slide" id="slide-52">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">10. Current standing</span>
@@ -927,7 +971,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-50">
+<div class="slide" id="slide-53">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">10. Current standing（続き）</span>
@@ -941,7 +985,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-51">
+<div class="slide" id="slide-54">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">10. Current standing（続き）</span>
@@ -955,7 +999,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-52">
+<div class="slide" id="slide-55">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">11. Disclaimer</span>
@@ -968,7 +1012,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-53">
+<div class="slide" id="slide-56">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">このドキュメントについて</span>
@@ -981,20 +1025,64 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-54">
+<div class="slide" id="slide-57">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">日本語</span>
+<span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
 <p>この文書は、Cynovela が何であり、何のためのもので、何でないかを書いたものです。部品の組み合わせ方や、検索から出てくるスコアの読み方は<a href="architecture.html" target="_blank" rel="noopener">architecture.md</a> にあります。できないことは <a href="limits.html" target="_blank" rel="noopener">limits.md</a> にあります。</p>
+<p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-55">
+<div class="slide" id="slide-58">
+<div class="slide-header">
+<span class="doc-name">concept</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-61">1. 核心メッセージ</a></li><li><a href="#slide-62">2. Cynovela が解く問題</a><ul><li><a href="#slide-64">2.1 AI セキュリティとガバナンスの 3 つのリスク</a></li></ul></li><li><a href="#slide-67">3. 動き方（3ステップ）</a></li><li><a href="#slide-68">4. 設計思想</a></li><li><a href="#slide-72">5. ローカルファーストの意味</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-59">
+<div class="slide-header">
+<span class="doc-name">concept</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-76">6. 背景にある概念</a><ul><li><a href="#slide-76">6.1 RAG の概念</a></li><li><a href="#slide-79">6.2 クラウドに送信できない理由（データ主権）</a></li><li><a href="#slide-80">6.3 PII 保護</a></li><li><a href="#slide-82">6.4 RBAC（ロールベースアクセス制御）</a></li><li><a href="#slide-84">6.5 監査ログ</a></li><li><a href="#slide-86">6.6 Smart Ingestion（賢い取り込み）</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-60">
+<div class="slide-header">
+<span class="doc-name">concept</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-89">7. 産業別の意義</a><ul><li><a href="#slide-89">7.1 金融</a></li><li><a href="#slide-90">7.2 医療</a></li><li><a href="#slide-91">7.3 製造</a></li><li><a href="#slide-92">7.4 研究開発</a></li></ul></li><li><a href="#slide-93">8. 独自実装の根拠</a></li><li><a href="#slide-95">9. 参照元の AI 基盤ツールとの違い</a></li><li><a href="#slide-98">10. 現在の位置づけ</a></li><li><a href="#slide-101">11. 免責</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-61">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">1. 核心メッセージ</span>
@@ -1007,7 +1095,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-56">
+<div class="slide" id="slide-62">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. Cynovela が解く問題</span>
@@ -1024,7 +1112,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-57">
+<div class="slide" id="slide-63">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. Cynovela が解く問題（続き）</span>
@@ -1040,7 +1128,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-58">
+<div class="slide" id="slide-64">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. Cynovela が解く問題（続き）</span>
@@ -1055,7 +1143,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-59">
+<div class="slide" id="slide-65">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. Cynovela が解く問題（続き）</span>
@@ -1069,7 +1157,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-60">
+<div class="slide" id="slide-66">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">2. Cynovela が解く問題（続き）</span>
@@ -1083,7 +1171,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-61">
+<div class="slide" id="slide-67">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">3. 動き方（3ステップ）</span>
@@ -1096,7 +1184,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-62">
+<div class="slide" id="slide-68">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. 設計思想</span>
@@ -1113,7 +1201,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-63">
+<div class="slide" id="slide-69">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. 設計思想（続き）</span>
@@ -1128,7 +1216,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-64">
+<div class="slide" id="slide-70">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. 設計思想（続き）</span>
@@ -1145,7 +1233,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-65">
+<div class="slide" id="slide-71">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">4. 設計思想（続き）</span>
@@ -1159,7 +1247,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-66">
+<div class="slide" id="slide-72">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. ローカルファーストの意味</span>
@@ -1173,7 +1261,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-67">
+<div class="slide" id="slide-73">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. ローカルファーストの意味（続き）</span>
@@ -1187,7 +1275,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-68">
+<div class="slide" id="slide-74">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. ローカルファーストの意味（続き）</span>
@@ -1201,7 +1289,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-69">
+<div class="slide" id="slide-75">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">5. ローカルファーストの意味（続き）</span>
@@ -1215,7 +1303,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-70">
+<div class="slide" id="slide-76">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念</span>
@@ -1232,7 +1320,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-71">
+<div class="slide" id="slide-77">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1246,7 +1334,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-72">
+<div class="slide" id="slide-78">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1262,7 +1350,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-73">
+<div class="slide" id="slide-79">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1278,7 +1366,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-74">
+<div class="slide" id="slide-80">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1297,7 +1385,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-75">
+<div class="slide" id="slide-81">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1314,7 +1402,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-76">
+<div class="slide" id="slide-82">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1332,7 +1420,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-77">
+<div class="slide" id="slide-83">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1348,7 +1436,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-78">
+<div class="slide" id="slide-84">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1365,7 +1453,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-79">
+<div class="slide" id="slide-85">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1381,7 +1469,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-80">
+<div class="slide" id="slide-86">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1399,7 +1487,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-81">
+<div class="slide" id="slide-87">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1414,7 +1502,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-82">
+<div class="slide" id="slide-88">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">6. 背景にある概念（続き）</span>
@@ -1429,7 +1517,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-83">
+<div class="slide" id="slide-89">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. 産業別の意義</span>
@@ -1445,7 +1533,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-84">
+<div class="slide" id="slide-90">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. 産業別の意義（続き）</span>
@@ -1460,7 +1548,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-85">
+<div class="slide" id="slide-91">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. 産業別の意義（続き）</span>
@@ -1475,7 +1563,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-86">
+<div class="slide" id="slide-92">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">7. 産業別の意義（続き）</span>
@@ -1490,7 +1578,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-87">
+<div class="slide" id="slide-93">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">8. 独自実装の根拠</span>
@@ -1505,7 +1593,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-88">
+<div class="slide" id="slide-94">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">8. 独自実装の根拠（続き）</span>
@@ -1520,7 +1608,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-89">
+<div class="slide" id="slide-95">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. 参照元の AI 基盤ツールとの違い</span>
@@ -1535,7 +1623,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-90">
+<div class="slide" id="slide-96">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. 参照元の AI 基盤ツールとの違い（続き）</span>
@@ -1550,7 +1638,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-91">
+<div class="slide" id="slide-97">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">9. 参照元の AI 基盤ツールとの違い（続き）</span>
@@ -1564,7 +1652,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-92">
+<div class="slide" id="slide-98">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">10. 現在の位置づけ</span>
@@ -1578,7 +1666,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-93">
+<div class="slide" id="slide-99">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">10. 現在の位置づけ（続き）</span>
@@ -1592,7 +1680,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-94">
+<div class="slide" id="slide-100">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">10. 現在の位置づけ（続き）</span>
@@ -1606,7 +1694,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-95">
+<div class="slide" id="slide-101">
 <div class="slide-header">
 <span class="doc-name">concept</span>
 <span class="slide-title">11. 免責</span>
@@ -1622,7 +1710,7 @@ a:hover { text-decoration: underline; }
 </div>
 <nav class="nav-bar">
 <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-<span id="slide-counter">1 / 95</span>
+<span id="slide-counter">1 / 101</span>
 <button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>

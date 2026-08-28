@@ -163,7 +163,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;
@@ -211,11 +211,13 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">English — About this document</span>
+<span class="continued">(1/2)</span>
 </div>
 <div class="slide-body">
     <p><strong>日本語版はこちら → 日本語</strong></p>
     <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that an individual could understand the concepts of an AI platform tool by working with their own hands. It is not a commercial product and not an official implementation. The implementation is entirely original, and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.</blockquote>
     <p>If you are starting from nothing, read <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> first. What Cynovela is and what it is for is in <a href="concept.html" target="_blank" rel="noopener">concept.md</a>; what it cannot do is in <a href="limits.html" target="_blank" rel="noopener">limits.md</a>.</p>
+    <p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -223,6 +225,28 @@ a:hover { text-decoration: underline; }
 </div>
 </div>
 <div class="slide" id="slide-3">
+<div class="slide-header">
+<span class="doc-name">faq</span>
+<span class="slide-title">English — About this document</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-4">Q1. What is the difference from the referenced AI platform tool</a></li>
+    <li><a href="#slide-5">Q2. What does it mean that the data does not go outside</a></li>
+    <li><a href="#slide-7">Q3. What file types can be used</a></li>
+    <li><a href="#slide-8">Q4. How much spec is required</a></li>
+    <li><a href="#slide-10">Q5. How are documents containing personal information handled</a></li>
+    <li><a href="#slide-13">Q6. Are there features that do not work</a></li>
+    <li><a href="#slide-16">Q7. Where do I look next</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-4">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q1. What is the difference from the referenced AI platform tool</span>
@@ -236,7 +260,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-4">
+<div class="slide" id="slide-5">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q2. What does it mean that the data does not go outside</span>
@@ -261,7 +285,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-6">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q2. What does it mean that the data does not go outside</span>
@@ -276,7 +300,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-7">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q3. What file types can be used</span>
@@ -290,7 +314,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-8">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q4. How much spec is required</span>
@@ -314,7 +338,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-9">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q4. How much spec is required</span>
@@ -328,7 +352,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-10">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q5. How are documents containing personal information handled</span>
@@ -344,7 +368,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-11">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q5. How are documents containing personal information handled</span>
@@ -360,7 +384,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-12">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q5. How are documents containing personal information handled</span>
@@ -374,7 +398,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-13">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q6. Are there features that do not work</span>
@@ -399,7 +423,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-14">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q6. Are there features that do not work</span>
@@ -423,7 +447,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-15">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q6. Are there features that do not work</span>
@@ -438,7 +462,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-16">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q7. Where do I look next</span>
@@ -462,21 +486,45 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-17">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(1/2)</span>
 </div>
 <div class="slide-body">
     <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
     <p>まだ何も始めていない場合は、まず <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> を読んでください。Cynovela が何であり何のためのものかは <a href="concept.html" target="_blank" rel="noopener">concept.md</a> に、できないことは <a href="limits.html" target="_blank" rel="noopener">limits.md</a> にあります。</p>
+    <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-18">
+<div class="slide-header">
+<span class="doc-name">faq</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><a href="#slide-19">Q1. 参照元の AI 基盤ツールとの違いは何ですか</a></li>
+    <li><a href="#slide-20">Q2. データが外に出ないとはどういう意味ですか</a></li>
+    <li><a href="#slide-22">Q3. 使えるファイル種別は何ですか</a></li>
+    <li><a href="#slide-23">Q4. スペック要件はどれくらい必要ですか</a></li>
+    <li><a href="#slide-24">Q5. 個人情報が入った文書はどう扱われますか</a></li>
+    <li><a href="#slide-26">Q6. 動かない機能はありますか</a></li>
+    <li><a href="#slide-28">Q7. 次はどこを見ればよいですか</a></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-19">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q1. 参照元の AI 基盤ツールとの違いは何ですか</span>
@@ -490,7 +538,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-18">
+<div class="slide" id="slide-20">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q2. データが外に出ないとはどういう意味ですか</span>
@@ -515,7 +563,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-19">
+<div class="slide" id="slide-21">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q2. データが外に出ないとはどういう意味ですか</span>
@@ -530,7 +578,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-20">
+<div class="slide" id="slide-22">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q3. 使えるファイル種別は何ですか</span>
@@ -544,7 +592,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-21">
+<div class="slide" id="slide-23">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q4. スペック要件はどれくらい必要ですか</span>
@@ -568,7 +616,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-22">
+<div class="slide" id="slide-24">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q5. 個人情報が入った文書はどう扱われますか</span>
@@ -586,7 +634,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-23">
+<div class="slide" id="slide-25">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q5. 個人情報が入った文書はどう扱われますか</span>
@@ -601,7 +649,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-24">
+<div class="slide" id="slide-26">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q6. 動かない機能はありますか</span>
@@ -626,7 +674,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-25">
+<div class="slide" id="slide-27">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q6. 動かない機能はありますか</span>
@@ -652,7 +700,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-26">
+<div class="slide" id="slide-28">
 <div class="slide-header">
 <span class="doc-name">faq</span>
 <span class="slide-title">Q7. 次はどこを見ればよいですか</span>
@@ -679,7 +727,7 @@ a:hover { text-decoration: underline; }
 </div>
 <nav class="nav-bar">
 <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-<span id="slide-counter">1 / 26</span>
+<span id="slide-counter">1 / 28</span>
 <button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>

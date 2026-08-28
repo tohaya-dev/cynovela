@@ -82,8 +82,9 @@ pii_mode: standard
 # G-2: 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
 auth:
   admin_initial_password: ''
-  # N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) に
-  #   案内 (docs/STARTUP.md) と同じ値が書かれる。空のままだと初回起動時に乱数が使われる。
+  # N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) が
+  #   この行へ値を書く。同梱の文書には書かない (受け取り手には launch.sh が
+  #   初回起動時に画面へ出す)。空のままだと初回起動時に乱数が使われる (db.py)。
   viewer_initial_password: ''
 vector_store:
   provider: chromadb

@@ -32,6 +32,48 @@ restore, changing the port, and reading the logs — are in [operations.md](oper
 
 ---
 
+**Contents**
+
+- [0. Read this first (this is where most people get stuck)](#0-read-this-first-this-is-where-most-people-get-stuck)
+- [1. Which package did you download?](#1-which-package-did-you-download)
+- [2. The gentle way in — the package edition, step by step](#2-the-gentle-way-in-the-package-edition-step-by-step)
+- [3. Why each of those steps is there](#3-why-each-of-those-steps-is-there)
+- [4. The short route, for those in a hurry](#4-the-short-route-for-those-in-a-hurry)
+  - [4-1. Setting up the environment (source edition only)](#4-1-setting-up-the-environment-source-edition-only)
+  - [4-2. A note on SSL_CERT_FILE (important)](#4-2-a-note-on-ssl_cert_file-important)
+  - [4-3. Starting](#4-3-starting)
+- [5. What to prepare (source edition)](#5-what-to-prepare-source-edition)
+- [6. Extract](#6-extract)
+- [7. Create the runtime environment and start](#7-create-the-runtime-environment-and-start)
+- [8. First run only: a screen asks you to choose about downloading the AI model](#8-first-run-only-a-screen-asks-you-to-choose-about-downloading-the-ai-model)
+- [9. Open it in a browser](#9-open-it-in-a-browser)
+- [10. Sign in, and change the initial password](#10-sign-in-and-change-the-initial-password)
+  - [Roles](#roles)
+  - [How to create a viewer when you started with nothing loaded](#how-to-create-a-viewer-when-you-started-with-nothing-loaded)
+- [11. Connect the LLM that writes the answers](#11-connect-the-llm-that-writes-the-answers)
+  - [11-1. Preparation on the LM Studio side](#11-1-preparation-on-the-lm-studio-side)
+  - [11-2. Settings on the Cynovela side](#11-2-settings-on-the-cynovela-side)
+- [12. Ask your first question](#12-ask-your-first-question)
+- [13. Add a folder to be read (an ingest source)](#13-add-a-folder-to-be-read-an-ingest-source)
+  - [Add it from the screen (recommended)](#add-it-from-the-screen-recommended)
+  - [Add by double-clicking](#add-by-double-clicking)
+  - [From a terminal](#from-a-terminal)
+  - [Passing multiple ingest sources](#passing-multiple-ingest-sources)
+- [14. Ingest documents and publish](#14-ingest-documents-and-publish)
+- [15. When you place folders or files there later](#15-when-you-place-folders-or-files-there-later)
+- [16. Everyday startup](#16-everyday-startup)
+  - [There are 2 ways to start it, and 2 things that can start](#there-are-2-ways-to-start-it-and-2-things-that-can-start)
+  - [Notes before the first start](#notes-before-the-first-start)
+  - [Frequently used operations](#frequently-used-operations)
+- [17. Startup options](#17-startup-options)
+  - [List of startup forms (--mode) (measured 2026-08-12)](#list-of-startup-forms-mode-measured-2026-08-12)
+- [18. The route through the terminal (summary)](#18-the-route-through-the-terminal-summary)
+- [19. Stopping, and starting again](#19-stopping-and-starting-again)
+- [20. What is going on when you stop and start again](#20-what-is-going-on-when-you-stop-and-start-again)
+- [21. Checking behavior (tests)](#21-checking-behavior-tests)
+- [22. When things do not work](#22-when-things-do-not-work)
+- [23. Where to go next](#23-where-to-go-next)
+
 ## 0. Read this first (this is where most people get stuck)
 
 - **The first time you sign in as the administrator, you will always be told to change
@@ -1194,6 +1236,48 @@ More detail is in the bundled `README.md`.
 ログ確認 — は [operations.md](operations.md) にあります。
 
 ---
+
+**目次**
+
+- [0. 先に知っておくこと（ここでつまずく人が一番多いところ）](#0-先に知っておくことここでつまずく人が一番多いところ)
+- [1. どの配布物を落としましたか](#1-どの配布物を落としましたか)
+- [2. やさしい入口 — パッケージ版を一歩ずつ](#2-やさしい入口-パッケージ版を一歩ずつ)
+- [3. なぜその手順なのか](#3-なぜその手順なのか)
+- [4. 急ぐ人のための最短の道](#4-急ぐ人のための最短の道)
+  - [4-1. 環境のセットアップ（ソース版のみ）](#4-1-環境のセットアップソース版のみ)
+  - [4-2. SSL_CERT_FILE の注意（重要）](#4-2-ssl_cert_file-の注意重要)
+  - [4-3. 起動](#4-3-起動)
+- [5. 用意するもの（ソース版）](#5-用意するものソース版)
+- [6. 展開する](#6-展開する)
+- [7. 動作環境を作って起動する](#7-動作環境を作って起動する)
+- [8. 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます](#8-初回だけaiモデルのダウンロードを選ぶ画面が出ます)
+- [9. ブラウザで開く](#9-ブラウザで開く)
+- [10. ログインと初回のパスワード変更](#10-ログインと初回のパスワード変更)
+  - [ロール](#ロール)
+  - [何も入れずに始めた場合の、閲覧者の作り方](#何も入れずに始めた場合の閲覧者の作り方)
+- [11. 回答を作る LLM をつなぐ](#11-回答を作る-llm-をつなぐ)
+  - [11-1. LM Studio 側の準備](#11-1-lm-studio-側の準備)
+  - [11-2. Cynovela 側の設定](#11-2-cynovela-側の設定)
+- [12. 最初の質問をする](#12-最初の質問をする)
+- [13. 検索の対象フォルダ（取り込み元）を足す](#13-検索の対象フォルダ取り込み元を足す)
+  - [画面から足す（おすすめ）](#画面から足すおすすめ)
+  - [ダブルクリックで足す](#ダブルクリックで足す)
+  - [ターミナルから足す](#ターミナルから足す)
+  - [取り込み元を複数渡す](#取り込み元を複数渡す)
+- [14. 資料を取り込んで公開する](#14-資料を取り込んで公開する)
+- [15. 後からフォルダやファイルを置いたとき](#15-後からフォルダやファイルを置いたとき)
+- [16. 日常の起動手順](#16-日常の起動手順)
+  - [起動の仕方は 2 通り、起動の中身も 2 通りあります](#起動の仕方は-2-通り起動の中身も-2-通りあります)
+  - [はじめて起動する前の注意](#はじめて起動する前の注意)
+  - [よく使う操作](#よく使う操作)
+- [17. 起動オプション](#17-起動オプション)
+  - [起動の形（--mode）の一覧（実測・2026-08-12）](#起動の形-modeの一覧実測2026-08-12)
+- [18. ターミナルで行う道（まとめ）](#18-ターミナルで行う道まとめ)
+- [19. 止め方と、起こし直し方](#19-止め方と起こし直し方)
+- [20. 止めて起こし直すとき何が起きているのか](#20-止めて起こし直すとき何が起きているのか)
+- [21. 動作確認（テスト）](#21-動作確認テスト)
+- [22. うまくいかないとき](#22-うまくいかないとき)
+- [23. 次に読むもの](#23-次に読むもの)
 
 ## 0. 先に知っておくこと（ここでつまずく人が一番多いところ）
 

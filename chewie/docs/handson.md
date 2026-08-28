@@ -22,6 +22,20 @@ addresses in them do not exist.
 
 ---
 
+**Contents**
+
+- [1. Getting ready](#1-getting-ready)
+- [2. What is inside the sample material](#2-what-is-inside-the-sample-material)
+- [3. Exercise A — questions one file can answer](#3-exercise-a-questions-one-file-can-answer)
+- [4. Exercise B — questions that span more than one file](#4-exercise-b-questions-that-span-more-than-one-file)
+- [5. Exercise C — questions the material does not answer](#5-exercise-c-questions-the-material-does-not-answer)
+- [6. Exercise D — how the same material looks to different roles](#6-exercise-d-how-the-same-material-looks-to-different-roles)
+- [7. Exercise E — ingest and publish material of your own](#7-exercise-e-ingest-and-publish-material-of-your-own)
+- [8. Questions and expected answers](#8-questions-and-expected-answers)
+  - [(a) Answerable from a single file](#a-answerable-from-a-single-file)
+  - [(b) Needs two or more files](#b-needs-two-or-more-files)
+  - [(c) Not written anywhere](#c-not-written-anywhere)
+
 ## 1. Getting ready
 
 The exercises assume Cynovela is already running with the bundled demo data.
@@ -332,6 +346,20 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 すべて実在しません。
 
 ---
+
+**目次**
+
+- [1. 準備](#1-準備)
+- [2. サンプル資料には何が入っているか](#2-サンプル資料には何が入っているか)
+- [3. 演習A: 1 本で答えられる問い](#3-演習a-1-本で答えられる問い)
+- [4. 演習B: 複数の文書をまたぐ問い](#4-演習b-複数の文書をまたぐ問い)
+- [5. 演習C: 答えが無い問い](#5-演習c-答えが無い問い)
+- [6. 演習D: 役割による見え方の違い](#6-演習d-役割による見え方の違い)
+- [7. 演習E: 自分の資料を取り込んで publish する](#7-演習e-自分の資料を取り込んで-publish-する)
+- [8. 設問と正解の対応表](#8-設問と正解の対応表)
+  - [(a) 1 本で答えられるもの](#a-1-本で答えられるもの)
+  - [(b) 2 本以上をまたぐもの](#b-2-本以上をまたぐもの)
+  - [(c) どこにも書いていないもの](#c-どこにも書いていないもの)
 
 ## 1. 準備
 

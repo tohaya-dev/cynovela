@@ -18,6 +18,31 @@ see [architecture.md](architecture.md). For what it cannot do, see [limits.md](l
 
 ---
 
+**Contents**
+
+- [1. Core message](#1-core-message)
+- [2. The problems Cynovela solves](#2-the-problems-cynovela-solves)
+  - [2.1 The three risks of AI security and governance](#21-the-three-risks-of-ai-security-and-governance)
+- [3. How it works (3 steps)](#3-how-it-works-3-steps)
+- [4. Design principles](#4-design-principles)
+- [5. What "local first" means](#5-what-local-first-means)
+- [6. The concepts behind it](#6-the-concepts-behind-it)
+  - [6.1 The concept of RAG](#61-the-concept-of-rag)
+  - [6.2 Why data cannot be sent to the cloud (data sovereignty)](#62-why-data-cannot-be-sent-to-the-cloud-data-sovereignty)
+  - [6.3 PII protection](#63-pii-protection)
+  - [6.4 RBAC (Role-Based Access Control)](#64-rbac-role-based-access-control)
+  - [6.5 Audit logs](#65-audit-logs)
+  - [6.6 Smart Ingestion](#66-smart-ingestion)
+- [7. Significance by industry](#7-significance-by-industry)
+  - [7.1 Finance](#71-finance)
+  - [7.2 Healthcare](#72-healthcare)
+  - [7.3 Manufacturing](#73-manufacturing)
+  - [7.4 Research and development](#74-research-and-development)
+- [8. Basis for the independent implementation](#8-basis-for-the-independent-implementation)
+- [9. Differences from the AI infrastructure tools it refers to](#9-differences-from-the-ai-infrastructure-tools-it-refers-to)
+- [10. Current standing](#10-current-standing)
+- [11. Disclaimer](#11-disclaimer)
+
 ## 1. Core message
 
 Cynovela is a learning-purpose verification implementation that keeps a RAG (Retrieval-Augmented Generation) pipeline for in-house documents entirely within a local environment. The whole flow — document ingest, PII (personal information) detection, vector search, and answer generation by a local LLM — is built from OSS parts only. Its purpose is to understand, by running it yourself, the problems that the referenced AI infrastructure tools try to solve.
@@ -324,6 +349,31 @@ Cynovela is a personal implementation for learning purposes; commercial use and 
 [architecture.md](architecture.md) にあります。できないことは [limits.md](limits.md) にあります。
 
 ---
+
+**目次**
+
+- [1. 核心メッセージ](#1-核心メッセージ)
+- [2. Cynovela が解く問題](#2-cynovela-が解く問題)
+  - [2.1 AI セキュリティとガバナンスの 3 つのリスク](#21-ai-セキュリティとガバナンスの-3-つのリスク)
+- [3. 動き方（3ステップ）](#3-動き方3ステップ)
+- [4. 設計思想](#4-設計思想)
+- [5. ローカルファーストの意味](#5-ローカルファーストの意味)
+- [6. 背景にある概念](#6-背景にある概念)
+  - [6.1 RAG の概念](#61-rag-の概念)
+  - [6.2 クラウドに送信できない理由（データ主権）](#62-クラウドに送信できない理由データ主権)
+  - [6.3 PII 保護](#63-pii-保護)
+  - [6.4 RBAC（ロールベースアクセス制御）](#64-rbacロールベースアクセス制御)
+  - [6.5 監査ログ](#65-監査ログ)
+  - [6.6 Smart Ingestion（賢い取り込み）](#66-smart-ingestion賢い取り込み)
+- [7. 産業別の意義](#7-産業別の意義)
+  - [7.1 金融](#71-金融)
+  - [7.2 医療](#72-医療)
+  - [7.3 製造](#73-製造)
+  - [7.4 研究開発](#74-研究開発)
+- [8. 独自実装の根拠](#8-独自実装の根拠)
+- [9. 参照元の AI 基盤ツールとの違い](#9-参照元の-ai-基盤ツールとの違い)
+- [10. 現在の位置づけ](#10-現在の位置づけ)
+- [11. 免責](#11-免責)
 
 ## 1. 核心メッセージ
 

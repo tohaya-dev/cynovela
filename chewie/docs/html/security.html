@@ -163,7 +163,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;
@@ -225,10 +225,12 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">English</span>
+<span class="continued">(1/8)</span>
 </div>
 <div class="slide-body">
 <p>Cynovela implements the <strong>guardrails (protection rules)</strong> and <strong>access control</strong> that are required when handling internal documents with RAG (Retrieval-Augmented Generation), split across several layers. This document describes how the current construction works, so that the person who sets Cynovela up can judge what is covered by it and what is not.</p>
 <p>Cynovela is a learning tool, and it does not meet the security requirements of production operation. The known limitations of Cynovela as a whole are collected in <code>docs/limits.md</code>.</p>
+<p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -236,6 +238,104 @@ a:hover { text-decoration: underline; }
 </div>
 </div>
 <div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(2/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-11">1. Disclaimers (4 points)</a><ul><li><a href="#slide-11">1-1. Learning purpose, unofficial implementation</a></li><li><a href="#slide-11">1-2. Absence of any official position</a></li><li><a href="#slide-12">1-3. Production operation is out of scope</a></li><li><a href="#slide-12">1-4. Possibility of specification changes</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(3/8)</span>
+</div>
+<div class="slide-body" style="overflow:auto;">
+<ul><li><a href="#slide-13">2. Overall construction</a><ul><li><a href="#slide-13">2.1 Three principles of the security design</a></li><li><a href="#slide-15">2.2 Separation layers per workspace</a></li><li><a href="#slide-15">2.3 Separation in ChromaDB (vector search)</a></li><li><a href="#slide-16">2.4 ACL (access control list) filter</a></li><li><a href="#slide-17">2.5 Known limitations of the separation</a></li><li><a href="#slide-18">2.6 Audit log</a></li><li><a href="#slide-19">2.7 Network control: IP allow list</a></li><li><a href="#slide-19">2.8 Network control: restriction on the LM Studio URL</a></li><li><a href="#slide-20">2.9 Known limitations of the current construction</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(4/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-21">3. Roles and permissions (RBAC)</a><ul><li><a href="#slide-21">3.1 Role definitions (3 roles)</a></li><li><a href="#slide-23">3.2 Role check helpers</a></li><li><a href="#slide-25">3.3 Main endpoints by role (admin only)</a></li><li><a href="#slide-28">3.4 Access control per workspace</a></li><li><a href="#slide-29">3.5 Differences in answer style by role</a></li><li><a href="#slide-31">3.6 Limitations of the role implementation</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-7">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(5/8)</span>
+</div>
+<div class="slide-body" style="overflow:auto;">
+<ul><li><a href="#slide-32">4. Guardrails</a><ul><li><a href="#slide-32">4.1 How the guardrail works</a></li><li><a href="#slide-33">4.2 Entry points</a></li><li><a href="#slide-34">4.3 The triple of policy x classification x action</a></li><li><a href="#slide-35">4.4 Categories (classification classes)</a></li><li><a href="#slide-37">4.5 Initial policies (seeds)</a></li><li><a href="#slide-37">4.6 Action types</a></li><li><a href="#slide-40">4.7 Prompt injection countermeasures (3-layer defense)</a></li><li><a href="#slide-44">4.8 Placement of the system prompt</a></li><li><a href="#slide-45">4.9 Audit logs of guardrail events (audit_logs)</a></li><li><a href="#slide-45">4.10 How to add a custom detector</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-8">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(6/8)</span>
+</div>
+<div class="slide-body" style="overflow:auto;">
+<ul><li><a href="#slide-50">5. PII detection and masking</a><ul><li><a href="#slide-50">5.1 Design principle: put only masked text into the vector DB</a></li><li><a href="#slide-52">5.2 Tier1: masking at ingest time</a></li><li><a href="#slide-56">5.3 Tier2: masking at answer time</a></li><li><a href="#slide-58">5.4 Dispatch by role</a></li><li><a href="#slide-61">5.5 How it looks by role</a></li><li><a href="#slide-61">5.6 Fernet encryption (vault)</a></li><li><a href="#slide-66">5.7 All PII categories</a></li><li><a href="#slide-71">5.8 Differences between <code>pii_mode</code> values</a></li><li><a href="#slide-73">5.9 Aggregation of detection counts</a></li><li><a href="#slide-74">5.10 Migration from the old implementation</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-9">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(7/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-75">6. Ways of use that are not recommended</a><ul><li><a href="#slide-75">6-1. Publishing directly to the internet</a></li><li><a href="#slide-76">6-2. Production operation with confidential documents</a></li><li><a href="#slide-77">6-3. LAN sharing with users you cannot trust</a></li><li><a href="#slide-77">6-4. Editing the audit log directly in the DB</a></li><li><a href="#slide-77">6-5. Forcing multiple simultaneous Publishes</a></li><li><a href="#slide-78">6-6. Checking quality in mock mode</a></li><li><a href="#slide-78">6-7. Adding new <code>INSERT OR REPLACE</code> statements</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-10">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(8/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-79">7. Recommended operation configurations</a><ul><li><a href="#slide-79">7-1. Fully local operation (the narrowest exposure)</a></li><li><a href="#slide-79">7-2. Local LLM operation</a></li><li><a href="#slide-80">7-3. Operation via a personal VPN</a></li></ul></li><li><a href="#slide-81">8. Vulnerability reports</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-11">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">1. Disclaimers (4 points)</span>
@@ -252,7 +352,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-12">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">1. Disclaimers (4 points)（続き）</span>
@@ -269,7 +369,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-13">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction</span>
@@ -284,7 +384,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-14">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction（続き）</span>
@@ -298,7 +398,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-15">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction（続き）</span>
@@ -315,7 +415,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-16">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction（続き）</span>
@@ -336,7 +436,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-17">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction（続き）</span>
@@ -352,7 +452,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-18">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction（続き）</span>
@@ -368,7 +468,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-19">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction（続き）</span>
@@ -387,7 +487,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-20">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. Overall construction（続き）</span>
@@ -403,7 +503,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-21">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)</span>
@@ -420,7 +520,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-22">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -435,7 +535,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-23">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -451,7 +551,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-24">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -466,7 +566,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-18">
+<div class="slide" id="slide-25">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -481,7 +581,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-19">
+<div class="slide" id="slide-26">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -495,7 +595,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-20">
+<div class="slide" id="slide-27">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -509,7 +609,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-21">
+<div class="slide" id="slide-28">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -526,7 +626,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-22">
+<div class="slide" id="slide-29">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -543,7 +643,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-23">
+<div class="slide" id="slide-30">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -558,7 +658,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-24">
+<div class="slide" id="slide-31">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. Roles and permissions (RBAC)（続き）</span>
@@ -573,7 +673,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-25">
+<div class="slide" id="slide-32">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails</span>
@@ -588,7 +688,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-26">
+<div class="slide" id="slide-33">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -604,7 +704,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-27">
+<div class="slide" id="slide-34">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -620,7 +720,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-28">
+<div class="slide" id="slide-35">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -640,7 +740,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-29">
+<div class="slide" id="slide-36">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -655,7 +755,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-30">
+<div class="slide" id="slide-37">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -674,7 +774,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-31">
+<div class="slide" id="slide-38">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -689,7 +789,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-32">
+<div class="slide" id="slide-39">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -708,7 +808,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-33">
+<div class="slide" id="slide-40">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -725,7 +825,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-34">
+<div class="slide" id="slide-41">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -754,7 +854,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-35">
+<div class="slide" id="slide-42">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -772,7 +872,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-36">
+<div class="slide" id="slide-43">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -793,7 +893,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-37">
+<div class="slide" id="slide-44">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -810,7 +910,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-38">
+<div class="slide" id="slide-45">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -829,7 +929,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-39">
+<div class="slide" id="slide-46">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -848,7 +948,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-40">
+<div class="slide" id="slide-47">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -870,7 +970,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-41">
+<div class="slide" id="slide-48">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -891,7 +991,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-42">
+<div class="slide" id="slide-49">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. Guardrails（続き）</span>
@@ -907,11 +1007,11 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-43">
+<div class="slide" id="slide-50">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking</span>
-<span class="continued">(1/24)</span>
+<span class="continued">(1/25)</span>
 </div>
 <div class="slide-body">
 <h3>5.1 Design principle: put only masked text into the vector DB</h3>
@@ -923,32 +1023,45 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-44">
+<div class="slide" id="slide-51">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(2/24)</span>
+<span class="continued">(2/25)</span>
 </div>
 <div class="slide-body">
 <ul><li>The path where a search hit gets mixed into the LLM prompt → only masked text is passed</li><li>The path where the ChromaDB data is dumped or copied as is → masked only</li><li>The path where the DB file is physically carried away → the raw side is already encrypted with Fernet</li></ul>
 <p>To achieve this, Cynovela adopts a double defense of masking at ingest time (Tier1) and masking at answer time (Tier2).</p>
-<blockquote><strong>Abolished: ingest without masking (<code>collections.raw_only = 1</code>)</strong> — the ingest that bypasses masking (Raw mode) was abolished on 2026-07-24. If you specify it now, it is rejected with HTTP 400 (measured 2026-08-02). Only collections created in the past with <code>raw_only = 1</code> can remain in a state without a masked layer (for details see metadata-engine.md §6).</blockquote>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-45">
+<div class="slide" id="slide-52">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(3/24)</span>
+<span class="continued">(3/25)</span>
 </div>
 <div class="slide-body">
+<blockquote><strong>Abolished: ingest without masking (<code>collections.raw_only = 1</code>)</strong> — the ingest that bypasses masking (Raw mode) was abolished on 2026-07-24. If you specify it now, it is rejected with HTTP 400 (measured 2026-08-02). Only collections created in the past with <code>raw_only = 1</code> can remain in a state without a masked layer (for details see <a href="architecture.html" target="_blank" rel="noopener">architecture.md</a> §3.5.1 "Abolished: <code>raw_only</code>").</blockquote>
 <h3>5.2 Tier1: masking at ingest time</h3>
 <h4>5.2.1 Role</h4>
 <p>In the middle of Publish (the processing that loads a collection into ChromaDB), a dual-row of "raw text" and "masked text" is generated for each chunk. Both are saved in the <code>chunks</code> table in SQLite and in both ChromaDB collections.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-53">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">5. PII detection and masking（続き）</span>
+<span class="continued">(4/25)</span>
+</div>
+<div class="slide-body">
 <h4>5.2.2 Implementation location</h4>
 <p><code>rag.py:984-1075</code> (excerpt):</p>
 </div>
@@ -957,11 +1070,11 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-46">
+<div class="slide" id="slide-54">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(4/24)</span>
+<span class="continued">(5/25)</span>
 </div>
 <div class="slide-body" style="overflow:auto;">
 <pre><code>pii_flag = 1 if pii_pat.search(chunk or "") else 0
@@ -987,11 +1100,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-47">
+<div class="slide" id="slide-55">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(5/24)</span>
+<span class="continued">(6/25)</span>
 </div>
 <div class="slide-body">
 <p><code>_mtws_publish</code> is an alias of <code>guardrail.mask_text_with_spans</code>, and applies a regular-expression-based mask to each chunk.</p>
@@ -1003,11 +1116,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-48">
+<div class="slide" id="slide-56">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(6/24)</span>
+<span class="continued">(7/25)</span>
 </div>
 <div class="slide-body">
 <h4>5.2.4 Behavior on failure</h4>
@@ -1023,11 +1136,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-49">
+<div class="slide" id="slide-57">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(7/24)</span>
+<span class="continued">(8/25)</span>
 </div>
 <div class="slide-body">
 <pre><code>def _mask_for_viewer(text: str, user: dict | None) -&gt; str:
@@ -1058,11 +1171,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-50">
+<div class="slide" id="slide-58">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(8/24)</span>
+<span class="continued">(9/25)</span>
 </div>
 <div class="slide-body">
 <p><code>_mask_for_viewer</code> is called at 4 places in the chat path (normal response / Compare A / Compare B / SSE path) (<code>routers/chat.py:653 / 655 / 681 / 1814</code>). For anything other than admin, the exit mask is applied by force.</p>
@@ -1074,11 +1187,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-51">
+<div class="slide" id="slide-59">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(9/24)</span>
+<span class="continued">(10/25)</span>
 </div>
 <div class="slide-body">
 <pre><code>def tier_for_role(role: str) -&gt; str:
@@ -1094,11 +1207,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-52">
+<div class="slide" id="slide-60">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(10/24)</span>
+<span class="continued">(11/25)</span>
 </div>
 <div class="slide-body">
 <ul><li><strong>admin</strong> → refers to the collection on the <code>raw</code> side, and the exit masking is passed through in the answer display (the original text is shown as it is)</li><li><strong>viewer / not specified</strong> (<code>curator</code> and so on are normalized to viewer) → refers to the collection on the <code>masked</code> side, and the exit masking is also applied (the text stays masked when displayed)</li></ul>
@@ -1109,11 +1222,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-53">
+<div class="slide" id="slide-61">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(11/24)</span>
+<span class="continued">(12/25)</span>
 </div>
 <div class="slide-body">
 <h3>5.5 How it looks by role</h3>
@@ -1126,11 +1239,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-54">
+<div class="slide" id="slide-62">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(12/24)</span>
+<span class="continued">(13/25)</span>
 </div>
 <div class="slide-body">
 <h4>5.6.1 Role and design policy</h4>
@@ -1142,11 +1255,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-55">
+<div class="slide" id="slide-63">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(13/24)</span>
+<span class="continued">(14/25)</span>
 </div>
 <div class="slide-body">
 <h4>5.6.2 Implementation</h4>
@@ -1159,11 +1272,11 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-56">
+<div class="slide" id="slide-64">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(14/24)</span>
+<span class="continued">(15/25)</span>
 </div>
 <div class="slide-body">
 <pre><code>ENC_PREFIX = "enc:"
@@ -1181,11 +1294,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-57">
+<div class="slide" id="slide-65">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(15/24)</span>
+<span class="continued">(16/25)</span>
 </div>
 <div class="slide-body">
 <h4>5.6.3 Where it is applied</h4>
@@ -1197,11 +1310,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-58">
+<div class="slide" id="slide-66">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(16/24)</span>
+<span class="continued">(17/25)</span>
 </div>
 <div class="slide-body">
 <h4>5.6.4 Migration of existing data</h4>
@@ -1216,11 +1329,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-59">
+<div class="slide" id="slide-67">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(17/24)</span>
+<span class="continued">(18/25)</span>
 </div>
 <div class="slide-body">
 <table><thead><tr><th>entity_type</th><th>Detection target</th><th>Token after masking</th></tr></thead><tbody><tr><td><code>URL</code></td><td><code>https?://...</code></td><td><code>[MASKED:URL]</code></td></tr><tr><td><code>EMAIL</code></td><td>Email address (<code>\b[\w.+-]+@[\w.-]+\.\w+\b</code>)</td><td><code>[MASKED:EMAIL]</code></td></tr><tr><td><code>PHONE_JP</code></td><td>Mobile number (070/080/090)</td><td><code>[MASKED:PHONE]</code></td></tr><tr><td><code>PHONE_LAND</code></td><td>Landline phone number</td><td><code>[MASKED:PHONE]</code></td></tr><tr><td><code>CREDIT</code></td><td>Credit card number (4-4-4-4 form)</td><td><code>[MASKED:CREDIT]</code></td></tr><tr><td><code>MYNUMBER</code></td><td>My Number (12 digits)</td><td><code>[MASKED:MYNUM]</code></td></tr><tr><td><code>PASSPORT</code></td><td>Passport number (2 letters + 7 digits)</td><td><code>[MASKED:PASSPORT]</code></td></tr><tr><td><code>IPV4</code></td><td>IPv4 address</td><td><code>[MASKED:IP]</code></td></tr></tbody></table>
@@ -1230,11 +1343,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-60">
+<div class="slide" id="slide-68">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(18/24)</span>
+<span class="continued">(19/25)</span>
 </div>
 <div class="slide-body">
 <h4>5.7.2 Secondary line: <code>utils/metadata/pii.py</code> (presidio + GiNZA fallback)</h4>
@@ -1246,11 +1359,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-61">
+<div class="slide" id="slide-69">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(19/24)</span>
+<span class="continued">(20/25)</span>
 </div>
 <div class="slide-body">
 <table><thead><tr><th>entity_type</th><th>Description</th></tr></thead><tbody><tr><td><code>EMAIL</code></td><td>Email address (regular expression)</td></tr><tr><td><code>PHONE_JP</code></td><td>Japanese phone number</td></tr><tr><td><code>PHONE_INTL</code></td><td>International phone number</td></tr><tr><td><code>IP_ADDRESS</code></td><td>IP address</td></tr><tr><td><code>MY_NUMBER</code></td><td>My Number</td></tr><tr><td><code>CREDIT_CARD</code></td><td>Credit card number</td></tr><tr><td><code>INTERNAL_URL</code></td><td>Internal URL</td></tr></tbody></table>
@@ -1260,11 +1373,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-62">
+<div class="slide" id="slide-70">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(20/24)</span>
+<span class="continued">(21/25)</span>
 </div>
 <div class="slide-body">
 <table><thead><tr><th>entity_type</th><th>Description</th></tr></thead><tbody><tr><td><code>EMAIL_ADDRESS</code></td><td>Email detected by presidio</td></tr><tr><td><code>PHONE_NUMBER</code></td><td>Phone number detected by presidio</td></tr><tr><td><code>DATE_TIME</code></td><td>Date and time detected by presidio</td></tr><tr><td><code>PERSON_JP</code></td><td>Personal name detected by GiNZA (Japanese)</td></tr><tr><td><code>ORG_JP</code></td><td>Organization name detected by GiNZA (Japanese)</td></tr><tr><td><code>LOC_JP</code></td><td>Place name detected by GiNZA (Japanese)</td></tr><tr><td><code>ADDRESS_JP</code></td><td>Japanese address rule</td></tr></tbody></table>
@@ -1274,11 +1387,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-63">
+<div class="slide" id="slide-71">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(21/24)</span>
+<span class="continued">(22/25)</span>
 </div>
 <div class="slide-body">
 <p><code>{CREDIT_CARD, MY_NUMBER, SSN, PASSPORT, IBAN_CODE}</code> are defined as <code>HIGH_RISK_TYPES</code> and are weighted heavily in the calculation of the sensitivity score (0 to 100).</p>
@@ -1293,11 +1406,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-64">
+<div class="slide" id="slide-72">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(22/24)</span>
+<span class="continued">(23/25)</span>
 </div>
 <div class="slide-body">
 <h4>5.8.1 How to set it</h4>
@@ -1310,11 +1423,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-65">
+<div class="slide" id="slide-73">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(23/24)</span>
+<span class="continued">(24/25)</span>
 </div>
 <div class="slide-body">
 <p>If an invalid value is given, it is reset to <code>standard</code> (<code>server.py:3135-3137</code>).</p>
@@ -1330,11 +1443,11 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-66">
+<div class="slide" id="slide-74">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII detection and masking（続き）</span>
-<span class="continued">(24/24)</span>
+<span class="continued">(25/25)</span>
 </div>
 <div class="slide-body">
 <h3>5.10 Migration from the old implementation</h3>
@@ -1345,7 +1458,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-67">
+<div class="slide" id="slide-75">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. Ways of use that are not recommended</span>
@@ -1362,7 +1475,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-68">
+<div class="slide" id="slide-76">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. Ways of use that are not recommended（続き）</span>
@@ -1378,7 +1491,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-69">
+<div class="slide" id="slide-77">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. Ways of use that are not recommended（続き）</span>
@@ -1397,7 +1510,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-70">
+<div class="slide" id="slide-78">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. Ways of use that are not recommended（続き）</span>
@@ -1414,7 +1527,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-71">
+<div class="slide" id="slide-79">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">7. Recommended operation configurations</span>
@@ -1433,7 +1546,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-72">
+<div class="slide" id="slide-80">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">7. Recommended operation configurations（続き）</span>
@@ -1450,7 +1563,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-73">
+<div class="slide" id="slide-81">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">8. Vulnerability reports</span>
@@ -1463,7 +1576,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-74">
+<div class="slide" id="slide-82">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">このドキュメントについて</span>
@@ -1476,21 +1589,121 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-75">
+<div class="slide" id="slide-83">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">日本語</span>
+<span class="continued">(1/8)</span>
 </div>
 <div class="slide-body">
 <p>Cynovela は、社内ドキュメントを RAG（検索拡張生成）で扱う際に必要となる <strong>ガードレール（保護ルール）</strong> と <strong>アクセス制御</strong> を、複数層に分けて実装しています。本ドキュメントでは、導入する人が「いまの作りで何が扱われていて、何が扱われていないか」を判断できるように、現在の作りを記述します。</p>
 <p>Cynovela は学習用ツールであり、本番運用のセキュリティ要件を満たすものではありません。Cynovela 全体の既知の制限は <code>docs/limits.md</code> にまとめています。</p>
+<p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-76">
+<div class="slide" id="slide-84">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(2/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-91">1. 免責（4 点）</a><ul><li><a href="#slide-91">1-1. 学習目的・非公式実装</a></li><li><a href="#slide-91">1-2. 公式見解の不在</a></li><li><a href="#slide-91">1-3. 本番運用は想定外</a></li><li><a href="#slide-92">1-4. 仕様変更の可能性</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-85">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(3/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-93">2. 全体の作り</a><ul><li><a href="#slide-93">2.1 セキュリティ設計 3 原則</a></li><li><a href="#slide-94">2.2 ワークスペース単位の分離レイヤー</a></li><li><a href="#slide-94">2.3 ChromaDB（ベクター検索）の分離</a></li><li><a href="#slide-95">2.4 ACL（アクセス制御リスト）フィルター</a></li><li><a href="#slide-96">2.5 分離の既知制限</a></li><li><a href="#slide-97">2.6 監査ログ</a></li><li><a href="#slide-97">2.7 ネットワーク制御：IP アローリスト</a></li><li><a href="#slide-98">2.8 ネットワーク制御：LM Studio URL の制限</a></li><li><a href="#slide-99">2.9 現在の作りの既知の制限</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-86">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(4/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-100">3. 役割と権限（RBAC）</a><ul><li><a href="#slide-100">3.1 ロール定義（3 ロール）</a></li><li><a href="#slide-102">3.2 ロール検査ヘルパー</a></li><li><a href="#slide-103">3.3 ロール別 主要エンドポイント（admin 限定）</a></li><li><a href="#slide-106">3.4 ワークスペース単位のアクセス制御</a></li><li><a href="#slide-107">3.5 ロール別 回答スタイルの違い</a></li><li><a href="#slide-108">3.6 ロール実装の制限</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-87">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(5/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-109">4. ガードレール</a><ul><li><a href="#slide-109">4.1 ガードレールの仕組み</a></li><li><a href="#slide-109">4.2 入口</a></li><li><a href="#slide-110">4.3 ポリシー × 分類 × アクションの三項</a></li><li><a href="#slide-111">4.4 カテゴリ（分類クラス）</a></li><li><a href="#slide-112">4.5 初期ポリシー（シード）</a></li><li><a href="#slide-113">4.6 アクション種別</a></li><li><a href="#slide-115">4.7 プロンプトインジェクション対策（3 層防御）</a></li><li><a href="#slide-120">4.8 システムプロンプトの配置</a></li><li><a href="#slide-120">4.9 ガードレールの監査ログ（audit_logs）</a></li><li><a href="#slide-121">4.10 カスタム検出器の追加方法</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-88">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(6/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-126">5. PII の検出とマスキング</a><ul><li><a href="#slide-126">5.1 設計思想：ベクター DB にはマスク済みのみ入れる</a></li><li><a href="#slide-127">5.2 Tier1：取込時マスキング</a></li><li><a href="#slide-131">5.3 Tier2：回答時マスキング</a></li><li><a href="#slide-133">5.4 ロール別の振り分け</a></li><li><a href="#slide-135">5.5 ロール別の見え方</a></li><li><a href="#slide-135">5.6 Fernet 暗号化（vault）</a></li><li><a href="#slide-140">5.7 PII カテゴリ全件</a></li><li><a href="#slide-145">5.8 <code>pii_mode</code> の違い</a></li><li><a href="#slide-147">5.9 検出件数の集計</a></li><li><a href="#slide-148">5.10 旧実装からの移行</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-89">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(7/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-149">6. 推奨しない使用方法</a><ul><li><a href="#slide-149">6-1. インターネットへの直接公開</a></li><li><a href="#slide-149">6-2. 機密文書での本番運用</a></li><li><a href="#slide-150">6-3. 信頼できないユーザーへの LAN 共有</a></li><li><a href="#slide-151">6-4. 監査ログの DB 直接編集</a></li><li><a href="#slide-151">6-5. 同時複数 Publish の強制実行</a></li><li><a href="#slide-151">6-6. モックモードでの品質確認</a></li><li><a href="#slide-152">6-7. <code>INSERT OR REPLACE</code> 文の新規追加</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-90">
+<div class="slide-header">
+<span class="doc-name">security</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(8/8)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-153">7. 推奨運用構成</a><ul><li><a href="#slide-153">7-1. 完全ローカル運用（露出が最も狭い構成）</a></li><li><a href="#slide-153">7-2. ローカル LLM 運用</a></li><li><a href="#slide-154">7-3. 個人 VPN 経由運用</a></li></ul></li><li><a href="#slide-155">8. 脆弱性報告</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-91">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">1. 免責（4 点）</span>
@@ -1509,7 +1722,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-77">
+<div class="slide" id="slide-92">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">1. 免責（4 点）（続き）</span>
@@ -1524,7 +1737,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-78">
+<div class="slide" id="slide-93">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. 全体の作り</span>
@@ -1540,7 +1753,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-79">
+<div class="slide" id="slide-94">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. 全体の作り（続き）</span>
@@ -1557,7 +1770,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-80">
+<div class="slide" id="slide-95">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. 全体の作り（続き）</span>
@@ -1579,7 +1792,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-81">
+<div class="slide" id="slide-96">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. 全体の作り（続き）</span>
@@ -1594,7 +1807,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-82">
+<div class="slide" id="slide-97">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. 全体の作り（続き）</span>
@@ -1612,7 +1825,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-83">
+<div class="slide" id="slide-98">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. 全体の作り（続き）</span>
@@ -1629,7 +1842,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-84">
+<div class="slide" id="slide-99">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">2. 全体の作り（続き）</span>
@@ -1645,7 +1858,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-85">
+<div class="slide" id="slide-100">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）</span>
@@ -1662,7 +1875,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-86">
+<div class="slide" id="slide-101">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1678,7 +1891,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-87">
+<div class="slide" id="slide-102">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1695,7 +1908,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-88">
+<div class="slide" id="slide-103">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1710,7 +1923,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-89">
+<div class="slide" id="slide-104">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1724,7 +1937,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-90">
+<div class="slide" id="slide-105">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1738,7 +1951,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-91">
+<div class="slide" id="slide-106">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1755,7 +1968,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-92">
+<div class="slide" id="slide-107">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1774,7 +1987,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-93">
+<div class="slide" id="slide-108">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">3. 役割と権限（RBAC）（続き）</span>
@@ -1789,7 +2002,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-94">
+<div class="slide" id="slide-109">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール</span>
@@ -1807,7 +2020,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-95">
+<div class="slide" id="slide-110">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1823,7 +2036,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-96">
+<div class="slide" id="slide-111">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1843,7 +2056,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-97">
+<div class="slide" id="slide-112">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1860,7 +2073,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-98">
+<div class="slide" id="slide-113">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1878,7 +2091,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-99">
+<div class="slide" id="slide-114">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1894,7 +2107,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-100">
+<div class="slide" id="slide-115">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1913,7 +2126,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-101">
+<div class="slide" id="slide-116">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1928,7 +2141,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-102">
+<div class="slide" id="slide-117">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1957,7 +2170,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-103">
+<div class="slide" id="slide-118">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1975,7 +2188,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-104">
+<div class="slide" id="slide-119">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -1996,7 +2209,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-105">
+<div class="slide" id="slide-120">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -2015,7 +2228,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-106">
+<div class="slide" id="slide-121">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -2035,7 +2248,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-107">
+<div class="slide" id="slide-122">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -2051,7 +2264,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-108">
+<div class="slide" id="slide-123">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -2074,7 +2287,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-109">
+<div class="slide" id="slide-124">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -2095,7 +2308,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-110">
+<div class="slide" id="slide-125">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">4. ガードレール（続き）</span>
@@ -2110,7 +2323,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-111">
+<div class="slide" id="slide-126">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング</span>
@@ -2127,7 +2340,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-112">
+<div class="slide" id="slide-127">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2135,23 +2348,23 @@ if user_role and _acl_filter_enabled():
 </div>
 <div class="slide-body">
 <p>これを実現するため、Cynovela は取込時マスキング（Tier1）と回答時マスキング（Tier2）の二重防御を採用しています。</p>
-<blockquote><strong>廃止済み: マスキングなし取り込み（<code>collections.raw_only = 1</code>）</strong> — マスキングを迂回する取り込み（Raw モード）は 2026-07-24 に廃止しました。いま指定すると HTTP 400 で拒否されます（2026-08-02 実測）。過去に作られた <code>raw_only = 1</code> のコレクションだけが masked 層を持たない状態で残り得ます（詳細は metadata-engine.md §6）。</blockquote>
+<blockquote><strong>廃止済み: マスキングなし取り込み（<code>collections.raw_only = 1</code>）</strong> — マスキングを迂回する取り込み（Raw モード）は 2026-07-24 に廃止しました。いま指定すると HTTP 400 で拒否されます（2026-08-02 実測）。過去に作られた <code>raw_only = 1</code> のコレクションだけが masked 層を持たない状態で残り得ます（詳細は <a href="architecture.html" target="_blank" rel="noopener">architecture.md</a> §3.5.1「廃止済み: <code>raw_only</code>」）。</blockquote>
 <h3>5.2 Tier1：取込時マスキング</h3>
-<h4>5.2.1 役割</h4>
-<p>Publish（コレクションを ChromaDB に流し込む処理）の途中で、各 chunk について「生本文（raw）」と「マスク済み本文（masked）」の dual-row を生成します。両方が SQLite の <code>chunks</code> テーブルと ChromaDB の両 collection に保存されます。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-113">
+<div class="slide" id="slide-128">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
 <span class="continued">(3/23)</span>
 </div>
 <div class="slide-body">
+<h4>5.2.1 役割</h4>
+<p>Publish（コレクションを ChromaDB に流し込む処理）の途中で、各 chunk について「生本文（raw）」と「マスク済み本文（masked）」の dual-row を生成します。両方が SQLite の <code>chunks</code> テーブルと ChromaDB の両 collection に保存されます。</p>
 <h4>5.2.2 実装箇所</h4>
 <p><code>rag.py:984-1075</code>（抜粋）：</p>
 </div>
@@ -2160,7 +2373,7 @@ if user_role and _acl_filter_enabled():
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-114">
+<div class="slide" id="slide-129">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2190,7 +2403,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-115">
+<div class="slide" id="slide-130">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2206,7 +2419,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-116">
+<div class="slide" id="slide-131">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2226,7 +2439,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-117">
+<div class="slide" id="slide-132">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2261,7 +2474,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-118">
+<div class="slide" id="slide-133">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2283,7 +2496,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-119">
+<div class="slide" id="slide-134">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2299,7 +2512,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-120">
+<div class="slide" id="slide-135">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2316,7 +2529,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-121">
+<div class="slide" id="slide-136">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2332,7 +2545,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-122">
+<div class="slide" id="slide-137">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2349,7 +2562,7 @@ all_docs_masked.append(_masked_chunk or "")</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-123">
+<div class="slide" id="slide-138">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2371,7 +2584,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-124">
+<div class="slide" id="slide-139">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2389,7 +2602,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-125">
+<div class="slide" id="slide-140">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2406,7 +2619,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-126">
+<div class="slide" id="slide-141">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2420,7 +2633,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-127">
+<div class="slide" id="slide-142">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2436,7 +2649,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-128">
+<div class="slide" id="slide-143">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2450,7 +2663,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-129">
+<div class="slide" id="slide-144">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2464,7 +2677,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-130">
+<div class="slide" id="slide-145">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2483,7 +2696,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-131">
+<div class="slide" id="slide-146">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2502,7 +2715,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-132">
+<div class="slide" id="slide-147">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2520,7 +2733,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-133">
+<div class="slide" id="slide-148">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">5. PII の検出とマスキング（続き）</span>
@@ -2535,7 +2748,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-134">
+<div class="slide" id="slide-149">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. 推奨しない使用方法</span>
@@ -2554,7 +2767,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-135">
+<div class="slide" id="slide-150">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. 推奨しない使用方法（続き）</span>
@@ -2570,7 +2783,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-136">
+<div class="slide" id="slide-151">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. 推奨しない使用方法（続き）</span>
@@ -2589,7 +2802,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-137">
+<div class="slide" id="slide-152">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">6. 推奨しない使用方法（続き）</span>
@@ -2604,7 +2817,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-138">
+<div class="slide" id="slide-153">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">7. 推奨運用構成</span>
@@ -2624,7 +2837,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-139">
+<div class="slide" id="slide-154">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">7. 推奨運用構成（続き）</span>
@@ -2640,7 +2853,7 @@ def dec_raw(text: str | None) -&gt; str:
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-140">
+<div class="slide" id="slide-155">
 <div class="slide-header">
 <span class="doc-name">security</span>
 <span class="slide-title">8. 脆弱性報告</span>
@@ -2656,7 +2869,7 @@ def dec_raw(text: str | None) -&gt; str:
 </div>
 <nav class="nav-bar">
 <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-<span id="slide-counter">1 / 140</span>
+<span id="slide-counter">1 / 155</span>
 <button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>

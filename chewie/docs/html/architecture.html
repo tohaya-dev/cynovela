@@ -163,7 +163,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;
@@ -225,9 +225,11 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">English</span>
+<span class="continued">(1/5)</span>
 </div>
 <div class="slide-body">
 <p>This document is for the reader who wants to know how Cynovela works inside. It covers the overall shape, the features that are confirmed as implemented, how ingest and classification work, how search works, how to read the scores, the shape of an answer, and the main categories of the API.</p>
+<p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -235,6 +237,62 @@ a:hover { text-decoration: underline; }
 </div>
 </div>
 <div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(2/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-8">1. Overview</a><ul><li><a href="#slide-8">1.1 Component Overview Diagram</a></li><li><a href="#slide-11">1.2 Role of Each Layer</a></li><li><a href="#slide-15">1.3 Workspace and Collection</a></li><li><a href="#slide-23">1.4 Component Changes by Startup Mode</a></li></ul></li><li><a href="#slide-28">2. List of Confirmed Implemented Features</a><ul><li><a href="#slide-29">2.1 RAG (Retrieval-Augmented Generation) Pipeline</a></li><li><a href="#slide-31">2.2 Guardrails / Security</a></li><li><a href="#slide-34">2.3 Smart Ingestion (Ingest and Classification)</a></li><li><a href="#slide-37">2.4 Surrounding Features</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(3/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-38">3. How Ingest and Classification Work (Smart Ingestion)</a><ul><li><a href="#slide-38">3.1 The Concept of Smart Ingestion</a></li><li><a href="#slide-39">3.2 The 14 Category Definitions (All of Them)</a></li><li><a href="#slide-42">3.3 The 3-Stage Classification Engine</a></li><li><a href="#slide-46">3.4 Hash Based Differential Sync (DataSyncService)</a></li><li><a href="#slide-49">3.5 Ingest Without Masking (raw_only) and the Old Raw Mode</a></li><li><a href="#slide-51">3.6 Chunk Splitting Strategy</a></li><li><a href="#slide-54">3.7 Compatibility With the Old Classification</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(4/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-55">4. How Search Works (the RAG Pipeline)</a><ul><li><a href="#slide-55">4.1 Pipeline Flow</a></li><li><a href="#slide-57">4.2 Hybrid Search (Vector + BM25)</a></li><li><a href="#slide-61">4.3 The Role of the Reranker</a></li><li><a href="#slide-65">4.4 Advanced Search Options (Advanced RAG)</a></li><li><a href="#slide-68">4.5 The Parameters of the <code>rag</code> Section</a></li></ul></li><li><a href="#slide-72">5. How to Read the Scores</a><ul><li><a href="#slide-72">5.1 The 3 Kinds of Score</a></li><li><a href="#slide-73">5.2 What Each Score Means</a></li><li><a href="#slide-74">5.3 Confidence Threshold (confidence_threshold)</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-7">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(5/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-82">6. The Shape of an Answer</a><ul><li><a href="#slide-82">6.1 Strictness Modes (2 Kinds)</a></li><li><a href="#slide-86">6.2 Answer Style by Role</a></li><li><a href="#slide-87">6.3 RAG Presets (5 in Total)</a></li><li><a href="#slide-89">6.4 The 3 RAG Modes</a></li><li><a href="#slide-90">6.5 Answer Format</a></li></ul></li><li><a href="#slide-93">7. Main Categories of API Endpoints</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-8">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview</span>
@@ -248,7 +306,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-9">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -340,7 +398,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-10">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -401,7 +459,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-11">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -418,7 +476,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-12">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -433,7 +491,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-13">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -450,7 +508,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-14">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -467,7 +525,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-15">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -484,7 +542,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-16">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -505,7 +563,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-17">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -520,7 +578,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-18">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -542,7 +600,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-19">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -557,7 +615,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-20">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -580,7 +638,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-21">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -600,7 +658,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-18">
+<div class="slide" id="slide-22">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -617,7 +675,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-19">
+<div class="slide" id="slide-23">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -633,7 +691,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-20">
+<div class="slide" id="slide-24">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -648,7 +706,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-21">
+<div class="slide" id="slide-25">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -662,7 +720,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-22">
+<div class="slide" id="slide-26">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -697,7 +755,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-23">
+<div class="slide" id="slide-27">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. Overview（続き）</span>
@@ -714,7 +772,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-24">
+<div class="slide" id="slide-28">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features</span>
@@ -728,7 +786,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-25">
+<div class="slide" id="slide-29">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -743,7 +801,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-26">
+<div class="slide" id="slide-30">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -757,7 +815,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-27">
+<div class="slide" id="slide-31">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -771,7 +829,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-28">
+<div class="slide" id="slide-32">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -785,7 +843,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-29">
+<div class="slide" id="slide-33">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -799,7 +857,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-30">
+<div class="slide" id="slide-34">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -813,7 +871,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-31">
+<div class="slide" id="slide-35">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -827,7 +885,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-32">
+<div class="slide" id="slide-36">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -841,7 +899,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-33">
+<div class="slide" id="slide-37">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. List of Confirmed Implemented Features（続き）</span>
@@ -856,7 +914,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-34">
+<div class="slide" id="slide-38">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)</span>
@@ -872,7 +930,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-35">
+<div class="slide" id="slide-39">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -889,7 +947,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-36">
+<div class="slide" id="slide-40">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -903,7 +961,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-37">
+<div class="slide" id="slide-41">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -917,7 +975,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-38">
+<div class="slide" id="slide-42">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -936,7 +994,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-39">
+<div class="slide" id="slide-43">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -953,7 +1011,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-40">
+<div class="slide" id="slide-44">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -970,7 +1028,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-41">
+<div class="slide" id="slide-45">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -989,7 +1047,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-42">
+<div class="slide" id="slide-46">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1005,7 +1063,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-43">
+<div class="slide" id="slide-47">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1025,7 +1083,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-44">
+<div class="slide" id="slide-48">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1041,7 +1099,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-45">
+<div class="slide" id="slide-49">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1058,7 +1116,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-46">
+<div class="slide" id="slide-50">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1075,7 +1133,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-47">
+<div class="slide" id="slide-51">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1092,7 +1150,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-48">
+<div class="slide" id="slide-52">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1115,7 +1173,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-49">
+<div class="slide" id="slide-53">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1133,7 +1191,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-50">
+<div class="slide" id="slide-54">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. How Ingest and Classification Work (Smart Ingestion)（続き）</span>
@@ -1151,7 +1209,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-51">
+<div class="slide" id="slide-55">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)</span>
@@ -1166,7 +1224,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-52">
+<div class="slide" id="slide-56">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1220,7 +1278,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-53">
+<div class="slide" id="slide-57">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1236,7 +1294,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-54">
+<div class="slide" id="slide-58">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1251,7 +1309,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-55">
+<div class="slide" id="slide-59">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1268,7 +1326,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-56">
+<div class="slide" id="slide-60">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1283,7 +1341,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-57">
+<div class="slide" id="slide-61">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1298,7 +1356,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-58">
+<div class="slide" id="slide-62">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1313,7 +1371,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-59">
+<div class="slide" id="slide-63">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1327,7 +1385,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-60">
+<div class="slide" id="slide-64">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1349,7 +1407,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-61">
+<div class="slide" id="slide-65">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1366,7 +1424,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-62">
+<div class="slide" id="slide-66">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1380,7 +1438,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-63">
+<div class="slide" id="slide-67">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1394,7 +1452,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-64">
+<div class="slide" id="slide-68">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1410,7 +1468,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-65">
+<div class="slide" id="slide-69">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1424,7 +1482,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-66">
+<div class="slide" id="slide-70">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1438,7 +1496,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-67">
+<div class="slide" id="slide-71">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. How Search Works (the RAG Pipeline)（続き）</span>
@@ -1452,7 +1510,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-68">
+<div class="slide" id="slide-72">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores</span>
@@ -1468,7 +1526,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-69">
+<div class="slide" id="slide-73">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1486,7 +1544,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-70">
+<div class="slide" id="slide-74">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1503,7 +1561,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-71">
+<div class="slide" id="slide-75">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1525,7 +1583,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-72">
+<div class="slide" id="slide-76">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1540,7 +1598,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-73">
+<div class="slide" id="slide-77">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1557,7 +1615,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-74">
+<div class="slide" id="slide-78">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1573,7 +1631,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-75">
+<div class="slide" id="slide-79">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1590,7 +1648,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-76">
+<div class="slide" id="slide-80">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1604,7 +1662,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-77">
+<div class="slide" id="slide-81">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. How to Read the Scores（続き）</span>
@@ -1619,7 +1677,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-78">
+<div class="slide" id="slide-82">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer</span>
@@ -1635,7 +1693,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-79">
+<div class="slide" id="slide-83">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1651,7 +1709,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-80">
+<div class="slide" id="slide-84">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1674,7 +1732,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-81">
+<div class="slide" id="slide-85">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1691,7 +1749,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-82">
+<div class="slide" id="slide-86">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1709,7 +1767,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-83">
+<div class="slide" id="slide-87">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1724,7 +1782,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-84">
+<div class="slide" id="slide-88">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1738,7 +1796,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-85">
+<div class="slide" id="slide-89">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1761,7 +1819,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-86">
+<div class="slide" id="slide-90">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1778,7 +1836,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-87">
+<div class="slide" id="slide-91">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1794,7 +1852,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-88">
+<div class="slide" id="slide-92">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. The Shape of an Answer（続き）</span>
@@ -1810,7 +1868,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-89">
+<div class="slide" id="slide-93">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. Main Categories of API Endpoints</span>
@@ -1824,7 +1882,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-90">
+<div class="slide" id="slide-94">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. Main Categories of API Endpoints（続き）</span>
@@ -1838,7 +1896,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-91">
+<div class="slide" id="slide-95">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. Main Categories of API Endpoints（続き）</span>
@@ -1852,7 +1910,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-92">
+<div class="slide" id="slide-96">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. Main Categories of API Endpoints（続き）</span>
@@ -1866,7 +1924,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-93">
+<div class="slide" id="slide-97">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">このドキュメントについて</span>
@@ -1879,20 +1937,78 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-94">
+<div class="slide" id="slide-98">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">日本語</span>
+<span class="continued">(1/5)</span>
 </div>
 <div class="slide-body">
 <p>このドキュメントは、中がどう動いているかを知りたい人のためのものです。全体像、確認済みの実装機能、取り込みと分類のしくみ、検索のしくみ、スコアの読み方、回答のかたち、API の主要カテゴリを扱います。</p>
+<p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-95">
+<div class="slide" id="slide-99">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(2/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-103">1. 全体像</a><ul><li><a href="#slide-103">1.1 コンポーネント全体図</a></li><li><a href="#slide-106">1.2 各レイヤーの役割</a></li><li><a href="#slide-110">1.3 Workspace と Collection</a></li><li><a href="#slide-117">1.4 起動モードによるコンポーネント変化</a></li></ul></li><li><a href="#slide-121">2. 確認済みの実装機能の一覧</a><ul><li><a href="#slide-122">2.1 RAG（検索拡張生成）パイプライン</a></li><li><a href="#slide-124">2.2 ガードレール / セキュリティ</a></li><li><a href="#slide-127">2.3 Smart Ingestion（取り込み・分類）</a></li><li><a href="#slide-130">2.4 周辺機能</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-100">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(3/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-131">3. 取り込みと分類のしくみ（Smart Ingestion）</a><ul><li><a href="#slide-131">3.1 Smart Ingestion の概念</a></li><li><a href="#slide-132">3.2 14 カテゴリ定義（全件）</a></li><li><a href="#slide-135">3.3 分類エンジン 3 段構え</a></li><li><a href="#slide-139">3.4 ハッシュ差分同期（DataSyncService）</a></li><li><a href="#slide-141">3.5 マスキングなし取り込み（raw_only）と旧 raw モード</a></li><li><a href="#slide-143">3.6 チャンク分割戦略</a></li><li><a href="#slide-146">3.7 旧分類との互換性</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-101">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(4/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-147">4. 検索のしくみ（RAG パイプライン）</a><ul><li><a href="#slide-147">4.1 パイプラインのフロー</a></li><li><a href="#slide-149">4.2 ハイブリッド検索（ベクター + BM25）</a></li><li><a href="#slide-152">4.3 Reranker の役割</a></li><li><a href="#slide-157">4.4 高度な検索オプション（Advanced RAG）</a></li><li><a href="#slide-160">4.5 <code>rag</code> 節のパラメータ</a></li></ul></li><li><a href="#slide-164">5. スコアの読み方</a><ul><li><a href="#slide-164">5.1 スコア 3 種の違い</a></li><li><a href="#slide-165">5.2 それぞれのスコアの意味</a></li><li><a href="#slide-166">5.3 信頼度閾値（confidence_threshold）</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-102">
+<div class="slide-header">
+<span class="doc-name">architecture</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(5/5)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-173">6. 回答のかたち</a><ul><li><a href="#slide-173">6.1 厳格度モード（2 種類）</a></li><li><a href="#slide-177">6.2 ロール別 回答スタイル</a></li><li><a href="#slide-177">6.3 RAG プリセット（全 5 件）</a></li><li><a href="#slide-179">6.4 RAG モード 3 種</a></li><li><a href="#slide-180">6.5 回答の形式</a></li></ul></li><li><a href="#slide-182">7. API エンドポイントの主要カテゴリ</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-103">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像</span>
@@ -1906,7 +2022,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-96">
+<div class="slide" id="slide-104">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -1998,7 +2114,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-97">
+<div class="slide" id="slide-105">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2059,7 +2175,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-98">
+<div class="slide" id="slide-106">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2076,7 +2192,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-99">
+<div class="slide" id="slide-107">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2091,7 +2207,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-100">
+<div class="slide" id="slide-108">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2108,7 +2224,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-101">
+<div class="slide" id="slide-109">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2125,7 +2241,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-102">
+<div class="slide" id="slide-110">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2148,7 +2264,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-103">
+<div class="slide" id="slide-111">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2165,7 +2281,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-104">
+<div class="slide" id="slide-112">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2187,7 +2303,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-105">
+<div class="slide" id="slide-113">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2202,7 +2318,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-106">
+<div class="slide" id="slide-114">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2225,7 +2341,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-107">
+<div class="slide" id="slide-115">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2245,7 +2361,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-108">
+<div class="slide" id="slide-116">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2262,7 +2378,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-109">
+<div class="slide" id="slide-117">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2278,7 +2394,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-110">
+<div class="slide" id="slide-118">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2293,7 +2409,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-111">
+<div class="slide" id="slide-119">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2329,7 +2445,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-112">
+<div class="slide" id="slide-120">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">1. 全体像（続き）</span>
@@ -2346,7 +2462,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-113">
+<div class="slide" id="slide-121">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧</span>
@@ -2360,7 +2476,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-114">
+<div class="slide" id="slide-122">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2375,7 +2491,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-115">
+<div class="slide" id="slide-123">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2389,7 +2505,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-116">
+<div class="slide" id="slide-124">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2403,7 +2519,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-117">
+<div class="slide" id="slide-125">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2417,7 +2533,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-118">
+<div class="slide" id="slide-126">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2431,7 +2547,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-119">
+<div class="slide" id="slide-127">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2445,7 +2561,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-120">
+<div class="slide" id="slide-128">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2459,7 +2575,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-121">
+<div class="slide" id="slide-129">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2473,7 +2589,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-122">
+<div class="slide" id="slide-130">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">2. 確認済みの実装機能の一覧（続き）</span>
@@ -2488,7 +2604,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-123">
+<div class="slide" id="slide-131">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）</span>
@@ -2504,7 +2620,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-124">
+<div class="slide" id="slide-132">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2521,7 +2637,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-125">
+<div class="slide" id="slide-133">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2535,7 +2651,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-126">
+<div class="slide" id="slide-134">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2549,7 +2665,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-127">
+<div class="slide" id="slide-135">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2568,7 +2684,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-128">
+<div class="slide" id="slide-136">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2585,7 +2701,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-129">
+<div class="slide" id="slide-137">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2602,7 +2718,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-130">
+<div class="slide" id="slide-138">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2621,7 +2737,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-131">
+<div class="slide" id="slide-139">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2639,7 +2755,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-132">
+<div class="slide" id="slide-140">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2658,7 +2774,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-133">
+<div class="slide" id="slide-141">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2677,7 +2793,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-134">
+<div class="slide" id="slide-142">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2694,7 +2810,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-135">
+<div class="slide" id="slide-143">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2711,7 +2827,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-136">
+<div class="slide" id="slide-144">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2734,7 +2850,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-137">
+<div class="slide" id="slide-145">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2752,7 +2868,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-138">
+<div class="slide" id="slide-146">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">3. 取り込みと分類のしくみ（Smart Ingestion）（続き）</span>
@@ -2770,7 +2886,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-139">
+<div class="slide" id="slide-147">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）</span>
@@ -2785,7 +2901,7 @@ deleted_paths = existing_paths - discovered_paths</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-140">
+<div class="slide" id="slide-148">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2839,7 +2955,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-141">
+<div class="slide" id="slide-149">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2855,7 +2971,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-142">
+<div class="slide" id="slide-150">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2870,7 +2986,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-143">
+<div class="slide" id="slide-151">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2887,7 +3003,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-144">
+<div class="slide" id="slide-152">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2904,7 +3020,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-145">
+<div class="slide" id="slide-153">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2918,7 +3034,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-146">
+<div class="slide" id="slide-154">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2932,7 +3048,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-147">
+<div class="slide" id="slide-155">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2946,7 +3062,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-148">
+<div class="slide" id="slide-156">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2968,7 +3084,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-149">
+<div class="slide" id="slide-157">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2985,7 +3101,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-150">
+<div class="slide" id="slide-158">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -2999,7 +3115,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-151">
+<div class="slide" id="slide-159">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -3013,7 +3129,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-152">
+<div class="slide" id="slide-160">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -3029,7 +3145,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-153">
+<div class="slide" id="slide-161">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -3043,7 +3159,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-154">
+<div class="slide" id="slide-162">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -3057,7 +3173,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-155">
+<div class="slide" id="slide-163">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">4. 検索のしくみ（RAG パイプライン）（続き）</span>
@@ -3071,7 +3187,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-156">
+<div class="slide" id="slide-164">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方</span>
@@ -3088,7 +3204,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-157">
+<div class="slide" id="slide-165">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3106,7 +3222,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-158">
+<div class="slide" id="slide-166">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3124,7 +3240,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-159">
+<div class="slide" id="slide-167">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3144,7 +3260,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-160">
+<div class="slide" id="slide-168">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3159,7 +3275,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-161">
+<div class="slide" id="slide-169">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3177,7 +3293,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-162">
+<div class="slide" id="slide-170">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3193,7 +3309,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-163">
+<div class="slide" id="slide-171">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3210,7 +3326,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-164">
+<div class="slide" id="slide-172">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">5. スコアの読み方（続き）</span>
@@ -3225,7 +3341,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-165">
+<div class="slide" id="slide-173">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち</span>
@@ -3242,7 +3358,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-166">
+<div class="slide" id="slide-174">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3259,7 +3375,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-167">
+<div class="slide" id="slide-175">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3280,7 +3396,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-168">
+<div class="slide" id="slide-176">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3298,7 +3414,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-169">
+<div class="slide" id="slide-177">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3317,7 +3433,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-170">
+<div class="slide" id="slide-178">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3331,7 +3447,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-171">
+<div class="slide" id="slide-179">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3354,7 +3470,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-172">
+<div class="slide" id="slide-180">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3371,7 +3487,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-173">
+<div class="slide" id="slide-181">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">6. 回答のかたち（続き）</span>
@@ -3390,7 +3506,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-174">
+<div class="slide" id="slide-182">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. API エンドポイントの主要カテゴリ</span>
@@ -3404,7 +3520,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-175">
+<div class="slide" id="slide-183">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. API エンドポイントの主要カテゴリ（続き）</span>
@@ -3418,7 +3534,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-176">
+<div class="slide" id="slide-184">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. API エンドポイントの主要カテゴリ（続き）</span>
@@ -3432,7 +3548,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-177">
+<div class="slide" id="slide-185">
 <div class="slide-header">
 <span class="doc-name">architecture</span>
 <span class="slide-title">7. API エンドポイントの主要カテゴリ（続き）</span>
@@ -3449,7 +3565,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 </div>
 <nav class="nav-bar">
 <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-<span id="slide-counter">1 / 177</span>
+<span id="slide-counter">1 / 185</span>
 <button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>

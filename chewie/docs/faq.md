@@ -16,6 +16,16 @@ If you are starting from nothing, read [getting-started.md](getting-started.md) 
 What Cynovela is and what it is for is in [concept.md](concept.md); what it cannot do is in
 [limits.md](limits.md).
 
+**Contents**
+
+- [Q1. What is the difference from the referenced AI platform tool](#q1-what-is-the-difference-from-the-referenced-ai-platform-tool)
+- [Q2. What does it mean that the data does not go outside](#q2-what-does-it-mean-that-the-data-does-not-go-outside)
+- [Q3. What file types can be used](#q3-what-file-types-can-be-used)
+- [Q4. How much spec is required](#q4-how-much-spec-is-required)
+- [Q5. How are documents containing personal information handled](#q5-how-are-documents-containing-personal-information-handled)
+- [Q6. Are there features that do not work](#q6-are-there-features-that-do-not-work)
+- [Q7. Where do I look next](#q7-where-do-i-look-next)
+
 ## Q1. What is the difference from the referenced AI platform tool
 
 Cynovela is a learning project that re-implements, using only OSS and so that an individual could understand it by working with their own hands, the concept that the referenced AI platform tool tries to solve (a RAG platform that safely connects in-house documents to a local LLM). The implementation is entirely original, and there is no compatibility with the referenced tool in the source code, the API specification, or the data model. Commercial features, support, and an SLA are not provided.
@@ -132,6 +142,16 @@ The full list, including the limits of masking, the formats that cannot be read,
 まだ何も始めていない場合は、まず [getting-started.md](getting-started.md) を読んでください。
 Cynovela が何であり何のためのものかは [concept.md](concept.md) に、
 できないことは [limits.md](limits.md) にあります。
+
+**目次**
+
+- [Q1. 参照元の AI 基盤ツールとの違いは何ですか](#q1-参照元の-ai-基盤ツールとの違いは何ですか)
+- [Q2. データが外に出ないとはどういう意味ですか](#q2-データが外に出ないとはどういう意味ですか)
+- [Q3. 使えるファイル種別は何ですか](#q3-使えるファイル種別は何ですか)
+- [Q4. スペック要件はどれくらい必要ですか](#q4-スペック要件はどれくらい必要ですか)
+- [Q5. 個人情報が入った文書はどう扱われますか](#q5-個人情報が入った文書はどう扱われますか)
+- [Q6. 動かない機能はありますか](#q6-動かない機能はありますか)
+- [Q7. 次はどこを見ればよいですか](#q7-次はどこを見ればよいですか)
 
 ## Q1. 参照元の AI 基盤ツールとの違いは何ですか
 

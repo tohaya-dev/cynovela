@@ -22,6 +22,46 @@ The version is `1.1.1` (`APP_VERSION` in `core/version.py` is the only source, a
 
 ---
 
+**Contents**
+
+- [1. What masking cannot do](#1-what-masking-cannot-do)
+  - [1.1 Rules can only catch the 13 types that have a fixed shape](#11-rules-can-only-catch-the-13-types-that-have-a-fixed-shape)
+  - [1.2 Personal names and addresses depend on language analysis; with `lite` nothing is masked at all](#12-personal-names-and-addresses-depend-on-language-analysis-with-lite-nothing-is-masked-at-all)
+  - [1.3 Organisation names and place names exist in name only, with nothing behind them](#13-organisation-names-and-place-names-exist-in-name-only-with-nothing-behind-them)
+  - [1.4 Without a language model, even `standard` degrades to rules only](#14-without-a-language-model-even-standard-degrades-to-rules-only)
+  - [1.5 Passwords and API keys are cut off by whitespace, Japanese text, or newlines](#15-passwords-and-api-keys-are-cut-off-by-whitespace-japanese-text-or-newlines)
+  - [1.6 Whitespace can enter text extracted from a PDF, letting an email escape masking](#16-whitespace-can-enter-text-extracted-from-a-pdf-letting-an-email-escape-masking)
+  - [1.7 Whether an administrator can see the original text depends on the key and the destination](#17-whether-an-administrator-can-see-the-original-text-depends-on-the-key-and-the-destination)
+- [2. Document formats that cannot be read](#2-document-formats-that-cannot-be-read)
+- [3. Speaking to it by voice](#3-speaking-to-it-by-voice)
+- [4. There is no endpoint for uploading documents](#4-there-is-no-endpoint-for-uploading-documents)
+- [5. Conditions under which sending to the outside is stopped](#5-conditions-under-which-sending-to-the-outside-is-stopped)
+- [6. Constraints when used concurrently](#6-constraints-when-used-concurrently)
+- [7. Constraints on replacing models](#7-constraints-on-replacing-models)
+- [8. Features that are only a skeleton with nothing inside](#8-features-that-are-only-a-skeleton-with-nothing-inside)
+- [9. The Kubernetes set does not work as-is](#9-the-kubernetes-set-does-not-work-as-is)
+- [10. Other limitations and notes](#10-other-limitations-and-notes)
+  - [Startup forms and where data lives](#startup-forms-and-where-data-lives)
+  - [Cross-collection search](#cross-collection-search)
+  - [Workspace separation](#workspace-separation)
+  - [MCP](#mcp)
+  - [How answers are built](#how-answers-are-built)
+  - [Removed features](#removed-features)
+  - [The pass (login token)](#the-pass-login-token)
+  - [Pitfalls](#pitfalls)
+- [11. Things recorded in 1.0.7](#11-things-recorded-in-107)
+  - [11.1 Restoring a backup through the API does not reliably give you the backup](#111-restoring-a-backup-through-the-api-does-not-reliably-give-you-the-backup)
+  - [11.2 A backup holds data, not settings](#112-a-backup-holds-data-not-settings)
+  - [11.3 The "dimension" written into an export is a fixed number](#113-the-dimension-written-into-an-export-is-a-fixed-number)
+  - [11.4 With Ollama, the context length is whatever Ollama defaults to](#114-with-ollama-the-context-length-is-whatever-ollama-defaults-to)
+  - [11.5 An imported workspace searches by vector only](#115-an-imported-workspace-searches-by-vector-only)
+  - [11.6 Not measured: the package edition on a Mac without conda](#116-not-measured-the-package-edition-on-a-mac-without-conda)
+  - [11.7 Fixed in chewie, not in falcon](#117-fixed-in-chewie-not-in-falcon)
+- [12. Authentication, authorization and communication](#12-authentication-authorization-and-communication)
+- [13. Linkages that are defined but not integrated](#13-linkages-that-are-defined-but-not-integrated)
+- [14. Areas skipped in the tests](#14-areas-skipped-in-the-tests)
+- [15. Items that are not complete](#15-items-that-are-not-complete)
+
 ## 1. What masking cannot do
 
 **This is the most important section of this document.** Masking is a mechanism for hiding
@@ -617,6 +657,46 @@ They are written here as the state of the current build, not as a schedule.
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
+
+**目次**
+
+- [1. マスキング（マスキング）でできないこと](#1-マスキングマスキングでできないこと)
+  - [1.1 決まった形をした 13 種類しか、規則では取れない](#11-決まった形をした-13-種類しか規則では取れない)
+  - [1.2 氏名と住所は言語解析まかせ。`lite` にすると一切マスキングされない](#12-氏名と住所は言語解析まかせlite-にすると一切マスキングされない)
+  - [1.3 組織名と地名は、名前だけあって中身がない](#13-組織名と地名は名前だけあって中身がない)
+  - [1.4 言語モデルが入っていないと、`standard` でも規則だけに退行する](#14-言語モデルが入っていないとstandard-でも規則だけに退行する)
+  - [1.5 パスワードと API キーは、空白・日本語・改行で切れる](#15-パスワードと-api-キーは空白日本語改行で切れる)
+  - [1.6 PDF から取り出した文字に空白が入り、電子メールがマスキングを逃れることがある](#16-pdf-から取り出した文字に空白が入り電子メールがマスキングを逃れることがある)
+  - [1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい](#17-管理者が原文を見られるかどうかは鍵と宛先しだい)
+- [2. 読み込めない資料の形式](#2-読み込めない資料の形式)
+- [3. 音声で話しかけること](#3-音声で話しかけること)
+- [4. 資料をアップロードする受け口はない](#4-資料をアップロードする受け口はない)
+- [5. 外部への送出が止まる条件](#5-外部への送出が止まる条件)
+- [6. 同時に使うときの制約](#6-同時に使うときの制約)
+- [7. モデルの差し替えの制約](#7-モデルの差し替えの制約)
+- [8. 骨組みだけで中身がない機能](#8-骨組みだけで中身がない機能)
+- [9. Kubernetes 一式は、そのままでは動かない](#9-kubernetes-一式はそのままでは動かない)
+- [10. その他の制限と注意](#10-その他の制限と注意)
+  - [起動の形態とデータの場所](#起動の形態とデータの場所)
+  - [横断検索](#横断検索)
+  - [workspace の分離](#workspace-の分離)
+  - [MCP](#mcp-1)
+  - [回答の作り](#回答の作り)
+  - [廃止した機能](#廃止した機能)
+  - [通行証（ログイン用のトークン）](#通行証ログイン用のトークン)
+  - [落とし穴](#落とし穴)
+- [11. 1.0.7 で分かったこと](#11-107-で分かったこと)
+  - [11.1 API から控えに戻しても、控えの中身になるとはかぎらない](#111-api-から控えに戻しても控えの中身になるとはかぎらない)
+  - [11.2 控えに入るのはデータであって、設定ではない](#112-控えに入るのはデータであって設定ではない)
+  - [11.3 書き出しに書かれる「次元」は、決め打ちの数である](#113-書き出しに書かれる次元は決め打ちの数である)
+  - [11.4 Ollama を使うと、文脈の長さは Ollama の既定のままになる](#114-ollama-を使うと文脈の長さは-ollama-の既定のままになる)
+  - [11.5 取り込んだ作業場所は、ベクターだけで探される](#115-取り込んだ作業場所はベクターだけで探される)
+  - [11.6 測っていないこと: conda の入っていない Mac でのパッケージ版](#116-測っていないこと-conda-の入っていない-mac-でのパッケージ版)
+  - [11.7 chewie では直し、falcon では直していないもの](#117-chewie-では直しfalcon-では直していないもの)
+- [12. 認証・認可と通信](#12-認証認可と通信)
+- [13. 定義はあるが統合されていない連携](#13-定義はあるが統合されていない連携)
+- [14. テストでスキップされている領域](#14-テストでスキップされている領域)
+- [15. 完了していない事項](#15-完了していない事項)
 
 ## 1. マスキング（マスキング）でできないこと
 

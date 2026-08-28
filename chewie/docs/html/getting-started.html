@@ -163,7 +163,7 @@ blockquote strong { color: var(--cyn-accent); }
 /* リンク */
 a { color: var(--cyn-accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-/* 章タイトル（manual-complete 用） */
+/* 章タイトル（大きな区切りを置くときに使う） */
 .chapter-slide {
   background: var(--cyn-accent-light) !important;
   align-items: center !important;
@@ -212,7 +212,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">English</span>
-<span class="continued">(1/2)</span>
+<span class="continued">(1/9)</span>
 </div>
 <div class="slide-body">
 <p>This single page takes you all the way to your first answer. <strong>The route that needs nothing but the screen is written first.</strong> The route that uses the terminal is collected further down.</p>
@@ -229,11 +229,12 @@ a:hover { text-decoration: underline; }
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">English（続き）</span>
-<span class="continued">(2/2)</span>
+<span class="continued">(2/9)</span>
 </div>
 <div class="slide-body">
 <table><thead><tr><th>If this is you</th><th>Read</th></tr></thead><tbody><tr><td>You have never opened Terminal</td><td>Section 0, then sections 2 and 3</td></tr><tr><td>You are in a hurry and know your way around a terminal</td><td>Section 4</td></tr><tr><td>You want the first run explained step by step (source edition included)</td><td>Sections 5 to 15</td></tr><tr><td>You already ran it once and just want to start it again</td><td>Sections 16 to 20</td></tr><tr><td>Something is not working</td><td>Section 22</td></tr></tbody></table>
 <p>Operational topics — the LLM provider settings in detail (including Ollama), backup and restore, changing the port, and reading the logs — are in <a href="operations.html" target="_blank" rel="noopener">operations.md</a>.</p>
+<p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -241,6 +242,104 @@ a:hover { text-decoration: underline; }
 </div>
 </div>
 <div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(3/9)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-11">0. Read this first (this is where most people get stuck)</a></li><li><a href="#slide-13">1. Which package did you download?</a></li><li><a href="#slide-19">2. The gentle way in — the package edition, step by step</a></li><li><a href="#slide-29">3. Why each of those steps is there</a></li><li><a href="#slide-35">4. The short route, for those in a hurry</a><ul><li><a href="#slide-35">4-1. Setting up the environment (source edition only)</a></li><li><a href="#slide-38">4-2. A note on SSL_CERT_FILE (important)</a></li><li><a href="#slide-38">4-3. Starting</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(4/9)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-42">5. What to prepare (source edition)</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(5/9)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-44">6. Extract</a></li><li><a href="#slide-45">7. Create the runtime environment and start</a></li><li><a href="#slide-48">8. First run only: a screen asks you to choose about downloading the AI model</a></li><li><a href="#slide-50">9. Open it in a browser</a></li><li><a href="#slide-51">10. Sign in, and change the initial password</a><ul><li><a href="#slide-54">Roles</a></li><li><a href="#slide-55">How to create a viewer when you started with nothing loaded</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-7">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(6/9)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-56">11. Connect the LLM that writes the answers</a><ul><li><a href="#slide-56">11-1. Preparation on the LM Studio side</a></li><li><a href="#slide-57">11-2. Settings on the Cynovela side</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-8">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(7/9)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-61">12. Ask your first question</a></li><li><a href="#slide-63">13. Add a folder to be read (an ingest source)</a><ul><li><a href="#slide-63">Add it from the screen (recommended)</a></li><li><a href="#slide-64">Add by double-clicking</a></li><li><a href="#slide-66">From a terminal</a></li><li><a href="#slide-67">Passing multiple ingest sources</a></li></ul></li><li><a href="#slide-71">14. Ingest documents and publish</a></li><li><a href="#slide-76">15. When you place folders or files there later</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-9">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(8/9)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-78">16. Everyday startup</a><ul><li><a href="#slide-79">There are 2 ways to start it, and 2 things that can start</a></li><li><a href="#slide-83">Notes before the first start</a></li><li><a href="#slide-86">Frequently used operations</a></li></ul></li><li><a href="#slide-88">17. Startup options</a><ul><li><a href="#slide-89">List of startup forms (--mode) (measured 2026-08-12)</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-10">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">English（続き）</span>
+<span class="continued">(9/9)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-91">18. The route through the terminal (summary)</a></li><li><a href="#slide-96">19. Stopping, and starting again</a></li><li><a href="#slide-101">20. What is going on when you stop and start again</a></li><li><a href="#slide-105">21. Checking behavior (tests)</a></li><li><a href="#slide-107">22. When things do not work</a></li><li><a href="#slide-111">23. Where to go next</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-11">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">0. Read this first (this is where most people get stuck)</span>
@@ -256,7 +355,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-5">
+<div class="slide" id="slide-12">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">0. Read this first (this is where most people get stuck)（続き）</span>
@@ -270,7 +369,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-6">
+<div class="slide" id="slide-13">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. Which package did you download?</span>
@@ -284,7 +383,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-7">
+<div class="slide" id="slide-14">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. Which package did you download?（続き）</span>
@@ -298,7 +397,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-8">
+<div class="slide" id="slide-15">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. Which package did you download?（続き）</span>
@@ -312,7 +411,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-9">
+<div class="slide" id="slide-16">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. Which package did you download?（続き）</span>
@@ -326,7 +425,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-10">
+<div class="slide" id="slide-17">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. Which package did you download?（続き）</span>
@@ -348,7 +447,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-11">
+<div class="slide" id="slide-18">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. Which package did you download?（続き）</span>
@@ -362,7 +461,7 @@ a:hover { text-decoration: underline; }
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-12">
+<div class="slide" id="slide-19">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step</span>
@@ -384,7 +483,7 @@ SHA256SUMS</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-13">
+<div class="slide" id="slide-20">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -405,7 +504,7 @@ SHA256SUMS</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-14">
+<div class="slide" id="slide-21">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -425,7 +524,7 @@ SHA256SUMS</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-15">
+<div class="slide" id="slide-22">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -446,7 +545,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-16">
+<div class="slide" id="slide-23">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -466,7 +565,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-17">
+<div class="slide" id="slide-24">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -487,7 +586,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-18">
+<div class="slide" id="slide-25">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -507,7 +606,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-19">
+<div class="slide" id="slide-26">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -526,7 +625,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-20">
+<div class="slide" id="slide-27">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -546,7 +645,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-21">
+<div class="slide" id="slide-28">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. The gentle way in — the package edition, step by step（続き）</span>
@@ -564,7 +663,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-22">
+<div class="slide" id="slide-29">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. Why each of those steps is there</span>
@@ -579,7 +678,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-23">
+<div class="slide" id="slide-30">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. Why each of those steps is there（続き）</span>
@@ -596,7 +695,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-24">
+<div class="slide" id="slide-31">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. Why each of those steps is there（続き）</span>
@@ -612,7 +711,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-25">
+<div class="slide" id="slide-32">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. Why each of those steps is there（続き）</span>
@@ -629,7 +728,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-26">
+<div class="slide" id="slide-33">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. Why each of those steps is there（続き）</span>
@@ -646,7 +745,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-27">
+<div class="slide" id="slide-34">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. Why each of those steps is there（続き）</span>
@@ -661,7 +760,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-28">
+<div class="slide" id="slide-35">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. The short route, for those in a hurry</span>
@@ -677,7 +776,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-29">
+<div class="slide" id="slide-36">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. The short route, for those in a hurry（続き）</span>
@@ -695,7 +794,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-30">
+<div class="slide" id="slide-37">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. The short route, for those in a hurry（続き）</span>
@@ -714,7 +813,7 @@ conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-31">
+<div class="slide" id="slide-38">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. The short route, for those in a hurry（続き）</span>
@@ -733,7 +832,7 @@ conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-32">
+<div class="slide" id="slide-39">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. The short route, for those in a hurry（続き）</span>
@@ -755,7 +854,7 @@ conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-33">
+<div class="slide" id="slide-40">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. The short route, for those in a hurry（続き）</span>
@@ -778,7 +877,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-34">
+<div class="slide" id="slide-41">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. The short route, for those in a hurry（続き）</span>
@@ -793,7 +892,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-35">
+<div class="slide" id="slide-42">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">5. What to prepare (source edition)</span>
@@ -808,7 +907,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-36">
+<div class="slide" id="slide-43">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">5. What to prepare (source edition)（続き）</span>
@@ -825,7 +924,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-37">
+<div class="slide" id="slide-44">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">6. Extract</span>
@@ -843,7 +942,7 @@ ls launch.sh                  # このファイルが見えれば展開できて
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-38">
+<div class="slide" id="slide-45">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">7. Create the runtime environment and start</span>
@@ -859,7 +958,7 @@ ls launch.sh                  # このファイルが見えれば展開できて
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-39">
+<div class="slide" id="slide-46">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">7. Create the runtime environment and start（続き）</span>
@@ -882,7 +981,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-40">
+<div class="slide" id="slide-47">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">7. Create the runtime environment and start（続き）</span>
@@ -898,7 +997,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-41">
+<div class="slide" id="slide-48">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">8. First run only: a screen asks you to choose about downloading the AI model</span>
@@ -913,7 +1012,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-42">
+<div class="slide" id="slide-49">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">8. First run only: a screen asks you to choose about downloading the AI model（続き）</span>
@@ -927,7 +1026,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-43">
+<div class="slide" id="slide-50">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">9. Open it in a browser</span>
@@ -944,7 +1043,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-44">
+<div class="slide" id="slide-51">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. Sign in, and change the initial password</span>
@@ -959,7 +1058,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-45">
+<div class="slide" id="slide-52">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. Sign in, and change the initial password（続き）</span>
@@ -974,7 +1073,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-46">
+<div class="slide" id="slide-53">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. Sign in, and change the initial password（続き）</span>
@@ -990,7 +1089,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-47">
+<div class="slide" id="slide-54">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. Sign in, and change the initial password（続き）</span>
@@ -1007,7 +1106,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-48">
+<div class="slide" id="slide-55">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. Sign in, and change the initial password（続き）</span>
@@ -1023,7 +1122,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-49">
+<div class="slide" id="slide-56">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. Connect the LLM that writes the answers</span>
@@ -1039,7 +1138,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-50">
+<div class="slide" id="slide-57">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. Connect the LLM that writes the answers（続き）</span>
@@ -1056,7 +1155,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-51">
+<div class="slide" id="slide-58">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. Connect the LLM that writes the answers（続き）</span>
@@ -1071,7 +1170,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-52">
+<div class="slide" id="slide-59">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. Connect the LLM that writes the answers（続き）</span>
@@ -1085,7 +1184,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-53">
+<div class="slide" id="slide-60">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. Connect the LLM that writes the answers（続き）</span>
@@ -1099,7 +1198,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-54">
+<div class="slide" id="slide-61">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">12. Ask your first question</span>
@@ -1116,7 +1215,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-55">
+<div class="slide" id="slide-62">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">12. Ask your first question（続き）</span>
@@ -1131,7 +1230,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-56">
+<div class="slide" id="slide-63">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)</span>
@@ -1148,7 +1247,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-57">
+<div class="slide" id="slide-64">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)（続き）</span>
@@ -1165,7 +1264,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-58">
+<div class="slide" id="slide-65">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)（続き）</span>
@@ -1179,7 +1278,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-59">
+<div class="slide" id="slide-66">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)（続き）</span>
@@ -1203,7 +1302,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-60">
+<div class="slide" id="slide-67">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)（続き）</span>
@@ -1218,7 +1317,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-61">
+<div class="slide" id="slide-68">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)（続き）</span>
@@ -1245,7 +1344,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-62">
+<div class="slide" id="slide-69">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)（続き）</span>
@@ -1260,7 +1359,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-63">
+<div class="slide" id="slide-70">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. Add a folder to be read (an ingest source)（続き）</span>
@@ -1274,7 +1373,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-64">
+<div class="slide" id="slide-71">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. Ingest documents and publish</span>
@@ -1288,7 +1387,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-65">
+<div class="slide" id="slide-72">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. Ingest documents and publish（続き）</span>
@@ -1302,7 +1401,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-66">
+<div class="slide" id="slide-73">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. Ingest documents and publish（続き）</span>
@@ -1318,7 +1417,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-67">
+<div class="slide" id="slide-74">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. Ingest documents and publish（続き）</span>
@@ -1335,7 +1434,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-68">
+<div class="slide" id="slide-75">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. Ingest documents and publish（続き）</span>
@@ -1349,7 +1448,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-69">
+<div class="slide" id="slide-76">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">15. When you place folders or files there later</span>
@@ -1364,7 +1463,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-70">
+<div class="slide" id="slide-77">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">15. When you place folders or files there later（続き）</span>
@@ -1378,7 +1477,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-71">
+<div class="slide" id="slide-78">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup</span>
@@ -1398,7 +1497,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-72">
+<div class="slide" id="slide-79">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1414,7 +1513,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-73">
+<div class="slide" id="slide-80">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1429,7 +1528,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-74">
+<div class="slide" id="slide-81">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1446,7 +1545,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-75">
+<div class="slide" id="slide-82">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1464,7 +1563,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-76">
+<div class="slide" id="slide-83">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1479,7 +1578,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-77">
+<div class="slide" id="slide-84">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1493,7 +1592,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-78">
+<div class="slide" id="slide-85">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1515,7 +1614,7 @@ python server.py --mode text --demo   # demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-79">
+<div class="slide" id="slide-86">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1537,7 +1636,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-80">
+<div class="slide" id="slide-87">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. Everyday startup（続き）</span>
@@ -1551,7 +1650,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-81">
+<div class="slide" id="slide-88">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">17. Startup options</span>
@@ -1565,7 +1664,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-82">
+<div class="slide" id="slide-89">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">17. Startup options（続き）</span>
@@ -1581,7 +1680,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-83">
+<div class="slide" id="slide-90">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">17. Startup options（続き）</span>
@@ -1597,7 +1696,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-84">
+<div class="slide" id="slide-91">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. The route through the terminal (summary)</span>
@@ -1611,7 +1710,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-85">
+<div class="slide" id="slide-92">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. The route through the terminal (summary)（続き）</span>
@@ -1625,7 +1724,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-86">
+<div class="slide" id="slide-93">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. The route through the terminal (summary)（続き）</span>
@@ -1639,7 +1738,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-87">
+<div class="slide" id="slide-94">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. The route through the terminal (summary)（続き）</span>
@@ -1653,7 +1752,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-88">
+<div class="slide" id="slide-95">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. The route through the terminal (summary)（続き）</span>
@@ -1667,7 +1766,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-89">
+<div class="slide" id="slide-96">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. Stopping, and starting again</span>
@@ -1690,7 +1789,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-90">
+<div class="slide" id="slide-97">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. Stopping, and starting again（続き）</span>
@@ -1710,7 +1809,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-91">
+<div class="slide" id="slide-98">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. Stopping, and starting again（続き）</span>
@@ -1725,7 +1824,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-92">
+<div class="slide" id="slide-99">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. Stopping, and starting again（続き）</span>
@@ -1748,7 +1847,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-93">
+<div class="slide" id="slide-100">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. Stopping, and starting again（続き）</span>
@@ -1765,7 +1864,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-94">
+<div class="slide" id="slide-101">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">20. What is going on when you stop and start again</span>
@@ -1782,7 +1881,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-95">
+<div class="slide" id="slide-102">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">20. What is going on when you stop and start again（続き）</span>
@@ -1799,7 +1898,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-96">
+<div class="slide" id="slide-103">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">20. What is going on when you stop and start again（続き）</span>
@@ -1817,7 +1916,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-97">
+<div class="slide" id="slide-104">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">20. What is going on when you stop and start again（続き）</span>
@@ -1834,7 +1933,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-98">
+<div class="slide" id="slide-105">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">21. Checking behavior (tests)</span>
@@ -1854,7 +1953,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-99">
+<div class="slide" id="slide-106">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">21. Checking behavior (tests)（続き）</span>
@@ -1868,7 +1967,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-100">
+<div class="slide" id="slide-107">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. When things do not work</span>
@@ -1882,7 +1981,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-101">
+<div class="slide" id="slide-108">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. When things do not work（続き）</span>
@@ -1896,7 +1995,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-102">
+<div class="slide" id="slide-109">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. When things do not work（続き）</span>
@@ -1910,7 +2009,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-103">
+<div class="slide" id="slide-110">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. When things do not work（続き）</span>
@@ -1924,7 +2023,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-104">
+<div class="slide" id="slide-111">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">23. Where to go next</span>
@@ -1938,11 +2037,11 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-105">
+<div class="slide" id="slide-112">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">日本語</span>
-<span class="continued">(1/2)</span>
+<span class="continued">(1/7)</span>
 </div>
 <div class="slide-body">
 <p>この1枚だけで、最初の質問が返るところまで行けます。<strong>画面だけで済む道を先に書いています。</strong> ターミナルを使う道は後ろにまとめました。</p>
@@ -1955,22 +2054,93 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-106">
+<div class="slide" id="slide-113">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">日本語（続き）</span>
-<span class="continued">(2/2)</span>
+<span class="continued">(2/7)</span>
 </div>
 <div class="slide-body">
 <table><thead><tr><th>こういう方</th><th>読むところ</th></tr></thead><tbody><tr><td>ターミナルを一度も開いたことが無い</td><td>0節、そのあと 2節と3節</td></tr><tr><td>急いでいて、ターミナルは分かる</td><td>4節</td></tr><tr><td>初回の流れを順に読みたい（ソース版を含む）</td><td>5節〜15節</td></tr><tr><td>一度動かしていて、起こし直したいだけ</td><td>16節〜20節</td></tr><tr><td>うまくいかない</td><td>22節</td></tr></tbody></table>
 <p>運用の話 — LLMプロバイダーの詳しい設定（Ollama を含む）・バックアップと復元・ポート変更・ログ確認 — は <a href="operations.html" target="_blank" rel="noopener">operations.md</a> にあります。</p>
+<p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-107">
+<div class="slide" id="slide-114">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(3/7)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-119">0. 先に知っておくこと（ここでつまずく人が一番多いところ）</a></li><li><a href="#slide-120">1. どの配布物を落としましたか</a></li><li><a href="#slide-126">2. やさしい入口 — パッケージ版を一歩ずつ</a></li><li><a href="#slide-136">3. なぜその手順なのか</a></li><li><a href="#slide-142">4. 急ぐ人のための最短の道</a><ul><li><a href="#slide-142">4-1. 環境のセットアップ（ソース版のみ）</a></li><li><a href="#slide-144">4-2. SSL_CERT_FILE の注意（重要）</a></li><li><a href="#slide-144">4-3. 起動</a></li></ul></li><li><a href="#slide-148">5. 用意するもの（ソース版）</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-115">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(4/7)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-150">6. 展開する</a></li><li><a href="#slide-151">7. 動作環境を作って起動する</a></li><li><a href="#slide-154">8. 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます</a></li><li><a href="#slide-155">9. ブラウザで開く</a></li><li><a href="#slide-156">10. ログインと初回のパスワード変更</a><ul><li><a href="#slide-158">ロール</a></li><li><a href="#slide-160">何も入れずに始めた場合の、閲覧者の作り方</a></li></ul></li><li><a href="#slide-161">11. 回答を作る LLM をつなぐ</a><ul><li><a href="#slide-161">11-1. LM Studio 側の準備</a></li><li><a href="#slide-162">11-2. Cynovela 側の設定</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-116">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(5/7)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-164">12. 最初の質問をする</a></li><li><a href="#slide-166">13. 検索の対象フォルダ（取り込み元）を足す</a><ul><li><a href="#slide-166">画面から足す（おすすめ）</a></li><li><a href="#slide-167">ダブルクリックで足す</a></li><li><a href="#slide-168">ターミナルから足す</a></li><li><a href="#slide-169">取り込み元を複数渡す</a></li></ul></li><li><a href="#slide-172">14. 資料を取り込んで公開する</a></li><li><a href="#slide-176">15. 後からフォルダやファイルを置いたとき</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-117">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(6/7)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-178">16. 日常の起動手順</a><ul><li><a href="#slide-178">起動の仕方は 2 通り、起動の中身も 2 通りあります</a></li><li><a href="#slide-182">はじめて起動する前の注意</a></li><li><a href="#slide-184">よく使う操作</a></li></ul></li><li><a href="#slide-186">17. 起動オプション</a><ul><li><a href="#slide-187">起動の形（--mode）の一覧（実測・2026-08-12）</a></li></ul></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-118">
+<div class="slide-header">
+<span class="doc-name">getting-started</span>
+<span class="slide-title">日本語（続き）</span>
+<span class="continued">(7/7)</span>
+</div>
+<div class="slide-body">
+<ul><li><a href="#slide-189">18. ターミナルで行う道（まとめ）</a></li><li><a href="#slide-194">19. 止め方と、起こし直し方</a></li><li><a href="#slide-199">20. 止めて起こし直すとき何が起きているのか</a></li><li><a href="#slide-202">21. 動作確認（テスト）</a></li><li><a href="#slide-204">22. うまくいかないとき</a></li><li><a href="#slide-208">23. 次に読むもの</a></li></ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-119">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">0. 先に知っておくこと（ここでつまずく人が一番多いところ）</span>
@@ -1986,7 +2156,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-108">
+<div class="slide" id="slide-120">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. どの配布物を落としましたか</span>
@@ -2000,7 +2170,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-109">
+<div class="slide" id="slide-121">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. どの配布物を落としましたか（続き）</span>
@@ -2014,7 +2184,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-110">
+<div class="slide" id="slide-122">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. どの配布物を落としましたか（続き）</span>
@@ -2028,7 +2198,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-111">
+<div class="slide" id="slide-123">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. どの配布物を落としましたか（続き）</span>
@@ -2042,7 +2212,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-112">
+<div class="slide" id="slide-124">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. どの配布物を落としましたか（続き）</span>
@@ -2064,7 +2234,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-113">
+<div class="slide" id="slide-125">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">1. どの配布物を落としましたか（続き）</span>
@@ -2078,7 +2248,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-114">
+<div class="slide" id="slide-126">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ</span>
@@ -2100,7 +2270,7 @@ SHA256SUMS</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-115">
+<div class="slide" id="slide-127">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2121,7 +2291,7 @@ SHA256SUMS</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-116">
+<div class="slide" id="slide-128">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2141,7 +2311,7 @@ SHA256SUMS</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-117">
+<div class="slide" id="slide-129">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2162,7 +2332,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-118">
+<div class="slide" id="slide-130">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2183,7 +2353,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-119">
+<div class="slide" id="slide-131">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2204,7 +2374,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-120">
+<div class="slide" id="slide-132">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2226,7 +2396,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-121">
+<div class="slide" id="slide-133">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2244,7 +2414,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-122">
+<div class="slide" id="slide-134">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2266,7 +2436,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-123">
+<div class="slide" id="slide-135">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">2. やさしい入口 — パッケージ版を一歩ずつ（続き）</span>
@@ -2280,7 +2450,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-124">
+<div class="slide" id="slide-136">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. なぜその手順なのか</span>
@@ -2295,7 +2465,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-125">
+<div class="slide" id="slide-137">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. なぜその手順なのか（続き）</span>
@@ -2312,7 +2482,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-126">
+<div class="slide" id="slide-138">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. なぜその手順なのか（続き）</span>
@@ -2328,7 +2498,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-127">
+<div class="slide" id="slide-139">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. なぜその手順なのか（続き）</span>
@@ -2345,7 +2515,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-128">
+<div class="slide" id="slide-140">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. なぜその手順なのか（続き）</span>
@@ -2362,7 +2532,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-129">
+<div class="slide" id="slide-141">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">3. なぜその手順なのか（続き）</span>
@@ -2377,7 +2547,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-130">
+<div class="slide" id="slide-142">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. 急ぐ人のための最短の道</span>
@@ -2397,7 +2567,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-131">
+<div class="slide" id="slide-143">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. 急ぐ人のための最短の道（続き）</span>
@@ -2417,7 +2587,7 @@ conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-132">
+<div class="slide" id="slide-144">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. 急ぐ人のための最短の道（続き）</span>
@@ -2436,7 +2606,7 @@ conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-133">
+<div class="slide" id="slide-145">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. 急ぐ人のための最短の道（続き）</span>
@@ -2458,7 +2628,7 @@ conda run -n cynovela-dist python -m pip install -r requirements.txt</code></pre
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-134">
+<div class="slide" id="slide-146">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. 急ぐ人のための最短の道（続き）</span>
@@ -2481,7 +2651,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-135">
+<div class="slide" id="slide-147">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">4. 急ぐ人のための最短の道（続き）</span>
@@ -2496,7 +2666,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-136">
+<div class="slide" id="slide-148">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">5. 用意するもの（ソース版）</span>
@@ -2511,7 +2681,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-137">
+<div class="slide" id="slide-149">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">5. 用意するもの（ソース版）（続き）</span>
@@ -2528,7 +2698,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-138">
+<div class="slide" id="slide-150">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">6. 展開する</span>
@@ -2546,7 +2716,7 @@ ls launch.sh                  # このファイルが見えれば展開できて
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-139">
+<div class="slide" id="slide-151">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">7. 動作環境を作って起動する</span>
@@ -2562,7 +2732,7 @@ ls launch.sh                  # このファイルが見えれば展開できて
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-140">
+<div class="slide" id="slide-152">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">7. 動作環境を作って起動する（続き）</span>
@@ -2585,7 +2755,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-141">
+<div class="slide" id="slide-153">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">7. 動作環境を作って起動する（続き）</span>
@@ -2601,7 +2771,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-142">
+<div class="slide" id="slide-154">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">8. 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます</span>
@@ -2616,7 +2786,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-143">
+<div class="slide" id="slide-155">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">9. ブラウザで開く</span>
@@ -2633,7 +2803,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-144">
+<div class="slide" id="slide-156">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. ログインと初回のパスワード変更</span>
@@ -2648,7 +2818,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-145">
+<div class="slide" id="slide-157">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. ログインと初回のパスワード変更（続き）</span>
@@ -2665,7 +2835,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-146">
+<div class="slide" id="slide-158">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. ログインと初回のパスワード変更（続き）</span>
@@ -2681,7 +2851,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-147">
+<div class="slide" id="slide-159">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. ログインと初回のパスワード変更（続き）</span>
@@ -2697,7 +2867,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-148">
+<div class="slide" id="slide-160">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">10. ログインと初回のパスワード変更（続き）</span>
@@ -2712,7 +2882,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-149">
+<div class="slide" id="slide-161">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. 回答を作る LLM をつなぐ</span>
@@ -2728,7 +2898,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-150">
+<div class="slide" id="slide-162">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. 回答を作る LLM をつなぐ（続き）</span>
@@ -2747,7 +2917,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-151">
+<div class="slide" id="slide-163">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">11. 回答を作る LLM をつなぐ（続き）</span>
@@ -2763,7 +2933,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-152">
+<div class="slide" id="slide-164">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">12. 最初の質問をする</span>
@@ -2781,7 +2951,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-153">
+<div class="slide" id="slide-165">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">12. 最初の質問をする（続き）</span>
@@ -2795,7 +2965,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-154">
+<div class="slide" id="slide-166">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. 検索の対象フォルダ（取り込み元）を足す</span>
@@ -2812,7 +2982,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-155">
+<div class="slide" id="slide-167">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. 検索の対象フォルダ（取り込み元）を足す（続き）</span>
@@ -2829,7 +2999,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-156">
+<div class="slide" id="slide-168">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. 検索の対象フォルダ（取り込み元）を足す（続き）</span>
@@ -2853,7 +3023,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-157">
+<div class="slide" id="slide-169">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. 検索の対象フォルダ（取り込み元）を足す（続き）</span>
@@ -2868,7 +3038,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-158">
+<div class="slide" id="slide-170">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. 検索の対象フォルダ（取り込み元）を足す（続き）</span>
@@ -2895,7 +3065,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-159">
+<div class="slide" id="slide-171">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">13. 検索の対象フォルダ（取り込み元）を足す（続き）</span>
@@ -2911,7 +3081,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-160">
+<div class="slide" id="slide-172">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. 資料を取り込んで公開する</span>
@@ -2925,7 +3095,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-161">
+<div class="slide" id="slide-173">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. 資料を取り込んで公開する（続き）</span>
@@ -2939,7 +3109,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-162">
+<div class="slide" id="slide-174">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. 資料を取り込んで公開する（続き）</span>
@@ -2956,7 +3126,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-163">
+<div class="slide" id="slide-175">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">14. 資料を取り込んで公開する（続き）</span>
@@ -2972,7 +3142,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-164">
+<div class="slide" id="slide-176">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">15. 後からフォルダやファイルを置いたとき</span>
@@ -2987,7 +3157,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-165">
+<div class="slide" id="slide-177">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">15. 後からフォルダやファイルを置いたとき（続き）</span>
@@ -3001,7 +3171,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-166">
+<div class="slide" id="slide-178">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順</span>
@@ -3023,7 +3193,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-167">
+<div class="slide" id="slide-179">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順（続き）</span>
@@ -3039,7 +3209,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-168">
+<div class="slide" id="slide-180">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順（続き）</span>
@@ -3057,7 +3227,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-169">
+<div class="slide" id="slide-181">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順（続き）</span>
@@ -3074,7 +3244,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-170">
+<div class="slide" id="slide-182">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順（続き）</span>
@@ -3090,7 +3260,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-171">
+<div class="slide" id="slide-183">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順（続き）</span>
@@ -3112,7 +3282,7 @@ python server.py --mode text --demo   # デモ</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-172">
+<div class="slide" id="slide-184">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順（続き）</span>
@@ -3134,7 +3304,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-173">
+<div class="slide" id="slide-185">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">16. 日常の起動手順（続き）</span>
@@ -3148,7 +3318,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-174">
+<div class="slide" id="slide-186">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">17. 起動オプション</span>
@@ -3162,7 +3332,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-175">
+<div class="slide" id="slide-187">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">17. 起動オプション（続き）</span>
@@ -3179,7 +3349,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-176">
+<div class="slide" id="slide-188">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">17. 起動オプション（続き）</span>
@@ -3194,7 +3364,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-177">
+<div class="slide" id="slide-189">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. ターミナルで行う道（まとめ）</span>
@@ -3208,7 +3378,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-178">
+<div class="slide" id="slide-190">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. ターミナルで行う道（まとめ）（続き）</span>
@@ -3222,7 +3392,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-179">
+<div class="slide" id="slide-191">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. ターミナルで行う道（まとめ）（続き）</span>
@@ -3236,7 +3406,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-180">
+<div class="slide" id="slide-192">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. ターミナルで行う道（まとめ）（続き）</span>
@@ -3250,7 +3420,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-181">
+<div class="slide" id="slide-193">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">18. ターミナルで行う道（まとめ）（続き）</span>
@@ -3264,7 +3434,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-182">
+<div class="slide" id="slide-194">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. 止め方と、起こし直し方</span>
@@ -3286,7 +3456,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-183">
+<div class="slide" id="slide-195">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. 止め方と、起こし直し方（続き）</span>
@@ -3306,7 +3476,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-184">
+<div class="slide" id="slide-196">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. 止め方と、起こし直し方（続き）</span>
@@ -3322,7 +3492,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-185">
+<div class="slide" id="slide-197">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. 止め方と、起こし直し方（続き）</span>
@@ -3345,7 +3515,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-186">
+<div class="slide" id="slide-198">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">19. 止め方と、起こし直し方（続き）</span>
@@ -3362,7 +3532,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-187">
+<div class="slide" id="slide-199">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">20. 止めて起こし直すとき何が起きているのか</span>
@@ -3380,7 +3550,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-188">
+<div class="slide" id="slide-200">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">20. 止めて起こし直すとき何が起きているのか（続き）</span>
@@ -3398,7 +3568,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-189">
+<div class="slide" id="slide-201">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">20. 止めて起こし直すとき何が起きているのか（続き）</span>
@@ -3418,7 +3588,7 @@ bash stop.sh</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-190">
+<div class="slide" id="slide-202">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">21. 動作確認（テスト）</span>
@@ -3438,7 +3608,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-191">
+<div class="slide" id="slide-203">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">21. 動作確認（テスト）（続き）</span>
@@ -3452,7 +3622,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-192">
+<div class="slide" id="slide-204">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. うまくいかないとき</span>
@@ -3466,7 +3636,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-193">
+<div class="slide" id="slide-205">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. うまくいかないとき（続き）</span>
@@ -3480,7 +3650,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-194">
+<div class="slide" id="slide-206">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. うまくいかないとき（続き）</span>
@@ -3494,7 +3664,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-195">
+<div class="slide" id="slide-207">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">22. うまくいかないとき（続き）</span>
@@ -3508,7 +3678,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span>非公式・個人学習目的</span>
 </div>
 </div>
-<div class="slide" id="slide-196">
+<div class="slide" id="slide-208">
 <div class="slide-header">
 <span class="doc-name">getting-started</span>
 <span class="slide-title">23. 次に読むもの</span>
@@ -3525,7 +3695,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 </div>
 <nav class="nav-bar">
 <button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
-<span id="slide-counter">1 / 196</span>
+<span id="slide-counter">1 / 208</span>
 <button id="btn-next" onclick="navigate(1)">次へ →</button>
 </nav>
 <script>
