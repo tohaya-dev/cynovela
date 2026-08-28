@@ -9,7 +9,7 @@ router = APIRouter(tags=["cost"])
 
 @router.get("/api/cost/estimate", response_model=None)
 def cost_estimate(request: Request, users: int = 10):
-    """Local LLM vs Cloud API のコスト試算 (estimate only). Stage R8-fix: 認証必須."""
+    """Local LLM vs Cloud API のコスト試算 (estimate only). 認証必須."""
     from core.auth import _require_authenticated
 
     _require_authenticated(request)

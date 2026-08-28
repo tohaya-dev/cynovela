@@ -39,7 +39,7 @@
 # クリーン化はパスワードの塩を作り直すため、走らせるたびに DB のバイト列が変わる
 # (塩を固定するのは論外)。よって**同じ配布物を2回作ってもハッシュは一致しない。**
 # 同等性の判定は、塊の数・取り込み元・復号後の本文・埋め込みの一致で行うこと
-# (詳しくは tools/build_bundled_data.py の頭書きと の記録)。
+# (詳しくは tools/build_bundled_data.py の頭書きを参照)。
 #
 # 第5引数に金庫鍵 (store/secret.key) のパスを渡すと、それを同梱する。省略時の探索順は
 # 下の resolve_vault_key() を参照。**新しい環境変数は 1 つも増やさない**。
@@ -58,12 +58,21 @@ set -euo pipefail
 #       既知除外は置かない (残すと次の混入を見逃す。旧 chroma.sqlite3 の
 #       既知除外は dist-date-20260729 の実行で撤去)。
 #   (c) 開発中の文書のファイル名。instructions/・docs/spec-raw/ のパス、
-#       名前が instr-*・*指示書* のものが在れば止める。
+#       名前が instr-* のもの、内部の文書の呼び名を含むものが在れば止める。
+#       (c) は名前と中身の 2 段で見る。名前だけでは、注釈の中に書かれた
+#       内部の文書への参照が素通りするため、(c-2) で配布物へ入るテキストの
+#       ファイルの中身も走査し、内部の文書を指す語が在れば同じように止める。
 # 出力には記号・箇所数・相対パスだけを書き、値そのものは決して書かない。
 # 単体実行: tools/build-dist.sh inspect <ステージのディレクトリ> <検査値ファイル>
 # 開発機の利用者名は実行時に導出する。リテラルで書くと本スクリプト自身が
 # ステージに同梱されて検査(b)が自分を検出し、パッケージングが常に止まる(実測 20260729)。
 DIST_DEV_USER="$(id -un)"
+# 内部の文書を指す語も実行時に組み立てる。リテラルで書くと本スクリプト自身が
+# ステージに同梱されて検査(c-2)が自分を検出し、パッケージングが常に止まる
+# ((b) の利用者名と同じ理由)。中身は、作業番号・内部文書の呼び名・
+# ページ識別子のような 32 桁の 16 進である。
+DIST_DOC_INSTR="$(printf '\346\214\207\347\244\272\346\233\270')"
+DIST_DOC_RE="$(printf 'DD-CYN-[0-9]{4}|\346\214\207\347\244\272\346\233\270|\347\240\224\347\251\266\343\203\241\343\203\242|\350\250\255\350\250\210\343\203\241\343\203\242|\350\250\255\350\250\210\344\273\225\346\247\230|\116\157\164\151\157\156|(^|[^0-9A-Fa-f])[0-9a-f]{32}([^0-9A-Fa-f]|$)')"
 
 dist_inspect() {   # dist_inspect <STAGE/$NAME 相当のディレクトリ> <検査値ファイル>
   local stage="$1" values="$2" fail=0 n
@@ -79,7 +88,7 @@ dist_inspect() {   # dist_inspect <STAGE/$NAME 相当のディレクトリ> <検
   c_hits="$( (cd "$stage" && find . \
         \( -path './instructions' -o -path './instructions/*' \
         -o -path './docs/spec-raw' -o -path './docs/spec-raw/*' \
-        -o -name 'instr-*' -o -name '*指示書*' \) -print) | sed 's|^\./||' || true)"
+        -o -name 'instr-*' -o -name "*${DIST_DOC_INSTR}*" \) -print) | sed 's|^\./||' || true)"
   if [ -n "$c_hits" ]; then
     n="$(printf '%s\n' "$c_hits" | wc -l | tr -d ' ')"
     echo "[inspect] (c) 開発中の文書のファイル名を検出: $n 件 (表示は先頭20件まで)" >&2
@@ -87,6 +96,36 @@ dist_inspect() {   # dist_inspect <STAGE/$NAME 相当のディレクトリ> <検
     fail=1
   else
     echo "[inspect] (c) 開発中の文書のファイル名: 0件"
+  fi
+
+  # (c-2) 配布物へ入るファイルの中身に残った、内部の文書への参照 --------
+  # (c) はファイルの名前しか見ないので、注釈の中の参照は素通りする。
+  # そこで配布物へ入るテキストのファイルだけを中身まで読み、内部の文書を
+  # 指す語 ($DIST_DOC_RE) が在れば (c) と同じく fail=1 で止める。
+  # 走査するのは拡張子で選んだテキストのファイルだけで、モデルの重みと
+  # 語彙の巨大な JSON (store/models 配下)、作られた環境は外す。
+  # 残りのバイナリは grep -I が自分で読み飛ばす。
+  local c2_hits c2_f c2_cnt
+  c2_hits="$( (cd "$stage" && find . -type f \
+        \( -name '*.py' -o -name '*.sh' -o -name '*.js' -o -name '*.html' \
+        -o -name '*.css' -o -name '*.md' -o -name '*.txt' -o -name '*.json' \
+        -o -name '*.yaml' -o -name '*.yml' -o -name '*.toml' -o -name '*.ini' \
+        -o -name '*.cfg' -o -name '*.command' -o -name '*.applescript' \) \
+        ! -path './store/models/*' ! -path './.venv-cynovela/*' \
+        ! -path './.condapack-cynovela/*' ! -path '*/site-packages/*' \
+        ! -path '*/node_modules/*' ! -path '*/__pycache__/*' -print0 \
+        | xargs -0 grep -lIE -e "$DIST_DOC_RE" -- /dev/null) \
+        | sed 's|^\./||' || true)"
+  if [ -n "$c2_hits" ]; then
+    n="$(printf '%s\n' "$c2_hits" | wc -l | tr -d ' ')"
+    echo "[inspect] (c-2) 中身に残った内部の文書への参照を検出: $n ファイル (表示は先頭20件まで)" >&2
+    while IFS= read -r c2_f; do
+      c2_cnt="$( { grep -oIE -e "$DIST_DOC_RE" -- "$stage/$c2_f" || true; } | wc -l | tr -d ' ')"
+      echo "[inspect]     $c2_f: $c2_cnt 箇所" >&2
+    done < <(printf '%s\n' "$c2_hits" | head -20)
+    fail=1
+  else
+    echo "[inspect] (c-2) 中身に残った内部の文書への参照: 0件"
   fi
 
   # (b) 開発機の利用者名 --------------------------------------------------
@@ -600,7 +639,7 @@ PY
 #   (共有すると他所で発行された通行証が通ってしまう)。パスを名指しで消す。
 # ── ダブルクリックの入口は .command のファイルである ──
 #   F-8: 以前ここに在った「ダイアログの .app」の説明を落とした。同梱をやめた
-#   のは であり、その原稿 (tools/launcher-app/launcher.applescript) は
+#   のは以前の走行であり、その原稿 (tools/launcher-app/launcher.applescript) は
 #   本流に残してある。受け取り手が押す入口は、下の 3 つの .command だけである
 #   (決定 31-2 で、起動・停止に「取り込み元を足す」が加わった)。
 #   3つの .command は追跡ファイルのため git archive がそのまま同梱する。
@@ -632,7 +671,7 @@ rmdir "$STAGE/$NAME/store/backups" 2>/dev/null || true
 #   baseline-report.md は 2026-05-15 の調査ログ (作る側の home パスと conda 環境名が
 #   そのまま写っている)。受け取り手には使い道が無い。
 #   中身は当時の事実なのでツリー側は書き換えない。配布物から外すだけにする。
-# oldname-zero-20260731 (): 退避先の覚え書き (旧名を含むファイル名) は
+# oldname-zero-20260731: 退避先の覚え書き (旧名を含むファイル名) は
 #   本流から外した。ここでその名前を書いていると、パッケージング処理そのものが配布物の中に
 #   旧名を持ち込んでしまう (受け入れの旧名検査が、この 1 行に当たっていた)。
 #   DEV-NOTE-mba.md は開発の覚え書きで、旧名と作る側のバックアップ先を含む。

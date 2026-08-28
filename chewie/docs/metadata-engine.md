@@ -209,7 +209,6 @@ A rescan is done with `FileSystemDataSource.discover()`, and the set of file pat
 ### 5.4 Known limitations
 
 - **Difference detection works per path.** Strict difference detection by `content_hash` is not implemented yet.
-<!-- BACKLOG: content_hash 比較ベースの差分同期は仕様未確定 -->
 - There is no integrated path that **automatically links the detected changes to Publish**. Only logging after detection is implemented.
 
 ---
@@ -501,7 +500,6 @@ deleted_paths = existing_paths - discovered_paths
 ### 5.4 既知制限
 
 - **差分検出はパス単位** で動作します。`content_hash` による厳密な差分検出はまだ実装されていません。
-<!-- BACKLOG: content_hash 比較ベースの差分同期は仕様未確定 -->
 - 検出した変更を **Publish に自動連携** する経路は未統合です。検出後のログ出力までは実装済み。
 
 ---

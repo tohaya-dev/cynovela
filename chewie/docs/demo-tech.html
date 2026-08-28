@@ -613,13 +613,13 @@
 </svg>
 
 <div class="info-box">
-<strong>Note:</strong> When Adaptive RAG (complexity score &ge; 2.0) starts, it enters an Agentic loop and performs up to three iterative searches using CRAG / Multi-Query / HyDE. The abstention decision uses the Vector cosine score (threshold 0.50) rather than RRF.<br>
-<strong>補足:</strong> Adaptive RAG（complexity score ≥ 2.0）が起動すると Agentic ループに入り、CRAG / Multi-Query / HyDE を活用して最大 3 回の反復検索が行われます。Abstention 判定は RRF ではなく Vector cosine スコア（しきい値 0.50）で行います。
+<strong>Note:</strong> When Adaptive RAG (complexity score &ge; 2.0) starts, it enters an Agentic loop and performs up to three iterative searches using CRAG / Multi-Query / HyDE. The abstention decision uses the Vector cosine score (threshold 0.40) rather than RRF.<br>
+<strong>補足:</strong> Adaptive RAG（complexity score ≥ 2.0）が起動すると Agentic ループに入り、CRAG / Multi-Query / HyDE を活用して最大 3 回の反復検索が行われます。Abstention 判定は RRF ではなく Vector cosine スコア（しきい値 0.40）で行います。
 </div>
 
 <div class="warning-box">
-<strong> known limitations:</strong> The structured answer template is not implemented, and free-form answers are the standard. The low-confidence fallback (threshold=0.50) is configured, but automatic switching when a search returns zero hits is not fully integrated.<br>
-<strong>既知の制限:</strong> 構造化回答テンプレートは未実装で、自由形式回答が標準です。低信頼度フォールバック（threshold=0.50）は設定済みですが、検索 0 件時の自動切替は完全には統合されていません。
+<strong> known limitations:</strong> The structured answer template is not implemented, and free-form answers are the standard. The low-confidence fallback (threshold=0.40) is in place: when the highest score is below the threshold, the build returns a low-confidence reply without calling the LLM. Automatic switching when a search returns zero hits is not implemented.<br>
+<strong>既知の制限:</strong> 構造化回答テンプレートは未実装で、自由形式回答が標準です。低信頼度フォールバック（threshold=0.40）は実装済みで、最上位のスコアがしきい値を下回ると LLM を呼ばずに低信頼の返しをします。検索 0 件時の自動切替は実装されていません。
 </div>
 </div>
 </div>
@@ -916,7 +916,7 @@
 
 <div class="danger-box">
 <strong> known limitations:</strong> Complete detection of indirect prompt injection (instructions planted inside ingested documents) is planned for Phase 3. At present it relies on the pattern matching in<code>filter_poisoned_chunks</code>.<br>
-<strong>既知の制限:</strong> 間接プロンプトインジェクション（取り込んだ文書内に仕込まれた指示）の完全検出は Phase 3 で対応予定です。現状は<code>filter_poisoned_chunks</code> のパターンマッチに依存しています。
+<strong>既知の制限:</strong> 間接プロンプトインジェクション（取り込んだ文書内に仕込まれた指示）の完全な検出は実装されていません。現状は<code>filter_poisoned_chunks</code> のパターンマッチに依存しています。
 </div>
 </div>
 </div>

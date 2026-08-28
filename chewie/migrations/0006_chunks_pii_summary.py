@@ -1,6 +1,6 @@
 """migration 0006: chunks/parent_chunks に pii_summary 列を追加。
 
-項目④ 検出結果の見える化（指示書 masking-alpha-finish-apply-autonomous-v2-20260522 / 研究メモ item4-metadata-research.md）。
+検出結果の見える化。
 
 取り込み時の検出結果から「種類 × 件数」のみを JSON で保存する（値は保存しない）。
 例: '{"EMAIL": 3, "PHONE_JP": 1}'

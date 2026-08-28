@@ -158,7 +158,7 @@ async def admin_update_user(user_id: str, request: Request):
 def admin_delete_user(user_id: str, request: Request, purge: bool = False):
     """既定は論理削除（is_active=0）。`?purge=true` を付けたときだけ完全に消す。
 
-    DD-CYN-0151 §7: 「利用者の削除が論理削除のまま」に対する口。
+    「利用者の削除が論理削除のまま」に対する口。
       purge を付けない  … 従来どおり is_active=0 にするだけ。行は残る。
       purge=true        … users の行そのものを消す。作業場所の割り当てと
                           リフレッシュトークンは FK の ON DELETE CASCADE で一緒に消え、

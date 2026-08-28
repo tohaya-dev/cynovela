@@ -114,7 +114,7 @@ async def readiness_probe():
 async def health_detailed(request: Request):
     """全Providerの状態 + システム（DB/Chroma/Stale）を一括返却。
 
-    Stage R5-fix P2 #16: 運用詳細 (database.size_mb 等) は admin 限定。
+    運用詳細 (database.size_mb 等) は admin 限定。
     一般ユーザーは /api/health で十分。
 
     後方互換: 既存のフラットキー (llm/embedding/vector_store/reranker) を維持しつつ、

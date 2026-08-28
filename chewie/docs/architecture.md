@@ -188,7 +188,7 @@ For each collection ID, two Chroma collections `{cid}__raw` and `{cid}__masked` 
 
 Because the BM25 index is held in a dictionary keyed by `(workspace_id, tier)`, the key design also isolates searches so that they do not cross workspaces (`rag.py:101-107`).
 
-<!-- BACKLOG: a physical workspace boundary at the ChromaDB level is listed as A-6, a HIGH priority bug carried over from Phase 3; currently isolation is per collection_id -->
+The separation in ChromaDB itself is a logical boundary by collection name, per collection ID. A physical boundary per workspace (a separate directory and the like) is not implemented, and all collections are held in one Chroma store directory (`providers/vector_store.py`).
 
 ---
 
@@ -432,7 +432,7 @@ Collection ID ごとに `{cid}__raw` と `{cid}__masked` の 2 つの Chroma コ
 
 BM25 インデックスは `(workspace_id, tier)` をキーとした辞書で持つため、ワークスペースをまたぐ検索が起こらないようキー設計でも分離されています（`rag.py:101-107`）。
 
-<!-- BACKLOG: ChromaDB レベルでの workspace 物理境界は Phase 3 引き継ぎの HIGH 優先度バグとして A-6 に挙がっており、現状は collection_id 単位での分離 -->
+ChromaDB 自体の分離は collection ID 単位の collection 名による論理境界です。workspace ごとの物理境界（別ディレクトリ等）は実装されておらず、すべての collection は 1 つの Chroma の保管先ディレクトリに入ります（`providers/vector_store.py`）。
 
 ---
 

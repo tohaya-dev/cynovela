@@ -153,7 +153,7 @@ This is the milestone for "a state in which the core flows work end to end as a 
 - BAAI/bge-m3 vector embeddings
 - Replaceable Reranker (CrossEncoder, FlashRank, Ollama, HTTP)
 - Advanced search features (MMR, Parent-Child chunking, Multi-Query, CRAG, HyDE, Adaptive RAG)
-- Adoption of a confidence threshold (cosine similarity 0.50)
+- Adoption of a confidence threshold (cosine similarity 0.40)
 
 ### Stage 4: Smart Ingestion
 
@@ -204,36 +204,36 @@ This is the milestone for "a state in which the core flows work end to end as a 
 
 ---
 
-## Planned items toward Beta GA
+## Items that are not complete
 
-Beta GA is a milestone under consideration whose goal is "a state that can withstand simple shared use in addition to personal learning".
+The following are recorded as unfinished. They describe the state of the current build, not a schedule.
 
 ### Authentication and authorization
 
-- Full introduction of JWT authentication (enforcing RBAC in all modes)
-- Issuing API keys per user
+- Full JWT authentication (RBAC enforcement in all modes)
+- Per-user API key issuing
 
 ### RAG quality
 
-- Reranker substance testing (quality verification of CrossEncoder, etc.)
-- Adjusting the chunking strategy (considering making Contextual Chunking the default)
-- Considering the introduction of structured answer templates
+- Reranker substance testing (quality verification of CrossEncoder and others)
+- Adjustment of the chunking strategy (whether Contextual Chunking becomes the default)
+- Structured answer templates
 
 ### Stability
 
 - YAML persistence of the Embedding / Reranker settings (currently memory only)
-- Hardening the error recovery paths
-- Integrating DataSyncService with publish (currently a noop)
+- Hardening of the error recovery paths
+- Integration of DataSyncService with publish (currently a noop)
 
 ### Integration expansion
 
-- Expanding the tools published by the MCP server
-- Expanding the Chunks viewer of KnowledgeCatalog (metadata search, citation tracking)
+- Expansion of the tools published by the MCP server
+- Expansion of the Chunks viewer of KnowledgeCatalog (metadata search, citation tracking)
 
 ### Backend diversification
 
 - Vector store support for Qdrant / LanceDB (currently a skeleton only)
-- Implementing MLX Embedding / Reranker (Apple Silicon optimization)
+- MLX Embedding / Reranker implementation (Apple Silicon optimization)
 
 ---
 
@@ -385,7 +385,7 @@ Cynovela の主要な変更内容を時系列で記録します。
 - BAAI/bge-m3 ベクター埋め込み
 - Reranker の差し替え（CrossEncoder、FlashRank、Ollama、HTTP）
 - 高度な検索機能（MMR、Parent-Child チャンキング、Multi-Query、CRAG、HyDE、Adaptive RAG）
-- 信頼度閾値（cosine similarity 0.50）を採用
+- 信頼度閾値（cosine similarity 0.40）を採用
 
 ### Stage 4: Smart Ingestion
 
@@ -436,9 +436,9 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ---
 
-## Beta GA に向けた予定事項
+## 完了していない事項
 
-Beta GA は「個人学習に加えて簡易な共同利用にも耐えうる状態」をゴールとして検討中の節目です。
+以下は未完了として記録されている事項です。予定ではなく、現在の作りの状態として書きます。
 
 ### 認証・認可
 
@@ -447,9 +447,9 @@ Beta GA は「個人学習に加えて簡易な共同利用にも耐えうる状
 
 ### RAG 品質
 
-- Reranker 実体テスト（CrossEncoder 等の品質検証）
-- チャンク戦略の調整（Contextual Chunking のデフォルト化検討）
-- 構造化回答テンプレートの導入検討
+- Reranker 実体テスト（CrossEncoder などでの品質検証）
+- chunk 戦略の調整（Contextual Chunking を既定にするかどうか）
+- 構造化回答テンプレート
 
 ### 安定性
 

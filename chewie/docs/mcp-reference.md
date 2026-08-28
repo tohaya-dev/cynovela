@@ -1,7 +1,5 @@
 # MCP reference / MCP リファレンス
 
-<!-- DD-CYN-0151 §10: 実物の mcp_server.py の TOOLS からそのまま起こしている。 -->
-
 ## English
 
 Cynovela's MCP server offers **25 tools**. This page lists every one of

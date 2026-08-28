@@ -3,7 +3,8 @@
 ChromaDB は現状の rag.py が直接呼んでいる。本Providerでラップして
 将来 Qdrant 等に切り替えられるインターフェイスを提供する。
 
-BLOCK A-4: 指示書互換の collection 単位 sync VectorStore も追加 (下部参照)。
+BLOCK A-4: 既存 rag.py と同じ「1 コレクション固定・同期」の呼び方に合わせた
+collection 単位 sync VectorStore も追加 (下部参照)。
 """
 
 from __future__ import annotations
@@ -138,7 +139,7 @@ class ChromaDBVectorStore(VectorStoreProvider):
         workspace_id: str | None = None,
         tier: str = DEFAULT_TIER,
     ) -> list[dict]:
-        """Vector search. Stage R8-3: workspace_id を渡すと where 句で多重防御 (Agent N §3-1)。
+        """Vector search. workspace_id を渡すと where 句で多重防御。
 
         §段1c: tier ('raw' / 'masked') で読み出し先 Chroma collection を分岐。
         既定 tier='raw' (後方互換)。階層振り分けは §段2 で入口側が tier を選ぶ。
@@ -146,7 +147,7 @@ class ChromaDBVectorStore(VectorStoreProvider):
         client = self._ensure_client()
         try:
             col = client.get_collection(name=chroma_name_for_tier(collection_id, tier))
-            # Stage R8-3: workspace_id があれば where 句で絞り込み
+            # workspace_id があれば where 句で絞り込み
             _kw_extra = {"where": {"workspace_id": workspace_id}} if workspace_id else {}
             res = col.query(query_embeddings=[query_embedding], n_results=n, **_kw_extra)
             ids = (res.get("ids") or [[]])[0]
@@ -327,9 +328,9 @@ def get_vector_store_provider(config: dict) -> VectorStoreProvider:
     return ChromaDBVectorStore(path=v.get("path", ""))
 
 
-# ─── BLOCK A-4: 指示書互換 collection 単位 sync VectorStore ───
+# ─── BLOCK A-4: collection 単位 sync VectorStore ───
 # 上記 VectorStoreProvider (async / 全コレクション横断) を尊重しつつ、
-# 指示書の VectorStore (sync / 1コレクション固定) を追加する。
+# 既存 rag.py の呼び方に合わせた VectorStore (sync / 1コレクション固定) を追加する。
 # 既存 rag.py の ChromaDB 直接呼び出しはそのまま維持し、新規コードはこちらを使う。
 
 

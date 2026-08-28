@@ -26,15 +26,14 @@ RAG_STRATEGIES = {"simple", "hybrid_bm25", "contextual"}
 
 
 # ============================================================
-# Stage R7 C-4: Smart Ingestion Stage 2/3 状態遷移
+# Smart Ingestion Stage 2/3 状態遷移
 # ============================================================
-# 遷移パス (Notion 35994ef8 / Phase 3 Recon Agent J §1-3 中):
+# 遷移パス:
 #   draft → ingested → ready
 #   draft → publishing → ready / failed (legacy 経路、互換維持)
 #   publishing → stopped (中断)
 #
 # migration 0002 で collections.status の CHECK に 'ingested' を追加。
-# Phase 3 Recon Agent J で grep ヒット 0 だった機能を本実装で 3+ 件に。
 
 VALID_STATE_TRANSITIONS = {
     ("draft", "ingested"): "ingest 完了 (Stage 2 → Stage 3 入口)",
@@ -52,7 +51,7 @@ VALID_STATE_TRANSITIONS = {
 def transition_collection_state(col_id: str, from_state: str, to_state: str, conn=None) -> bool:
     """Smart Ingestion 状態遷移ヘルパー (Stage 2/3 経路)。
 
-    Stage R7 C-4 で新設。VALID_STATE_TRANSITIONS の合法遷移のみ許可する。
+    VALID_STATE_TRANSITIONS の合法遷移のみ許可する。
     """
     if (from_state, to_state) not in VALID_STATE_TRANSITIONS:
         return False
@@ -168,7 +167,7 @@ def list_collections(
         if (user or {}).get("role") != "admin":
             where_parts.append("workspace_id IN (SELECT workspace_id FROM workspace_users WHERE user_id = ?)")
             params.append((user or {}).get("id"))
-            # DD-CYN-0145 §148-1: 非admin には confidential の collection を一覧に出さない。
+            # 非admin には confidential の collection を一覧に出さない。
             # 従来は access_level を WHERE に含めておらず、所属WS内なら confidential も
             # メタデータごと閲覧者に返っていた。手本: catalog.py の viewer 絞り込みと同一述語。
             where_parts.append("(access_level IS NULL OR access_level != 'confidential')")
@@ -633,7 +632,7 @@ def publish_diff(request: Request, col_id: str):
             ).fetchall()
         }
         current_fs: dict[str, str] = {}
-        # DD-CYN-0171 (欠陥§183): 実体が無い / 開けない file を、理由つきで呼ぶ側へ返す。
+        # 実体が無い / 開けない file を、理由つきで呼ぶ側へ返す。
         #   従来はどちらも黙って continue しており、deleted_files に混ざるだけだった。
         #   ∴ 画面は「実体の無い file が在る」ことを知らないまま Publish を押せてしまい、
         #   publish の中で初めて「実体なし(温存)」「スキップ(読めず)」の道へ入っていた。
@@ -879,7 +878,7 @@ def publish(request: Request, col_id: str):
     # vision-placeholder-warn-20260727: 同期版 publish でも、中身が入らなかったファイルを
     #   応答へ返し、取り込み操作ログへ残す (publish-summary はここから読む)。
     _ph_files = list((_done_event or {}).get("placeholder_only_files") or [])
-    # DD-CYN-0171 (欠陥§183): 同期版の応答にも 0 チャンク完了の一言を載せる (追加の項目のみ)。
+    # 同期版の応答にも 0 チャンク完了の一言を載せる (追加の項目のみ)。
     _zcw = str((_done_event or {}).get("zero_chunk_warning") or "")
     if _zcw:
         result["zero_chunk_warning"] = _zcw

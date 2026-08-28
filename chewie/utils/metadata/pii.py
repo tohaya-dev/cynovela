@@ -1,9 +1,9 @@
 """utils.metadata.pii — PII 検出 / マスク / 感度スコア (実体集約版)。
 
-Stage R6-fix (Phase 3-fix): 旧 utils/pii_detector.py の実装を本ファイルに移植。
+旧 utils/pii_detector.py の実装を本ファイルに移植。
 presidio が使えれば使う、ダメなら正規表現フォールバック。日本語・英語両対応。
 
-Stage R7 C-5 で `llm_judge_pi` を追加し、HIGH 5 LLM judge ベースの PI 検出を提供する。
+`llm_judge_pi` は HIGH 5 LLM judge ベースの PI 検出を提供する。
 
 【設計方針】
 - presidio が使えれば使う。使えなければ正規表現フォールバック
@@ -325,14 +325,14 @@ def get_sensitivity_label(score: int, lang: str = "ja") -> str:
 
 
 # ============================================================
-# Stage R7 C-5: LLM judge ベースの PI 検出 (HIGH-5)
+# LLM judge ベースの PI 検出 (HIGH-5)
 # ============================================================
 
 
 def llm_judge_pi(text: str, provider: str = "lmstudio") -> Dict:
     """LLM judge による prompt injection / PII 判定。
 
-    Stage R7 C-5 で追加。cynovela.yaml の `llm.provider` に従う。
+    cynovela.yaml の `llm.provider` に従う。
     返り値:
         {
             "is_pi": bool,       # prompt injection 検出

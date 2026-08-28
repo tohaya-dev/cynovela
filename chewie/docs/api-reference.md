@@ -1,7 +1,5 @@
 # API reference / API リファレンス
 
-<!-- DD-CYN-0151 §10: 実物のコードから起こした一覧である。手で並べていない。 -->
-
 ## English
 
 This lists **every** HTTP endpoint this server answers. It was produced by reading
@@ -655,7 +653,7 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 |---|---|---|---|
 | `POST` | `/api/auth/change-password` | 利用者（管理者・閲覧者のいずれか） | Batch-B S1-1: ログイン済みユーザーが自分のパスワードを変更する。current_password 検証必須。 |
 | `POST` | `/api/auth/login` | 認証なしで通る | ログイン: username + password で password_hash 検証し新規セッション発行。 |
-| `POST` | `/api/auth/logout` | 利用者（管理者・閲覧者のいずれか） | Stage R8-fix: 認証必須化 (未認証 logout は意味なし、401 で reject). |
+| `POST` | `/api/auth/logout` | 利用者（管理者・閲覧者のいずれか） | 認証必須化 (未認証 logout は意味なし、401 で reject). |
 | `GET` | `/api/auth/me` | 利用者（管理者・閲覧者のいずれか） |  |
 | `POST` | `/api/auth/refresh` | 認証なしで通る | Batch-B S1-3: リフレッシュトークンで新しいアクセストークンを発行する。 |
 | `GET` | `/api/auth/session-config` | 管理者 | PHASE AUTH-1: セッション持続時間設定を返す。 |
@@ -679,13 +677,13 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 | `GET` | `/api/workspaces/{workspace_id}/publish-history` | 利用者（管理者・閲覧者のいずれか）・管理者 | Workspace のPublish履歴を新しい順で返す。 |
 | `DELETE` | `/api/workspaces/{ws_id}` | 管理者 |  |
 | `GET` | `/api/workspaces/{ws_id}` | 管理者 | PHASE 0-C: Workspace 単体取得 |
-| `PATCH` | `/api/workspaces/{ws_id}` | 管理者 | P4-6 / P4-11: WS の name / description / sync_config を更新する。 |
+| `PATCH` | `/api/workspaces/{ws_id}` | 管理者 | workspace の name / description / sync_config を更新する。 |
 | `PUT` | `/api/workspaces/{ws_id}` | 管理者 |  |
 | `PATCH` | `/api/workspaces/{ws_id}/archive` | 管理者 |  |
 | `PUT` | `/api/workspaces/{ws_id}/policy` | 管理者 |  |
-| `POST` | `/api/workspaces/{ws_id}/scan` | 管理者 | WS-card-v2: WSに紐づく全Sourceをまとめてスキャンする。 |
-| `GET` | `/api/workspaces/{ws_id}/sync-config` | 管理者 | P4-11: WSのポーリング設定を返す。 |
-| `PATCH` | `/api/workspaces/{ws_id}/sync-config` | 管理者 | P4-11: WSのポーリング設定だけを更新する。 |
+| `POST` | `/api/workspaces/{ws_id}/scan` | 管理者 | workspace に紐づく全 source をまとめて scan する。 |
+| `GET` | `/api/workspaces/{ws_id}/sync-config` | 管理者 | workspace のポーリング設定を返す。 |
+| `PATCH` | `/api/workspaces/{ws_id}/sync-config` | 管理者 | workspace のポーリング設定だけを更新する。 |
 | `PATCH` | `/api/workspaces/{ws_id}/unarchive` | 管理者 |  |
 
 ### まとまり — `routers/collections.py`（19件）
@@ -724,15 +722,15 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 | `POST` | `/api/ingest-roots` | 管理者 | 取り込み元を1件足す (管理者のみ・1回に1件だけ)。 |
 | `GET` | `/api/ingest-roots/browse` | 管理者 | 新しいルートを選ぶためのフォルダ辿り (管理者のみ・フォルダ名だけを返す)。 |
 | `DELETE` | `/api/ingest-roots/{name}` | 管理者 | 取り込み元を1件外す (管理者のみ)。原本には触らない。 |
-| `GET` | `/api/sources` | 利用者（管理者・閲覧者のいずれか） | GUI修正2 #35: archived_at IS NULL のもののみ返す。 |
+| `GET` | `/api/sources` | 利用者（管理者・閲覧者のいずれか） | archived_at IS NULL のもののみ返す。 |
 | `POST` | `/api/sources` | 管理者 |  |
 | `DELETE` | `/api/sources/{source_id}` | 管理者 | source 削除: DB 行とチャンクを削除する。 |
 | `GET` | `/api/sources/{source_id}` | 管理者 |  |
 | `GET` | `/api/sources/{source_id}/files` | 管理者 |  |
 | `GET` | `/api/sources/{source_id}/open-in-finder` | 管理者 | Open the source path in OS file manager (macOS Finder / Windows Explorer / Linux xdg-open). |
 | `POST` | `/api/sources/{source_id}/scan` | 管理者 |  |
-| `POST` | `/api/sources/{source_id}/scan/async` | 管理者 | DD-CYN-0142 §5-B: 走査を「開始だけを返す口」で始める (publish/async と同じ形)。 |
-| `POST` | `/api/sources/{source_id}/scan/cancel` | 管理者 | BLOCK B-6: 進行中のスキャンに停止フラグをセットする。 |
+| `POST` | `/api/sources/{source_id}/scan/async` | 管理者 | scan を「開始だけを返す口」で始める (publish/async と同じ形)。 |
+| `POST` | `/api/sources/{source_id}/scan/cancel` | 管理者 | 進行中のスキャンに停止フラグをセットする。 |
 
 ### 資料 — `routers/files.py`（4件）
 
@@ -742,7 +740,7 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 |---|---|---|---|
 | `GET` | `/api/browse` | 管理者 | Task 5: フォルダブラウザ。指定パス配下のサブフォルダ一覧を返す。 |
 | `PATCH` | `/api/documents/{document_id}/metadata` | 利用者（管理者・閲覧者のいずれか） | ビジネスメタデータ + 自動分類を更新. |
-| `GET` | `/api/files/{file_id}/preview` | 認証なしで通る | P2-2: ファイルプレビュー（先頭2000文字） |
+| `GET` | `/api/files/{file_id}/preview` | 認証なしで通る | ファイルプレビュー（先頭2000文字） |
 | `POST` | `/api/folder-scan-preview` | 管理者 | PHASE M-3: 指定フォルダを再帰スキャンし、拡張子別件数と推定処理時間を返す。 |
 
 ### 質問する — `routers/chat.py`（9件）
@@ -808,7 +806,7 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 |---|---|---|---|
 | `GET` | `/api/settings` | 管理者 |  |
 | `PUT` | `/api/settings` | 管理者 |  |
-| `GET` | `/api/settings/classifier` | 管理者 | Stage R5-fix P1 #15: admin 限定. |
+| `GET` | `/api/settings/classifier` | 管理者 | admin 限定. |
 | `POST` | `/api/settings/classifier` | 管理者 |  |
 | `GET` | `/api/settings/datasync` | 管理者 |  |
 | `POST` | `/api/settings/datasync` | 管理者 |  |
@@ -817,13 +815,13 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 | `GET` | `/api/settings/llm` | 管理者 | 現在のLLM設定を返す。api_key は値ではなく is_set フラグのみ。 |
 | `POST` | `/api/settings/llm` | 管理者 | LLM設定を動的更新。api_key はフォーム入力のみ (このセッションのRAM上の adapter に保持し、 |
 | `GET` | `/api/settings/models` | 管理者 |  |
-| `GET` | `/api/settings/pii-mode` | 管理者 | Stage R5-fix P1 #15: admin 限定. |
+| `GET` | `/api/settings/pii-mode` | 管理者 | admin 限定. |
 | `PUT` | `/api/settings/pii-mode` | 管理者 |  |
 | `GET` | `/api/settings/presets` | 管理者 | PHASE S-1: 推奨プリセット定義を返す (フロントエンド ドロップダウン用)。 |
 | `GET` | `/api/settings/remote-access` | 管理者 | PHASE B-1: 現在のバインドアドレス・ポート・TailScale IP・許可サブネットを返す。 |
 | `GET` | `/api/settings/reranker` | 管理者 |  |
 | `POST` | `/api/settings/reranker` | 管理者 |  |
-| `POST` | `/api/settings/reranker/test` | 管理者 | Stage R5-fix P1 #15: admin 限定. |
+| `POST` | `/api/settings/reranker/test` | 管理者 | admin 限定. |
 | `GET` | `/api/settings/system-prompt` | 管理者 |  |
 | `POST` | `/api/settings/system-prompt` | 管理者 |  |
 | `POST` | `/api/settings/test-connection` | 管理者 |  |
@@ -839,7 +837,7 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 | `GET` | `/api/llm/context-length` | 管理者 | #09 Step B/E: 現在の LLM のコンテキスト長を返す。 |
 | `POST` | `/api/llm/list-models` | 利用者（管理者・閲覧者のいずれか） | #06: 許可済みローカルエンドポイントからモデル一覧を取得する。 |
 | `GET` | `/api/llm/presets` | 管理者 | P6-E: 比較・切替用のLLMプリセット一覧を返す。 |
-| `PUT` | `/api/llm/providers` | 管理者 | GUI修正2 #28: ユーザー登録のLLMプロバイダー一覧をDB settings.llm.providers に保存する。 |
+| `PUT` | `/api/llm/providers` | 管理者 | ユーザー登録のLLMプロバイダー一覧をDB settings.llm.providers に保存する。 |
 
 ### LM Studio — `routers/lmstudio.py`（2件）
 
@@ -866,8 +864,8 @@ LM Studio に直接ものを聞く口。
 |---|---|---|---|
 | `GET` | `/api/chunking-config` | 管理者 | フェーズ2: Contextual Chunking 設定の取得。 |
 | `PATCH` | `/api/chunking-config` | 管理者 | フェーズ2: Contextual Chunking ON/OFF をDBに保存し、ランタイムに即反映する。 |
-| `GET` | `/api/execution-config` | 管理者 | P4-15: 実行モード設定を返す。APIキー類はマスクする。 |
-| `PATCH` | `/api/execution-config` | 管理者 | P4-15: 実行モード設定を更新する。 |
+| `GET` | `/api/execution-config` | 管理者 | 実行モード設定を返す。APIキー類はマスクする。 |
+| `PATCH` | `/api/execution-config` | 管理者 | 実行モード設定を更新する。 |
 | `GET` | `/api/pipeline-presets` | 管理者 | PHASE UX-1: パイプラインプリセット一覧 (組み込み + ユーザー定義)。 |
 | `POST` | `/api/pipeline-presets` | 管理者 | PHASE UX-1: ユーザープリセットを保存する。 |
 | `DELETE` | `/api/pipeline-presets/{preset_id}` | 管理者 | PHASE UX-1: ユーザープリセット削除 (組み込みは削除不可)。 |
@@ -882,7 +880,7 @@ LM Studio に直接ものを聞く口。
 | `POST` | `/api/guardrails/blocked-topics` | 管理者 | 禁止トピックを追加 (admin のみ). |
 | `DELETE` | `/api/guardrails/blocked-topics/{topic_id}` | 管理者 |  |
 | `GET` | `/api/guardrails/pii-detections` | 管理者 | audit_logs から PII 検出ログを集計して返す. |
-| `GET` | `/api/pii-detections` | 管理者 | P4-14: PII検出済みチャンクをドキュメント単位で集計して返す。 |
+| `GET` | `/api/pii-detections` | 管理者 | PII検出済みチャンクをドキュメント単位で集計して返す。 |
 
 ### 決まりごと — `routers/policies.py`（8件）
 
@@ -998,7 +996,7 @@ LM Studio に直接ものを聞く口。
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|
 | `GET` | `/api/stats/model` | 管理者 | モデル別クエリ数・平均応答時間 (audit_logs.detail JSON 経由). |
-| `GET` | `/api/stats/performance` | 管理者 | P3 §4: 応答時間・ディスク使用量・モデル変更イベント. |
+| `GET` | `/api/stats/performance` | 管理者 | 応答時間・ディスク使用量・モデル変更イベント. |
 | `GET` | `/api/stats/rag-quality` | 管理者 | RAG 品質スコア推移・ゼロヒット率・Guardrail 内訳. |
 
 ### ダッシュボード — `routers/dashboard.py`（1件）
@@ -1007,7 +1005,7 @@ LM Studio に直接ものを聞く口。
 
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|
-| `GET` | `/api/dashboard/summary` | 利用者（管理者・閲覧者のいずれか） | BLOCK B-5 / P4-13: Overview画面用のダッシュボード集計データを返す。 |
+| `GET` | `/api/dashboard/summary` | 利用者（管理者・閲覧者のいずれか） | Overview画面用のダッシュボード集計データを返す。 |
 
 ### 報告書 — `routers/reports.py`（3件）
 
@@ -1015,9 +1013,9 @@ LM Studio に直接ものを聞く口。
 
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|
-| `GET` | `/api/reports` | 認証なしで通る | Stage R5-fix P1 #11: admin 限定. |
+| `GET` | `/api/reports` | 認証なしで通る | admin 限定. |
 | `POST` | `/api/reports/generate` | 認証なしで通る | LLM で運用サマリーレポートを生成して reports テーブルに保存. |
-| `GET` | `/api/reports/{report_id}` | 認証なしで通る | Stage R5-fix P1 #11: admin 限定. |
+| `GET` | `/api/reports/{report_id}` | 認証なしで通る | admin 限定. |
 
 ### 費用 — `routers/cost.py`（1件）
 
@@ -1025,7 +1023,7 @@ LM Studio に直接ものを聞く口。
 
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|
-| `GET` | `/api/cost/estimate` | 利用者（管理者・閲覧者のいずれか） | Local LLM vs Cloud API のコスト試算 (estimate only). Stage R8-fix: 認証必須. |
+| `GET` | `/api/cost/estimate` | 利用者（管理者・閲覧者のいずれか） | Local LLM vs Cloud API のコスト試算 (estimate only). 認証必須. |
 
 ### 警告 — `routers/alerts.py`（1件）
 
@@ -1041,8 +1039,8 @@ LM Studio に直接ものを聞く口。
 
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|
-| `GET` | `/api/features` | 管理者 | P4-15: 全featuresフラグの現在値を返す。 |
-| `PATCH` | `/api/features` | 管理者 | P4-15: featuresフラグを更新する。DB settings に永続化する。 |
+| `GET` | `/api/features` | 管理者 | 全featuresフラグの現在値を返す。 |
+| `PATCH` | `/api/features` | 管理者 | featuresフラグを更新する。DB settings に永続化する。 |
 
 ### 起動の形 — `routers/mode.py`（1件）
 
@@ -1067,7 +1065,7 @@ MCP の設定と、つながるかの確認。
 
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|
-| `GET` | `/api/demo/role-switch` | 利用者（管理者・閲覧者のいずれか） | BLOCK B-2: ロール切替デモの workspace_id と利用可能ロールを返す。 |
+| `GET` | `/api/demo/role-switch` | 利用者（管理者・閲覧者のいずれか） | ロール切替デモの workspace_id と利用可能ロールを返す。 |
 
 ### 画面 — `routers/pages.py`（2件）
 

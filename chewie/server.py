@@ -97,10 +97,10 @@ if os.environ.get("SSL_CERT_FILE") and not os.path.exists(os.environ["SSL_CERT_F
             break
 
 
-# Fix-7 (Stage R4-1): --demo / --mock 起動時は本番 DB / Chroma と分離する。
+# Fix-7: --demo / --mock 起動時は本番 DB / Chroma と分離する。
 #         db.py / rag.py の import 前に環境変数を設定する必要があるため、
 #         argparse の `parse_known_args` で早期に sys.argv を解釈する正規経路に置換。
-#         （旧実装: `"--demo" in sys.argv` の文字列マッチ hack。Phase 3 Recon Agent K §1-3 で脆さ指摘済み）
+#         （旧実装: `"--demo" in sys.argv` の文字列マッチ hack。脆いため置き換えた）
 def _early_parse_demo() -> bool:
     # v3.5.0 Stage1-B: --mock 起動コード経路を完全撤去 (--demo は保持)。
     import argparse as _argparse
@@ -152,7 +152,7 @@ except Exception:
 #   従来は setdefault だったため、外から環境変数を与えると設定より強く効いた。
 #   ここで必ず入れ直し、外からの上書きを効かせない。
 #   なお下の4つは、この走りの中でデータ層へ渡すための受け渡しであり、設定の口ではない。
-# DD-CYN-0172 (欠陥§184): この本体は 1 回の走りで 2 度実行される。1 度目は
+# この本体は 1 回の走りで 2 度実行される。1 度目は
 #   `python server.py` の __main__ として2 度目は routers 等の `from server import ...`
 #   による module `server` としてである。`python server.py` の sys.path[0] は記号リンクを
 #   解いた実体の道になるため、木が記号リンクで組まれていると 2 度目の __file__ だけが
@@ -271,13 +271,13 @@ async def lifespan(app_instance):
         await _startup_rebuild_bm25()
     except Exception as _e:
         logger.warning(f"BM25 startup rebuild failed at lifespan: {_e}")
-    # 欠陥修正（DD-CYN-0166 派生）: 直後の _startup_scan_sources が「走査中」の
+    # 欠陥修正: 直後の _startup_scan_sources が「走査中」の
     # 誤判定に阻まれないよう、残骸の scan_jobs/sources を先に片付ける。
     try:
         await _startup_reset_residual_scan_jobs()
     except Exception as _e:
         logger.warning(f"residual scan job reset failed at lifespan: {_e}")
-    # A-10(a) DD-CYN-0142: 起動のたびに登録済みの取り込み元を1回走査する
+    # A-10(a) 起動のたびに登録済みの取り込み元を1回走査する
     # (変更の無いファイルは読み直さない)。起動を待たせないよう別スレッドで直列に回す。
     try:
         threading.Thread(target=_startup_scan_sources, daemon=True, name="startup-scan").start()
@@ -854,7 +854,7 @@ async def _startup_reset_residual_publish_jobs():
 async def _startup_reset_residual_scan_jobs():
     """起動時に、サーバー異常終了で残った scanning 状態を回復する。
 
-    DD-CYN-0166 派生の欠陥修正（会社支給の Mac で「走査中」「既に登録されています」
+    欠陥修正（会社支給の Mac で「走査中」「既に登録されています」
     が再起動後も消えないと報告された件）: _startup_reset_residual_publish_jobs と
     同じ回復処理が publish_jobs/collections にはあるが、scan_jobs/sources には
     無かった。そのため異常終了（強制終了・スリープ・launch.sh メニュー画面での
@@ -885,7 +885,7 @@ async def _startup_reset_residual_scan_jobs():
 
 
 def _startup_scan_sources():
-    """A-10(a) DD-CYN-0142: 起動のたびに、登録済みの取り込み元を1回走査する。
+    """A-10(a) 起動のたびに、登録済みの取り込み元を1回走査する。
 
     skip_unchanged=True で呼ぶため、前回走査以降に変わっていないファイルは読み直さない
     (登録済み扱いで数だけ進める)。SQLite の書き込みは単一ロックなので直列に回す。
@@ -1234,7 +1234,7 @@ from pathlib import Path as _Path
 
 # FIX-4 (Critical): Mock版や独立配置のため、CYNOVELA_BACKUP_DIR / CYNOVELA_DB 環境変数を尊重
 # alpha §9-A-7: バックアップ対象 DB を実 DB と一致させる (パッケージ配下 db/cynovela.db)
-# DD-CYN-0148 §4-A: 既定値がホームの下 (~/.cynovela/backups) を指していたが、実際の置き場は
+# 既定値がホームの下 (~/.cynovela/backups) を指していたが、実際の置き場は
 # 起動時に cynovela.yaml の paths から組み立てた <展開フォルダ>/store/backups である (上の
 # CYNOVELA_BACKUP_DIR の入れ直しを参照)。∴ この既定値は到達しない。読んだ人が誤解する元を
 # 消すため、既定値も store の下を指す形へ揃える。動きは変わらない。
@@ -1273,7 +1273,7 @@ def _create_backup(label: str = "") -> dict:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     safe_label = "".join(c for c in (label or "") if c.isalnum() or c in "-_")[:32]
     name = f"backup-{ts}" + (f"-{safe_label}" if safe_label else "")
-    # DD-CYN-0146 §150-1: 控えの名前が秒単位の時刻だけで作られていたため、同じ秒に2回作ると
+    # 控えの名前が秒単位の時刻だけで作られていたため、同じ秒に2回作ると
     # 2回目が既存ディレクトリへ書き込もうとして失敗（copytree の FileExistsError → 500）していた。
     # 既に同名が在るときは連番を足して衝突を避け、失敗させない。
     backup_dir = BACKUP_BASE / name
@@ -1400,7 +1400,7 @@ _scan_cancel_flags: dict[str, bool] = {}
 # /api/sources/{source_id}/scan/cancel は routers/sources.py に移動済み
 
 
-# DD-CYN-0151 §7: 同じ取り込み元に対する走査を、同時に2本走らせない。
+# 同じ取り込み元に対する走査を、同時に2本走らせない。
 #   これまで 409 で断っていたのは /api/sources/{id}/scan/async の1か所だけだった。
 #   同期の /scan・取り込み元を作ったときの自動走査・起動時走査はどれも素通しで、
 #   同じフォルダを2本同時に舐めると files への書き込みが競合した。
@@ -1417,7 +1417,7 @@ def _do_scan(source_id: str, job_id: str | None = None, skip_unchanged: bool = F
     skip_unchanged: 起動時走査用。前回走査以降に変わっていないファイルは本文抽出を
     行わない (登録済み扱いで数だけ進める)。
     """
-    # DD-CYN-0151 §7: 同じ取り込み元の走査が既に走っていたら、始めずに戻る。
+    # 同じ取り込み元の走査が既に走っていたら、始めずに戻る。
     with _scan_running_lock:
         if source_id in _scan_running:
             logger.warning(f"scan already running for source={source_id}; this call is skipped")
@@ -1447,7 +1447,7 @@ def _do_scan(source_id: str, job_id: str | None = None, skip_unchanged: bool = F
 
 
 def _do_scan_body(source_id: str, job_id: str | None = None, skip_unchanged: bool = False):
-    """DD-CYN-0151 §7: 走査の本体。排他は _do_scan が持つ。"""
+    """走査の本体。排他は _do_scan が持つ。"""
     # BLOCK B-6: スキャン開始時にcancel flagをクリア
     _scan_cancel_flags.pop(source_id, None)
 
@@ -1604,7 +1604,7 @@ def _do_scan_body(source_id: str, job_id: str | None = None, skip_unchanged: boo
                         )
                     file_count = 1
             elif os.path.isdir(src_path):
-                # DD-CYN-0142: 中止はループの外で一括処理する。旧実装は内側の break だけで
+                # 中止はループの外で一括処理する。旧実装は内側の break だけで
                 # 抜けると完了経路へ落ち、部分走査のまま status='completed' が記録され、
                 # 走査に達しなかった既存ファイルへ missing=1 が誤って立っていた。
                 _cancelled = False
@@ -1728,7 +1728,7 @@ def _do_scan_body(source_id: str, job_id: str | None = None, skip_unchanged: boo
                 if old_path not in seen_paths:
                     conn.execute("UPDATE files SET missing = 1 WHERE source_id = ? AND path = ?", (source_id, old_path))
 
-            # DD-CYN-0175 (欠陥§183-1): scan で新しく見つかった file を、その source を
+            # scan で新しく見つかった file を、その source を
             #   既に使っている collection へ結び付ける。
             #   従来 collection_files へ行を足すのは POST /api/collections (作成時)・
             #   PUT /api/collections/{id}・POST /api/collections/{id}/link-files の3つだけで、
@@ -2574,7 +2574,7 @@ def _run_publish_background(
                 progress=chunk_count,
                 total=chunk_count,
                 message=(
-                    # DD-CYN-0171 (欠陥§183): 0 チャンクで終わったのに「完了」とだけ出すのを止める。
+                    # 0 チャンクで終わったのに「完了」とだけ出すのを止める。
                     #   done イベントが理由つきの一言を運んでくるので、そのまま画面へ渡す。
                     str(final_event.get("zero_chunk_warning") or "")  # pyright: ignore[reportOptionalMemberAccess]
                     or f"Published with {chunk_count} chunks"
@@ -2593,7 +2593,7 @@ def _run_publish_background(
                 level="success", job_id=job_id,
                 metadata={
                     "stage": "done", "chunk_count": chunk_count, "collection_id": col_id, "diff": _diff,
-                    # DD-CYN-0171 (欠陥§183): 0 チャンク完了の理由を取り込み操作ログにも残す。
+                    # 0 チャンク完了の理由を取り込み操作ログにも残す。
                     "zero_chunk_warning": str((final_event or {}).get("zero_chunk_warning") or ""),
                     # vision-placeholder-warn-20260727: 中身が1文字も入らなかったファイル。
                     #   平文がある取り込みの瞬間にしか判定できない (インデックスの本文は暗号文) ため、
@@ -3388,7 +3388,7 @@ def _preflight_model_check(args) -> bool:
 def _wire_providers_for_mode(app_config, yaml_cfg: dict) -> None:
     """起動モードと cynovela.yaml に基づいて provider を配線する。
 
-    Stage R4-2/3: バグ 6 の解消。Phase 3 Recon Agent H §2.6 で確認:
+    バグ 6 の解消。確認済みの旧実装の問題:
     旧実装は rag.reranker_enabled + reranker_url の HttpReranker 専用分岐のみで、
     cynovela.yaml:90-97 の reranker.provider (cross_encoder / flashrank / mlx / ...)
     が無視されて NoReranker 固定になっていた。
@@ -3703,7 +3703,7 @@ if __name__ == "__main__":
     )
     _state.adapter = _adapter
 
-    # Stage R4-3: Reranker 配線は _wire_providers_for_mode() に集約。
+    # Reranker 配線は _wire_providers_for_mode() に集約。
     # v3.5.0 Stage1-B: --mock 撤去。モデル不要の TF-IDF 埋め込みは --mode minimal で配線される。
 
     # BLOCK A-1: AppConfig 構築（モジュール変数として公開）
@@ -3759,7 +3759,7 @@ if __name__ == "__main__":
     except Exception as _e:
         print(f"[WARN] EventBus init failed (continuing): {_e}")
 
-    # Stage R4-2/3: 起動時 provider 配線を _wire_providers_for_mode() に集約
+    # 起動時 provider 配線を _wire_providers_for_mode() に集約
     # （旧実装: rag.reranker_enabled + reranker_url の HttpReranker 専用分岐のみで、
     #   cynovela.yaml:90-97 の reranker.provider=cross_encoder などが無視されていた = バグ 6）
     _wire_providers_for_mode(_app_config, yaml_cfg)

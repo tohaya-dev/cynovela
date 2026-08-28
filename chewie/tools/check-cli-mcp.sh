@@ -1,5 +1,5 @@
 #!/bin/bash
-# DD-CYN-0140 §5-J-4 / §5-K-2 + DD-CYN-0141 §5-G: CLI と MCP の動作確認を1本で回す。
+# CLI と MCP の動作確認を1本で回す。
 # パッケージ版とソース版の両方へ、Python と接続先だけ替えて使う。
 #
 # 使い方:
@@ -64,12 +64,12 @@ if [ "$SERVER_UP" = 1 ]; then
     chk 0 "workspaces" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" workspaces
     chk 0 "collections" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" collections
     chk 0 "index-status" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" index-status
-    say "5a2) DD-CYN-0142 §5-A: 作業の単位の命令 (読むだけのもの + --yes 門)"
+    say "5a2) 作業の単位の命令 (読むだけのもの + --yes 門)"
     chk 0 "sources" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" sources
     chk 0 "audit-logs" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" audit-logs --limit 5 || true
     chk 1 "users create without --yes -> 1 (書かない)" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" users create --username check-cli-noyes --password 'Check-12345!'
     chk 1 "backup create without --yes -> 1 (書かない)" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" backup create
-    say "5b) settings (DD-CYN-0141 §5-A。admin token のときだけ 0、viewer token なら 3 が正)"
+    say "5b) settings (admin token のときだけ 0、viewer token なら 3 が正)"
     if "$PY" "$CLI" --url "$BASE" --token "$TOKEN" settings show >/dev/null 2>&1; then
       chk 0 "settings show" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" settings show
       chk 0 "settings show reranker" -- "$PY" "$CLI" --url "$BASE" --token "$TOKEN" settings show reranker

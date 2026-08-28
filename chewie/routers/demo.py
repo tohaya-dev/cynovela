@@ -16,7 +16,7 @@ def get_role_switch_demo(request: Request):
     """BLOCK B-2: ロール切替デモの workspace_id と利用可能ロールを返す。
     --demo 起動時のみ available=True を返す。それ以外は常に False。
 
-    Stage R8-fix: 認証必須。
+    認証必須。
     """
     from core.auth import _require_authenticated
     from core.constants import ROLE_DEMO_WS_NAME

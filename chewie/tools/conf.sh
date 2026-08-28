@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cynovela 設定の読み取り ()
+# Cynovela 設定の読み取り
 #   設定の保存先は cynovela.yaml 1本だけとする。環境変数では受け取らない。
 #   起動の道すじ (Cynovela-start.command → launcher-core.sh → launch.sh → run-container.sh) の
 #   どの段からも、この1本を読む。

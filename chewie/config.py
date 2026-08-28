@@ -63,7 +63,7 @@ def _load_or_create_jwt_signing_key() -> str:
     二役分離 (part6-20260726): 2026-07-05 (hansolo 3616e2e) は署名鍵の公知フォールバックを
     塞ぐため署名鍵を金庫鍵へ寄せた (一鍵二役)。本関数はその際に残件化された「二役の分離」で、
     署名鍵だけを別ファイルへ切り出す。金庫鍵の解決・生成 (_load_or_create_secret_key) には
-    一切手を入れない。移行データは無い (通行証は使い捨て。DD-CYN-0151 §5 以降、期限は
+    一切手を入れない。移行データは無い (通行証は使い捨てで、期限は
     呼ぶ側が頼んだときだけ入る)。
 
     解決順序 (金庫鍵と同型・**新しい環境変数は 1 つも追加しない**):
@@ -180,7 +180,7 @@ def load_cynovela_config(yaml_path: str = "cynovela.yaml") -> dict:
             "hyde_enabled": False,  # default OFF (High Quality モードで ON)
             # 低信頼度フォールバック: hits の最大 vector_score (cosine類似度 0〜1) で判定
             # BGE-M3 のノイズフロアは 0.35-0.45 (架空クエリでもこの程度の score が出る)
-            # 実存クエリは 0.55-0.75 程度のため 0.50 を境界に設定
+            # 実存クエリは 0.55-0.75 程度のため 0.40 を境界に設定
             # 高すぎると関連文書取りこぼし、低すぎると無関係文書を返す
             "confidence_threshold": 0.40,
             # Reranker 推論時の最大トークン長 (BAAI/bge-reranker-v2-m3 推奨は 512)

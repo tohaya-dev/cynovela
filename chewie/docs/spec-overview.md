@@ -104,7 +104,7 @@ For details, see `docs/api-reference.md`.
 | MLX Embedding | Skeleton only |
 | MLX Reranker | Skeleton only |
 | LanceDB backend | Skeleton only |
-| GraphRAG strategy | Planned for future implementation |
+| GraphRAG strategy | Not implemented |
 
 ### 3.2 Removed features
 
@@ -116,30 +116,30 @@ For details, see `docs/api-reference.md`.
 
 ### 3.3 Limitations by design
 
-- The confidence threshold (confidence_threshold = 0.50) is defined as a configuration value, but its exclusion logic in the search pipeline is only **partly integrated**.
-- Automatic polling sync works up to difference detection, but automatic linkage to Publish is **not integrated** (planned to be connected in a later phase).
-- Hash difference sync works **per path**. Comparison by `content_hash` is not implemented yet.
+- The confidence threshold (confidence_threshold = 0.40) is defined as a configuration value, but its exclusion logic in the search pipeline is only **partly integrated**.
+- Automatic polling sync works up to difference detection, but automatic linkage to Publish is **not integrated**.
+- Hash difference sync works **per path**. Comparison by `content_hash` is not implemented, and the comparison method is not fixed.
 - Authentication is enforced in all startup forms (it is not skipped even with `--demo`). The fixed token that used to be accepted with `--demo` startup was abolished on 2026-07-29.
 
 ### 3.4 Structured answer templates
 
-- A feature that fixes the LLM's answer into a **structured format** such as JSON or an `<answer>` tag is not implemented. A free-form answer is the standard.
+- A feature that fixes the LLM's answer into a **structured format** such as JSON or an `<answer>` tag is not implemented. A free-form answer is the standard. Whether such a feature will be introduced is not decided.
 
 ---
 
-## 4. Items planned toward Beta GA
+## 4. Items that are not complete
 
-The priority topics toward Beta GA, as read from the CHANGELOG, are as follows.
+The following are recorded in the CHANGELOG as unfinished. They are written here as the state of the current build, not as a schedule.
 
-| Item | Overview |
+| Item | Current state |
 |---|---|
-| Fixing HIGH priority bugs | The reversed DB → Chroma order in `import_workspace`, the race condition in `admin_cleanup_chromadb_orphans`, the physical boundary of WS isolation, the WS-A → WS-B cross-boundary check, and others |
-| Indirect prompt injection detection | A detection mechanism aimed at attacks that come through ingested documents |
-| Implementation of Qdrant / MLX / LanceDB | Advance the currently skeleton-only implementations into real implementations |
-| Reranker testing with a real model | Improving RAG quality with CrossEncoder and others |
-| Persisting Embedding / Reranker settings to YAML | They are currently held in memory, so they return to the defaults on restart |
-| Introducing JWT authentication | Enforcing RBAC in all modes |
-| KnowledgeCatalog extension | Metadata search in the Chunks viewer, citation tracking |
+| Bugs recorded as HIGH priority | The reversed DB → Chroma order in `import_workspace`, the race condition in `admin_cleanup_chromadb_orphans`, the physical boundary of workspace isolation, the workspace-A → workspace-B cross-boundary check, and others |
+| Indirect prompt injection detection | A detection mechanism aimed at attacks that come through ingested documents is not implemented |
+| Qdrant / MLX / LanceDB | The implementations are a skeleton only |
+| Reranker testing with a real model | Verification with CrossEncoder and others is not done |
+| Embedding / Reranker settings | Held in memory only, so they return to the defaults on restart. They are not persisted to YAML |
+| JWT authentication | Not introduced |
+| KnowledgeCatalog | Metadata search in the Chunks viewer and citation tracking are not implemented |
 
 ---
 
@@ -247,7 +247,7 @@ The priority topics toward Beta GA, as read from the CHANGELOG, are as follows.
 | MLX Embedding | 骨格のみ |
 | MLX Reranker | 骨格のみ |
 | LanceDB バックエンド | 骨格のみ |
-| GraphRAG 戦略 | 将来実装予定 |
+| GraphRAG 戦略 | 未実装 |
 
 ### 3.2 廃止された機能
 
@@ -259,32 +259,30 @@ The priority topics toward Beta GA, as read from the CHANGELOG, are as follows.
 
 ### 3.3 設計上の制限
 
-- 信頼度閾値（confidence_threshold = 0.50）は設定値としては定義済みですが、検索パイプラインからの除外ロジックには **部分統合** に留まります。
-- 自動ポーリング同期は差分検出までは動作しますが、Publish への自動連携は **未統合** です（後続フェーズで接続予定）。
-- ハッシュ差分同期は **パス単位** で動作します。`content_hash` 比較はまだ実装されていません。
-<!-- BACKLOG: content_hash 比較の差分検出は仕様未確定 -->
+- 信頼度閾値（confidence_threshold = 0.40）は設定値としては定義済みですが、検索パイプラインからの除外ロジックには **部分統合** に留まります。
+- 自動ポーリング同期は差分検出までは動作しますが、Publish への自動連携は **未統合** です。
+- ハッシュ差分同期は **パス単位** で動作します。`content_hash` 比較は実装されておらず、比較方式も確定していません。
 - 認証強制はすべての起動形態で動作します（`--demo` 起動でも省かれません）。かつて `--demo` 起動で受理していた固定トークンは 2026-07-29 に廃止しました。
 
 ### 3.4 構造化回答テンプレート
 
-- LLM の回答を JSON や `<answer>` タグなどの **構造化フォーマット** で固定する機能は実装されていません。自由形式の回答が標準です。
-<!-- BACKLOG: 構造化回答テンプレートの導入可否は未定 -->
+- LLM の回答を JSON や `<answer>` タグなどの **構造化フォーマット** で固定する機能は実装されていません。自由形式の回答が標準です。導入するかどうかは決まっていません。
 
 ---
 
-## 4. Beta GA に向けて予定している事項
+## 4. 完了していない事項
 
-CHANGELOG から読み取れる、Beta GA に向けた重点課題は次のとおりです。
+以下は CHANGELOG に未完了として記録されている事項です。予定ではなく、現在の作りの状態として書きます。
 
-| 項目 | 概要 |
+| 項目 | 現在の状態 |
 |---|---|
-| HIGH 優先度バグの修正 | `import_workspace` の DB → Chroma 順序逆転、`admin_cleanup_chromadb_orphans` の競合状態、WS 分離の物理境界、WS-A → WS-B 越境チェックなど |
-| 間接プロンプトインジェクション検出 | 取り込んだドキュメント経由の攻撃を対象とした検出機構 |
-| Qdrant / MLX / LanceDB の実装 | 現在骨格のみの実装を本実装に進める |
-| Reranker 実体テスト | CrossEncoder などでの RAG 品質向上 |
-| Embedding / Reranker 設定の YAML 永続化 | 現在はメモリ保持のため再起動でデフォルトに戻る |
-| JWT 認証の導入 | 全モードでの RBAC 強制 |
-| KnowledgeCatalog 拡張 | Chunks ビューアのメタデータ検索、出典追跡 |
+| HIGH 優先度として記録されているバグ | `import_workspace` の DB → Chroma 順序逆転、`admin_cleanup_chromadb_orphans` の競合状態、workspace 分離の物理境界、workspace-A → workspace-B の越境チェックなど |
+| 間接プロンプトインジェクション検出 | 取り込んだ文書を経由する攻撃を対象とした検出機構は未実装です |
+| Qdrant / MLX / LanceDB | 実装は骨格のみです |
+| Reranker の実モデルでの試験 | CrossEncoder などでの検証を行っていません |
+| Embedding / Reranker の設定 | メモリ保持のみで、再起動すると既定値に戻ります。YAML へ永続化していません |
+| JWT 認証 | 導入していません |
+| KnowledgeCatalog | Chunks ビューアのメタデータ検索と出典追跡は未実装です |
 
 ---
 

@@ -2028,7 +2028,7 @@ def _publish_collection_iter_impl(
                             _missing_ids = json.loads(_missing_hash.get("chunk_ids", "[]"))
                         except Exception:
                             _missing_ids = []
-                        # DD-CYN-0171 (欠陥§183): 上と同じ理由。温存する中身が無い記録を
+                        # 上と同じ理由。温存する中身が無い記録を
                         #   「実体なし(温存)」に数えると、total_chunks が 0 のまま done へ抜け、
                         #   しかも全滅判定 (processed=0 かつ retained=0 かつ missing_retained=0)
                         #   にも当たらないため error にすらならない。
@@ -2064,7 +2064,7 @@ def _publish_collection_iter_impl(
                         old_ids = json.loads(existing.get("chunk_ids", "[]"))
                     except Exception:
                         old_ids = []
-                    # DD-CYN-0171 (欠陥§183): chunk_ids が空の file_hashes 行を「温存」に
+                    # chunk_ids が空の file_hashes 行を「温存」に
                     #   数えると、retained_chunk_ids が増えないまま retained_count だけが増え、
                     #   total_chunks が 0 のまま done へ抜ける (= collections.chunk_count が 0、
                     #   状態は ready、所要は 1 秒台)。空の記録は温存する中身を持たないので、
@@ -2886,7 +2886,7 @@ def _publish_collection_iter_impl(
         "unchanged_count": retained_count,
         "missing_count": missing_retained_count,
         "skipped_count": len(skipped_files),
-        # DD-CYN-0171 (欠陥§183): 0 チャンクで「完了」を出すのは、ポリシーで全除外された
+        # 0 チャンクで「完了」を出すのは、ポリシーで全除外された
         #   ときだけが正当である。それ以外で 0 になったら、受領書と保存された状態が
         #   食い違ったまま ready になる。呼ぶ側 (publish_jobs のメッセージ・取り込み操作
         #   ログ・同期版の応答) がそのまま出せるよう、ここで理由つきの一言を付ける。
@@ -3743,7 +3743,7 @@ async def rag_retrieve(
         ids = _bm25_chunk_ids[_bm25k]
         texts = _bm25_chunk_texts.get(_bm25k, [])
         sources = _bm25_chunk_source.get(_bm25k, [])
-        # DD-CYN-0145 §148-2: BM25 インデックスは (workspace_id, tier) 単位で、
+        # BM25 インデックスは (workspace_id, tier) 単位で、
         # ワークスペース内の全 collection の chunk を含む。従来はここで collection_ids に
         # よる絞り込みをせず、指定外（例: 別の public や confidential）の chunk まで
         # マージしていた（ベクター経路は collection_ids でスコープ済みなのに BM25 だけ素通し）。
@@ -3809,7 +3809,7 @@ async def rag_retrieve(
                 try:
                     # masked-only §9-3: メタ補完も masked コレクションから引く (raw 層は存在しない)。
                     col2 = chroma.get_collection(name=_cnt2(cid, "masked"))
-                    # Stage R8-3: workspace_id where 句で多重防御 (Agent N §3-1)
+                    # workspace_id where 句で多重防御
                     _get_kwargs = {"ids": missing_meta_ids, "include": ["metadatas"]}
                     if workspace_id:
                         _get_kwargs["where"] = {"workspace_id": workspace_id}

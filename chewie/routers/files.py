@@ -59,7 +59,7 @@ def _ingest_roots_now():
 async def update_document_metadata(document_id: str, request: Request):
     """ビジネスメタデータ + 自動分類を更新.
 
-    Stage R5-fix P1 #9: sensitivity_level / doc_type 変更は admin 限定。
+    sensitivity_level / doc_type 変更は admin 限定。
     owner / department / project は認証済みユーザー全員可。
     """
     from core.auth import _require_authenticated
@@ -68,7 +68,7 @@ async def update_document_metadata(document_id: str, request: Request):
     body = await parse_body_pydantic(request)
     allowed = {"owner", "department", "project", "sensitivity_level", "doc_type"}
     updates = {k: v for k, v in (body or {}).items() if k in allowed}
-    # Stage R5-fix P1 #9: sensitivity_level / doc_type は admin のみ変更可
+    # sensitivity_level / doc_type は admin のみ変更可
     privileged_fields = {"sensitivity_level", "doc_type"}
     if any(k in updates for k in privileged_fields):
         if user.get("role") != "admin":

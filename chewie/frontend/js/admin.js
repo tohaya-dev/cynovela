@@ -100,7 +100,7 @@ async function createBackupNow() {
   } catch (e) { showToast(lj(`Backup failed: ${e.message}`,`バックアップ失敗: ${e.message}`), 'error'); }
 }
 
-// DD-CYN-0148 §4-D: 押すと壊れる restoreBackup の処理を取り除いた。動いている最中に
+// 押すと壊れる restoreBackup の処理を取り除いた。動いている最中に
 // 土台を差し替えるため、応答が返らず起動し直しが要る。復元は Cynovela を停止した状態で
 // 行う（手順は docs/operations.md）。API の口 /api/admin/backups/{name}/restore は残している。
 

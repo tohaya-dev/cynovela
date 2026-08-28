@@ -1,7 +1,5 @@
 # CLI reference / CLI リファレンス
 
-<!-- DD-CYN-0151 §10: cynovela-cli.py の argparse をそのまま読んで作っている。 -->
-
 ## English
 
 `cynovela-cli.py` has **18 commands**, **48 counting the sub-commands**.

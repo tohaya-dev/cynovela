@@ -271,7 +271,7 @@ Both require the administrator role, and `_require_admin(request)` is called at 
 
 ## 8. Migration from the Old Implementation
 
-The old `utils/pii_detector.py` was deleted, and the implementation was consolidated into `utils/metadata/pii.py` (via Stage R6-fix / Phase 3-fix). `llm_judge_pi(text)` in the new implementation is a function that performs an additional judgment based on an LLM judge, and was introduced at Stage R7 C-5.
+The old `utils/pii_detector.py` was deleted, and the implementation was consolidated into `utils/metadata/pii.py`. `llm_judge_pi(text)` in the new implementation is a function that performs an additional judgment based on an LLM judge.
 
 ---
 
@@ -546,7 +546,7 @@ PII 検出は次の 2 系統で集計されます。
 
 ## 8. 旧実装からの移行
 
-旧 `utils/pii_detector.py` は削除され、実装は `utils/metadata/pii.py` に集約されました（Stage R6-fix / Phase 3-fix 経由）。新実装の `llm_judge_pi(text)` は LLM judge ベースで追加判定を行う関数で、Stage R7 C-5 で導入されました。
+旧 `utils/pii_detector.py` は削除され、実装は `utils/metadata/pii.py` に集約されました。新実装の `llm_judge_pi(text)` は LLM judge ベースで追加判定を行う関数です。
 
 ---
 

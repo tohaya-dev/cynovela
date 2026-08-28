@@ -62,8 +62,8 @@ On the BM25 path as well, the metadata is completed first and then the ACL check
 
 ### 2.4 Known limitations
 
-- ChromaDB is separated by a logical boundary (collection name), but a **physical boundary (a separate directory, etc.) is not implemented**. An improvement is planned toward Beta GA.
-- The cross-boundary check for session information of WS-A being diverted into a chat of WS-B has a known gap, and is planned to be addressed in Phase 3.
+- ChromaDB is separated by a logical boundary (collection name), but a **physical boundary (a separate directory, etc.) is not implemented**. All collections are held in one Chroma store directory (`providers/vector_store.py`).
+- The cross-boundary check for session information of WS-A being diverted into a chat of WS-B has a known gap.
 
 ---
 
@@ -221,11 +221,11 @@ EXFILTRATION_PATTERNS = [
 ]
 ```
 
-In addition, an extra **LLM judge based** decision is also provided by `llm_judge_pi` in `utils/metadata/pii.py` (Stage R7 C-5).
+In addition, an extra **LLM judge based** decision is also provided by `llm_judge_pi` in `utils/metadata/pii.py`.
 
 ### 5.4 Indirect attacks through documents (known limitation)
 
-Prompt injection wording that slipped into an ingested document is guarded once by the post-retrieval inspection, but a **detection mechanism dedicated to indirect prompt injection** is listed as one of the HIGH priority bugs to be added in Phase 3.
+Prompt injection wording that slipped into an ingested document is guarded once by the post-retrieval inspection, but a **detection mechanism dedicated to indirect prompt injection** is not implemented.
 
 ---
 
@@ -280,11 +280,11 @@ When composing the LLM prompt, the design is that the **system prompt is placed 
 | Item | Status |
 |---|---|
 | Forced authentication | Resolved (2026-07-29). Only the JWT of `/api/auth/login` is accepted, and authentication is forced even on a `--demo` startup |
-| WS physical boundary | A physical boundary at the ChromaDB level is not implemented. Planned for Phase 3 |
-| WS-A → WS-B cross-boundary check | There is a gap. Planned for Phase 3 |
-| Indirect prompt injection detection | No dedicated mechanism. Planned to be added in Phase 3 |
-| DB → Chroma order inversion in `import_workspace` | Known bug. Planned to be fixed in Phase 3 |
-| Race condition in `admin_cleanup_chromadb_orphans` | Known bug. Planned to be fixed in Phase 3 |
+| WS physical boundary | A physical boundary at the ChromaDB level is not implemented. The separation is a logical boundary by collection name |
+| WS-A → WS-B cross-boundary check | There is a gap |
+| Indirect prompt injection detection | No dedicated mechanism |
+| DB → Chroma order inversion in `import_workspace` | Known bug |
+| Race condition in `admin_cleanup_chromadb_orphans` | Known bug |
 | Persistence of Embedding / Reranker settings | Kept in memory only. Returns to the default on restart |
 
 ---
@@ -351,9 +351,8 @@ BM25 経路でも同様にメタデータを補完してから ACL チェック�
 
 ### 2.4 既知制限
 
-- ChromaDB は論理境界（コレクション名）で分離していますが、**物理境界（別ディレクトリ等）は未実装** です。Beta GA に向けて改善が予定されています。
-- WS-A のセッション情報が WS-B のチャットに流用される越境チェックには既知の漏れがあり、Phase 3 で対応予定です。
-<!-- BACKLOG: WS 分離の物理境界化、越境チェックの強化は Phase 3 対応 -->
+- ChromaDB は論理境界（collection 名）で分離していますが、**物理境界（別ディレクトリ等）は未実装** です。すべての collection は 1 つの Chroma の保管先ディレクトリに入ります（`providers/vector_store.py`）。
+- WS-A のセッション情報が WS-B のチャットに流用される越境チェックには既知の漏れがあります。
 
 ---
 
@@ -418,8 +417,7 @@ def tier_for_role(role: str) -> str:
 
 `routers/chat.py` の通常応答 / 比較 A / 比較 B / SSE の 4 経路すべてで呼ばれます。admin 以外は強制的に出口マスクが適用されます。
 
-詳細は `docs/guardrails.md`（別途）または `docs/rbac.md` を参照してください。
-<!-- BACKLOG: docs/guardrails.md の存在は B-3 フェーズで生成予定 -->
+詳細は `docs/guardrails.md` または `docs/rbac.md` を参照してください。
 
 ---
 
@@ -512,12 +510,11 @@ EXFILTRATION_PATTERNS = [
 ]
 ```
 
-加えて、`utils/metadata/pii.py` の `llm_judge_pi` で **LLM judge ベース** の追加判定も用意されています（Stage R7 C-5）。
+加えて、`utils/metadata/pii.py` の `llm_judge_pi` で **LLM judge ベース** の追加判定も用意されています。
 
 ### 5.4 ドキュメント経由の間接攻撃（既知制限）
 
-取り込んだドキュメントに紛れ込んだプロンプトインジェクション文言は、retrieval 後検査で 1 段ガードしていますが、**間接プロンプトインジェクション専用の検出機構** は Phase 3 で追加予定の HIGH 優先度バグの 1 つに挙げられています。
-<!-- BACKLOG: 間接プロンプトインジェクション専用検出の設計詳細は Phase 3 で確定 -->
+取り込んだドキュメントに紛れ込んだプロンプトインジェクション文言は、retrieval 後検査で 1 段ガードしていますが、**間接プロンプトインジェクション専用の検出機構** はありません。
 
 ---
 
@@ -572,11 +569,11 @@ LLM プロンプトを構成する際、**システムプロンプトは retriev
 | 項目 | 状態 |
 |---|---|
 | 認証強制 | 解消済み（2026-07-29）。`/api/auth/login` の JWT のみを受け付け、`--demo` 起動でも認証は強制されます |
-| WS 物理境界 | ChromaDB レベルの物理境界は未実装。Phase 3 で対応予定 |
-| WS-A → WS-B 越境チェック | 漏れあり。Phase 3 で対応予定 |
-| 間接プロンプトインジェクション検出 | 専用機構なし。Phase 3 で追加予定 |
-| `import_workspace` の DB → Chroma 順序逆転 | 既知バグ。Phase 3 で修正予定 |
-| `admin_cleanup_chromadb_orphans` の競合状態 | 既知バグ。Phase 3 で修正予定 |
+| WS 物理境界 | ChromaDB レベルの物理境界は未実装。分離は collection 名による論理境界 |
+| WS-A → WS-B 越境チェック | 漏れあり |
+| 間接プロンプトインジェクション検出 | 専用機構なし |
+| `import_workspace` の DB → Chroma 順序逆転 | 既知バグ |
+| `admin_cleanup_chromadb_orphans` の競合状態 | 既知バグ |
 | Embedding / Reranker 設定の永続化 | メモリ保持のみ。再起動でデフォルトに戻る |
 
 ---

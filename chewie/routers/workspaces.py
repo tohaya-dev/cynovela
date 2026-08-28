@@ -216,7 +216,7 @@ def list_workspaces(
 def list_workspaces_selectable(request: Request):
     """RAGChat WS選択用軽量エンドポイント。
 
-    Stage R5-fix P1 #14: 未認証で全件返却していたのを停止し 401。
+    未認証で全件返却していたのを停止し 401。
     """
     from core.auth import _require_authenticated
 

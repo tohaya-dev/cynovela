@@ -1,10 +1,10 @@
 """utils.metadata.classification — ドキュメント分類 (実体集約版)。
 
-Stage R6-fix (Phase 3-fix): 旧 utils/classification_engine.py の 14 カテゴリ
+旧 utils/classification_engine.py の 14 カテゴリ
 (LightweightClassifier / LLMClassifier / HybridClassifier) と
 旧 metadata_engine.classify_document_type の 5 種 API を本ファイルに統合移植。
 
-14 カテゴリ: Notion「Cynovela Smart Ingestion 設計仕様（2026-05-07）」
+14 カテゴリ: Smart Ingestion の設計で定めた分類。
 5 種 API: 旧 metadata_engine.py の Public API (classify_document_type)
 """
 

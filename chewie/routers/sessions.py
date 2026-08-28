@@ -84,7 +84,7 @@ def list_sessions(request: Request, workspace_id: str | None = None, limit: int 
 async def create_session(request: Request):
     """新規セッションを作成する。session_id を返す。
 
-    Stage R5-fix P1 #10: WS メンバーシップ検査追加 (admin は全 WS、その他は workspace_users で許可済 WS のみ)。
+    WS メンバーシップ検査追加 (admin は全 WS、その他は workspace_users で許可済 WS のみ)。
     """
     from core.auth import _require_authenticated
 
@@ -95,7 +95,7 @@ async def create_session(request: Request):
     if not workspace_id:
         raise HTTPException(400, "workspace_id is required")
     user_id = user["id"]
-    # Stage R5-fix P1 #10: WS メンバーシップ検査 (admin は全 WS 通過、その他は workspace_users 必須)
+    # WS メンバーシップ検査 (admin は全 WS 通過、その他は workspace_users 必須)
     _user_role = user.get("role") or ""
     _is_admin_user = _user_role == "admin"
     if not _is_admin_user:

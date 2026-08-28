@@ -28,7 +28,7 @@ set -u
 WRAP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BODY="$WRAP_DIR/tools/launch-body.sh"
 
-# ── DD-CYN-0181 (欠陥§187): 同梱の conda-pack 環境を見つける処理は、ここ 1 箇所だけに置く。
+# ── 同梱の conda-pack 環境を見つける処理は、ここ 1 箇所だけに置く。
 #   従来はこの判定が「透過の道」(端末が無いときの exec) より後ろに在ったため、端末が
 #   無い起動 (launchd / 切り離し / 時刻起動) では判定へ到達せず、同梱環境が在るのに
 #   機械側の conda 環境で立ち上がっていた。判定そのものは変えていない。
@@ -46,7 +46,7 @@ LOG="$WRAP_DIR/store/launch-app.log"
 SHARED_ENV="cynovela"
 DIST_ENV="cynovela-dist"
 
-# ── A-3 (DD-CYN-0142 §5-C): 配布物に付いた印 (拡張属性) を自分で全部落とす ──
+# ── A-3: 配布物に付いた印 (拡張属性) を自分で全部落とす ──
 #   com.apple.quarantine を含め、種類を狙わず全部落とす。対象はこの配布物の中だけ。
 #   部品を入れる処理 (--setup の pip) より前 = この入口の先頭で行う。
 #   落とせないもの (非 ASCII 名で OS 側が失敗する等) は名前を出して先へ進む。1件で止めない。
@@ -60,7 +60,7 @@ _drop_marks() {
     fi
 }
 
-# ── A-4 (DD-CYN-0142 §5-D): 置き場所がクラウド同期の下かを、起動の前に判定して伝える ──
+# ── A-4: 置き場所がクラウド同期の下かを、起動の前に判定して伝える ──
 #   止めるのではなく、何が起きるかと逃がし方を伝えたうえで進む。
 _warn_if_cloud_synced() {
     local _hit=""
@@ -104,7 +104,7 @@ for _a in "$@"; do
     esac
 done
 if [ "$_PASSTHRU" = "1" ] || [ ! -t 0 ] || [ ! -t 1 ]; then
-    # DD-CYN-0181 (欠陥§187): 透過で本体へ渡すときも、同梱環境が在れば
+    # 透過で本体へ渡すときも、同梱環境が在れば
     #   それを使う。画面が出せないだけであって、同梱環境を捨てる理由はない。
     #   呼び出し側が --python を既に指定しているときは、その指定を尊重して足さない。
     #   同梱環境が無い配布形態 (all-in-one / lightweight) では何も足さない。
@@ -299,7 +299,7 @@ HAVE_CONDA=0
 _find_conda && HAVE_CONDA=1
 # 3.12 以上の python を探す (新しい版から順に)
 _find_python() {
-    # DD-CYN-0140: 要件は 3.12 以上である (pyproject.toml requires-python = ">=3.12" /
+    # 要件は 3.12 以上である (pyproject.toml requires-python = ">=3.12" /
     #   environment.yml が python=3.12.13 を固定 / tools/conf.sh の _conf_py_meets も 3.12 以上)。
     #   旧: ここだけ 3.10 以上を通しており、選択肢2 を選ぶと launch-body.sh 側が 3.12 未満を
     #   弾いて止まるのに、この画面は「3.10 以上」と「3.12 を入れてください」を並べて出していた。
@@ -503,7 +503,7 @@ confirm_launch() {
 # ── 実行の順 (N-6 → N-1 → N-3) ──────────────────────────────
 running_menu
 
-# ── A-5 (DD-CYN-0142 §5-E / DD-CYN-0162 §1-2): 同梱の conda-pack 済み環境
+# ── A-5: 同梱の conda-pack 済み環境
 #    (.condapack-cynovela) が既に在り、その python が動くときは、選択の画面を
 #    出さずにそのまま使う。在るのに壊れているときだけ選択へ。
 #    ( .venv-cynovela は Source edition が --setup でその場に新規作成する本物の
@@ -549,7 +549,7 @@ if [ "$NEED_SETUP" = "1" ]; then
 fi
 PASS+=(--python "$SEL_PY")
 
-# ── 3.5 部品 (bge-m3) が無いときは、ダウンロードの前に必ず聞く () ──
+# ── 3.5 部品 (bge-m3) が無いときは、ダウンロードの前に必ず聞く ──
 #   本体は切り離し (--no-prompt・端末なし) で動くため、本体の確認は受け取り手に
 #   届かない。∴ 人が見ているこの包みで、切り離す前に聞く (事実161 の二択を保つ)。
 #   選ぶまで通信は始めない。1 を選ぶと、本体が起動の中でダウンロードする (進み具合は記録へ)。

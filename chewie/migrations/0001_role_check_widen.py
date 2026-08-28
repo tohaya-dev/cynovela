@@ -1,7 +1,5 @@
 """migration 0001: users.role の CHECK 制約を緩和し、既存ロールを正規化する。
 
-Stage R2-2 で新設。
-
 変更前: CHECK(role IN ('admin', 'data-engineer', 'data-scientist'))
 変更後: CHECK(role IN ('admin', 'curator', 'viewer'))
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cynovela MCP Server v3.1 — protocol 2026-07-28 (stdio).
 
-DD-CYN-0140 §5-K: 2024-11-05 世代の手書き JSON-RPC を現行仕様へ作り直した。
+2024-11-05 世代の手書き JSON-RPC を現行仕様へ作り直した。
   - `server/discover` に応える。initialize/initialized の握手も Mcp-Session-Id も
     要求しない (接続に状態を持たせない)。旧世代クライアントから initialize が
     来た場合は同じ内容で応えるだけで、握手の完了を待たない。
@@ -41,8 +41,8 @@ JSON_SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 
 # ─────────────────────────────────────────
 # ツール定義 (25本 = 開放22 + 既定閉3。全て実在する REST の口だけを叩く。
-#             16本は DD-CYN-0140/0141、9本は DD-CYN-0142 §5-A で作業の単位で追加)
-#   追加分 (DD-CYN-0142):
+#             16本が先行し、9本を作業の単位で追加)
+#   追加分:
 #   server_status → GET /api/health + /api/collections (稼働と索引の状態)
 #   ingest_source → POST /api/ingest-roots + /api/sources + /api/sources/{id}/scan/async (1道具)
 #   get_job_status → GET /api/jobs/{job_id} (走査と公開の進み具合)
@@ -417,7 +417,7 @@ TOOLS = [
             "required": ["ok"],
         },
     },
-    # ─── 設定系 (DD-CYN-0141 §5-C。管理者トークンが必要。API キーの値は入力にだけ現れ、
+    # ─── 設定系 (管理者トークンが必要。API キーの値は入力にだけ現れ、
     #     応答には *_set の bool しか出さない) ───
     {
         "name": "settings_show",
@@ -536,7 +536,7 @@ TOOLS = [
             "required": ["providers", "count"],
         },
     },
-    # ─── DD-CYN-0142 §5-A: 作業の単位で足した道具 (開放6) ───
+    # ─── 作業の単位で足した道具 (開放6) ───
     {
         "name": "server_status",
         "description": "サーバの稼働と索引の状態を見ます (GET /api/health と、まとまりごとの塊の数)。",
@@ -685,7 +685,7 @@ TOOLS = [
             "required": ["ok", "action"],
         },
     },
-    # ─── DD-CYN-0142 §5-A: 既定で閉じる道具 (3)。CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 の
+    # ─── 既定で閉じる道具 (3)。CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 の
     #     ときだけ tools/list に現れる。閉じたまま呼ばれた場合も実行しない (二重の守り)。
     #     これは機能差ではなく、資料の中身に引きずられた AI の暴発を止める仕掛け (§0-2 C)。───
     {
@@ -862,7 +862,7 @@ def _chat_fragments(d: dict, limit: int) -> list:
     """出典の断片。/api/chat の "sources" はファイル名の文字列一覧で、断片の本文と
     スコアは "citations" (source_filename / chunk_preview / score) に入っている。
     citations を優先し、無ければ sources に倒す。"""
-    # DD-CYN-0151 §7: index を落とさずに渡す。回答本文の [N] はこの番号であり、
+    # index を落とさずに渡す。回答本文の [N] はこの番号であり、
     #   受け取った側が一覧を数え直すと本文と食い違う (従来はここで番号を捨てていた)。
     frags = [
         {
@@ -1069,7 +1069,7 @@ def _tool_list_sources(a):
 
 
 def _tool_publish_collection(a):
-    # DD-CYN-0142 §5-B: 開始だけを返す口 (publish/async) を叩き、job_id を即返す。
+    # 開始だけを返す口 (publish/async) を叩き、job_id を即返す。
     # 進み具合は get_job_status。以前の同期版は埋め込みの計算で数分待たせていた。
     _st, d = _api("POST", f"/api/collections/{a['collection_id']}/publish/async", body={}, timeout=60)
     d = d if isinstance(d, dict) else {}
@@ -1091,7 +1091,7 @@ def _tool_create_workspace(a):
     return structured, f"ワークスペース作成: {structured['name']} ({structured['id']})"
 
 
-# ─── 設定系の実装 (DD-CYN-0141 §5-C) ───
+# ─── 設定系の実装 ───
 # 各対象の 読む口 / 書く口。pii だけ書き込みが PUT (routers/settings.py の実装どおり)。
 _SETTINGS_KINDS = {
     "llm": ("GET", "/api/settings/llm", "POST", "/api/settings/llm"),
@@ -1152,7 +1152,7 @@ def _tool_settings_test(a):
 
 
 def _tool_settings_set(a):
-    # DD-CYN-0141 §5-B: 設定を変える道具は既定で閉じる。MCP を呼ぶのは直前に読んだ資料の
+    # 設定を変える道具は既定で閉じる。MCP を呼ぶのは直前に読んだ資料の
     # 中身に引きずられうる AI であり、資料内の「設定を書き換えろ」を指示と受け取る経路が
     # 原理的に存在する。∴ 明示的に開けたときだけ通す。資格の検査 (サーバ側 admin 必須) の
     # 代わりではなく、その手前に重ねる薄い守り。読む道具には付けない。
@@ -1192,7 +1192,7 @@ def _tool_settings_providers(a):
     return structured, f"プリセット {len(rows)}件"
 
 
-# ─── DD-CYN-0142 §5-A: 作業の単位で足した道具の実装 ───
+# ─── 作業の単位で足した道具の実装 ───
 def _tool_server_status(_a):
     up, version = False, None
     try:
@@ -1284,7 +1284,7 @@ def _tool_publish_control(a):
     return structured, f"publish {action}: " + json.dumps(structured["result"], ensure_ascii=False)
 
 
-# ─── 既定で閉じる道具 (DD-CYN-0142 §5-A)。settings_set と同じ形の env 門。───
+# ─── 既定で閉じる道具。settings_set と同じ形の env 門。───
 _ADMIN_WRITE_TOOLS = ("delete_item", "manage_users", "manage_backups")
 
 
@@ -1328,7 +1328,7 @@ def _tool_manage_users(a):
         return ({"ok": True, "action": action, "result": d if isinstance(d, dict) else {}},
                 f"利用者を変えました: {a.get('user_id')}")
     if action == "delete":
-        # DD-CYN-0151 §7: purge=true で完全に消す。既定は従来どおり使えなくするだけ。
+        # purge=true で完全に消す。既定は従来どおり使えなくするだけ。
         _purge = bool(a.get("purge"))
         _qs = "?purge=true" if _purge else ""
         _st, d = _api("DELETE", f"/api/admin/users/{a['user_id']}{_qs}", timeout=30)
@@ -1453,7 +1453,7 @@ def handle(req: dict):
         return {"jsonrpc": "2.0", "id": rid, "result": {}}
 
     if method == "tools/list":
-        # DD-CYN-0142 §5-A: 既定で閉じる道具は、開けたときだけ一覧に現れる。
+        # 既定で閉じる道具は、開けたときだけ一覧に現れる。
         if os.environ.get("CYNOVELA_MCP_ALLOW_ADMIN_WRITE", "").strip() == "1":
             visible = TOOLS
         else:
@@ -1482,7 +1482,7 @@ def handle(req: dict):
         try:
             structured, text = impl(arguments)
         except NotFoundError as e:
-            # 資料が無いときは -32602 (DD-CYN-0140 §5-K-1)
+            # 資料が無いときは -32602
             return {
                 "jsonrpc": "2.0", "id": rid,
                 "error": {"code": -32602, "message": str(e)},

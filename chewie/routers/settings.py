@@ -605,7 +605,7 @@ async def update_reranker_settings(request: Request):
 
 @router.post("/api/settings/reranker/test", response_model=None)
 async def test_reranker_connection(request: Request):
-    """Stage R5-fix P1 #15: admin 限定."""
+    """admin 限定."""
     from core.auth import _require_admin
     from server import get_reranker_provider_current
 
@@ -615,7 +615,7 @@ async def test_reranker_connection(request: Request):
 
 @router.get("/api/settings/classifier", response_model=None)
 def get_classifier_settings(request: Request):
-    """Stage R5-fix P1 #15: admin 限定."""
+    """admin 限定."""
     from core.auth import _require_admin
 
     _require_admin(request)
@@ -650,7 +650,7 @@ async def update_classifier_settings(request: Request):
 
 @router.get("/api/settings/pii-mode", response_model=None)
 def get_pii_mode(request: Request):
-    """Stage R5-fix P1 #15: admin 限定."""
+    """admin 限定."""
     from core.auth import _require_admin
 
     _require_admin(request)
@@ -688,7 +688,7 @@ async def set_pii_mode(request: Request):
 
         set_pii_detection_mode(mode)
         # cynovela.yaml の pii_mode キーに永続化（次回起動でも反映）
-        # DD-CYN-0145 §148-3: 従来は safe_load→dict→safe_dump の往復で、ファイル冒頭・各節の
+        # 従来は safe_load→dict→safe_dump の往復で、ファイル冒頭・各節の
         # 説明コメントと値の引用符が全て失われていた（設定の置き場はこのファイル1本という運用で
         # コメントは受け取り手向けの案内を兼ねる）。tools/conf.sh / tools/build-dist.sh と同じく
         # 「その行だけを書き替える」行単位置換に改める。値は上で lite/standard に限定済みのため

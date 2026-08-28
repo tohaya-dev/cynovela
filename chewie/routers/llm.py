@@ -197,7 +197,7 @@ async def llm_context_length(request: Request):
 async def llm_list_models(request: Request):
     """#06: 許可済みローカルエンドポイントからモデル一覧を取得する。
 
-    Stage R5-fix P2 #18: 認証必須化 (allowlist は防御層として残す)。
+    認証必須化 (allowlist は防御層として残す)。
     """
     from core.auth import _require_authenticated
 

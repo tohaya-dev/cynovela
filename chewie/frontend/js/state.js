@@ -2098,7 +2098,7 @@ async function scanSource(id) {
     `上記以外（.dmg 等）は自動的にスキップされます。`;
   confirmAction('スキャン実行', message, '🔍', async () => {
     try {
-      // DD-CYN-0142 §5-B: 開始だけを返す口 (scan/async) で始め、進み具合は /api/jobs で取る。
+      // 開始だけを返す口 (scan/async) で始め、進み具合は /api/jobs で取る。
       const res = await API.post(`/api/sources/${id}/scan/async`);
       showToast(lj('Scan started','走査を始めました'), 'info');
       _pollScanJob(res.job_id, id);
@@ -2107,7 +2107,7 @@ async function scanSource(id) {
   });
 }
 
-// DD-CYN-0142 A-10(b): 走査ジョブの進み具合を publish と同じ 2 秒ポーリングで追う。
+// 走査ジョブの進み具合を publish と同じ 2 秒ポーリングで追う。
 function _pollScanJob(jobId, sourceId) {
   let ticks = 0;
   const timer = setInterval(async () => {
@@ -2135,7 +2135,7 @@ function _pollScanJob(jobId, sourceId) {
   }, 2000);
 }
 
-// DD-CYN-0142 A-10(b): 取り込み元の下に後から置いたフォルダ/ファイルを一覧へ反映する入口。
+// 取り込み元の下に後から置いたフォルダ/ファイルを一覧へ反映する入口。
 async function rescanAllSources() {
   const n = State.sources.length;
   if (!n) { showToast(lj('No sources yet','取り込み元がまだありません'), 'info'); return; }
@@ -2949,7 +2949,7 @@ async function renderBackupList() {
         <td>${(b.created_at||'').slice(0,16).replace('T',' ')}</td>
         <td>${_fmtBytes((b.db_size||0)+(b.chroma_size||0))}</td>
         <td class="btn-row">
-          <!-- DD-CYN-0148 §4-D: 押すと壊れる「↩ リストア」の押しボタンを画面から外した。
+          <!-- 押すと壊れる「↩ リストア」の押しボタンを画面から外した。
                動いている最中に土台を差し替えるため、応答が返らず起動し直しが要る。
                API の口そのものは残している。外したのは画面からの入口だけである。 -->
           <span style="font-size:14px;color:var(--text-4)">${bi('Restore is done with Cynovela stopped. See docs/operations.md for the procedure.', '復元は Cynovela を停止した状態で行います。手順は docs/operations.md を参照してください。')}</span>
@@ -2972,7 +2972,7 @@ async function renderBackupList() {
 
 function getCurrentWorkspaceId() { return _currentWorkspaceId || ''; }
 
-// === Beta GA: PDF取り込みモード ===
+// === PDF取り込みモード ===
 const _PDF_MODE_WARNINGS = {
   fast: '⚠️ 取り込みモードを変更した場合、既存のコレクションは削除して再追加（再Publish）が必要です。',
   quality: '⚠️ 高品質モード: pdfplumber を使用します。処理時間が標準より長くなります。設定変更後は既存のコレクションを削除して再追加してください。',
@@ -3030,7 +3030,7 @@ function openWsDetail(wsId, wsName) {
   if (panel) panel.style.display = 'block';
   // デフォルトはFilesタブ
   switchWsTab('files');
-  // Beta GA: PDF取り込みモードの現在値を反映
+  // PDF取り込みモードの現在値を反映
   try {
     const _ws = (State.workspaces || []).find(w => w.id === wsId);
     let _mode = 'fast';

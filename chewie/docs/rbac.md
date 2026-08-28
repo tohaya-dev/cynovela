@@ -265,7 +265,6 @@ def tier_for_role(role: str) -> str:
 ## 6. 制限
 
 - 認証は `/api/auth/login` が発行する JWT（JSON Web Token）のみです。`Bearer demo-token-{user_id}` 形式の簡易トークンは 2026-07-29 に廃止し、`--demo` 起動でも 401 で拒否します。
-<!-- BACKLOG: JWT 導入時のロール検査ヘルパーの変更点は未定義 -->
 - ロール検査の実装は **約 242 箇所に分散** しているため、共通化（例: FastAPI Depends ベースへの統合）は今後の整理候補です。
 - ワンクリック入室（ユーザーカードからの未認証ログイン）は完全撤去済みです。`username` と `password` の入力が必須となっています。
 

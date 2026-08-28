@@ -12,7 +12,7 @@
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
 > It does not represent the official position of any company or product.
 
-Cynovela's RAG (Retrieval-Augmented Generation) answers change their behavior according to the combination of a **mode** and a **preset**, depending on the use case. This document organizes the modes that can be confirmed as of , together with their implementation evidence.
+Cynovela's RAG (Retrieval-Augmented Generation) answers change their behavior according to the combination of a **mode** and a **preset**, depending on the use case. This document organizes the modes that can be confirmed at present, together with their implementation evidence.
 
 ---
 
@@ -94,18 +94,17 @@ The search `grep -rn "structured.*answer\|answer.*template\|template.*answer" --
 - No structured fields in the `ChunkHit` / `RetrievalResult` dataclasses
 - No instruction in the system prompt such as "return in JSON format" or "return with `<answer>XXX</answer>` tags"
 
-Therefore, as of , a **free-form answer is the standard**.
+Therefore, at present a **free-form answer is the standard**.
 
 ### 3.2 The Citation Feature Is Implemented
 
-Separately from the structured answer template, the **citation feature** is implemented (`build_citations()` / `build_context_with_citations()` at `rag.py:238-288`). It embeds citation numbers in the form `[1][2]` in the answer, and returns the citation mapping downstream.
+Separately from the structured answer template, the **citation feature** is implemented (`build_citations()` / `build_context_with_citations()` at `rag.py:479-523`). It embeds citation numbers in the form `[1][2]` in the answer, and returns the citation mapping downstream.
 
 - Setting: `config.rag.citation_enabled = true` (default)
 
-### 3.3 Planned for Beta GA
+### 3.3 Not decided
 
-Whether to introduce a structured answer template has not been decided.
-<!-- BACKLOG: the specification of the structured answer template (fixed JSON output, forced tags, and so on) is undecided -->
+Whether to introduce a structured answer template has not been decided, and neither is the shape it would take (fixed JSON output, forced tags, and so on).
 
 ---
 
@@ -116,29 +115,28 @@ Whether to introduce a structured answer template has not been decided.
 ```yaml
 # config.py の defaults
 rag:
-  confidence_threshold: 0.50
+  confidence_threshold: 0.40
 ```
 
 - Scale: cosine similarity (0 to 1)
 - BGE-M3's noise floor: 0.35 to 0.45 (roughly this score appears even for unrelated queries)
 - Typical range for real queries: 0.55 to 0.75
-- Judgment policy: 0.50 or below is treated as "low quality" and becomes a fallback candidate
+- Judgment policy: a highest `vector_score` below 0.40 is treated as low confidence and becomes a fallback candidate
 
 ### 4.2 The Judgment Metric Is the Vector Cosine
 
 As a lesson from the past, **using the RRF score for the abstention judgment is wrong**. RRF is a sum of reciprocal ranks (max ≈ 0.033) and differs by orders of magnitude from cosine similarity (0 to 1). Always use the **vector cosine** as the judgment metric.
 
-### 4.3 Pipeline Integration Status
+### 4.3 Where the Threshold Is Applied
 
-`config.rag.confidence_threshold` is defined as a value, but within the search pipeline (`rag_retrieve`) it remains only **partially integrated** into explicit exclusion logic.
+`config.rag.confidence_threshold` is read at the chat entry point (`routers/chat.py`), not inside `rag_retrieve`. The current build works as follows.
 
-- Handling of 0 search results → automatic switching to `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` is unimplemented
-- A separate processing flow when the top score< threshold is unimplemented
-<!-- BACKLOG: full integration of the abstention fallback based on confidence_threshold is unimplemented -->
+- When there is at least one hit and the highest `vector_score` is below the threshold, the LLM is not called. A `LOW_CONFIDENCE_FALLBACK` audit entry is written, and the reply carries `low_confidence`, `max_score`, `threshold` and up to 3 suggested questions built from the hits. The SSE path applies the same rule.
+- When there are 0 hits, there is no automatic switch to `GENERAL_KNOWLEDGE_SYSTEM_PROMPT`. General knowledge mode is used only when it is asked for explicitly.
 
 ### 4.4 Policy for Adjustment
 
-You can change the threshold by editing `rag.confidence_threshold` in `cynovela.yaml`. Hard-coding is prohibited; change it only through the configuration file.
+You can change the threshold by editing `rag.confidence_threshold` in `cynovela.yaml`. Hard-coding is prohibited; change it only through the configuration file. Note that a `confidence_threshold` row in the SQLite `settings` table takes priority over the configuration file (see `docs/rag-pipeline.md` §6.4).
 
 ---
 
@@ -269,14 +267,13 @@ MCP（外部ツール）からは `rag_general` ツールを呼ぶことで、RA
 
 ### 3.2 引用機能は実装済み
 
-構造化回答テンプレートとは別に、**引用（citation）機能** は実装済みです（`rag.py:238-288` の `build_citations()` / `build_context_with_citations()`）。回答中に `[1][2]` 形式の引用番号を埋め込み、後段で出典マッピングを返します。
+構造化回答テンプレートとは別に、**引用（citation）機能** は実装済みです（`rag.py:479-523` の `build_citations()` / `build_context_with_citations()`）。回答中に `[1][2]` 形式の引用番号を埋め込み、後段で出典マッピングを返します。
 
 - 設定: `config.rag.citation_enabled = true`（既定）
 
-### 3.3 Beta GA 予定
+### 3.3 未確定の事項
 
-構造化回答テンプレートの導入可否は未確定です。
-<!-- BACKLOG: 構造化回答テンプレート（JSON 出力固定、タグ強制など）の仕様は未定 -->
+構造化回答テンプレートの導入可否は未確定で、その仕様（JSON 出力固定、タグ強制など）も未定です。
 
 ---
 
@@ -287,29 +284,28 @@ MCP（外部ツール）からは `rag_general` ツールを呼ぶことで、RA
 ```yaml
 # config.py の defaults
 rag:
-  confidence_threshold: 0.50
+  confidence_threshold: 0.40
 ```
 
 - スケール: コサイン類似度（0〜1）
 - BGE-M3 のノイズフロア: 0.35〜0.45（無関係なクエリでもこの程度のスコアが出る）
 - 実存クエリの典型範囲: 0.55〜0.75
-- 判定方針: 0.50 以下を「低品質」とみなすフォールバック候補
+- 判定方針: 最高 `vector_score` が 0.40 を下回るものを低信頼度とみなすフォールバック候補
 
 ### 4.2 判定指標は vector cosine
 
 過去の教訓として、**Abstention（回答抑制）判定に RRF スコアを使うのは誤り** です。RRF は順位の逆数和（最大 ≈ 0.033）であり、コサイン類似度（0〜1）と桁が違います。判定指標は必ず **vector cosine** を使ってください。
 
-### 4.3 パイプライン統合状況
+### 4.3 しきい値が効く場所
 
-`config.rag.confidence_threshold` は値としては定義済みですが、検索パイプライン（`rag_retrieve`）の中で **明示的な除外ロジックには部分統合** に留まります。
+`config.rag.confidence_threshold` は `rag_retrieve` の中ではなく、chat の入口（`routers/chat.py`）で読まれます。現在の作りは次のとおりです。
 
-- 検索結果の 0 件処理 → `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` への自動切替は未実装
-- 最高スコア< threshold での別処理フローは未実装
-<!-- BACKLOG: confidence_threshold を踏まえた Abstention フォールバックの完全統合は未実装 -->
+- hits が 1 件以上あり、その最高 `vector_score` がしきい値を下回るとき、LLM は呼ばれません。`LOW_CONFIDENCE_FALLBACK` の監査記録が書かれ、応答には `low_confidence`・`max_score`・`threshold` と、hits から作った推奨質問（最大 3 件）が入ります。SSE 経路も同じ規則です。
+- hits が 0 件のときに `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` へ自動で切り替わることはありません。一般知識モードは明示的に指定されたときだけ使われます。
 
 ### 4.4 調整の方針
 
-`cynovela.yaml` の `rag.confidence_threshold` を編集することで閾値を変えられます。ハードコードは禁止されており、設定ファイル経由のみで変更します。
+`cynovela.yaml` の `rag.confidence_threshold` を編集することで閾値を変えられます。ハードコードは禁止されており、設定ファイル経由のみで変更します。なお SQLite の `settings` テーブルに `confidence_threshold` 行があるときは、そちらが設定ファイルより優先されます（`docs/rag-pipeline.md` §6.4）。
 
 ---
 

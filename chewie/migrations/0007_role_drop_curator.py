@@ -1,7 +1,5 @@
 """migration 0007: users.role から 'curator' を物理削除する。
 
-fix-s2-4-curator-removal-v1 (Stage S2-4) で新設。
-
 変更前: CHECK(role IN ('admin', 'curator', 'viewer'))
 変更後: CHECK(role IN ('admin', 'viewer'))
 

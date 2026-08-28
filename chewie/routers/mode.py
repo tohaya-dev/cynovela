@@ -14,7 +14,7 @@ router = APIRouter(tags=["mode"])
 def get_mode(request: Request):
     """実行モードを返す。フロントがバナー表示判定に使う。
 
-    Stage R5-fix P2 #17: 匿名は {mode} のみ。admin は endpoint / model を含む詳細を返す。
+    匿名は {mode} のみ。admin は endpoint / model を含む詳細を返す。
     """
     from core.auth import _require_authenticated
     from llm_adapter import MockAdapter, OpenAICompatibleAdapter

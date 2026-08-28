@@ -411,7 +411,7 @@ async function importWorkspace() {
       body: form,
     });
     if (!res.ok) throw new Error(await res.text());
-    // DD-CYN-0151 §6-2: サーバが ok:false を返したときは成功と表示しない。
+    // サーバが ok:false を返したときは成功と表示しない。
     // まとまりに資料が1つも入らなかった場合がこれに当たる (書き出し物の files.json が空)。
     const data = await res.json().catch(() => null);
     if (data && data.ok === false) {

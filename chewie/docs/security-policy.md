@@ -69,7 +69,7 @@ The behavior of features, API signatures, the database schema and setting keys m
 ### 2-6. RAG pipeline
 
 - **Structured answer template not implemented**: A free form answer is the standard. Forcing an answer in JSON format or XML tag format is not supported.
-- **Low confidence fallback partially implemented**: confidence_threshold (0.50) is defined, but the processing that switches automatically to `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` when there are 0 search results is not integrated.
+- **Low confidence fallback partially implemented**: confidence_threshold (0.40) is defined, but the processing that switches automatically to `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` when there are 0 search results is not integrated.
 
 ### 2-7. UI
 
@@ -80,7 +80,7 @@ The behavior of features, API signatures, the database schema and setting keys m
 
 - **Demo mode related**: 4 authentication boundary tests remain `@pytest.mark.skip` (lines 11 / 51 / 56 / 157 of `tests/test_auth_boundary.py`). The reason text says "`--demo` モードでは認証バイパスが仕様", but because it was changed on 2026-07-29 into a form that enforces authentication even with a `--demo` startup, this reason no longer matches the implementation.
 - **Sources API**: Because of the path registration form, 2 tests are skipped.
-- **Publish Semaphore**: Because mock injection at module scope is difficult, 1 xfail. A change to a lazy accessor is planned for Stage-3.
+- **Publish Semaphore**: Because mock injection at module scope is difficult, 1 xfail.
 
 ---
 
@@ -238,7 +238,7 @@ Cynovela の挙動・実装・ドキュメントは、参照元のいかなる�
 ### 2-6. RAG パイプライン
 
 - **構造化回答テンプレート未実装**: 自由形式の回答が標準。JSON 形式や XML タグ形式での回答強制は未対応。
-- **低信頼度フォールバック部分実装**: confidence_threshold（0.50）は定義済みだが、検索結果が 0 件のときに `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` へ自動切替する処理は未統合。
+- **低信頼度フォールバック部分実装**: confidence_threshold（0.40）は定義済みだが、検索結果が 0 件のときに `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` へ自動切替する処理は未統合。
 
 ### 2-7. UI
 
@@ -249,7 +249,7 @@ Cynovela の挙動・実装・ドキュメントは、参照元のいかなる�
 
 - **デモモード関連**: 認証境界テスト 4 件が `@pytest.mark.skip` のままです（`tests/test_auth_boundary.py` の 11 / 51 / 56 / 157 行）。理由文には「`--demo` モードでは認証バイパスが仕様」と書かれていますが、2026-07-29 に `--demo` 起動でも認証を強制する形へ変えたため、この理由はすでに実装と合っていません。
 - **Sources API**: path 登録形式のため一部テスト 2 件をスキップ。
-- **Publish Semaphore**: モジュールスコープでのモック注入困難により xfail 1 件。Stage-3 で lazy accessor 化予定。
+- **Publish Semaphore**: モジュールスコープでのモック注入困難により xfail 1 件です。
 
 ---
 

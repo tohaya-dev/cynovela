@@ -238,7 +238,7 @@ echo "[3/4] この配布物のための conda 環境を消します"
 if [ "$_have_conda_env" = "1" ]; then
     _conda_err=""
     if [ -n "$CONDA_BIN" ]; then
-        # A-6 (DD-CYN-0142 §5-F): 結果を捨てない。失敗の理由を受け取って出す。
+        # A-6: 結果を捨てない。失敗の理由を受け取って出す。
         _conda_err="$("$CONDA_BIN" env remove -n "$DIST_ENV" --yes 2>&1 >/dev/null || true)"
     fi
     if [ -d "$CONDA_ENV_DIR" ]; then
@@ -258,7 +258,7 @@ echo "      ${REPO}"
 # 自分が読み終わったあとに動く別の仕組み (osascript) へ渡す。
 # Finder に頼むため、別のディスクに置かれている場合も、そのディスクのゴミ箱へ入る。
 # .venv-cynovela と .condapack-cynovela と .mas-env と store/ は、このフォルダの中に在るので一緒に入る。
-# A-6 (DD-CYN-0142 §5-F): Finder へ渡した結果 (終了コードと標準エラー) を捨てずに受け取り、
+# A-6: Finder へ渡した結果 (終了コードと標準エラー) を捨てずに受け取り、
 # 失敗したときは理由と次の一手を出す。成否の最終判定は従来どおり「実際に消えたか」で行う。
 _trash_err="$(/usr/bin/osascript -e "tell application \"Finder\" to move POSIX file \"${REPO}\" to trash" 2>&1 >/dev/null)"
 _trash_rc=$?

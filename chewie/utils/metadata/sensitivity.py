@@ -1,6 +1,6 @@
 """utils.metadata.sensitivity — 感度スコア計算 (実体集約版)。
 
-Stage R6-fix (Phase 3-fix): 旧 metadata_engine.score_sensitivity の実装を本ファイルに移植。
+旧 metadata_engine.score_sensitivity の実装を本ファイルに移植。
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """utils.metadata.enrich — チャンクメタデータ強化。
 
-Stage R6-2D: 薄いラッパー。Stage R8 で実体移植予定。
+薄いラッパー。実体は後日移植する。
 """
 
 from typing import Any
@@ -9,8 +9,7 @@ from typing import Any
 def enrich_chunk_metadata(chunk: dict[str, Any]) -> dict[str, Any]:
     """チャンクに分類・感度メタデータを付与する。
 
-    Stage R6 では minimal stub。Stage R8 で classification + sensitivity の結合
-    実装を移植する。
+    現状は minimal stub。classification + sensitivity の結合実装は後日移植する。
     """
     text = chunk.get("content", "") or chunk.get("text", "")
     if not text:

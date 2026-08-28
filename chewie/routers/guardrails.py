@@ -73,7 +73,7 @@ def list_pii_detections_from_audit(
 def list_blocked_topics(request: Request):
     """登録済み禁止トピック一覧.
 
-    Stage R5-fix P1 #12: 認証必須化 (pattern が偵察情報になるため)。
+    認証必須化 (pattern が偵察情報になるため)。
     """
     from core.auth import _require_authenticated
 

@@ -68,7 +68,7 @@ The body text of the `raw` tier goes through `vault_enc.enc_raw()` and is stored
 
 Several scores with different scales appear in Cynovela's search. It is important not to confuse them.
 
-**Vector Score (cosine similarity)**: A 0 to 1 scale. BGE-M3 turns a sentence into a vector, and the ChromaDB distance is converted into a similarity with `_dist_to_sim()` (A-3 §11, `rag.py:1701`). The noise floor of BGE-M3 is 0.35 to 0.45, and real queries (ones whose answer is in the material) typically land around 0.55 to 0.75. The low-confidence fallback threshold `confidence_threshold` is 0.50 by default (`config.py:131-135`).
+**Vector Score (cosine similarity)**: A 0 to 1 scale. BGE-M3 turns a sentence into a vector, and the ChromaDB distance is converted into a similarity with `_dist_to_sim()` (A-3 §11, `rag.py:3204`). The noise floor of BGE-M3 is 0.35 to 0.45, and real queries (ones whose answer is in a published file) typically land around 0.55 to 0.75. The low-confidence fallback threshold `confidence_threshold` is 0.40 by default (`config.py:181-185`).
 
 **BM25 Score**: A lexical score based on word occurrence frequency. It is normalized to `[0, 1]` before integration.
 
@@ -214,7 +214,7 @@ PII 検出モードは `cynovela.yaml` の `pii_mode` キーで `lite`（正規�
 
 Cynovela の検索ではスケールの異なる複数のスコアが登場します。混同しないことが重要です。
 
-**Vector Score（コサイン類似度）**: 0〜1 のスケール。BGE-M3 が文をベクトル化し、ChromaDB の距離（distance）を `_dist_to_sim()` で類似度に変換した値（A-3 §11、`rag.py:1701`）。BGE-M3 のノイズフロアは 0.35〜0.45 で、実存クエリ（資料に答えがあるもの）は典型的に 0.55〜0.75 程度になります。低信頼度フォールバックの閾値 `confidence_threshold` は既定 0.50 です（`config.py:131-135`）。
+**Vector Score（コサイン類似度）**: 0〜1 のスケール。BGE-M3 が文をベクトル化し、ChromaDB の距離（distance）を `_dist_to_sim()` で類似度に変換した値（A-3 §11、`rag.py:3204`）。BGE-M3 のノイズフロアは 0.35〜0.45 で、実存クエリ（publish 済みの file に答えがあるもの）は典型的に 0.55〜0.75 程度になります。低信頼度フォールバックの閾値 `confidence_threshold` は既定 0.40 です（`config.py:181-185`）。
 
 **BM25 Score**: 単語の出現頻度に基づく語彙的スコア。`[0, 1]` に正規化してから統合されます。
 

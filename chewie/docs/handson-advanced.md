@@ -48,7 +48,7 @@ When started with `--demo`, only one workspace containing the bundled dummy docu
 2. Open the "collection list" and confirm that the visible collections differ
 3. Specify the `collection_id` of one workspace and try to chat from the other, and confirm that the boundary works
 
-> **Note**: Of the workspace separation, the physical boundary at the ChromaDB level is still being strengthened. `<!-- BACKLOG: A-6 仕様で「WS 分離: ChromaDB 物理境界なし」が Phase 3 引き継ぎ HIGH バグとして明示されています -->`
+> **Note**: Of the separation of a workspace, the separation in ChromaDB is a logical boundary by collection name; a physical boundary (a separate directory and the like) is not implemented. See `known-limitations.md`.
 
 ---
 
@@ -261,7 +261,7 @@ In addition, 3 admin tools (`delete_item` / `manage_users` / `manage_backups`) a
 2. 「コレクション一覧」を開き、見えるコレクションが異なることを確認
 3. 一方のワークスペースの `collection_id` を指定して他方からチャットを試み、境界が機能していることを確認
 
-> **補足**: ワークスペース分離のうち、ChromaDB レベルでの物理境界は強化が継続中です。`<!-- BACKLOG: A-6 仕様で「WS 分離: ChromaDB 物理境界なし」が Phase 3 引き継ぎ HIGH バグとして明示されています -->`
+> **補足**: workspace の分離のうち ChromaDB 上の分離は collection 名による論理境界で、物理境界（別ディレクトリ等）は実装されていません。`known-limitations.md` を参照してください。
 
 ---
 
@@ -411,7 +411,7 @@ MCP は、外部の AI アシスタントから Cynovela の RAG 検索やワー
 
 > **注意**: MCP サーバーは内部で Cynovela の REST API に対して認証付きリクエストを送ります。MCP 実行用の Python パスは環境変数 `CYNOVELA_MCP_PYTHON` で指定可能です。
 
-> **既知の制限**: MCP サーバーの実行は conda 環境前提です。<!-- BACKLOG: A-5 仕様に「MCP の conda 限定」の旨が known-limitations 候補として挙げられているが、原因の明示はなし -->
+> **既知の制限**: MCP サーバーの実行は conda 環境前提です。
 
 ---
 

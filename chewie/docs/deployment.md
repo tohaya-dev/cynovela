@@ -27,8 +27,7 @@ Cynovela is a tool for personal verification, and the environments in which it h
 | Local LLM | LM Studio (OpenAI-compatible `/v1` API) |
 | Embedding | BAAI/bge-m3, paraphrase-multilingual-MiniLM-L12-v2, paraphrase-MiniLM-L3-v2, TF-IDF |
 
-<!-- BACKLOG: the verification status on Windows / Linux / Docker environments is unverified because spec-raw does not describe it -->
-<!-- BACKLOG: details for GPU usage (CUDA version, memory guideline) are unverified because spec-raw does not describe them -->
+Windows / Linux / Docker environments have not been verified. The details of using a GPU (the CUDA version and a memory guideline) have not been verified either.
 
 ---
 
@@ -342,8 +341,7 @@ Cynovela は個人検証用のツールであり、動作確認している環�
 | ローカル LLM | LM Studio（OpenAI 互換 `/v1` API） |
 | Embedding | BAAI/bge-m3、paraphrase-multilingual-MiniLM-L12-v2、paraphrase-MiniLM-L3-v2、TF-IDF |
 
-<!-- BACKLOG: Windows / Linux / Docker 環境での動作確認状況は spec-raw に記載がないため未確認 -->
-<!-- BACKLOG: GPU 利用時の詳細（CUDA バージョン、メモリ目安）は spec-raw に記載がないため未確認 -->
+Windows / Linux / Docker 環境での動作は確認していません。GPU 利用時の詳細（CUDA バージョン、メモリ目安）も確認していません。
 
 ---
 

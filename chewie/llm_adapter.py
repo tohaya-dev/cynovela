@@ -111,7 +111,7 @@ class LMStudioAdapter:
             return []
 
     async def _loaded_model_ids(self) -> list[str]:
-        """実際に読み込まれているモデル id の一覧 (DD-CYN-0141 §5-D)。
+        """実際に読み込まれているモデル id の一覧。
 
         /v1/models は「ダウンロード済み全件」で読み込み状態を持たない (実測 32件中
         読み込み済み 1件)。読み込み状態 (state) は LM Studio の /api/v0/models にしか
@@ -146,7 +146,7 @@ class LMStudioAdapter:
     async def has_loaded_model(self) -> tuple[bool, str]:
         """(ロード済みか, チャット可能な先頭モデルID) を返す。
 
-        DD-CYN-0141 §5-D: モデル未指定 (auto) の解決は、実際に読み込まれている
+        モデル未指定 (auto) の解決は、実際に読み込まれている
         モデルを最優先する。従来は /v1/models の先頭 (＝単にダウンロード済みの先頭)
         を選んでおり、未読込モデル宛の要求が JIT ロードの時間を沈黙のまま
         タイムアウト枠の中で払っていた。

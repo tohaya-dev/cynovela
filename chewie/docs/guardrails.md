@@ -59,8 +59,6 @@ The classification classes that can be confirmed from the seed data at `db.py:85
 
 The old `classifier.py` also has definitions of 8 categories, PII / Financial / HR / Legal / Healthcare / Sales / Technical / Marketing, but that is a separate system from Smart Ingestion (document type classification at ingest time), and the seeds actually used on the guardrail side are the 3 items above.
 
-<!-- BACKLOG: Legal / Healthcare / Sales / Technical / Marketing の 5 カテゴリは旧 classifier.py に定義はあるが、現行のガードレールシードでは使われていない。GA 時点でこれらを有効化するのか・分類エンジンとの接続をどうするかは spec-raw に確認情報なし -->
-
 ---
 
 ## 3. Initial Policies (Seeds)
@@ -162,7 +160,7 @@ Verified based on international AI security evaluation criteria, including count
 
 ### 5.5 Auxiliary Means: LLM Judge
 
-A mechanism is also provided at `llm_judge_pi(text)` in `utils/metadata/pii.py:263` that makes an additional decision based on an LLM judge for patterns that regular expressions cannot fully catch (introduced in Stage R7 C-5).
+A mechanism is also provided at `llm_judge_pi(text)` in `utils/metadata/pii.py:263` that makes an additional decision based on an LLM judge for patterns that regular expressions cannot fully catch.
 
 ---
 
@@ -294,8 +292,6 @@ Add a regular expression to the `INJECTION_PATTERNS` / `EXFILTRATION_PATTERNS` l
 
 旧 `classifier.py` には PII / Financial / HR / Legal / Healthcare / Sales / Technical / Marketing の 8 カテゴリ定義もありますが、これは Smart Ingestion（取込時の文書種別分類）とは別系統で、ガードレール側で実際に使われているシードは上記 3 件です。
 
-<!-- BACKLOG: Legal / Healthcare / Sales / Technical / Marketing の 5 カテゴリは旧 classifier.py に定義はあるが、現行のガードレールシードでは使われていない。GA 時点でこれらを有効化するのか・分類エンジンとの接続をどうするかは spec-raw に確認情報なし -->
-
 ---
 
 ## 3. 初期ポリシー（シード）
@@ -397,7 +393,7 @@ EXFILTRATION_PATTERNS = [
 
 ### 5.5 補助手段：LLM judge
 
-`utils/metadata/pii.py:263` の `llm_judge_pi(text)` で、正規表現では拾いきれないパターンを LLM judge ベースで追加判定する機構も用意されています（Stage R7 C-5 で導入）。
+`utils/metadata/pii.py:263` の `llm_judge_pi(text)` で、正規表現では拾いきれないパターンを LLM judge ベースで追加判定する機構も用意されています。
 
 ---
 

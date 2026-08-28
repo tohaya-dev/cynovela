@@ -415,7 +415,7 @@ async def _guarded_call_llm(
 
 
 async def _timeout_answer(adapter, configured_model: str) -> str:
-    """DD-CYN-0141 §5-D: タイムアウトの原因が「設定モデルが推論サーバに未読込」なら、
+    """タイムアウトの原因が「設定モデルが推論サーバに未読込」なら、
     汎用のタイムアウト文言ではなく、何が足りないか・次の一手を返す。
     doctor (cynovela-cli.py) も同じ言葉で事前に検知する。判定できない口では従来文言。"""
     target = configured_model if configured_model not in ("", "auto") else ""
@@ -436,7 +436,7 @@ async def _timeout_answer(adapter, configured_model: str) -> str:
             "次の一手: LM Studio でこのモデルを読み込むか、設定（画面の Settings / "
             "cynovela-cli settings set llm / MCP settings_set）で読み込み済みのモデルを選んでください。"
         )
-    # DD-CYN-0151 §7: 文言を実態に合わせた。
+    # 文言を実態に合わせた。
     #   従来の「参照ドキュメント数を減らすか」は、画面にその設定が無いため打つ手にならなかった。
     #   実際の待ち時間は llm_adapter の読み取り待ち 120秒 で、設定から変えられない。
     #   ∴ 待った長さを数で示し、いま本当に打てる手だけを並べる。
@@ -1354,7 +1354,7 @@ async def chat(request: Request):
             (workspace_id, *access_levels),
         ).fetchall()
 
-        # DD-CYN-0145 §148-2: クライアントが collection_ids を指定したら、その集合に絞る。
+        # クライアントが collection_ids を指定したら、その集合に絞る。
         # 従来は body の collection_ids を読まず黙殺し、WS内の許可 collection 全体へ倒れていた
         # （閲覧者が confidential を名指ししても public 全体が検索された）。ここで
         # 「アクセス権のある集合(collections)」と「指定された集合」の積をとる。指定 id が
@@ -1831,7 +1831,7 @@ async def chat(request: Request):
         if isinstance(e, _MNF_m):
             answer = str(e)  # C: 理由と名前を画面に出す（汎用文言で覆わない）
         elif _is_timeout:
-            # DD-CYN-0141 §5-D: 未読込モデルが原因なら、原因と次の一手を返す
+            # 未読込モデルが原因なら、原因と次の一手を返す
             answer = await _timeout_answer(adapter_now, model)
         else:
             answer = "LLMへの接続に失敗しました。しばらくしてから再度お試しください。"
@@ -2067,8 +2067,7 @@ async def chat(request: Request):
         _persist_token_usage(session_id_in, token_info)
     except Exception as _e:
         logger.warning(f"token_usage persistence failed: {_e}")
-    # Stage R7 C-6: RAG 結果空 (filtered_chunks 0 件) の場合、answer 先頭に「根拠なし: 」プレフィックス付加。
-    # Phase 3 Recon Agent J §1-3 必須 3 で grep ヒット 0 → 本実装で 1+ に。
+    # RAG 結果空 (filtered_chunks 0 件) の場合、answer 先頭に「根拠なし: 」プレフィックス付加。
     if not filtered_chunks and answer and not answer.startswith("根拠なし"):
         answer = "根拠なし: " + answer
     # LLM abstention: rag.py:183 SYSTEM_PROMPT の指示により LLM 自身が
@@ -2118,7 +2117,7 @@ async def chat(request: Request):
 async def chat_compare(request: Request):
     """P6-E: 同じ質問・同じチャンクを2モデルに並列送信し、両方の回答を返す.
 
-    Stage R5-fix P1 #8: 認証 inline 必須化。
+    認証 inline 必須化。
     fix-security-batch-v2 (2026-05-28) Sub-2F-2: /api/chat と同じく admin 限定に変更。
     """
     user = _require_admin(request)
@@ -2377,7 +2376,7 @@ async def rag_query(request: Request):
     内部的に /api/chat の最小サブセットを呼び出し citations 付き応答を返す。
     workspace_id 省略時はユーザーがアクセス可能な先頭 workspace を自動選択。
     """
-    # DD-CYN-0179 (欠陥§185): 入口の資格を委譲先 /api/chat と揃える。本 EP は下で
+    # 入口の資格を委譲先 /api/chat と揃える。本 EP は下で
     # chat() を呼ぶだけであり、所属 (require_ws_membership)・collection の access_level・
     # マスキング層 (_effective_send_tier)・監査は全て chat() 側が委譲後のリクエストの
     # トークンから引き直す。ここで admin を要求すると、閲覧者が自分に許された公開
@@ -2396,7 +2395,7 @@ async def rag_query(request: Request):
         raise HTTPException(413, "query は 4000 文字以下にしてください")
     workspace_id = (body.get("workspace_id") or "").strip() or None
     if not workspace_id:
-        # DD-CYN-0179 (欠陥§185): 入口を開いたので、省略時の自動選択も呼び出し元で絞る。
+        # 入口を開いたので、省略時の自動選択も呼び出し元で絞る。
         # 従来は全 workspace から最古の 1 件を無条件に選んでおり、docstring の
         # 「ユーザーがアクセス可能な先頭 workspace」と実装が食い違っていた。
         # admin は従来どおり広域 (挙動を変えない)。非 admin は workspace_users の所属に限る。
@@ -2639,7 +2638,7 @@ async def generate_followups(request: Request):
 @router.post("/api/workspaces/{workspace_id}/chat/stream", response_model=None)
 @_chat_rate_limit()
 async def chat_stream(workspace_id: str, request: Request):
-    # Stage R8-fix P1 #6: 認証必須化 (Agent I §3-1)
+    # 認証必須化
     from core.auth import _require_authenticated as _ra
 
     _ra(request)
@@ -3181,7 +3180,7 @@ async def chat_stream(workspace_id: str, request: Request):
                 if isinstance(e, _MNF_s):
                     answer = str(e)  # C: 理由と名前を画面に出す（汎用文言で覆わない）
                 elif _is_timeout:
-                    # DD-CYN-0141 §5-D: 未読込モデルが原因なら、原因と次の一手を返す (SSE 経路も同じ言葉)
+                    # 未読込モデルが原因なら、原因と次の一手を返す (SSE 経路も同じ言葉)
                     answer = await _timeout_answer(adapter, _sse_model)
                 else:
                     answer = "LLMへの接続に失敗しました。しばらくしてから再度お試しください。"
@@ -3346,7 +3345,7 @@ def full_export_workspace(request: Request, workspace_id: str):
                 "SELECT policy_id FROM workspace_policies WHERE workspace_id = ?", (workspace_id,)
             ).fetchall()
         ]
-        # DD-CYN-0151 §6-2: 資料の記述の集め方。
+        # 資料の記述の集め方。
         #   従来は「作業場所 → workspace_sources → sources → files」の経路だけを辿っていた。
         #   まとまりが持つ資料 (collection_files) が、作業場所に結ばれていない取り込み元の
         #   ものだった場合、collections.json には file_ids が並ぶのに files.json と
@@ -3458,7 +3457,7 @@ def full_export_workspace(request: Request, workspace_id: str):
             offset = 0
             jsonl_lines: list[str] = []
             while offset < count:
-                # Stage R8-3: workspace_id where フィルタで多重防御 (Agent N §3-1)
+                # workspace_id where フィルタで多重防御
                 batch = ccol.get(
                     include=["embeddings", "documents", "metadatas"],
                     limit=BATCH_SIZE,
@@ -3514,7 +3513,7 @@ def full_export_workspace(request: Request, workspace_id: str):
 
 
 def _remap_ids_in_text(text, replacements: dict) -> str:
-    """DD-CYN-0151 §6-3: 文字列の中に混ざった古い番号を、新しい番号へ置き換える。
+    """文字列の中に混ざった古い番号を、新しい番号へ置き換える。
 
     vector_id / parent_id / logical_chunk_id は「まとまり#取り込み元#資料#…」の形で
     番号を連ねた文字列である。∴ 番号そのものを置き換えるしかない。
@@ -3531,7 +3530,7 @@ def _remap_ids_in_text(text, replacements: dict) -> str:
 
 def _remap_vector_metadata(meta: dict, old_cid: str, new_cid: str, new_ws_id: str,
                            source_id_map: dict, file_id_map: dict) -> dict:
-    """DD-CYN-0151 §6-3: ベクターの覚えに残る番号を、取り込み先の番号へ揃える。
+    """ベクターの覚えに残る番号を、取り込み先の番号へ揃える。
 
     探す側は where={"workspace_id": ...} で絞る (rag.py)。∴ ここを書き換えないと、
     取り込んだ作業場所では 1件も当たらない。
@@ -3685,7 +3684,7 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
                 policy_id_map[p["id"]] = npid
 
         # Workspace 本体
-        # DD-CYN-0147 §151-2: workspaces.name は UNIQUE。従来は常に「元の名前 (imported)」で
+        # workspaces.name は UNIQUE。従来は常に「元の名前 (imported)」で
         # 作っていたため、同じ書き出しを2回持ち込むと2回目が UNIQUE 制約に触れて 500 になった。
         # 既に同名が在るときは (imported 2)・(imported 3)… と番号を足して空いている名前を探す。
         # 探し尽くしたときは通常の例外を投げ、API に読める文言で断らせる（サーバは落とさない）。
@@ -3732,7 +3731,7 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
         target_status = "ready" if include_vectors else "draft"
         new_collection_ids: list[str] = []
         col_id_map: dict[str, str] = {}
-        # DD-CYN-0151 §6-2: 「資料が1つも作れなかった」を掴んでおく置き場。
+        # 「資料が1つも作れなかった」を掴んでおく置き場。
         empty_collections: list[dict] = []
         collection_link_report: list[dict] = []
         for col in collections:
@@ -3750,7 +3749,7 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
                     col.get("allowed_roles_json"),
                 ),
             )
-            # DD-CYN-0151 §6-2: 資料を1つも作れなかったまとまりを数える。
+            # 資料を1つも作れなかったまとまりを数える。
             _declared = list(col.get("file_ids") or [])
             _linked = 0
             for old_fid in _declared:
@@ -3801,7 +3800,7 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
             # スキップし、再 publish でマスキング済みベクターを作り直してもらう (note でガイド)。
             from providers.vector_store import chroma_name_for_tier as _cnt_restore
             ccol = chroma.get_or_create_collection(name=_cnt_restore(new_cid, "masked"))
-            # DD-CYN-0151 §6-3: 番号の入れ替え表。長い番号から順に当てる
+            # 番号の入れ替え表。長い番号から順に当てる
             # (短い番号が長い番号の一部に含まれていても、取り違えないため)。
             _id_replacements = {old_cid: new_cid}
             _id_replacements.update(source_id_map)
@@ -3841,7 +3840,7 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
                 # masked-only §9-1: tier='masked' のレコードだけ復元する (raw は捨てる)。
                 if (_rec_meta.get("tier") or "raw") != "masked":
                     continue
-                # DD-CYN-0151 §6-3: 覚えに残っている番号を、いま作った番号へ書き換える。
+                # 覚えに残っている番号を、いま作った番号へ書き換える。
                 #   従来は書き出したときのままの番号 (作業場所・まとまり・取り込み元・資料) を
                 #   そのまま入れていた。探す側は where={"workspace_id": ...} で絞るため、
                 #   取り込んだ作業場所では 1件も当たらず、再度の公開なしには答えが返らなかった。
@@ -3868,7 +3867,7 @@ async def import_workspace(request: Request, file: UploadFile = File(...)):
         else "ベクターデータは含まれていません。各 Collection の再 Publish が必要です。"
     )
 
-    # DD-CYN-0151 §6-2: まとまりに紐付く資料が1つも作れなかったときは、成功と表示しない。
+    # まとまりに紐付く資料が1つも作れなかったときは、成功と表示しない。
     #   書き出し物の files.json が空 (または資料の番号が1つも合わない) と、まとまりは
     #   出来ても中身が空になる。従来はこの場合でも ok=True と「すぐに使えます」を返していた。
     warnings: list[str] = []

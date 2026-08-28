@@ -91,7 +91,7 @@ def name_for(host_path: str, taken) -> str:
     parts = [p for p in host_path.rstrip("/").split("/") if p]
     toks = [t for t in (_sanitize(p) for p in parts[-2:]) if t]
     base = "-".join(toks)
-    # DD-CYN-0146 §150: 従来は「符号(8桁)を足してから base[:32] で切り詰め」ていたため、
+    # 従来は「符号(8桁)を足してから base[:32] で切り詰め」ていたため、
     # 道筋の末尾が長いと避けるための符号ごと切り落とされ、再び衝突→SystemExit→サーバ全停止
     # になっていた。順序を改め「先に枠へ収めてから符号/連番を足す」ことで、避ける印が必ず
     # 32文字の枠に残るようにする。SystemExit もやめ、探し尽くしたときだけ通常の例外を投げて

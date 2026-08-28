@@ -16,8 +16,6 @@
 
 Cynovela is a learning project that re-implements, using only OSS and so that an individual could understand it by working with their own hands, the concept that the referenced AI platform tool tries to solve (a RAG platform that safely connects in-house documents to a local LLM). The implementation is entirely original, and there is no compatibility with the referenced tool in the source code, the API specification, or the data model. Commercial features, support, and an SLA are not provided.
 
-<!-- BACKLOG: 参照元ツールの具体的機能との対照表は spec-raw に根拠なし。書かない。 -->
-
 ## Q2. What does it mean that the data does not go outside
 
 In the default configuration of Cynovela, all of the following are completed in the local environment (a FastAPI server bound to 127.0.0.1).
@@ -36,9 +34,7 @@ The IP allowlist middleware (A-5) works only when `--allow-subnet` / `--allow-ta
 
 ## Q3. What file types can be used
 
-`extract_text()` in `rag.py` is in charge of text extraction (A-3 line 431). For images, an extraction path via OCR (`_extract_image_text()`, A-3 line 375) is provided, and in the `multimedia` preset there is a description of support for a mix of images and Office files (the A-3 preset table).
-
-<!-- BACKLOG: extract_text の対応拡張子一覧は spec-raw に列挙がない。確認後追記。 -->
+`extract_text()` in `rag.py` is in charge of text extraction (A-3 line 431). For images, an extraction path via OCR (`_extract_image_text()`, A-3 line 375) is provided, and in the `multimedia` preset there is a description of support for a mix of images and Office files (the A-3 preset table). An exhaustive list of the supported extensions is not carried in this document.
 
 ## Q4. How much spec is required
 
@@ -72,11 +68,11 @@ Written honestly. Skeleton features (interface only, whose substance throws `Not
 
 | Feature | File | State |
 |------|---------|------|
-| MLX Embedding | `providers/embedding.py:105` | Planned for future implementation |
-| MLX Reranker | `providers/reranker.py:216` | Planned for future implementation |
+| MLX Embedding | `providers/embedding.py:105` | Not implemented |
+| MLX Reranker | `providers/reranker.py:216` | Not implemented |
 | Qdrant VectorStore | `providers/vector_store.py:260-272` | Skeleton only (add / search / delete / export / import are all unimplemented) |
 | LanceDB backend | `providers/vector_store.py` | Rejected when the package is not installed |
-| GraphRAG strategy | `services/rag_strategies.py:116` | Planned for future implementation |
+| GraphRAG strategy | `services/rag_strategies.py:116` | Not implemented |
 
 Features that were explicitly abolished (A-6 §2):
 
@@ -86,7 +82,7 @@ Features that were explicitly abolished (A-6 §2):
 
 Features that are defined as settings but whose integration into the search pipeline is partial (A-3 §6, §11):
 
-- `confidence_threshold` (default 0.50) is defined in config, but the logic to exclude low-confidence results is not integrated.
+- `confidence_threshold` (default 0.40) is defined in config, but the logic to exclude low-confidence results is not integrated.
 - Structured answer templates (JSON format, forced tags, and so on) are unimplemented. Answers are free-form.
 
 Authentication is enforced even on a `--demo` start. The `@pytest.mark.skip` that remains in the authentication boundary tests is a leftover from when `--demo` bypassed authentication, and the reason text no longer matches the implementation.
@@ -94,8 +90,6 @@ Authentication is enforced even on a `--demo` start. The `@pytest.mark.skip` tha
 ## Q7. What is the direction from here
 
 Improving RAG quality, JWT authentication, and publishing MCP are the main roadmap items. For details, see the BACKLOG.
-
-<!-- BACKLOG: ロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。 -->
 
 ---
 
@@ -113,8 +107,6 @@ Improving RAG quality, JWT authentication, and publishing MCP are the main roadm
 ## Q1. 参照元の AI 基盤ツールとの違いは何ですか
 
 Cynovela は、参照元の AI 基盤ツールが解こうとしているコンセプト（社内ドキュメントを安全にローカル LLM へつなぐ RAG 基盤）を、個人が手を動かして理解するために OSS だけで再実装した学習用プロジェクトです。実装はすべてオリジナルで、ソースコード・API 仕様・データモデルに参照元との互換性はありません。商用機能・サポート・SLA は提供しません。
-
-<!-- BACKLOG: 参照元ツールの具体的機能との対照表は spec-raw に根拠なし。書かない。 -->
 
 ## Q2. データが外に出ないとはどういう意味ですか
 
@@ -134,9 +126,7 @@ IP アローリストミドルウェア（A-5）は `--allow-subnet` / `--allow-
 
 ## Q3. 使えるファイル種別は何ですか
 
-`rag.py` の `extract_text()` がテキスト抽出を担当します（A-3 行 431）。画像については OCR による抽出経路（`_extract_image_text()`、A-3 行 375）が用意されており、`multimedia` プリセットでは画像・Office 混在に対応する記述があります（A-3 プリセット表）。
-
-<!-- BACKLOG: extract_text の対応拡張子一覧は spec-raw に列挙がない。確認後追記。 -->
+`rag.py` の `extract_text()` がテキスト抽出を担当します（A-3 行 431）。画像については OCR による抽出経路（`_extract_image_text()`、A-3 行 375）が用意されており、`multimedia` プリセットでは画像・Office 混在に対応する記述があります（A-3 プリセット表）。対応する拡張子の網羅的な一覧は本書には載せていません。
 
 ## Q4. スペック要件はどれくらい必要ですか
 
@@ -170,11 +160,11 @@ Cynovela は二段構えで PII（Personally Identifiable Information: 個人情
 
 | 機能 | ファイル | 状態 |
 |------|---------|------|
-| MLX Embedding | `providers/embedding.py:105` | 将来実装予定 |
-| MLX Reranker | `providers/reranker.py:216` | 将来実装予定 |
+| MLX Embedding | `providers/embedding.py:105` | 未実装 |
+| MLX Reranker | `providers/reranker.py:216` | 未実装 |
 | Qdrant VectorStore | `providers/vector_store.py:260-272` | 骨格のみ（add / search / delete / export / import すべて未実装） |
 | LanceDB バックエンド | `providers/vector_store.py` | パッケージ未導入時に拒否 |
-| GraphRAG 戦略 | `services/rag_strategies.py:116` | 将来実装予定 |
+| GraphRAG 戦略 | `services/rag_strategies.py:116` | 未実装 |
 
 明示的に廃止された機能（A-6 §2）:
 
@@ -184,7 +174,7 @@ Cynovela は二段構えで PII（Personally Identifiable Information: 個人情
 
 設定としては定義されているが、検索パイプラインへの統合が部分的な機能（A-3 §6, §11）:
 
-- `confidence_threshold`（既定 0.50）は config に定義済みだが、低信頼度結果の除外ロジックは未統合。
+- `confidence_threshold`（既定 0.40）は config に定義済みだが、低信頼度結果の除外ロジックは未統合。
 - 構造化回答テンプレート（JSON 形式・タグ強制など）は未実装。回答は自由形式。
 
 `--demo` 起動でも認証は強制されます。認証境界テストに残っている `@pytest.mark.skip` は、`--demo` が認証をバイパスしていた頃の名残で、理由文はすでに実装と合っていません。
@@ -192,7 +182,5 @@ Cynovela は二段構えで PII（Personally Identifiable Information: 個人情
 ## Q7. 今後の方向性は何ですか
 
 RAG 品質の向上、JWT 認証、MCP 公開などが主要なロードマップ項目です。詳細は BACKLOG を参照してください。
-
-<!-- BACKLOG: ロードマップ詳細（RAG 品質・JWT 認証・MCP 公開等）は CLAUDE.md にあるが、spec-raw では確認できない箇所がある。FAQ では一行のみとする。 -->
 
 ---

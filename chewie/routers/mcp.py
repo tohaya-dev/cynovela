@@ -37,7 +37,7 @@ def mcp_config(request: Request):
     }
     # sweep-fix-d-20260711: 静的2要素配列を撤去し mcp_server.py の TOOLS 実ツール名を動的取得。
     #   件数表示(フロント mc.tools.length)が実装済みツール数と一致するようにする
-    #   (DD-CYN-0142 時点で 25 本 = 開放22 + 既定閉3。数はここに書かず TOOLS から読む)。
+    #   (本稿執筆時点で 25 本 = 開放22 + 既定閉3。数はここに書かず TOOLS から読む)。
     #   ※ import mcp_server は不可: 同モジュールは import 時に module-level argparse を実行し
     #     サーバの argv で sys.exit(2) して落ちる。副作用ゼロの ast 解析で TOOLS リテラルを読む。
     _tool_names: list = []

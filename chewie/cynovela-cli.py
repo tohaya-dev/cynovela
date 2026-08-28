@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Cynovela CLI — use Cynovela from the terminal / ターミナルから Cynovela を使う.
 
-DD-CYN-0140 §5-J. Standard library only. Talks only to the REST API — it never
+Standard library only. Talks only to the REST API — it never
 reads the database, store/, or the configuration behind the server's back
 (doctor inspects local files read-only, and changes nothing).
 
-Commands are grouped by the unit of work (DD-CYN-0142 §5-A). Dangerous
+Commands are grouped by the unit of work. Dangerous
 operations (delete / users / backup / settings set) never run without an
 explicit --yes: without it they show what would happen and stop.
 
@@ -155,7 +155,7 @@ def _load_env_file(path: Path) -> dict:
 
 
 def _save_env_file(path: Path, updates: dict) -> None:
-    """DD-CYN-0151 §5: rewrite ~/.cynovela_cli.env keeping every other line.
+    """Rewrite ~/.cynovela_cli.env keeping every other line.
 
     A value of None removes the key. The file is left readable by its owner
     only, because it holds a bearer token.
@@ -283,7 +283,7 @@ def _http_probe(url: str, timeout: float = 3.0):
 def _model_snapshot(name: str):
     """Same look as the in-app judgement: snapshots/<hash>/ must be a non-empty dir.
 
-    Candidate order mirrors config.resolve_model_path (DD-CYN-0139: all 6 sites
+    Candidate order mirrors config.resolve_model_path (all 6 sites
     look only at snapshots/<hash>/ being a non-empty directory).
     """
     folder = "models--" + name.replace("/", "--")
@@ -346,7 +346,7 @@ def cmd_doctor(ctx: Ctx, _args) -> int:
         "Neither LM Studio nor Ollama answered. Start LM Studio and load a model, or `ollama serve`. Questions cannot be answered without one.",
         "LM Studio も Ollama も応答しません。LM Studio を起動してモデルを読み込むか、`ollama serve` を実行してください。どちらも居ないと質問に答えられません。")
 
-    # 3b) 設定されたモデルが実際に読み込まれているか (DD-CYN-0141 §5-D)。
+    # 3b) 設定されたモデルが実際に読み込まれているか。
     #    /v1/models はダウンロード済み全件で読み込み状態を持たない。読み込み状態は
     #    LM Studio の /api/v0/models にしか無い。口が無い接続先では判定できない旨を出す。
     #    質問がタイムアウトになるとき、サーバの回答文と同じ言葉をここで事前に言う。
@@ -447,7 +447,7 @@ def cmd_doctor(ctx: Ctx, _args) -> int:
 
 
 # ─── read-only server commands ─────────────────────────────────
-# ─── login / logout (DD-CYN-0151 §5) ───────────────────────────
+# ─── login / logout ────────────────────────────────────────────
 CLI_ENV_PATH = Path.home() / ".cynovela_cli.env"
 
 
@@ -590,7 +590,7 @@ def cmd_search(ctx: Ctx, args) -> int:
     # /api/chat の "sources" はファイル名の文字列一覧。断片の本文とスコアは
     # "citations" (source_filename / chunk_preview / score) に入っている。
     frags = []
-    # DD-CYN-0151 §7: index も渡す (回答本文の [N] と同じ番号)。
+    # index も渡す (回答本文の [N] と同じ番号)。
     for _n, c in enumerate(data.get("citations") or []):
         if isinstance(c, dict):
             frags.append({
@@ -637,7 +637,7 @@ def cmd_index_status(ctx: Ctx, args) -> int:
                                      "note": _m("index_note", ctx.lang)}, lines)
 
 
-# ─── DD-CYN-0142 §5-A: 作業の単位で足した命令 ─────────────────────
+# ─── 作業の単位で足した命令 ────────────────────────────────────
 def _T(ctx: Ctx, en: str, ja: str) -> str:
     return ja if ctx.lang == "ja" else en
 
@@ -705,7 +705,7 @@ def cmd_chat(ctx: Ctx, args) -> int:
     data = data if isinstance(data, dict) else {}
     answer = str(data.get("answer") or "")
     sources = [str(s) for s in (data.get("sources") or [])]
-    # DD-CYN-0151 §7: 出典の番号は citations[].index を使う。これが回答本文の [N] と同じ番号で、
+    # 出典の番号は citations[].index を使う。これが回答本文の [N] と同じ番号で、
     #   画面もこの値を使っている。従来は sources (ファイル名を重複なくまとめた一覧) を
     #   1 から数え直していたため、本文の [N] と一覧の番号が食い違っていた。
     citations = [
@@ -995,7 +995,7 @@ def cmd_users(ctx: Ctx, args) -> int:
             return _fail(ctx, "users update", status, data)
         return _ok(ctx, "users update", data, lines + [_T(ctx, "updated.", "変えました。")])
     if sub == "delete":
-        # DD-CYN-0151 §7: --purge で完全に消す。付けなければ従来どおり止めるだけ。
+        # --purge で完全に消す。付けなければ従来どおり止めるだけ。
         purge = bool(getattr(args, "purge", False))
         lines = [_T(ctx, f"delete user: {args.id}", f"利用者を消します: {args.id}"),
                  _T(ctx,
@@ -1066,7 +1066,7 @@ def cmd_backup(ctx: Ctx, args) -> int:
     return EXIT_USER
 
 
-# ─── settings (DD-CYN-0141 §5-A; REST only, admin token required) ─
+# ─── settings (REST only, admin token required) ────────────────
 # 各対象の 読む口 / 書く口 / 書ける KEY。pii だけ書き込みが PUT である
 # (routers/settings.py の実装どおり)。KEY の型は送る前の変換にだけ使う。
 SETTINGS_KINDS = {

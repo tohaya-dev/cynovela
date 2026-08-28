@@ -114,12 +114,12 @@ Two integration methods can be selected.
 
 ### Rough guide to the scores (vector cosine similarity)
 
-For BGE-M3, the Embedding model used in the AI infrastructure tool that this refers to, the rough guide is as follows.
+BGE-M3 is the Embedding model that Cynovela itself uses by default (`BAAI/bge-m3`, set in `config.py` and `cynovela.yaml`). The rough guide to its scores is as follows.
 
 | Score band | Interpretation |
 |---------|------|
 | 0.35 to 0.45 | Noise floor. Appears even for unrelated queries |
-| 0.50 | The default value of the confidence threshold (`confidence_threshold`) |
+| 0.40 | The default value of the confidence threshold (`confidence_threshold`) |
 | 0.55 to 0.75 | Typical hit range for a real query |
 | 0.75 and above | Extremely highly relevant |
 
@@ -364,12 +364,12 @@ Cynovela は次の 2 系統を統合します。
 
 ### スコアの目安（ベクター・コサイン類似度）
 
-参照元の AI 基盤ツールで使われている Embedding モデル BGE-M3 の場合、おおまかな目安は次のとおりです。
+BGE-M3 は Cynovela 自身が既定で使う Embedding モデルです（`BAAI/bge-m3`。`config.py` と `cynovela.yaml` で設定しています）。そのスコアのおおまかな目安は次のとおりです。
 
 | スコア帯 | 解釈 |
 |---------|------|
 | 0.35 ～ 0.45 | ノイズフロア。無関係なクエリでも出現します |
-| 0.50 | 信頼度しきい値（`confidence_threshold`）の既定値 |
+| 0.40 | 信頼度しきい値（`confidence_threshold`）の既定値 |
 | 0.55 ～ 0.75 | 実存クエリの典型的なヒット範囲 |
 | 0.75 以上 | きわめて関連性が高い |
 

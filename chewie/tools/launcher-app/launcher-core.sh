@@ -22,7 +22,7 @@ STATE_FILE="$REPO/store/launch-app.state"
 LOG="$REPO/store/launch-app.log"
 mkdir -p "$REPO/store"
 
-# ---------- コンテナの実行エンジン (実行体) の解決 () ----------
+# ---------- コンテナの実行エンジン (実行体) の解決 ----------
 #   アイコンから起動すると PATH が素の値になり、端末では見つかる podman が見つからない。
 #   決める順: ①設定/指定での明示 (在れば探索しない) ②podman → docker の探索 ③画面側で選んでもらう。
 #   探索は 受け継いだ PATH → ログインシェル → 決まった保存先 の3段。
@@ -325,7 +325,7 @@ cmd_root_names() { cmd_list_roots | grep -o '"name": "[^"]*"' | cut -d'"' -f4; }
 cmd_add_root()   { ( cd "$REPO" && ./launch.sh --add-path "$1" 2>&1 ); }
 cmd_remove_root(){ ( cd "$REPO" && ./launch.sh --remove "$1" 2>&1 ); }
 
-# 実行エンジンの状態を1行で返す ()。画面 (launcher.applescript) が読む。
+# 実行エンジンの状態を1行で返す。画面 (launcher.applescript) が読む。
 #   ENGINE=ok NAME=<名前> / ENGINE=not-running NAME=<名前> / ENGINE=not-found
 #   "engine set <パス>" は「場所を選ぶ」で指された実行ファイルを設定へ覚える。
 cmd_engine() {

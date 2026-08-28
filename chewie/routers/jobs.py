@@ -14,7 +14,7 @@ router = APIRouter(tags=["jobs"])
 def get_job_status(request: Request, job_id: str):
     """publish_jobs → scan_jobs の順に job の現在状態を返す。見つからなければ 404。
 
-    DD-CYN-0142 §5-B: 走査も公開と同じ「開始だけを返す口 + 進み具合を取りに行く口」に
+    走査も公開と同じ「開始だけを返す口 + 進み具合を取りに行く口」に
     揃えたため、この口が両方のジョブの進み具合を返す。kind で区別する。
     """
     _require_admin(request)

@@ -22,7 +22,7 @@ from core.audit import _log_audit
 
 router = APIRouter(tags=["sources"])
 
-# DD-CYN-0168 (欠陥§181): 同期の走査要求が「走査中」に当たったときに待つ上限と、
+# 同期の走査要求が「走査中」に当たったときに待つ上限と、
 #   その間の見に行く間隔。起動時の `scan` (_startup_scan_sources) は登録済みの `source` を
 #   直列に処理するため、`file` が多いほどここで待つ時間が延びる。値の是非は Tocchi の裁定事項。
 _SCAN_WAIT_SEC = 300.0
@@ -169,11 +169,11 @@ async def create_source(request: Request):
     _existing = None
     conn = get_db()
     try:
-        # DD-CYN-0151 §7: 同じ場所を二重に登録させない。
+        # 同じ場所を二重に登録させない。
         #   従来 UNIQUE が効いていたのは name だけだったため、名前を変えれば同じフォルダを
         #   何本でも登録でき、走査も公開も二重に走っていた。
         #   場所の見分けは実体のパス (シンボリックリンクと末尾の / を解いたもの) で行う。
-        # DD-CYN-0168 (欠陥§179 版3 / §181): 同じ場所が既に在るときに 409 で断ると、
+        # 同じ場所が既に在るときに 409 で断ると、
         #   クイックスタートも `source` の追加もそこで行き止まりになり、画面には
         #   「この場所は既に登録されています」だけが残っていた。二重登録を防ぐ目的は
         #   「新しい行を作らない」ことで足りる。∴ 断らずに、既に在る source をそのまま
@@ -203,7 +203,7 @@ async def create_source(request: Request):
         # 以後の全書き込みが busy_timeout(30s) 超過の "database is locked" になる
         conn.close()
     if _existing is not None:
-        # DD-CYN-0168: 既に在る source を返す。auto_scan が真なら、その source を
+        # 既に在る source を返す。auto_scan が真なら、その source を
         #   走査し直す (走査が既に走っていれば _do_scan 側の排他が黙って戻す)。
         if auto_scan:
             threading.Thread(target=_do_scan, args=(_existing["id"],), daemon=True).start()
@@ -272,7 +272,7 @@ def cancel_scan(request: Request, source_id: str):
         src = conn.execute("SELECT id FROM sources WHERE id = ?", (source_id,)).fetchone()
         if not src:
             raise HTTPException(404, "Source not found")
-        # 欠陥修正（DD-CYN-0166 派生）: 上のフラグはプロセス内メモリのみで、
+        # 欠陥修正: 上のフラグはプロセス内メモリのみで、
         # それを監視しているスレッドが既に死んでいる（またはこの後プロセスごと
         # 再起動される）場合は何も起きない。scan_jobs.status を直接書き換える
         # ことで、生きたスレッドの有無に関わらずキャンセルを確定させる。
@@ -295,7 +295,7 @@ def cancel_scan(request: Request, source_id: str):
 
 @router.post("/api/sources/{source_id}/scan/async", response_model=None)
 def scan_source_async(request: Request, source_id: str):
-    """DD-CYN-0142 §5-B: 走査を「開始だけを返す口」で始める (publish/async と同じ形)。
+    """走査を「開始だけを返す口」で始める (publish/async と同じ形)。
 
     scan_jobs に pending 行を作って job_id を即返し、走査は別スレッドで回す。
     進み具合は GET /api/jobs/{job_id} で取る。中止は既存の /scan/cancel。
@@ -343,12 +343,12 @@ def scan_source(request: Request, source_id: str):
     if not source:
         raise HTTPException(404, "Source not found")
 
-    # DD-CYN-0151 §7: 同期の走査にも、非同期と同じ「走査中なら断る」を付ける。
+    # 同期の走査にも、非同期と同じ「走査中なら断る」を付ける。
     #   本体 (_do_scan) 側でも締めているが、そこで黙って戻ると呼んだ側は
     #   「走ったのに何も起きなかった」と見えてしまう。∴ ここで理由を返す。
     import server as _srv
 
-    # DD-CYN-0168 (欠陥§181): ここで即 409 を返すと、クイックスタートの
+    # ここで即 409 を返すと、クイックスタートの
     #   「④ Source スキャン」がそこで行き止まりになる。起動のたびに走る
     #   _startup_scan_sources() は登録済みの `source` を skip_unchanged=True で
     #   直列に `scan` するため、起動直後にクイックスタートを押すと、残骸が無くても
@@ -659,7 +659,7 @@ async def add_ingest_root(request: Request):
     for _r in _data["roots"]:
         if _r.get("host_path") == _real:
             return {"ok": True, "name": _r.get("name"), "already": True}
-    # DD-CYN-0146 §150: 名前の割り当てが尽きた場合、name_for は SystemExit ではなく
+    # 名前の割り当てが尽きた場合、name_for は SystemExit ではなく
     # ValueError を投げる（サーバは落とさない）。ここで受けて読める文言で断る。
     try:
         _name = _h.assign_name(_data, _real)

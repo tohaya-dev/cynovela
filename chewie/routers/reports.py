@@ -17,7 +17,7 @@ router = APIRouter(tags=["reports"])
 async def generate_report(request: Request):
     """LLM で運用サマリーレポートを生成して reports テーブルに保存.
 
-    Stage R5-fix P1 #11: admin 限定。
+    admin 限定。
     """
     from core.auth import _require_role
     from core.llm import _call_llm_simple
@@ -65,7 +65,7 @@ async def generate_report(request: Request):
 
 @router.get("/api/reports", response_model=None)
 def list_reports(request: Request):
-    """Stage R5-fix P1 #11: admin 限定."""
+    """admin 限定."""
     from core.auth import _require_role
 
     _require_role(request, {"admin"})
@@ -82,7 +82,7 @@ def list_reports(request: Request):
 
 @router.get("/api/reports/{report_id}", response_model=None)
 def get_report(report_id: str, request: Request):
-    """Stage R5-fix P1 #11: admin 限定."""
+    """admin 限定."""
     from core.auth import _require_role
 
     _require_role(request, {"admin"})

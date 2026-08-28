@@ -118,19 +118,19 @@ The `rag_mode` key switches the behavior of the whole search pipeline.
 
 ## 5. Strictness mode (system prompt switching)
 
-`rag.py:175-213` defines 2 kinds of system prompt, and they are switched depending on whether search results were obtained or not.
+`rag.py:318-434` defines 2 kinds of system prompt. Which one is used is decided by the `rag_mode` of the request: `general` selects the general knowledge prompt (`routers/chat.py`), and every other value selects the RAG prompt. There is no automatic switch to the general knowledge prompt when the search returns 0 results.
 
 | Constant name | Purpose |
 |--------|------|
 | `DEFAULT_SYSTEM_PROMPT` (`SYSTEM_PROMPT`) | When RAG is enabled. Instructs the LLM to answer on the grounds of the search results (context) |
 | `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` | General knowledge mode. On the premise that no context is provided, instructs it to answer "I don't know" for what it does not know |
 
-In addition, a role specific preface is applied with `apply_role_prefix()` (`rag.py:215-231`).
+In addition, a role specific preface is applied with `apply_role_prefix()` (`rag.py:444-452`).
 
 - **admin**: Provides complete information including technical details, setting values and internal structure
 - **reader**: A focused, easy to understand explanation that avoids technical jargon
 
-<!-- BACKLOG: 「STRICT モード」相当の独立したプロンプト切替や、ガードレール強度を段階的に変える厳格度ダイヤルは spec-raw で確認できなかったため、ここではシステムプロンプトの 2 種類切替を「厳格度モード」として扱う -->
+There is no separate "STRICT mode" prompt, and no dial that changes guardrail strength in stages. The current build switches between the 2 system prompts above, and this document calls that switching the strictness mode.
 
 ---
 
@@ -140,26 +140,42 @@ This is the threshold used for the decision of the low confidence fallback (Abst
 
 ### 6.1 Setting value
 
-`config.py:131-135`:
+`config.py:181-185`:
 
 ```python
 # 低信頼度フォールバック: hits の最大 vector_score で判定
 # BGE-M3 のノイズフロアは 0.35-0.45 (架空クエリでもこの程度の score が出る)
-# 実存クエリは 0.55-0.75 程度のため 0.50 を境界に設定
-"confidence_threshold": 0.50,
+# 実存クエリは 0.55-0.75 程度のため 0.40 を境界に設定
+"confidence_threshold": 0.40,
 ```
 
 ### 6.2 Grounds for the value
 
 - **BGE-M3 noise floor**: 0.35 to 0.45 (even an unrelated query produces roughly this score)
 - **Typical range of a real query**: 0.55 to 0.75
-- **Decision boundary**: 0.50. Below this it is judged as "insufficient grounds", and becomes a candidate for withholding the answer or switching to general knowledge mode
+- **`confidence_threshold` default**: 0.40. When the highest `vector_score` falls below it, the grounds are judged insufficient, and the answer is withheld or general knowledge mode is offered instead
 
 ### 6.3 Important note about the scale
 
 The decision metric must always be `vector_score` (cosine similarity, 0 to 1 scale). Because it is of a different order of magnitude from the RRF score (the sum of reciprocals of ranks, max ≈ 0.033), doing the threshold decision with the RRF score makes Abstention fire wildly on every query. Interpret the value of `config.rag.confidence_threshold` on the premise of the cosine scale.
 
-<!-- BACKLOG: confidence_threshold は config に定義済みだが、実際の Abstention 除外ロジックは検索パイプラインに部分統合のみ。全段への統合状況は spec-raw に「パイプラインに部分統合」とだけあり、どの分岐で実際にハジくかまでは確認できなかった -->
+### 6.4 Where the value comes from
+
+The effective default is **0.40**. `config.py` and `cynovela.yaml` carry the same value, so this is the value in use unless it has been changed.
+
+The current build reads the threshold in this order, and the first value found is the one used.
+
+1. The `confidence_threshold` row of the `settings` table in SQLite
+2. `config.rag.confidence_threshold` (`config.py:185`, 0.40; `cynovela.yaml` holds the same 0.4)
+
+Only when that key is missing from the configuration entirely does a literal written in the code take over, and that literal is **not the same on every path** in the current build.
+
+| Path | Order it reads | Literal used when the configuration key is absent |
+|---|---|---|
+| chat (`routers/chat.py`, both the non-streaming and the SSE path) | SQLite `settings` → `config.rag.confidence_threshold` → literal | `0.02` |
+| dashboard (`routers/dashboard.py`) | SQLite `settings` → literal (it does not read the configuration at all) | `0.40` |
+
+So a reader should not take 0.02 as "the last resort everywhere". It is the chat path's literal only. As long as the configuration key is present, both paths land on 0.40.
 
 ---
 
@@ -298,19 +314,19 @@ Reranker の推論時間（`rerank_latency_ms`）と各 chunk のスコア（`re
 
 ## 5. 厳格度モード（システムプロンプト切替）
 
-`rag.py:175-213` には 2 種類のシステムプロンプトが定義されており、検索結果が得られた場合と得られなかった場合とで切り替わります。
+`rag.py:318-434` には 2 種類のシステムプロンプトが定義されています。どちらを使うかはリクエストの `rag_mode` で決まり、`general` のときだけ一般知識モードのプロンプトが選ばれます（`routers/chat.py`）。それ以外は RAG 用のプロンプトです。検索結果が 0 件でも一般知識モードへ自動で切り替わることはありません。
 
 | 定数名 | 用途 |
 |--------|------|
 | `DEFAULT_SYSTEM_PROMPT`（`SYSTEM_PROMPT`） | RAG 有効時。検索結果（context）を根拠に回答することを LLM に指示 |
 | `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` | 一般知識モード。context が提供されないことを前提に、知らないことは「分かりません」と返すよう指示 |
 
-加えて、ロール別の前置きが `apply_role_prefix()`（`rag.py:215-231`）で適用されます。
+加えて、ロール別の前置きが `apply_role_prefix()`（`rag.py:444-452`）で適用されます。
 
 - **admin**: 技術的詳細・設定値・内部構造を含む完全な情報を提供
 - **reader**: 要点を絞った分かりやすい説明、専門用語を避ける
 
-<!-- BACKLOG: 「STRICT モード」相当の独立したプロンプト切替や、ガードレール強度を段階的に変える厳格度ダイヤルは spec-raw で確認できなかったため、ここではシステムプロンプトの 2 種類切替を「厳格度モード」として扱う -->
+「STRICT モード」に相当する独立したプロンプトや、ガードレール強度を段階的に変えるダイヤルはありません。現在の作りは上記 2 種類のシステムプロンプトの切替であり、本書ではこの切替を厳格度モードと呼んでいます。
 
 ---
 
@@ -320,26 +336,42 @@ Reranker の推論時間（`rerank_latency_ms`）と各 chunk のスコア（`re
 
 ### 6.1 設定値
 
-`config.py:131-135`：
+`config.py:181-185`：
 
 ```python
 # 低信頼度フォールバック: hits の最大 vector_score で判定
 # BGE-M3 のノイズフロアは 0.35-0.45 (架空クエリでもこの程度の score が出る)
-# 実存クエリは 0.55-0.75 程度のため 0.50 を境界に設定
-"confidence_threshold": 0.50,
+# 実存クエリは 0.55-0.75 程度のため 0.40 を境界に設定
+"confidence_threshold": 0.40,
 ```
 
 ### 6.2 値の根拠
 
 - **BGE-M3 ノイズフロア**: 0.35〜0.45（無関係なクエリでもこの程度の score が出る）
 - **実存クエリの典型範囲**: 0.55〜0.75
-- **判定境界**: 0.50。これを下回ると「根拠不足」と判断し、回答保留や一般知識モードへの切替の候補となる
+- **`confidence_threshold` の既定**: 0.40。最高 `vector_score` がこれを下回ると「根拠不足」と判断し、回答保留や一般知識モードへの切替の候補となる
 
 ### 6.3 スケールに関する重要な注意
 
 判定指標は必ず `vector_score`（cosine 類似度・0〜1 スケール）を使います。RRF スコア（順位の逆数和、最大 ≈ 0.033）と桁が違うため、RRF スコアでしきい値判定を行うと全クエリで Abstention が暴発します。`config.rag.confidence_threshold` の値は cosine スケール前提で解釈してください。
 
-<!-- BACKLOG: confidence_threshold は config に定義済みだが、実際の Abstention 除外ロジックは検索パイプラインに部分統合のみ。全段への統合状況は spec-raw に「パイプラインに部分統合」とだけあり、どの分岐で実際にハジくかまでは確認できなかった -->
+### 6.4 値の出どころ
+
+実効の既定値は **0.40** です。`config.py` と `cynovela.yaml` が同じ値を持っているため、変更していなければこの値が使われます。
+
+現在の作りでは、次の順にしきい値を読み、最初に見つかった値を使います。
+
+1. SQLite の `settings` テーブルの `confidence_threshold` 行
+2. `config.rag.confidence_threshold`（`config.py:185`、0.40。`cynovela.yaml` も同じ 0.4）
+
+設定からこのキーが丸ごと消えたときにだけ、コードに直書きされた値が使われます。現在の作りでは、この直書きの値は **経路によって同じではありません**。
+
+| 経路 | 読む順番 | 設定にキーが無いときの直書きの値 |
+|---|---|---|
+| chat（`routers/chat.py`。非ストリーミング経路と SSE 経路の両方） | SQLite `settings` → `config.rag.confidence_threshold` → 直書き | `0.02` |
+| dashboard（`routers/dashboard.py`） | SQLite `settings` → 直書き（設定を読みません） | `0.40` |
+
+そのため 0.02 を「どの経路でも最後はこれ」と読まないでください。chat 経路の直書きの値にすぎません。設定にキーがある限り、どちらの経路も 0.40 になります。
 
 ---
 

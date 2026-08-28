@@ -16,7 +16,7 @@ This document describes what Cynovela **cannot** do. Explanations of what it can
 `README.md` and `quickstart.md`. Only the things that will disappoint you if you expect them
 are written here.
 
-The version is `1.1.0` (`APP_VERSION` in `core/version.py` is the only source, and
+The version is `1.1.1` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -352,6 +352,18 @@ The MCP tools include `search_across_collections` (search spanning multiple coll
 **the screen (GUI) has no entry point for cross-collection search.**
 From the screen you select one workspace and search it.
 
+### Workspace separation
+
+- **The separation of a workspace in ChromaDB is a logical boundary (the collection name);
+  a physical boundary (a separate directory and the like) is not implemented.**
+  One Chroma store directory holds every collection, and what divides them is the collection
+  name, `{collection_id}__raw` and `{collection_id}__masked` (`providers/vector_store.py`).
+- When a `workspace_id` is passed to a search, a `where` condition on the metadata narrows the
+  result further, but that is a filter applied inside the same store; the place where the data
+  is kept is not divided.
+- The BM25 index is held in memory in a dictionary keyed by `(workspace_id, tier)`, so that
+  path is divided by the key, not by a directory either (`rag.py`).
+
 ### MCP
 
 - `mcp_server.py` provides 25 tools (22 visible by default; 3 admin tools appear only when CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 is set).
@@ -528,7 +540,7 @@ at those places and this release does not rewrite falcon to match:
 この文書は、Cynovela に **できないこと** を書いたものです。できることの説明は
 `README.md` と `quickstart.md` にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.1.0` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `1.1.1` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
@@ -842,6 +854,17 @@ Kubernetes で動かしたい場合は、Deployment の定義を自分で書く�
 MCP のツールには `search_across_collections`（複数のコレクションをまたぐ検索）が
 ありますが、**画面（GUI）には横断検索の入口がありません。**
 画面からはワークスペースを 1 つ選んで検索します。
+
+### workspace の分離
+
+- **ChromaDB 上の workspace の分離は論理境界（collection 名）であり、物理境界（別ディレクトリ等）は
+  実装されていません。** 1 つの Chroma の保管先ディレクトリにすべての collection が入り、
+  分けているのは `{collection_id}__raw` と `{collection_id}__masked` という collection 名です
+  （`providers/vector_store.py`）。
+- 検索に `workspace_id` を渡すと、メタデータの `where` 条件でさらに絞り込みますが、これは同じ保管先の
+  中での絞り込みであって、置き場所を分けているわけではありません。
+- BM25 のインデックスは `(workspace_id, tier)` をキーにした辞書としてメモリに持つため、こちらも
+  ディレクトリではなくキーで分けています（`rag.py`）。
 
 ### MCP
 

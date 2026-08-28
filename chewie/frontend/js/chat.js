@@ -210,7 +210,7 @@ function toggleDebugPanel(btn) {
   btn.textContent = isOpen ? lj('🔍 Show search details ▼', '🔍 検索詳細を見る ▼') : lj('🔍 Hide search details ▲', '🔍 検索詳細を閉じる ▲');
 }
 
-// Beta GA: ガバナンスサマリーバッジ（誰が・どのtierで・ガードレール/PII 状況）
+// ガバナンスサマリーバッジ（誰が・どのtierで・ガードレール/PII 状況）
 function buildGovernanceBadge(meta) {
   if (!meta) return '';
   const parts = [];
@@ -828,7 +828,7 @@ async function _sendChatStreamingUI(text, wsId, opts = {}) {
             prog.style.opacity = '0.5';
             prog.style.fontSize = '11px';
           }
-          // Beta GA: ガバナンスサマリーバッジを回答上部に常時表示
+          // ガバナンスサマリーバッジを回答上部に常時表示
           const _ansEl = answerEl();
           if (_ansEl && typeof buildGovernanceBadge === 'function') {
             const _badge = buildGovernanceBadge(obj);

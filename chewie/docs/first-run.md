@@ -2,7 +2,7 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
-This page is for the **package edition** (`cynovela-chewie-package-1.1.0.tar.gz`).
+This page is for the **package edition** (`cynovela-chewie-package-1.1.1.tar.gz`).
 It assumes you have never opened Terminal. Nothing is skipped.
 
 ---
@@ -28,10 +28,10 @@ Do these in order. Do not read ahead for reasons; the reasons are in Part 2.
 On the releases page, download these into your **Downloads** folder:
 
 ```
-cynovela-chewie-package-1.1.0.tar.gz
-cynovela-chewie-models-1.1.0.tar.gz.part00
-cynovela-chewie-models-1.1.0.tar.gz.part01
-cynovela-chewie-models-1.1.0.tar.gz.part02
+cynovela-chewie-package-1.1.1.tar.gz
+cynovela-chewie-models-1.1.1.tar.gz.part00
+cynovela-chewie-models-1.1.1.tar.gz.part01
+cynovela-chewie-models-1.1.1.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -60,7 +60,7 @@ Nothing will be printed. That is correct.
 Type this as **one line** and press return:
 
 ```
-cat cynovela-chewie-models-1.1.0.tar.gz.part* > cynovela-chewie-models-1.1.0.tar.gz
+cat cynovela-chewie-models-1.1.1.tar.gz.part* > cynovela-chewie-models-1.1.1.tar.gz
 ```
 
 This takes **one to three minutes** and prints nothing while it works. When the
@@ -76,8 +76,8 @@ This takes **one to three minutes**. It then prints one line per file. Every lin
 must end in `OK`:
 
 ```
-cynovela-chewie-models-1.1.0.tar.gz: OK
-cynovela-chewie-package-1.1.0.tar.gz: OK
+cynovela-chewie-models-1.1.1.tar.gz: OK
+cynovela-chewie-package-1.1.1.tar.gz: OK
 ```
 
 If any line says `FAILED`, download that file again and repeat from step 4. Do
@@ -86,7 +86,7 @@ not go on.
 #### Step 6. Unpack the program
 
 ```
-tar -xzf cynovela-chewie-package-1.1.0.tar.gz
+tar -xzf cynovela-chewie-package-1.1.1.tar.gz
 ```
 
 This takes **three to ten minutes** and prints nothing. A folder named `chewie`
@@ -103,7 +103,7 @@ Nothing is printed.
 #### Step 8. Unpack the AI models inside it
 
 ```
-tar -xzf ../cynovela-chewie-models-1.1.0.tar.gz
+tar -xzf ../cynovela-chewie-models-1.1.1.tar.gz
 ```
 
 This takes **two to five minutes** and prints nothing.
@@ -279,7 +279,7 @@ Closing the window does not stop it. That is why there is a separate
 
 ## 日本語
 
-このページは**パッケージ版**（`cynovela-chewie-package-1.1.0.tar.gz`）向けです。
+このページは**パッケージ版**（`cynovela-chewie-package-1.1.1.tar.gz`）向けです。
 ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。
 
 ---
@@ -303,10 +303,10 @@ Closing the window does not stop it. That is why there is a separate
 リリースのページから、次の5つを**ダウンロード**フォルダへ落とします。
 
 ```
-cynovela-chewie-package-1.1.0.tar.gz
-cynovela-chewie-models-1.1.0.tar.gz.part00
-cynovela-chewie-models-1.1.0.tar.gz.part01
-cynovela-chewie-models-1.1.0.tar.gz.part02
+cynovela-chewie-package-1.1.1.tar.gz
+cynovela-chewie-models-1.1.1.tar.gz.part00
+cynovela-chewie-models-1.1.1.tar.gz.part01
+cynovela-chewie-models-1.1.1.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -335,7 +335,7 @@ cd ~/Downloads
 次を**1行で**打って return を押します。
 
 ```
-cat cynovela-chewie-models-1.1.0.tar.gz.part* > cynovela-chewie-models-1.1.0.tar.gz
+cat cynovela-chewie-models-1.1.1.tar.gz.part* > cynovela-chewie-models-1.1.1.tar.gz
 ```
 
 **1〜3分**かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。
@@ -350,8 +350,8 @@ shasum -a 256 --ignore-missing -c SHA256SUMS
 終わっていなければなりません。
 
 ```
-cynovela-chewie-models-1.1.0.tar.gz: OK
-cynovela-chewie-package-1.1.0.tar.gz: OK
+cynovela-chewie-models-1.1.1.tar.gz: OK
+cynovela-chewie-package-1.1.1.tar.gz: OK
 ```
 
 `FAILED` と出た行があれば、そのファイルを落とし直して手順4からやり直します。
@@ -360,7 +360,7 @@ cynovela-chewie-package-1.1.0.tar.gz: OK
 #### 手順6. 本体を取り出す
 
 ```
-tar -xzf cynovela-chewie-package-1.1.0.tar.gz
+tar -xzf cynovela-chewie-package-1.1.1.tar.gz
 ```
 
 **3〜10分**かかります。何も出ません。ダウンロードの中に `chewie` という名前の
@@ -377,7 +377,7 @@ cd chewie
 #### 手順8. その中で AIモデルを取り出す
 
 ```
-tar -xzf ../cynovela-chewie-models-1.1.0.tar.gz
+tar -xzf ../cynovela-chewie-models-1.1.1.tar.gz
 ```
 
 **2〜5分**かかります。何も出ません。

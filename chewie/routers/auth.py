@@ -44,7 +44,7 @@ def _auth_rate_limit():
 
 
 def _requested_expiry_seconds(body) -> int | None:
-    """DD-CYN-0151 §5: 呼ぶ側が期間を渡したときだけ、その期間で切れるようにする。
+    """呼ぶ側が期間を渡したときだけ、その期間で切れるようにする。
 
     受け取る形は2つ。どちらも省略できる。
       expires_in_hours    : 時間で渡す（小数可）
@@ -131,7 +131,7 @@ async def login(request: Request):
         _audit_auth_failure(request, "bad_password")
         raise HTTPException(401, "ユーザー名またはパスワードが正しくありません")
 
-    # DD-CYN-0151 §5: アクセストークンの既定を無制限にした（従来は 8時間 固定）。
+    # アクセストークンの既定を無制限にした（従来は 8時間 固定）。
     # 呼ぶ側が expires_in_hours / expires_in_seconds を渡したときだけ exp を入れる。
     from core.auth import _get_jwt_secret
     now = datetime.now(_tz.utc)
@@ -188,14 +188,14 @@ async def login(request: Request):
         "user_id": str(user["id"]),
         "role": user["role"],
         "must_change_password": must_change,
-        # DD-CYN-0151 §5: 期限なしなら null。渡された期間で切れるなら、その秒数。
+        # 期限なしなら null。渡された期間で切れるなら、その秒数。
         "expires_in": _exp_secs,
     }
 
 
 @router.post("/api/auth/logout", response_model=_PilotResp)  # FIX-052 パイロット
 async def logout(request: Request):
-    """Stage R8-fix: 認証必須化 (未認証 logout は意味なし、401 で reject)."""
+    """認証必須化 (未認証 logout は意味なし、401 で reject)."""
     _lo_user = _require_authenticated(request)
     auth = request.headers.get("Authorization", "")
     if auth.startswith("Bearer ") and not auth.startswith("Bearer demo-token-"):
@@ -334,7 +334,7 @@ def refresh_access_token(
 ):
     """Batch-B S1-3: リフレッシュトークンで新しいアクセストークンを発行する。
 
-    DD-CYN-0151 §5: 既定は無制限（exp を入れない）。login と同じで、
+    既定は無制限（exp を入れない）。login と同じで、
     expires_in_hours / expires_in_seconds を渡したときだけ、その期間で切れる。
     """
     from core.auth import _get_jwt_secret
