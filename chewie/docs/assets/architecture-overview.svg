@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 680" width="1020" height="680" font-family="Helvetica Neue, Helvetica, Arial, Hiragino Sans, Hiragino Kaku Gothic ProN, Yu Gothic, Meiryo, Noto Sans CJK JP, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8c959f"/></marker></defs>
+<rect width="1020" height="680" fill="#ffffff"/>
+<text x="510.0" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="#1f2328">Cynovela chewie — Architecture Overview / 構成の概要</text>
+<text x="510.0" y="49" text-anchor="middle" font-size="11" fill="#57606a">All processing runs on the local machine. / すべての処理は手元の機械の中で完結します。</text>
+<rect x="30" y="62" width="960" height="84" rx="8" fill="#eef4fb" stroke="#adc6e5" stroke-width="1.2"/>
+<text x="44" y="82" font-size="12.5" font-weight="700" fill="#57606a">1. Entry points / 入口</text>
+<rect x="50" y="88" width="280" height="44" rx="6" fill="#ffffff" stroke="#adc6e5" stroke-width="1.2"/>
+<text x="190.0" y="106.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Browser UI</text>
+<text x="190.0" y="123.0" text-anchor="middle" font-size="12" fill="#1f2328">ブラウザ画面</text>
+<rect x="370" y="88" width="280" height="44" rx="6" fill="#ffffff" stroke="#adc6e5" stroke-width="1.2"/>
+<text x="510.0" y="106.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">CLI  (cynovela-cli.py)</text>
+<text x="510.0" y="123.0" text-anchor="middle" font-size="12" fill="#1f2328">コマンド</text>
+<rect x="690" y="88" width="280" height="44" rx="6" fill="#ffffff" stroke="#adc6e5" stroke-width="1.2"/>
+<text x="830.0" y="106.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">MCP server  (mcp_server.py)</text>
+<text x="830.0" y="123.0" text-anchor="middle" font-size="12" fill="#1f2328">MCP サーバー</text>
+<line x1="510" y1="150" x2="510" y2="168" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="30" y="172" width="960" height="84" rx="8" fill="#eef7f0" stroke="#a8ceb4" stroke-width="1.2"/>
+<text x="44" y="192" font-size="12.5" font-weight="700" fill="#57606a">2. Application  FastAPI / アプリ本体</text>
+<rect x="50" y="198" width="280" height="44" rx="6" fill="#ffffff" stroke="#a8ceb4" stroke-width="1.2"/>
+<text x="190.0" y="216.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Routers (35)</text>
+<text x="190.0" y="233.0" text-anchor="middle" font-size="12" fill="#1f2328">API の入口</text>
+<rect x="370" y="198" width="280" height="44" rx="6" fill="#ffffff" stroke="#a8ceb4" stroke-width="1.2"/>
+<text x="510.0" y="216.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Auth / RBAC  3 roles</text>
+<text x="510.0" y="233.0" text-anchor="middle" font-size="12" fill="#1f2328">認証と権限  3 ロール</text>
+<rect x="690" y="198" width="280" height="44" rx="6" fill="#ffffff" stroke="#a8ceb4" stroke-width="1.2"/>
+<text x="830.0" y="216.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Audit log</text>
+<text x="830.0" y="233.0" text-anchor="middle" font-size="12" fill="#1f2328">監査ログ</text>
+<line x1="250" y1="260" x2="250" y2="280" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<line x1="770" y1="260" x2="770" y2="280" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="30" y="284" width="460" height="208" rx="8" fill="#fdf3e7" stroke="#e8c79a" stroke-width="1.2"/>
+<text x="44" y="304" font-size="12.5" font-weight="700" fill="#57606a">3. Ingest  (publish) / 取り込み</text>
+<rect x="50" y="310" width="420" height="40" rx="6" fill="#ffffff" stroke="#e8c79a" stroke-width="1.2"/>
+<text x="260.0" y="326.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Extract text  (file_parser)</text>
+<text x="260.0" y="343.0" text-anchor="middle" font-size="12" fill="#1f2328">本文の取り出し</text>
+<line x1="260" y1="352" x2="260" y2="362" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="50" y="364" width="420" height="40" rx="6" fill="#ffffff" stroke="#e8c79a" stroke-width="1.2"/>
+<text x="260.0" y="380.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Classify  14 categories</text>
+<text x="260.0" y="397.0" text-anchor="middle" font-size="12" fill="#1f2328">分類  14 種</text>
+<line x1="260" y1="406" x2="260" y2="416" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="50" y="418" width="420" height="40" rx="6" fill="#ffffff" stroke="#e8c79a" stroke-width="1.2"/>
+<text x="260.0" y="434.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Mask PII  ->  [MASKED:TYPE]</text>
+<text x="260.0" y="451.0" text-anchor="middle" font-size="12" fill="#1f2328">伏字</text>
+<line x1="260" y1="460" x2="260" y2="466" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="260" y="482" text-anchor="middle" font-size="11.5" fill="#57606a">Chunk 500 / overlap 50, two tiers  /  チャンク分割・親子2層</text>
+<rect x="530" y="284" width="460" height="208" rx="8" fill="#fdeef0" stroke="#e8adb6" stroke-width="1.2"/>
+<text x="544" y="304" font-size="12.5" font-weight="700" fill="#57606a">4. Answer  (chat) / 応答</text>
+<rect x="550" y="310" width="420" height="40" rx="6" fill="#ffffff" stroke="#e8adb6" stroke-width="1.2"/>
+<text x="760.0" y="326.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Hybrid search: vector + BM25</text>
+<text x="760.0" y="343.0" text-anchor="middle" font-size="12" fill="#1f2328">ハイブリッド検索</text>
+<line x1="760" y1="352" x2="760" y2="362" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="550" y="364" width="420" height="40" rx="6" fill="#ffffff" stroke="#e8adb6" stroke-width="1.2"/>
+<text x="760.0" y="380.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">Rerank  (off by default)</text>
+<text x="760.0" y="397.0" text-anchor="middle" font-size="12" fill="#1f2328">再ランク  既定は無効</text>
+<line x1="760" y1="406" x2="760" y2="416" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="550" y="418" width="420" height="40" rx="6" fill="#ffffff" stroke="#e8adb6" stroke-width="1.2"/>
+<text x="760.0" y="434.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">confidence_threshold  0.40</text>
+<text x="760.0" y="451.0" text-anchor="middle" font-size="12" fill="#1f2328">確からしさの判定</text>
+<line x1="760" y1="460" x2="760" y2="466" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="760" y="482" text-anchor="middle" font-size="11.5" fill="#57606a">Below the line -> answer is withheld  /  下回れば回答を保留</text>
+<line x1="260" y1="496" x2="260" y2="520" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<line x1="760" y1="520" x2="760" y2="496" stroke="#8c959f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="30" y="524" width="960" height="96" rx="8" fill="#f3eefb" stroke="#c3ade0" stroke-width="1.2"/>
+<text x="44" y="544" font-size="12.5" font-weight="700" fill="#57606a">5. Storage  (stays on this machine) / 保管</text>
+<rect x="50" y="552" width="280" height="52" rx="6" fill="#ffffff" stroke="#c3ade0" stroke-width="1.2"/>
+<text x="190.0" y="566.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">SQLite</text>
+<text x="190.0" y="582.0" text-anchor="middle" font-size="12" fill="#1f2328">本文・設定・監査</text>
+<text x="190.0" y="598.0" text-anchor="middle" font-size="10.5" fill="#57606a">db.py</text>
+<rect x="370" y="552" width="280" height="52" rx="6" fill="#ffffff" stroke="#c3ade0" stroke-width="1.2"/>
+<text x="510.0" y="566.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">ChromaDB (local file)</text>
+<text x="510.0" y="582.0" text-anchor="middle" font-size="12" fill="#1f2328">ベクター</text>
+<text x="510.0" y="598.0" text-anchor="middle" font-size="10.5" fill="#57606a">providers/vector_store.py</text>
+<rect x="690" y="552" width="280" height="52" rx="6" fill="#ffffff" stroke="#c3ade0" stroke-width="1.2"/>
+<text x="830.0" y="566.0" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">BM25 index</text>
+<text x="830.0" y="582.0" text-anchor="middle" font-size="12" fill="#1f2328">語の索引</text>
+<text x="830.0" y="598.0" text-anchor="middle" font-size="10.5" fill="#57606a">in memory</text>
+<text x="30" y="644" font-size="11" fill="#57606a">Embedding: BAAI/bge-m3   |   LLM: LM Studio / Ollama / OpenAI-compatible, all local   |   Reranker: BAAI/bge-reranker-v2-m3 (disabled by default)</text>
+<text x="30" y="661" font-size="11" fill="#57606a">埋め込み: BAAI/bge-m3   |   言語モデル: LM Studio / Ollama / OpenAI 互換（いずれも手元で実行）   |   再ランク: BAAI/bge-reranker-v2-m3（既定は無効）</text>
+</svg>

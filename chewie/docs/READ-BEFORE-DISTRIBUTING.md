@@ -36,12 +36,13 @@ generated on the receiving machine at first startup; it is not in the package.
    describe a fictional company. Every person, organisation, address, phone
    number and email address in them is invented and bears no relation to anyone
    real.
-4. **The initial passwords are fixed values, written in the bundled
-   `STARTUP.md`.** Nothing is delivered separately. **The administrator is
+4. **The initial passwords are fixed values, and `launch.sh` prints them on
+   the screen at the first start.** Nothing is delivered separately, and they
+   are not written into any bundled document. **The administrator is
    required to change the password at first sign-in** — tell the recipient to
    do that first.
 5. **In production mode, no ingest source is registered.** You must register one
-   before your own material can be read. See `GETTING-STARTED.md`. With
+   before your own material can be read. See `getting-started.md`. With
    `--demo`, one source is already registered.
 6. **Note the default listen address.** The server listens on **all addresses
    (0.0.0.0)** by default, so it is visible from other machines on the same
@@ -83,11 +84,11 @@ generated on the receiving machine at first startup; it is not in the package.
 
 同梱のデータベースとインデックスは、**配布物を作るときに、この配布物の中の `dummy-corpus/` から作っています**。作る側の作業用の資料やインデックスは入っていません。コンテナ版には、実際に入っているものを配布物を作るときに数えた内訳が `BUNDLED-DATA.md` として同梱されます。
 
-## 4. 初期パスワードは固定値で、同梱の STARTUP.md に書いてあります
+## 4. 初期パスワードは固定値で、初回起動時に画面へ出ます
 
-管理者と閲覧者の初期パスワードは**固定値**で、tar の中の `STARTUP.md` の「ログイン」の節に書かれています。**別便で渡すファイルはありません**（2026-08-02 に、乱数を作って別便で渡す形から変えました。受け取り手が入れない配布物を作らないためです）。
+管理者と閲覧者の初期パスワードは**固定値**で、`launch.sh` が初回の起動時に画面へ出します（`tools/launch-body.sh` の `print_first_login`。2 回目からは出ません）。同梱の文書には書かれていません。**別便で渡すファイルはありません**（2026-08-02 に、乱数を作って別便で渡す形から変えました。受け取り手が入れない配布物を作らないためです）。
 
-平文はこのリポジトリには置いていません。配布物を作るときに `tools/dist-initial-credentials.local`（git 追跡外・0600）から読み込み、同梱の `STARTUP.md` と `cynovela.yaml` へ書き込みます。このファイルが無いと配布物は作れません（途中で止まります）。
+平文はこのリポジトリには置いていません。配布物を作るときに `tools/dist-initial-credentials.local`（git 追跡外・0600）から読み込み、同梱の `cynovela.yaml` の `auth.admin_initial_password` / `auth.viewer_initial_password` へ書き込みます。このファイルが無いと配布物は作れません（途中で止まります）。
 
 **管理者は初回ログインでパスワードの変更を求められます。** 受け取った方には、まず管理者のパスワードを変えるようにお伝えください。
 
@@ -97,7 +98,7 @@ generated on the receiving machine at first startup; it is not in the package.
 
 **引数なしで起動した場合（本番）**、取り込み元（ソースのルート）は登録 0 件です。自分の資料を取り込むには、**最初に取り込み元を 1 つ登録する必要があります**。登録するまで、外部のフォルダは読み取れません。
 
-登録手順は、同梱の **GETTING-STARTED.md の「7. 自分の資料を取り込む」（7-1. 取り込み元のフォルダを登録する）** を参照してください。
+登録手順は、同梱の **getting-started.md の「取り込み元を足す」の節** を参照してください。
 
 **`--demo` で起動した場合**はこの作業は要りません。同梱のダミー資料が取り込み済みの状態で入っており、取り込み元も `./dummy-corpus` の 1 件が最初から登録されています。そのまま検索や質問を試せます。
 

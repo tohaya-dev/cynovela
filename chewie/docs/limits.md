@@ -12,9 +12,10 @@
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
 > It does not represent the official position of any company or product.
 
-This document describes what Cynovela **cannot** do. Explanations of what it can do are in
-`README.md` and `quickstart.md`. Only the things that will disappoint you if you expect them
-are written here.
+This document describes what Cynovela **cannot** do, and what to watch out for. Explanations
+of what it can do are in [getting-started.md](getting-started.md) and
+[concept.md](concept.md). Only the things that will disappoint you if you expect them are
+written here.
 
 The version is `1.1.1` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
@@ -263,7 +264,7 @@ features can look like they are not working.
 
 ## 7. Constraints on replacing models
 
-Detailed steps are in `SETUP-ACCELERATOR.md`. Only the key points are written here.
+Detailed steps are in [operations.md](operations.md). Only the key points are written here.
 
 - **The embedding model must match down to the version (snapshot).**
   The snapshot version of `BAAI/bge-m3` must be aligned.
@@ -304,6 +305,7 @@ and class / method name.)
 | `providers/reranker.py` | `MLXReranker.rerank` | Unimplemented (future) |
 | `providers/vector_store.py` | `VectorStoreProvider.add` / `.search` / `.delete_collection` / `.export` / `.import_data` / `.test_connection` | Abstract |
 | `providers/vector_store.py` | `QdrantVectorStore.add` / `.search` / `.delete_collection` / `.export` / `.import_data` | Unimplemented (skeleton only) |
+| `providers/vector_store.py` | The LanceDB backend | Initialization only; the substance is not implemented, and it is rejected when the package is not installed |
 | `services/rag_strategies.py` | `GraphRAGStrategy.retrieve` / `.build_graph` / `.traverse_with_acl` | Unimplemented (future) |
 | `services/agent_runtime.py` | `AgentRuntime.run` / `.call_tool` / `.available_tools` | Abstract declarations only. There is not a single implementing class |
 
@@ -313,7 +315,8 @@ In other words:
 - **The MLX path for Apple Silicon is unusable.** Both embedding and reranking are
   unimplemented.
   (If you want to use the Apple Silicon GPU, it goes through the external accelerator.
-  See `SETUP-ACCELERATOR.md`.)
+  See [operations.md](operations.md).)
+- **You cannot switch the vector storage to LanceDB either.** Only the initialization exists.
 - **Graph-based search (GraphRAG) is unusable.**
 - **You cannot have an agent do work.** Only the type declarations exist.
 
@@ -381,6 +384,9 @@ From the screen you select one workspace and search it.
 - **There is no automatic switching when confidence is low.**
   `cynovela.yaml` has `confidence_threshold` (default `0.4`), but no behaviour that
   automatically switches to a general-knowledge mode when it falls below is built in.
+  The value is defined as a setting, and the processing that switches to
+  `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` when there are 0 search results is not integrated;
+  the exclusion logic in the search pipeline is only **partly integrated**.
 - **Self-evaluation of an answer is a simple rule.** `evaluate_answer_quality()` in
   `adaptive_rag.py` decides sufficiency from "the answer is empty", "under 60 characters with
   few hits", and "contains a negative phrasing". It does not have an LLM evaluate it.
@@ -526,6 +532,72 @@ at those places and this release does not rewrite falcon to match:
 
 ---
 
+## 12. Authentication, authorization and communication
+
+- **Authentication is a JWT.** It is issued by `POST /api/auth/login`, and it is required even
+  with a `--demo` startup. The old fixed token in the form `Bearer demo-token-<user_id>` was
+  abolished on 2026-07-29. How the signing key is created and where it lives is in §10,
+  "The pass (login token)".
+- **Scope of the RBAC implementation.** An authorization check is present in 34 of the 36
+  router files under `routers/`. Authentication itself is enforced regardless of the startup
+  form, and it is not loosened with a `--demo` startup.
+- **There is no API key management feature.** Issuing and revoking a per-user API key is not
+  implemented.
+- **HTTPS is not supported.** The main body listens over HTTP only. TLS termination has to be
+  delegated to a reverse proxy (nginx and the like).
+- **The communication with the LLM is plain text too.** The connection to LM Studio / Ollama
+  is plain HTTP as well. Publishing outside the LAN is not recommended.
+- **The Embedding / Reranker settings are not persisted.** A change made at runtime (through
+  the UI) is not written back to the YAML, and returns to the default on restart.
+
+---
+
+## 13. Linkages that are defined but not integrated
+
+- **DataSyncService is not connected to publish.** The hash-based differential sync only
+  writes logs; the actual call into `rag.publish` is a noop.
+- **The difference detection is per path.** Addition and deletion over the set of paths are
+  detected (at a 60 second interval by default), but comparison by `content_hash` is not
+  implemented and the comparison method is not fixed, so a change to the *content* of a file
+  is not detected this way.
+- **The exclusion logic of `confidence_threshold` is only partly integrated** into the search
+  pipeline. What this means in practice is in §10, "How answers are built".
+- **A structured answer template is not implemented.** Fixing the LLM's answer into a
+  structured format such as JSON or an `<answer>` tag is not supported; a free-form answer is
+  the standard. Whether such a feature will be introduced is not decided.
+- **Some elements of the i18n switch are fixed.** A few elements whose display is controlled by
+  the language switch (Japanese / English) do not follow it.
+- **Some UI elements are hidden until the tab is initialised.** They stay `display:none` until
+  the JavaScript initialisation finishes.
+
+---
+
+## 14. Areas skipped in the tests
+
+- **Demo mode related.** 4 authentication boundary tests remain `@pytest.mark.skip`
+  (lines 11 / 51 / 56 / 157 of `tests/test_auth_boundary.py`). The reason text says
+  "`--demo` モードでは認証バイパスが仕様", but because it was changed on 2026-07-29 into a
+  form that enforces authentication even with a `--demo` startup, this reason no longer
+  matches the implementation.
+- **Sources API.** Because of the path registration form, 2 tests are skipped.
+- **Publish Semaphore.** Because mock injection at module scope is difficult, 1 xfail.
+
+---
+
+## 15. Items that are not complete
+
+The following are recorded as unfinished in [reference/changelog.md](reference/changelog.md).
+They are written here as the state of the current build, not as a schedule.
+
+| Item | Current state |
+|---|---|
+| Bugs recorded as HIGH priority | The reversed DB → Chroma order in `import_workspace`, the race condition in `admin_cleanup_chromadb_orphans`, the physical boundary of workspace isolation (see §10, "Workspace separation"), the workspace-A → workspace-B cross-boundary check, and others |
+| Indirect prompt injection detection | A detection mechanism aimed at attacks that come through ingested documents is not implemented |
+| Reranker testing with a real model | Verification with CrossEncoder and others is not done |
+| KnowledgeCatalog | Metadata search in the Chunks viewer and citation tracking are not implemented |
+
+---
+
 ---
 
 # 日本語
@@ -537,8 +609,9 @@ at those places and this release does not rewrite falcon to match:
 > という OSS スタックで構成されています。
 > 会社・製品の公式見解を一切代表しません。
 
-この文書は、Cynovela に **できないこと** を書いたものです。できることの説明は
-`README.md` と `quickstart.md` にあります。ここには、期待すると外れることだけを書きます。
+この文書は、Cynovela に **できないこと**、および気をつけることを書いたものです。
+できることの説明は [getting-started.md](getting-started.md) と
+[concept.md](concept.md) にあります。ここには、期待すると外れることだけを書きます。
 
 版は `1.1.1` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
@@ -772,7 +845,7 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
 
 ## 7. モデルの差し替えの制約
 
-詳しい手順は `SETUP-ACCELERATOR.md` にあります。要点だけ書きます。
+詳しい手順は [operations.md](operations.md) にあります。要点だけ書きます。
 
 - **埋め込みモデルは、版（snapshot）まで一致していなければなりません。**
   `BAAI/bge-m3` の snapshot 版まで揃える必要があります。
@@ -810,6 +883,7 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
 | `providers/reranker.py` | `MLXReranker.rerank` | 未実装（将来） |
 | `providers/vector_store.py` | `VectorStoreProvider.add` / `.search` / `.delete_collection` / `.export` / `.import_data` / `.test_connection` | 抽象 |
 | `providers/vector_store.py` | `QdrantVectorStore.add` / `.search` / `.delete_collection` / `.export` / `.import_data` | 未実装（骨格のみ） |
+| `providers/vector_store.py` | LanceDB バックエンド | 初期化のみで実体は未実装。パッケージ未導入時は拒否されます |
 | `services/rag_strategies.py` | `GraphRAGStrategy.retrieve` / `.build_graph` / `.traverse_with_acl` | 未実装（将来） |
 | `services/agent_runtime.py` | `AgentRuntime.run` / `.call_tool` / `.available_tools` | 抽象宣言のみ。実装したクラスは 1 つもありません |
 
@@ -818,7 +892,8 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
 - **ベクターの保管先を Qdrant に替えることはできません。** 動くのは ChromaDB だけです。
 - **Apple Silicon 向けの MLX 経路は使えません。** 埋め込みも再ランクも未実装です。
   （Apple Silicon の GPU を使いたい場合は、外部アクセラレータ経由になります。
-  `SETUP-ACCELERATOR.md` を参照してください。）
+  [operations.md](operations.md) を参照してください。）
+- **ベクターの保管先を LanceDB に替えることもできません。** 初期化しかありません。
 - **グラフを使った検索（GraphRAG）は使えません。**
 - **エージェントに作業をさせることはできません。** 型の宣言だけがあります。
 
@@ -882,6 +957,9 @@ MCP のツールには `search_across_collections`（複数のコレクション
 - **信頼度の低いときの自動切り替えはありません。**
   `cynovela.yaml` に `confidence_threshold`（既定 `0.4`）がありますが、
   下回ったときに一般知識モードへ自動で切り替えるような動きは組み込まれていません。
+  値は設定としては定義済みですが、検索結果が 0 件のときに
+  `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` へ自動切替する処理は未統合で、
+  検索パイプラインからの除外ロジックも **部分統合** に留まります。
 - **回答の自己評価は単純な規則です。** `adaptive_rag.py` の
   `evaluate_answer_quality()` は「回答が空」「60 文字未満でヒットも少ない」
   「否定的な言い回しを含む」で足りているかを決めます。LLM に評価させてはいません。
@@ -1023,5 +1101,67 @@ falcon はその箇所のコードが違っており、この版では falcon �
 | 時間切れの文言 | falcon に `_timeout_answer` が無く、古い文が本文中の2か所に置かれている |
 | 出典の番号を MCP まで通すこと | falcon の MCP サーバは版が古い（道具 11件・chewie は 25件） |
 | `login` / `logout` を含む CLI | falcon に `cynovela-cli.py` が無い |
+
+
+---
+
+## 12. 認証・認可と通信
+
+- **認証は JWT です。** `POST /api/auth/login` が発行し、`--demo` 起動でも必要です。
+  旧 `Bearer demo-token-<user_id>` 形式の固定トークンは 2026-07-29 に廃止済みです。
+  署名鍵の作られ方と置き場所は §10「通行証（ログイン用のトークン）」にあります。
+- **RBAC の実装範囲。** `routers/` 配下の 36 ファイルのうち 34 ファイルに認可チェックが
+  入っています。認証そのものは起動形態によらず強制され、`--demo` 起動でも緩みません。
+- **API キー管理機能はありません。** ユーザー単位の API キー発行・失効機能は未実装です。
+- **HTTPS 化は未対応です。** 本体は HTTP のみで待ち受けます。TLS 終端はリバースプロキシ
+  （nginx 等）に委譲する必要があります。
+- **LLM との通信も平文です。** LM Studio / Ollama への接続も HTTP 平文です。
+  LAN 外への公開は推奨しません。
+- **Embedding / Reranker の設定は永続化されません。** 実行時変更（UI 経由）は YAML に
+  書き戻されず、再起動で既定値に戻ります。
+
+---
+
+## 13. 定義はあるが統合されていない連携
+
+- **DataSyncService は publish につながっていません。** ハッシュ差分同期はログ出力のみで、
+  実際の `rag.publish` への接続は noop です。
+- **差分検出はパス単位です。** パスの集合に対する追加・削除は検出します（既定 60 秒間隔）が、
+  `content_hash` 比較は実装されておらず比較方式も確定していないため、ファイルの*内容*の
+  変更はこの経路では検出されません。
+- **`confidence_threshold` の除外ロジックは検索パイプラインへ部分統合に留まります。**
+  実際の挙動は §10「回答の作り」にあります。
+- **構造化回答テンプレートは未実装です。** LLM の回答を JSON や `<answer>` タグなどの
+  構造化フォーマットで固定する機能はありません。自由形式の回答が標準です。
+  導入するかどうかは決まっていません。
+- **i18n 切替の一部要素は固定です。** 言語切替（日本語 / 英語）で表示制御される要素の一部が
+  切替に追随しません。
+- **タブ初期化前に隠れている UI 要素があります。** JavaScript の初期化が終わるまで
+  `display:none` のままです。
+
+---
+
+## 14. テストでスキップされている領域
+
+- **デモモード関連。** 認証境界テスト 4 件が `@pytest.mark.skip` のままです
+  （`tests/test_auth_boundary.py` の 11 / 51 / 56 / 157 行）。理由文には
+  「`--demo` モードでは認証バイパスが仕様」と書かれていますが、2026-07-29 に `--demo` 起動でも
+  認証を強制する形へ変えたため、この理由はすでに実装と合っていません。
+- **Sources API。** path 登録形式のため一部テスト 2 件をスキップしています。
+- **Publish Semaphore。** モジュールスコープでのモック注入困難により xfail 1 件です。
+
+---
+
+## 15. 完了していない事項
+
+以下は [reference/changelog.md](reference/changelog.md) に未完了として記録されている事項です。
+予定ではなく、現在の作りの状態として書きます。
+
+| 項目 | 現在の状態 |
+|---|---|
+| HIGH 優先度として記録されているバグ | `import_workspace` の DB → Chroma 順序逆転、`admin_cleanup_chromadb_orphans` の競合状態、workspace 分離の物理境界（§10「workspace の分離」参照）、workspace-A → workspace-B の越境チェックなど |
+| 間接プロンプトインジェクション検出 | 取り込んだ文書を経由する攻撃を対象とした検出機構は未実装です |
+| Reranker の実モデルでの試験 | CrossEncoder などでの検証を行っていません |
+| KnowledgeCatalog | Chunks ビューアのメタデータ検索と出典追跡は未実装です |
 
 ---

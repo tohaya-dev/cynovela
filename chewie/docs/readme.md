@@ -14,6 +14,9 @@
 
 Cynovela is a completely unofficial learning tool, created so that an individual can understand the concepts of AI infrastructure tools by working on them hands-on.
 
+**This page is an overview. The list of every document is [INDEX.md](INDEX.md); the single
+entry document is [START-HERE.md](../START-HERE.md).**
+
 ---
 
 ## 1. Project overview
@@ -121,21 +124,12 @@ python server.py --demo --lmstudio-url http://localhost:1234
 
 ---
 
-## 5. Document list
+## 5. Where the other documents are
 
-The following documents are placed under the `docs/` directory.
-
-| Document | Contents |
-|---|---|
-| `quickstart.md` | The shortest procedure for startup and initial setup |
-| `manual-complete.md` | A single manual covering all features |
-| `llm-connection.md` | Details of the LLM connection (LM Studio / Ollama / OpenAI-compatible) |
-| `mcp-guide.md` | MCP server integration and the list of exposed tools |
-| `lan-sharing.md` | Startup procedure for LAN sharing and Tailscale sharing |
-| `security-policy.md` | Known limitations and usage that is not recommended |
-| `changelog.md` | Release history |
-| `demo-general.html` | Interactive demo for a general audience (just open it in a browser) |
-| `demo-tech.html` | Interactive demo for engineers |
+This page is an overview only. **Every document that ships under `docs/` is listed in
+[INDEX.md](INDEX.md)**, sorted by reader — using it / installing and running it /
+looking things up — each with a line saying what is in it. There is no second list;
+open that one.
 
 ---
 
@@ -169,6 +163,9 @@ It contains none of the source code, trademarks, logos or official documentation
 > 会社・製品の公式見解を一切代表しません。
 
 Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かして理解するために作成した、完全非公式の学習用ツールです。
+
+**このページは概要です。文書の全数の一覧は [INDEX.md](INDEX.md)、唯一の入口は
+[START-HERE.md](../START-HERE.md) です。**
 
 ---
 
@@ -277,21 +274,11 @@ python server.py --demo --lmstudio-url http://localhost:1234
 
 ---
 
-## 5. ドキュメント一覧
+## 5. ほかの文書はどこにあるか
 
-`docs/` ディレクトリ配下に以下のドキュメントが配置されています。
-
-| ドキュメント | 内容 |
-|---|---|
-| `quickstart.md` | 起動・初期設定の最短手順 |
-| `manual-complete.md` | 全機能を網羅した一冊のマニュアル |
-| `llm-connection.md` | LLM 接続の詳細（LM Studio / Ollama / OpenAI 互換） |
-| `mcp-guide.md` | MCP サーバー連携と公開ツール一覧 |
-| `lan-sharing.md` | LAN 共有・Tailscale 共有の起動手順 |
-| `security-policy.md` | 既知制限・推奨しない使用方法 |
-| `changelog.md` | リリース履歴 |
-| `demo-general.html` | 一般向けインタラクティブデモ（ブラウザで開くだけ） |
-| `demo-tech.html` | 技術者向けインタラクティブデモ |
+このページは概要だけです。**`docs/` に同梱される文書の全数は [INDEX.md](INDEX.md) に並べてあります。**
+読み手ごと（使う人 / 入れる人・回す人 / 引く人）に分け、それぞれに何が書いてあるかを 1 行で
+添えてあります。一覧はそこ 1 つだけです。
 
 ---
 

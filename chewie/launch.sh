@@ -592,7 +592,7 @@ if [ -z "$_model_found" ]; then
             _msel="$(osascript -e 'POSIX path of (choose folder with prompt "bge-m3 が入っているフォルダを選んでください")' 2>/dev/null || true)"
             if [ -n "$_msel" ]; then
                 echo "  → 選ばれた場所: $_msel"
-                echo "     この場所を検索の対象にするには docs/SETUP-ACCELERATOR.md の手順で"
+                echo "     この場所を検索の対象にするには docs/operations.md の手順で"
                 echo "     $WRAP_DIR/store/models/models--BAAI--bge-m3/snapshots/<版>/ へ置いてください。"
                 echo "     置き終えたら、もう一度 ./launch.sh を叩いてください。ここでは起動しません。"
                 exit 0

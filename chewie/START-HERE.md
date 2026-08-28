@@ -5,7 +5,10 @@
 ## English
 
 **This is the only entry document. You can get started with this document alone.**
-Everything else under `docs/` is reference material — open it only when you need it (the list is at the end).
+Everything else under `docs/` is reference material — open it only when you need it.
+**Every one of those documents is listed in [`docs/INDEX.md`](docs/INDEX.md), sorted by
+reader: using it / installing and running it / looking things up. When you do not know
+which file you want, open that one.** The same list is repeated at the end of this page.
 
 This package is the **application build (runs on macOS directly, no container)**.
 
@@ -157,7 +160,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | `settings models` / `settings test` / `settings providers` | Models at the endpoint / test the LLM connection / selectable presets (admin token) |
 | `settings set [name] --set KEY=VALUE` | Changes server settings. Shows before → after, then does nothing unless `--yes` is added; `--dry-run` previews only (admin token) |
 
-Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes: **0** = OK, **1** = bad input, **2** = server unreachable, **3** = authentication failed, **4** = server error. Commands other than `doctor`/`status` need a token. The shortest way to get one is `cynovela-cli login --username cynovela`, which writes it into `~/.cynovela_cli.env` for you. You can also pass one with `--token`, or write `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` into that file by hand. The full list of commands and arguments is in `docs/cli-reference.md`. (The `./launch.sh` flags themselves are covered in `docs/USE-FROM-TERMINAL.txt` — a different topic.)
+Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes: **0** = OK, **1** = bad input, **2** = server unreachable, **3** = authentication failed, **4** = server error. Commands other than `doctor`/`status` need a token. The shortest way to get one is `cynovela-cli login --username cynovela`, which writes it into `~/.cynovela_cli.env` for you. You can also pass one with `--token`, or write `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` into that file by hand. The full list of commands and arguments is in `docs/reference/cli.md`. (The `./launch.sh` flags themselves are covered in `docs/USE-FROM-TERMINAL.txt` — a different topic.)
 
 **MCP — connecting an AI client.** `mcp_server.py` exposes Cynovela's tools to MCP clients (protocol revision 2026-07-28, stdio): searching, viewing, bringing material in (`ingest_source`, progress via `get_job_status`), publishing, and settings — 25 tools, of which 22 are visible by default. The three admin tools (`delete_item` / `manage_users` / `manage_backups`) appear only when the MCP server's env sets `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1`. Point your client at it like this (the same snippet is served signed-in at `/api/mcp/config`):
 
@@ -169,7 +172,7 @@ Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes
 }}}
 ```
 
-What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two things people trip over: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token does not expire unless the caller asked for an expiry when signing in (see `docs/api-reference.md`). The full walkthrough, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/mcp-guide.md`.
+What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two things people trip over: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token does not expire unless the caller asked for an expiry when signing in (see `docs/reference/api.md`). Every tool, with what you hand it and what comes back, is in `docs/reference/mcp.md`; the walkthrough of connecting a client, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/operations.md`.
 
 ---
 
@@ -183,34 +186,42 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 ### 10. Open only when you need it
 
+**The whole list lives in [`docs/INDEX.md`](docs/INDEX.md)** — every document that ships
+here, sorted by reader (using it / installing and running it / looking things up), each
+with a line saying what is in it. If you remember only one path from this page, remember
+that one. The same documents are repeated below.
+
 | File | What it covers (how it differs from the others) |
 |---|---|
+| [`docs/INDEX.md`](docs/INDEX.md) | **The index of every document. Open this when you do not know which file you want** |
 | `README.md` | What this tool is, what it can and cannot do, and the environment it runs in |
-| `docs/first-run.md` | Never opened Terminal? From the downloaded file to the first answer, nothing skipped |
-| `docs/restart.md` | Stopping it, starting it again, and why `--demo` has to stay the same |
+| `docs/getting-started.md` | Never opened Terminal? From the downloaded file to the first answer, nothing skipped — and the day-to-day start and stop after that |
 | `docs/editions.md` | Which of the four downloads to take, on one page |
-| `docs/cli-reference.md` | Every terminal command and every argument |
-| `docs/mcp-reference.md` | All 25 MCP tools: what you hand each one, what comes back |
-| `docs/api-reference.md` | Every HTTP endpoint (186), read out of the code |
-| `docs/HAJIMETE.md` | The gentlest walkthrough, from opening the package to the first answer (screen-first) |
-| `docs/GETTING-STARTED.md` | The same first run in more detail, step by step, with what each step prints |
-| `docs/quickstart.md` | The short version for people in a hurry (includes the manual, non-launcher route) |
-| `docs/STARTUP.md` | Day-to-day start/stop, ports, sign-in, and what to do when it will not start |
-| `docs/manual-complete.md` | The complete reference manual for every feature |
-| `docs/operations.md` | Operating it over time: logs, backups, maintenance |
-| `docs/deployment.md` | Deployment details behind the setup |
-| `docs/SETUP-ACCELERATOR.md` | Setting up the external inference server (only if you want it) |
+| `docs/concept.md` | What this tool is for, and how it differs from the tools it refers to |
+| `docs/architecture.md` | How it works inside: ingest and classification, search, the scores, the shape of an answer |
+| `docs/security.md` | Roles and permissions, PII detection and masking, the guardrails, and the ways of use that are not recommended |
+| `docs/limits.md` | What it cannot do: what masking misses, formats it cannot read, features that are only a skeleton |
+| `docs/operations.md` | Installing it and keeping it running: placing it, connecting an LLM, MCP from external tools, LAN sharing, backup and restore, logs, users, the port |
+| `docs/handson.md` | Exercises against the sample material bundled in `dummy-corpus/` |
+| `docs/faq.md` | The questions asked most often, answered short |
+| `docs/reference/cli.md` | Every terminal command and every argument |
+| `docs/reference/mcp.md` | Every MCP tool: what you hand each one, what comes back |
+| `docs/reference/api.md` | Every HTTP endpoint, read out of the code |
+| `docs/reference/changelog.md` | What changed in each version |
 | `docs/USE-FROM-TERMINAL.txt` | Running it from the terminal instead of the icons (same as `./launch.sh --help`) |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | Read this before you pass the package on to anyone |
 | `docs/NOTICE.md` | Before you start: no warranty, masking limits, checking answers |
-| `docs/` | Further reference: how masking works, permissions, the API, and more |
+| `docs/BUNDLED-DATA.md` | What the bundled sample material contains, counted when the package was built |
 
 ---
 
 # 日本語
 
 **この文書が唯一の入口です。この文書だけで始められます。**
-`docs/` 配下の他の文書は参照用です。必要になったときだけ開いてください（一覧は末尾）。
+`docs/` 配下の他の文書は参照用です。必要になったときだけ開いてください。
+**その全数は [`docs/INDEX.md`](docs/INDEX.md) に、読み手ごと（使う人 / 入れる人・回す人 /
+引く人）に並べてあります。どのファイルが要るか分からないときは、まずこれを開いてください。**
+同じ一覧はこのページの末尾にもあります。
 
 この配布物は **アプリ版（Mac の上で直に動く形。コンテナは使いません）** です。
 
@@ -362,7 +373,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 | `settings models` / `settings test` / `settings providers` | 接続先のモデル一覧 / LLM 接続の確認 / 選べるプリセット（管理者トークン） |
 | `settings set [対象] --set KEY=VALUE` | サーバの設定を変えます。変更前 → 変更後を見せてから、`--yes` を足さない限り何もしません。`--dry-run` は確認だけ（管理者トークン） |
 
-全命令に `--json`（機械で読める形）と `--lang en|ja` があります。終了コード: **0** = 正常、**1** = 入力の誤り、**2** = サーバへ到達できない、**3** = 認証に失敗、**4** = サーバが誤りを返した。`doctor`・`status` 以外はトークンが要ります。いちばん短い道は `cynovela-cli login --username cynovela` で、これが `~/.cynovela_cli.env` へ書いてくれます。`--token` で渡すことも、そのファイルへ自分で `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` を書くこともできます。命令と引数の全数は `docs/cli-reference.md` にあります。（`./launch.sh` 自体のフラグは別の話で、`docs/USE-FROM-TERMINAL.txt` にあります。）
+全命令に `--json`（機械で読める形）と `--lang en|ja` があります。終了コード: **0** = 正常、**1** = 入力の誤り、**2** = サーバへ到達できない、**3** = 認証に失敗、**4** = サーバが誤りを返した。`doctor`・`status` 以外はトークンが要ります。いちばん短い道は `cynovela-cli login --username cynovela` で、これが `~/.cynovela_cli.env` へ書いてくれます。`--token` で渡すことも、そのファイルへ自分で `CYNOVELA_URL=` / `CYNOVELA_TOKEN=` を書くこともできます。命令と引数の全数は `docs/reference/cli.md` にあります。（`./launch.sh` 自体のフラグは別の話で、`docs/USE-FROM-TERMINAL.txt` にあります。）
 
 **MCP — AI クライアントを繋ぐ。** `mcp_server.py` が Cynovela の道具を MCP クライアントへ出します（プロトコル版 2026-07-28・stdio）: 検索・見る・資料を入れる（`ingest_source`。進み具合は `get_job_status`）・公開・設定の 25 個で、既定で見えるのは 22 個です。管理系の 3 個（`delete_item` / `manage_users` / `manage_backups`）は、MCP サーバの env に `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1` を書いたときだけ現れます。クライアントには次の形で指します（同じスニペットはログイン後の `/api/mcp/config` でも取れます）:
 
@@ -374,7 +385,7 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 }}}
 ```
 
-繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。つまずきやすい点が2つあります: LM Studio で書くファイルは `mcp.json` です（**Program** パネル → **Install** → **Edit mcp.json** から開けます）。そして登録した後も、**LM Studio は道具の呼び出しごとに画面で許可を求めます** — 許可を出すまで道具は一度も動きません。トークンは、ログインのときに期間を渡さないかぎり切れません（`docs/api-reference.md` を参照）。手順の全体・設定系の道具・書き込みの守り（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）は `docs/mcp-guide.md` にあります。
+繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。つまずきやすい点が2つあります: LM Studio で書くファイルは `mcp.json` です（**Program** パネル → **Install** → **Edit mcp.json** から開けます）。そして登録した後も、**LM Studio は道具の呼び出しごとに画面で許可を求めます** — 許可を出すまで道具は一度も動きません。トークンは、ログインのときに期間を渡さないかぎり切れません（`docs/reference/api.md` を参照）。道具ごとに何を渡すと何が返るかは `docs/reference/mcp.md` に、クライアントを繋ぐ手順の全体・設定系の道具・書き込みの守り（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）は `docs/operations.md` にあります。
 
 ---
 
@@ -388,24 +399,28 @@ What the connected AI can see follows the token's role: a viewer token gets mask
 
 ### 10. 必要になったときに開くもの
 
+**全数の一覧は [`docs/INDEX.md`](docs/INDEX.md) にあります。** ここに同梱される文書のすべてを、
+読み手ごと（使う人 / 入れる人・回す人 / 引く人）に並べ、それぞれに何が書いてあるかを 1 行で
+添えてあります。このページから 1 つだけ覚えるなら、この道です。同じものを下にも並べます。
+
 | ファイル | 何が書いてあるか（他とどう違うか） |
 |---|---|
+| [`docs/INDEX.md`](docs/INDEX.md) | **文書の全数の索引。どのファイルが要るか分からないときはこれ** |
 | `README.md` | このツールが何か・できること できないこと・動作環境 |
-| `docs/first-run.md` | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし |
-| `docs/restart.md` | 止め方と起こし直し方。`--demo` を毎回そろえる理由 |
+| `docs/getting-started.md` | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし。その後の毎日の起動と停止も |
 | `docs/editions.md` | 4つの落とし物のどれを選ぶか。1枚 |
-| `docs/cli-reference.md` | ターミナルの命令と引数の全数 |
-| `docs/mcp-reference.md` | MCP の道具25件。何を渡すと何が返るか |
-| `docs/api-reference.md` | HTTP の口の全数（186件）。コードから起こしたもの |
-| `docs/HAJIMETE.md` | いちばんやさしいガイド。開いてから最初の答えが返るまで（画面中心） |
-| `docs/GETTING-STARTED.md` | 同じ初回の道のりをより詳しく、順を追って。各段で画面に出るものつき |
-| `docs/quickstart.md` | 急ぐ方向けの短い手順（launch.sh を使わない手動の道も含む） |
-| `docs/STARTUP.md` | 日常の起動と停止・ポート・ログイン・起動しないときの対処 |
-| `docs/manual-complete.md` | 全機能の完全マニュアル（リファレンス） |
-| `docs/operations.md` | 使い続けるための運用: ログ・バックアップ・保守 |
-| `docs/deployment.md` | セットアップの裏側にある導入の詳細 |
-| `docs/SETUP-ACCELERATOR.md` | 外部の推論サーバの立て方（使いたいときだけ） |
+| `docs/concept.md` | このツールが何のためのものか。参照元のツールとの違い |
+| `docs/architecture.md` | 内側の作り: 取り込みと分類・検索のしくみ・スコアの読み方・回答のかたち |
+| `docs/security.md` | 役割と権限・PII の検出とマスキング・ガードレール・推奨しない使用方法 |
+| `docs/limits.md` | できないこと: マスキングの取りこぼし・読み込めない形式・骨組みだけの機能 |
+| `docs/operations.md` | 据え方と使い続けるための運用: 置き方・LLM の接続・外部の道具から MCP で使う・LAN 共有・backup と restore・ログ・利用者・番号 |
+| `docs/handson.md` | `dummy-corpus/` の同梱資料を相手にする演習 |
+| `docs/faq.md` | よく聞かれることへの短い答え |
+| `docs/reference/cli.md` | ターミナルの命令と引数の全数 |
+| `docs/reference/mcp.md` | MCP の道具の全数。何を渡すと何が返るか |
+| `docs/reference/api.md` | HTTP の口の全数。コードから起こしたもの |
+| `docs/reference/changelog.md` | 版ごとの変更点 |
 | `docs/USE-FROM-TERMINAL.txt` | アイコンではなくターミナルから使う方法（`./launch.sh --help` と同一） |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | 誰かに配る前にお読みください |
 | `docs/NOTICE.md` | 使う前のご注意。無保証・マスキングの限界・答えの確かめ方 |
-| `docs/` | さらに参照用: マスキングの仕組み・権限・API など |
+| `docs/BUNDLED-DATA.md` | 同梱のサンプル資料に何が入っているか。配布物を組んだときに数えた値 |

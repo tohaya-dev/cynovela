@@ -31,7 +31,7 @@ Cynovela entry point — this is the only one the recipient runs.
   Where to open : http://localhost:8765   (the number you gave when you used --port)
   How to log in : administrator cynovela / viewer demo
                   The initial passwords are in the "ログイン" (Login) section of the
-                  bundled STARTUP.md.
+                  screen at the first start.
                   The administrator is asked to change the password on the first login.
                   Administrative operations do not go through until the change is finished.
 
@@ -71,7 +71,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://localhost:8765   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初のパスワードは同梱の STARTUP.md の「ログイン」の節にあります。
+             最初のパスワードは初回の起動時に画面へ出ます。
              管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 

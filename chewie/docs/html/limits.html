@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>このツールにできないこと（既知の制限） — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
+/* ダークモード禁止: @media prefers-color-scheme は一切書かない */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* docs/html/_tokens.txt から確定値を採用（frontend/style.css の :root と一致） */
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+/* スライドデッキ */
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+/* スライド本体（16:9） */
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px; /* nav-bar の高さ分 */
+}
+.slide.active { display: flex; }
+/* カバースライド */
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+/* スライドヘッダー */
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+/* コンテンツエリア */
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* テキスト要素 */
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+/* 箇条書き */
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+/* コードブロック */
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+/* テーブル */
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+/* 引用ブロック（免責・注意書き） */
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+/* 続きスライドの小バッジ */
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+/* フッター */
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+/* リンク */
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* 章タイトル（manual-complete 用） */
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+/* ナビバー */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+/* 印刷 */
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+</style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+<div class="slide cover active" id="slide-1">
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">このツールにできないこと（既知の制限）</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
+</div>
+<div class="slide" id="slide-2">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">English — About this document</span>
+</div>
+<div class="slide-body">
+    <p><strong>日本語版はこちら → 日本語</strong></p>
+    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that one individual could understand the concepts behind AI infrastructure tools by working through them by hand. It is not a commercial product and not an official implementation. The implementation is entirely original, built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.</blockquote>
+    <p>This document describes what Cynovela <strong>cannot</strong> do, and what to watch out for. Explanations of what it can do are in <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> and <a href="concept.html" target="_blank" rel="noopener">concept.md</a>. Only the things that will disappoint you if you expect them are written here.</p>
+    <p>The version is <code>1.1.1</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-3">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(1/12)</span>
+</div>
+<div class="slide-body">
+    <p><strong>This is the most important section of this document.</strong> Masking is a mechanism for hiding personal information, but the range it can hide has clear limits. <strong>The fact that masking matched does not mean all personal information in a document has been removed.</strong> Something that could not be hidden always remains.</p>
+    <h3>1.1 Rules can only catch the 13 types that have a fixed shape</h3>
+    <p>The types written in <code>PII_PATTERNS</code> of <code>guardrail.py</code> are only these 13.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(2/12)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Type</th><th>What it means</th></tr></thead>
+    <tbody>
+    <tr><td><code>URL</code></td><td>An address starting with http / https</td></tr>
+    <tr><td><code>EMAIL</code></td><td>An email address</td></tr>
+    <tr><td><code>PHONE_JP</code></td><td>Mobile phone number (070 / 080 / 090)</td></tr>
+    <tr><td><code>PHONE_LAND</code></td><td>Landline phone number</td></tr>
+    <tr><td><code>CREDIT</code></td><td>Credit card number</td></tr>
+    <tr><td><code>MYNUMBER</code></td><td>My Number (Japanese individual number)</td></tr>
+    <tr><td><code>PASSPORT</code></td><td>Passport number (2 letters + 7 digits)</td></tr>
+    <tr><td><code>IPV4</code></td><td>IPv4 address</td></tr>
+    <tr><td><code>PASSWORD</code></td><td>A labelled value such as "パスワード: XX"</td></tr>
+    <tr><td><code>APIKEY</code></td><td>API key / access token</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(3/12)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Type</th><th>What it means</th></tr></thead>
+    <tbody>
+    <tr><td><code>PRIVATEKEY</code></td><td>A private key block (<code>-----BEGIN ... PRIVATE KEY-----</code>)</td></tr>
+    <tr><td><code>SSN</code></td><td>US Social Security Number (3-2-4 form)</td></tr>
+    <tr><td><code>IBAN</code></td><td>International Bank Account Number</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(4/12)</span>
+</div>
+<div class="slide-body">
+    <p>Nothing else is masked by the rules, not even once. For example employee numbers, customer numbers, contract numbers, bank account numbers (other than IBAN), vehicle numbers and insurance card numbers are out of scope.</p>
+    <p>The rules match on "shape". If the shape is broken they do not match. Conversely, unrelated numbers that happen to match a shape are masked (a value of exactly 12 digits being masked as My Number is an example; this is intentional, as the result of prioritising the avoidance of leaks).</p>
+    <h3>1.2 Personal names and addresses depend on language analysis; with <code>lite</code> nothing is masked at all</h3>
+    <p>Personal names and addresses are not among the 13 types above. Their shape is not fixed, so the rules cannot catch them, and they are handled on the language analysis (NER) side.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-7">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(5/12)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li>The setting is <code>pii_mode</code> in <code>cynovela.yaml</code>. The default is <code>standard</code>.</li>
+    <li>Only when it is <code>standard</code> do <code>PERSON_JP</code> (personal name) and <code>ADDRESS_JP</code> (address) work.</li>
+    <li><strong>If you set <code>pii_mode</code> to <code>lite</code>, neither names nor addresses are masked at all.</strong> <code>lite</code> switches to a path that judges with regular expressions only, and the name and address recognizers are never assembled in the first place (see <code>get_active_recognizers()</code> and <code>detect_pii()</code> in <code>utils/metadata/pii.py</code>).</li>
+    </ul>
+    <p>Name detection only matches words registered as family or given names. Rare names, katakana transcriptions of foreign names, nicknames, and forms written together with a job title are missed. Addresses are also only looked at in the form that starts from a prefecture and in the postal code shape; forms such as "本社ビル 3 階" or "◯◯支店" are not treated as addresses.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-8">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(6/12)</span>
+</div>
+<div class="slide-body">
+    <h3>1.3 Organisation names and place names exist in name only, with nothing behind them</h3>
+    <p><code>get_active_recognizers()</code> also returns <code>ORG_JP</code> (organisation name) and <code>LOC_JP</code> (place name). The names are returned, but <strong>not a single recognizer that supplies them is registered</strong> (across the whole tree, these two words appear only on that one line).</p>
+    <p>In other words, <strong>organisation names and place names are not masked.</strong> Do not assume they are working just because their names appear in a list.</p>
+    <h3>1.4 Without a language model, even <code>standard</code> degrades to rules only</h3>
+    <p>Detecting names and addresses requires the spaCy / GiNZA language models. In an environment where these are not installed, detection degrades to regular expressions only, even with <code>pii_mode</code> left at <code>standard</code>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-9">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(7/12)</span>
+</div>
+<div class="slide-body">
+    <p>At startup <code>launch.sh</code> checks that they exist, and if they are missing it prints the following warning.</p>
+    <pre><code>⚠️  spaCy モデル '...' が未導入です (standard PII が regex フォールバックします)。'pip install -r requirements.txt' を実行してください。</code></pre>
+    <p><strong>While this warning is showing, neither names nor addresses are being masked.</strong> Startup does not stop, so if you skim past the warning you will keep using the tool believing masking is in effect.</p>
+    <h3>1.5 Passwords and API keys are cut off by whitespace, Japanese text, or newlines</h3>
+    <p>The <code>PASSWORD</code> and <code>APIKEY</code> rules pick up the value part using only ASCII graphic characters (the relevant block in <code>guardrail.py</code> states explicitly that "値は ASCII 図形文字 <code>[!-~]</code> のみ（空白・CJK で必ず切れる）"). Because of this, the following cannot be caught.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-10">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(8/12)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li>Values with whitespace in the middle (<code>パスワード: abc def</code>) → cut off after <code>abc</code></li>
+    <li>Values with Japanese text in the middle</li>
+    <li>Values spanning a newline (the whitespace between the label and the value is limited to tabs and spaces, and does not span newlines)</li>
+    </ul>
+    <p>Also, anything without a separator (<code>:</code> <code>：</code> <code>=</code> <code>＝</code> or "は") between the label and the value is out of scope. This is by design, to avoid catching common phrases such as <code>password protection</code>, and the price of that is that space-separated forms like "パスワード　abcdefgh" cannot be caught.</p>
+    <h3>1.6 Whitespace can enter text extracted from a PDF, letting an email escape masking</h3>
+    <p>A PDF is composed not as a sequence of characters but as information about where to place characters. When text is extracted from it, whitespace that was not in the original appearance can end up in the middle of a word.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-11">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(9/12)</span>
+</div>
+<div class="slide-body">
+    <p>The masking rules look at the sequence of characters, so a single inserted space is enough to stop a match. For an email address, this looks as follows.</p>
+    <ul>
+    <li><code>taro.yamada@example.co.jp</code> → masked</li>
+    <li><code>taro.yamada @example.co.jp</code> → <strong>not masked</strong> (cut off before the <code>@</code>)</li>
+    <li><code>taro.yamada@ example.co.jp</code> → <strong>not masked</strong> (cut off after the <code>@</code>)</li>
+    <li><code>taro. yamada@example.co.jp</code> → only the <code>yamada@example.co.jp</code> part is masked, and <code>taro.</code> remains</li>
+    </ul>
+    <p>The same thing can happen with other types such as phone numbers and card numbers. <strong>When you ingest a PDF, check with your own eyes whether masking matched.</strong> You can see the actual text from the chunk list after ingest.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-12">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(10/12)</span>
+</div>
+<div class="slide-body">
+    <h3>1.7 Whether an administrator can see the original text depends on the key and the destination</h3>
+    <p>When the role is <code>admin</code>, the design lets them see the original text before masking (<code>tier_for_role</code> in <code>rag.py</code>). However, in the following 3 cases even an administrator only gets masked content.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-13">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(11/12)</span>
+</div>
+<div class="slide-body">
+    <ol>
+    <li><strong>When the destination of the answering LLM points outside.</strong> <code>_effective_send_tier</code> in <code>routers/chat.py</code> drops to masked regardless of role when the destination is neither inside the local machine, nor the container's host side, nor a private address range. When the destination cannot be determined it also falls back to masked.</li>
+    <li><strong>When the vault (encrypted storage) key does not match.</strong> Original text is stored encrypted, and <code>_vault_substitute_raw</code> in <code>rag.py</code> decrypts it. Lines that cannot be decrypted use the masked text as-is (this is deliberate, so that ciphertext is never shown on screen). If you replace the key after receiving a package, even an administrator can no longer read the original text of documents ingested before that.</li>
+    <li><strong>The question text itself.</strong> Masking of the question text is not divided by role. Even if an administrator writes an IP address in the question, that IP is masked before it is passed to search and to the LLM.</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-14">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. What masking cannot do</span>
+<span class="continued">(12/12)</span>
+</div>
+<div class="slide-body">
+    <p>An earlier version of this document said "IPs are masked even for administrators (under investigation)", but the reason is the 3 items above. It is not a defect.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-15">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">2. Document formats that cannot be read</span>
+<span class="continued">(1/3)</span>
+</div>
+<div class="slide-body">
+    <p>The only formats that can be ingested are those written in <code>SUPPORTED_EXTENSIONS</code> in <code>rag.py</code>.</p>
+    <table>
+    <thead><tr><th>Kind</th><th>Extensions</th></tr></thead>
+    <tbody>
+    <tr><td>Documents</td><td><code>.txt</code> <code>.md</code> <code>.csv</code> <code>.pdf</code> <code>.docx</code></td></tr>
+    <tr><td>Spreadsheets / presentations</td><td><code>.xlsx</code> <code>.xls</code> <code>.pptx</code></td></tr>
+    <tr><td>Web / mail</td><td><code>.html</code> <code>.htm</code> <code>.eml</code></td></tr>
+    <tr><td>Archives</td><td><code>.zip</code></td></tr>
+    <tr><td>Images</td><td><code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.heic</code> <code>.webp</code> <code>.gif</code></td></tr>
+    </tbody>
+    </table>
+    <p>Anything else is excluded from ingest. Here are the commonly brought-in formats that <strong>cannot</strong> be handled.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-16">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">2. Document formats that cannot be read</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li>Old Office formats: <code>.doc</code> <code>.ppt</code> (only <code>.xls</code> can be handled), <code>.rtf</code></li>
+    <li>OpenDocument family: <code>.odt</code> <code>.ods</code> <code>.odp</code></li>
+    <li>Structured data: <code>.json</code> <code>.xml</code> <code>.yaml</code></li>
+    <li>Mail: <code>.msg</code> (Outlook format; only <code>.eml</code> is supported)</li>
+    </ul>
+    <ul>
+    <li>E-books: <code>.epub</code></li>
+    <li>Audio / video: <code>.mp3</code> <code>.wav</code> <code>.m4a</code> <code>.mp4</code> <code>.mov</code> and so on</li>
+    <li>Some images: <code>.tif</code> <code>.tiff</code> <code>.bmp</code> <code>.svg</code></li>
+    <li>Some archives: <code>.7z</code> <code>.rar</code> <code>.tar</code> <code>.gz</code> (only <code>.zip</code> is supported)</li>
+    </ul>
+    <p>Other limitations:</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-17">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">2. Document formats that cannot be read</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>Zip nesting is only one level deep.</strong> A zip inside a zip is not opened (the extraction step in <code>rag.py</code> skips entries whose extension is <code>.zip</code>).</li>
+    <li><strong>By default images are not read for text.</strong> The default behaviour is <code>filename_only</code>, which puts only the file name into the index (<code>_extract_image_text</code> in <code>rag.py</code>). Text inside an image is not read. There are settings that generate a description (<code>caption</code> / <code>lm_studio</code>), but the bundled <code>cynovela.yaml</code> has no <code>image:</code> entry, so the default stays in place.</li>
+    <li>If a PDF was produced as an image (merely scanned), not a single character can be extracted. There is no OCR (optical character recognition) mechanism.</li>
+    <li>Encrypted PDFs and corrupted documents are skipped. They appear in the ingest result as "読めない/空: N件".</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-18">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">3. Speaking to it by voice</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li>The voice feature has been removed. This package has no speech-to-text.</li>
+    <li>The legacy path <code>/api/transcribe</code> is <strong>no longer connected</strong>. <code>include_router</code> has been removed in <code>server.py</code> (it was a hole through which a transcription would come back unmasked, so it was deliberately removed).</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-19">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">4. There is no endpoint for uploading documents</span>
+</div>
+<div class="slide-body">
+    <p>The endpoint for pushing files in from the screen or the API has been <strong>removed</strong> (the top of <code>routers/sources.py</code> states that "アップロード保存先 <code>_uploads_root</code> と<code>/api/sources/upload</code> を撤去した。取り込みは取り込みフォルダ経由に一本化する").</p>
+    <p>Documents are <strong>placed in a predetermined ingest folder</strong> and then selected on screen. There is no longer any place inside the application that makes a copy of a document.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-20">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">5. Conditions under which sending to the outside is stopped</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p>These are less "things it cannot do" than "things deliberately stopped". When a determination cannot be made, it always falls to the stopping side. As a result, features can look like they are not working.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-21">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">5. Conditions under which sending to the outside is stopped</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>CRAG pre-reading.</strong> The step that has the LLM pre-read whether the search results are sufficient for the question is not executed when the destination is not inside the local machine, and <strong>when the destination cannot be determined</strong> (<code>rag.py</code>). When it is not executed, it falls back to "adopt the search results as they are". The screen shows <code>[CRAG] 非ローカル宛のため下読みをスキップします</code>.</li>
+    <li><strong>Conversation summarisation and extraction of hints from an answer.</strong> Both use the same determination, and for external destinations (including undeterminable ones) they send nothing and return empty (<code>routers/chat.py</code>).</li>
+    <li><strong>Sending original text based on role.</strong> If the destination is external, only masked content is sent, even for an administrator (the <code>_effective_send_tier</code> described above).</li>
+    <li><strong>If masking fails, processing stops.</strong> For both the question text and the answer, if the masking step dies with an exception, a 503 is returned and processing is aborted. Pre-masking content is never returned instead (<code>routers/chat.py</code>).</li>
+    <li><strong>The combination of unmasked ingest and external embedding is rejected.</strong> Collections created by an older version as "unmasked" cannot be published while external embedding is enabled (<code>rag.py</code>).</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-22">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">6. Constraints when used concurrently</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>Publish is limited to 2 at a time.</strong> A third waits 5 seconds and, if no slot opens, is returned as a failure (<code>server.py</code>; the screen shows "他のPublishが多すぎます。少し待ってから再試行してください。").</li>
+    <li><strong>LLM concurrency is 3 by default</strong> (<code>llm.max_concurrent</code> in <code>cynovela.yaml</code>; <code>server.py</code> builds a semaphore from this value). A fourth waits until a previous call finishes.</li>
+    <li><strong>Storage is a single SQLite file</strong> (WAL mode). Where writes overlap, waiting occurs. A usage pattern with dozens of people running ingest at the same time is not assumed.</li>
+    <li>The vector index (ChromaDB) is also a file on the same machine. Do not rewrite the same index from multiple processes.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-23">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">7. Constraints on replacing models</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p>Detailed steps are in <a href="operations.html" target="_blank" rel="noopener">operations.md</a>. Only the key points are written here.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-24">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">7. Constraints on replacing models</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>The embedding model must match down to the version (snapshot).</strong> The snapshot version of <code>BAAI/bge-m3</code> must be aligned. <strong>If the version differs the vector values change, they mix with the bundled index, and the search ranking breaks.</strong> If the version differs, a warning appears at startup and at publish time. When a warning appears, either align the version or rebuild the whole index.</li>
+    <li><strong>The lightweight package (does not include AI models; about 2.4 MB) does not bundle models.</strong> If you run the startup script without placing the models, the first startup asks whether to fetch them from the internet. If you decline, <strong>it stops before starting</strong>.</li>
+    <li><strong><code>host.containers.internal</code> cannot be resolved outside a container.</strong> If you start directly on the host, rewrite it to <code>127.0.0.1</code> (the container package rewrites this one word automatically. If you write a different host name or IP it is not rewritten and is used exactly as written).</li>
+    <li><strong>The image endpoint of the external accelerator is unimplemented.</strong> Calling it returns 501.</li>
+    <li><strong>Some values of <code>--mode</code> at startup do not actually switch anything.</strong> This is written directly in the description text of <code>--mode</code>. <code>lite</code> and <code>lite-en</code> have no wiring to a lightweight model, and currently run on the same <code>bge-m3</code> as the default <code>text</code>. <code>minimal</code> has no TF-IDF integration, so it too requires <code>bge-m3</code> (in an environment without the models placed, ingest is not possible). <strong>Whichever mode you choose, the size of the required models does not change.</strong></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-25">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
+<span class="continued">(1/4)</span>
+</div>
+<div class="slide-body">
+    <p>These raise <code>NotImplementedError</code> when called, or are only abstract declarations. (Line numbers are not written, because they shift immediately. They are indicated by file name and class / method name.)</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-26">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>File</th><th>Class / method</th><th>State</th></tr></thead>
+    <tbody>
+    <tr><td><code>providers/classifier.py</code></td><td><code>ClassifierProvider.classify</code></td><td>Abstract (a slot for replacement)</td></tr>
+    <tr><td><code>providers/embedding.py</code></td><td><code>EmbeddingProvider.embed</code> / <code>.test_connection</code></td><td>Abstract</td></tr>
+    <tr><td><code>providers/embedding.py</code></td><td><code>MLXEmbeddingProvider.embed</code></td><td>Unimplemented (future)</td></tr>
+    <tr><td><code>providers/reranker.py</code></td><td><code>RerankerProvider.rerank</code> / <code>.test_connection</code></td><td>Abstract</td></tr>
+    <tr><td><code>providers/reranker.py</code></td><td><code>MLXReranker.rerank</code></td><td>Unimplemented (future)</td></tr>
+    <tr><td><code>providers/vector_store.py</code></td><td><code>VectorStoreProvider.add</code> / <code>.search</code> / <code>.delete_collection</code> / <code>.export</code> / <code>.import_data</code> / <code>.test_connection</code></td><td>Abstract</td></tr>
+    <tr><td><code>providers/vector_store.py</code></td><td><code>QdrantVectorStore.add</code> / <code>.search</code> / <code>.delete_collection</code> / <code>.export</code> / <code>.import_data</code></td><td>Unimplemented (skeleton only)</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-27">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>File</th><th>Class / method</th><th>State</th></tr></thead>
+    <tbody>
+    <tr><td><code>providers/vector_store.py</code></td><td>The LanceDB backend</td><td>Initialization only; the substance is not implemented, and it is rejected when the package is not installed</td></tr>
+    <tr><td><code>services/rag_strategies.py</code></td><td><code>GraphRAGStrategy.retrieve</code> / <code>.build_graph</code> / <code>.traverse_with_acl</code></td><td>Unimplemented (future)</td></tr>
+    <tr><td><code>services/agent_runtime.py</code></td><td><code>AgentRuntime.run</code> / <code>.call_tool</code> / <code>.available_tools</code></td><td>Abstract declarations only. There is not a single implementing class</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-28">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. Features that are only a skeleton with nothing inside</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <p>In other words:</p>
+    <ul>
+    <li><strong>You cannot switch the vector storage to Qdrant.</strong> Only ChromaDB works.</li>
+    <li><strong>The MLX path for Apple Silicon is unusable.</strong> Both embedding and reranking are unimplemented. (If you want to use the Apple Silicon GPU, it goes through the external accelerator. See <a href="operations.html" target="_blank" rel="noopener">operations.md</a>.)</li>
+    <li><strong>You cannot switch the vector storage to LanceDB either.</strong> Only the initialization exists.</li>
+    <li><strong>Graph-based search (GraphRAG) is unusable.</strong></li>
+    <li><strong>You cannot have an agent do work.</strong> Only the type declarations exist.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-29">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">9. The Kubernetes set does not work as-is</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>The container package does not include <code>deploy/k8s/20-deployment.yaml</code>.</strong> <code>tools/build-dist.sh</code>, which builds the package, drops this file right before making the <code>tar</code>. With only the remaining 3 (namespace / pvc / service), not a single application container comes up.</li>
+    <li><strong>The direct-host-startup package has no <code>deploy/</code> at all.</strong></li>
+    </ul>
+    <p>If you want to run on Kubernetes, you need to write the Deployment definition yourself.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-30">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(1/8)</span>
+</div>
+<div class="slide-body">
+    <h3>Startup forms and where data lives</h3>
+    <ul>
+    <li>With <code>--demo</code>, it starts with a demo database loaded with the bundled dummy documents (<code>store/db/demo.db</code> and <code>store/vector/demo/chroma</code>).</li>
+    <li>With nothing added it is production, and starts with an <strong>empty database</strong> (<code>store/db/cynovela.db</code> and <code>store/vector/default/chroma</code>).</li>
+    <li><strong>Neither is erased by a restart.</strong> They are not initialised on every startup. If you want to erase them, delete the files yourself.</li>
+    <li>The bundled index and database are built <strong>only from the <code>dummy-corpus/</code> inside the package</strong> at the time the package is built. Not a single working document from the builder's side is included. What is actually included, and how many, is written out in <code>BUNDLED-DATA.md</code> in the package.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-31">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(2/8)</span>
+</div>
+<div class="slide-body">
+    <h3>Cross-collection search</h3>
+    <p>The MCP tools include <code>search_across_collections</code> (search spanning multiple collections), but <strong>the screen (GUI) has no entry point for cross-collection search.</strong> From the screen you select one workspace and search it.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-32">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(3/8)</span>
+</div>
+<div class="slide-body">
+    <h3>Workspace separation</h3>
+    <ul>
+    <li><strong>The separation of a workspace in ChromaDB is a logical boundary (the collection name); a physical boundary (a separate directory and the like) is not implemented.</strong> One Chroma store directory holds every collection, and what divides them is the collection name, <code>{collection_id}__raw</code> and <code>{collection_id}__masked</code> (<code>providers/vector_store.py</code>).</li>
+    <li>When a <code>workspace_id</code> is passed to a search, a <code>where</code> condition on the metadata narrows the result further, but that is a filter applied inside the same store; the place where the data is kept is not divided.</li>
+    <li>The BM25 index is held in memory in a dictionary keyed by <code>(workspace_id, tier)</code>, so that path is divided by the key, not by a directory either (<code>rag.py</code>).</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-33">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(4/8)</span>
+</div>
+<div class="slide-body">
+    <h3>MCP</h3>
+    <ul>
+    <li><code>mcp_server.py</code> provides 25 tools (22 visible by default; 3 admin tools appear only when CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 is set).</li>
+    <li>The MCP server is built to query Cynovela's REST API internally, with authentication. In other words, <strong>if the main body is not running, MCP does not work either.</strong></li>
+    <li>The Python executable that runs MCP can be specified with the environment variable <code>CYNOVELA_MCP_PYTHON</code>. If not specified, the currently running Python is used as-is (<code>routers/mcp.py</code>).</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-34">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(5/8)</span>
+</div>
+<div class="slide-body">
+    <h3>How answers are built</h3>
+    <ul>
+    <li><strong>Structured answers cannot be returned.</strong> Answers are free-form (Markdown where needed). Responses in JSON or with fixed tags are not provided. Citation of sources (in the <code>[1][2]</code> form) is implemented.</li>
+    <li><strong>There is no automatic switching when confidence is low.</strong> <code>cynovela.yaml</code> has <code>confidence_threshold</code> (default <code>0.4</code>), but no behaviour that automatically switches to a general-knowledge mode when it falls below is built in. The value is defined as a setting, and the processing that switches to <code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> when there are 0 search results is not integrated; the exclusion logic in the search pipeline is only <strong>partly integrated</strong>.</li>
+    <li><strong>Self-evaluation of an answer is a simple rule.</strong> <code>evaluate_answer_quality()</code> in <code>adaptive_rag.py</code> decides sufficiency from "the answer is empty", "under 60 characters with few hits", and "contains a negative phrasing". It does not have an LLM evaluate it.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-35">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(6/8)</span>
+</div>
+<div class="slide-body">
+    <h3>Removed features</h3>
+    <table>
+    <thead><tr><th>Feature</th><th>State</th></tr></thead>
+    <tbody>
+    <tr><td><code>--mock</code> startup</td><td>Removed. It does not exist among the startup options. Startup without models is also impossible</td></tr>
+    <tr><td><code>/chat-popup</code></td><td>Returns 410 Gone. Migrated to the full-screen chat</td></tr>
+    <tr><td>Login with <code>user_id</code> only</td><td>Removed. <code>username</code> and <code>password</code> are required</td></tr>
+    <tr><td>Unauthenticated access to <code>/api/auth/users</code></td><td>Removed. Administrator authentication is always required</td></tr>
+    <tr><td>The <code>--pii-mode</code> startup option</td><td>Abolished. Specify it with <code>pii_mode</code> in <code>cynovela.yaml</code></td></tr>
+    <tr><td>Legacy <code>/api/transcribe</code></td><td>Removed. There is no voice feature</td></tr>
+    <tr><td><code>/api/sources/upload</code></td><td>Removed. Unified on going through the ingest folder</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-36">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(7/8)</span>
+</div>
+<div class="slide-body">
+    <h3>The pass (login token)</h3>
+    <p>The pass is a JWT issued by <code>POST /api/auth/login</code>. The signing key is <strong>not included in the package</strong>. The receiving side auto-generates it from cryptographic random numbers at first startup and saves it to <code>store/db/jwt/secret.key</code> (<code>_load_or_create_jwt_signing_key</code> in <code>config.py</code>). This key is always dropped when the package is built (because if it were shared, a pass issued elsewhere would be accepted).</p>
+    <p>If saving the key fails, the key is valid only for that one run. In that case, restarting invalidates any issued passes (logging in again works).</p>
+    <p><strong>Since 1.0.7 the pass does not expire unless the caller asks it to.</strong> Before, every pass stopped working 8 hours after it was issued. Now <code>POST /api/auth/login</code> issues a pass with no expiry unless you pass <code>expires_in_hours</code> or <code>expires_in_seconds</code>. Two consequences you should know about:</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-37">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. Other limitations and notes</span>
+<span class="continued">(8/8)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>Signing out does not make the pass stop working.</strong> <code>POST /api/auth/logout</code> removes the refresh token and the in-memory session, but the pass itself is checked by its signature alone, so a copy of it keeps working. Previously the 8-hour limit put a floor under this; now there is none. If a pass leaks, the only way to invalidate it is to delete <code>store/db/jwt/secret.key</code> and restart, which invalidates <strong>every</strong> pass.</li>
+    <li>Pass <code>expires_in_hours</code> when you hand a pass to something you do not control.</li>
+    </ul>
+    <h3>Pitfalls</h3>
+    <ul>
+    <li>ChromaDB's <code>PersistentClient</code> does not error even when you pass it the wrong path. It silently creates an empty database. <strong>When a search returns 0 results, first suspect whether the index location is correct.</strong></li>
+    <li>Do not pass <code>max_tokens</code> to the LM Studio API. With a reasoning-type model, it will use up the tokens it needs for thinking.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-38">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(1/8)</span>
+</div>
+<div class="slide-body">
+    <p>These were measured while preparing 1.0.7. They are written here because they will bite you if you do not know them, not because they are about to change.</p>
+    <h3>11.1 Restoring a backup through the API does not reliably give you the backup</h3>
+    <p><code>POST /api/admin/backups/{name}/restore</code> copies the saved <code>cynovela.db</code> over the live database file <strong>while the server is still running</strong>. SQLite is in WAL mode, so the running process still holds <code>cynovela.db-wal</code> and <code>cynovela.db-shm</code> from before the copy, and those companions can write the old content back over the file you just restored. The endpoint answers <code>{"ok": true}</code> either way.</p>
+    <p><strong>The route that works:</strong> stop the server (<code>bash stop.sh</code>), put the files back by hand, then start it again.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-39">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(2/8)</span>
+</div>
+<div class="slide-body">
+    <pre><code>bash stop.sh
+cd store/db
+mv cynovela.db     cynovela.db.aside
+mv cynovela.db-wal cynovela.db-wal.aside   # if it exists
+mv cynovela.db-shm cynovela.db-shm.aside   # if it exists
+cp ../backups/&lt;the backup&gt;/cynovela.db .
+rm -rf ../vector/default/chroma
+cp -R ../backups/&lt;the backup&gt;/chroma ../vector/default/chroma
+cd ../..
+./launch.sh</code></pre>
+    <p><strong>Move the <code>-wal</code> and <code>-shm</code> companions aside together with the database.</strong> If you move only <code>cynovela.db</code>, SQLite finds a WAL that does not belong to the file next to it, and the result is neither the old data nor the new.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-40">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(3/8)</span>
+</div>
+<div class="slide-body">
+    <h3>11.2 A backup holds data, not settings</h3>
+    <p><code>_create_backup</code> copies exactly two things: the database (<code>cynovela.db</code>) and the search index (<code>chroma</code>). It does <strong>not</strong> copy:</p>
+    <ul>
+    <li><code>cynovela.yaml</code> — every setting that lives in the file, including the LLM endpoint, the masking mode and the paths</li>
+    <li><code>store/db/jwt/secret.key</code> — the key that signs the pass</li>
+    </ul>
+    <p>So restoring gives you your documents, users and index back. It does not give you your configuration back, and every pass issued before is still valid because the key never moved. Copy <code>cynovela.yaml</code> yourself if you want it kept.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-41">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(4/8)</span>
+</div>
+<div class="slide-body">
+    <h3>11.3 The "dimension" written into an export is a fixed number</h3>
+    <p><code>_meta.json</code> inside a full export carries <code>"embedding_dim": 1024</code>. That number is written into <code>routers/chat.py</code> directly; nothing measures the vectors. It is correct for BGE-M3, which is what ships. If you replace the embedding model with one of a different width, the file will say 1024 and be wrong. The model <strong>name</strong> in the same file is read from the running configuration and is correct.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-42">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(5/8)</span>
+</div>
+<div class="slide-body">
+    <h3>11.4 With Ollama, the context length is whatever Ollama defaults to</h3>
+    <p>Cynovela never sends <code>num_ctx</code> to Ollama. The parameters it does send are <code>top_p</code>, <code>top_k</code>, <code>max_tokens</code>, <code>repeat_penalty</code>, <code>seed</code> and <code>think</code>. Ollama therefore uses its own default context window and <strong>silently drops</strong> whatever does not fit — you get an answer that ignores the passages that were cut. Set the context length on the Ollama side (a Modelfile with <code>PARAMETER num_ctx</code>, or <code>OLLAMA_CONTEXT_LENGTH</code>) to match the material you feed it.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-43">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(6/8)</span>
+</div>
+<div class="slide-body">
+    <h3>11.5 An imported workspace searches by vector only</h3>
+    <p><code>POST /api/workspaces/import</code> restores the vectors, and since 1.0.7 it also rewrites the ids inside them so the imported workspace answers without being published again. What it does <strong>not</strong> restore is the <code>chunks</code> table, from which the BM25 keyword index is built. So an imported workspace is searched by vector similarity and reranking only; the keyword half of the hybrid search contributes nothing (you can see this as <code>bm25_score: 0.0</code> on every hit). Publish the collection again if you want the keyword half back.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-44">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(7/8)</span>
+</div>
+<div class="slide-body">
+    <h3>11.6 Not measured: the package edition on a Mac without conda</h3>
+    <p>The package edition is meant to need neither Python nor conda. That it starts from its bundled environment was measured on the build machine — but that machine has conda installed, so this run cannot tell you that a Mac with <strong>no</strong> conda at all behaves the same. Treat "no conda required" as designed-for and checked on a machine that happens to have conda, not as measured on a machine without it.</p>
+    <h3>11.7 Fixed in chewie, not in falcon</h3>
+    <p>The following were repaired in the application build (chewie) and deliberately <strong>not</strong> carried into the container build (falcon), because falcon's code differs at those places and this release does not rewrite falcon to match:</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-45">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. Things recorded in 1.0.7</span>
+<span class="continued">(8/8)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>What</th><th>Why not</th></tr></thead>
+    <tbody>
+    <tr><td>The scan of one folder cannot start twice</td><td>falcon has no <code>scan_jobs</code> table and its <code>_do_scan</code> takes different arguments</td></tr>
+    <tr><td>The generation-timeout wording</td><td>falcon has no <code>_timeout_answer</code>; the old sentence sits inline in two places</td></tr>
+    <tr><td>Citation numbers carried through to MCP</td><td>falcon's MCP server is an older build (11 tools against 25)</td></tr>
+    <tr><td>The CLI, including <code>login</code> / <code>logout</code></td><td>falcon ships no <code>cynovela-cli.py</code></td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-46">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">12. Authentication, authorization and communication</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>Authentication is a JWT.</strong> It is issued by <code>POST /api/auth/login</code>, and it is required even with a <code>--demo</code> startup. The old fixed token in the form <code>Bearer demo-token-&lt;user_id&gt;</code> was abolished on 2026-07-29. How the signing key is created and where it lives is in §10, "The pass (login token)".</li>
+    <li><strong>Scope of the RBAC implementation.</strong> An authorization check is present in 34 of the 36 router files under <code>routers/</code>. Authentication itself is enforced regardless of the startup form, and it is not loosened with a <code>--demo</code> startup.</li>
+    <li><strong>There is no API key management feature.</strong> Issuing and revoking a per-user API key is not implemented.</li>
+    <li><strong>HTTPS is not supported.</strong> The main body listens over HTTP only. TLS termination has to be delegated to a reverse proxy (nginx and the like).</li>
+    <li><strong>The communication with the LLM is plain text too.</strong> The connection to LM Studio / Ollama is plain HTTP as well. Publishing outside the LAN is not recommended.</li>
+    <li><strong>The Embedding / Reranker settings are not persisted.</strong> A change made at runtime (through the UI) is not written back to the YAML, and returns to the default on restart.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-47">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">13. Linkages that are defined but not integrated</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>DataSyncService is not connected to publish.</strong> The hash-based differential sync only writes logs; the actual call into <code>rag.publish</code> is a noop.</li>
+    <li><strong>The difference detection is per path.</strong> Addition and deletion over the set of paths are detected (at a 60 second interval by default), but comparison by <code>content_hash</code> is not implemented and the comparison method is not fixed, so a change to the <em>content</em> of a file is not detected this way.</li>
+    <li><strong>The exclusion logic of <code>confidence_threshold</code> is only partly integrated</strong> into the search pipeline. What this means in practice is in §10, "How answers are built".</li>
+    <li><strong>A structured answer template is not implemented.</strong> Fixing the LLM's answer into a structured format such as JSON or an <code>&lt;answer&gt;</code> tag is not supported; a free-form answer is the standard. Whether such a feature will be introduced is not decided.</li>
+    <li><strong>Some elements of the i18n switch are fixed.</strong> A few elements whose display is controlled by the language switch (Japanese / English) do not follow it.</li>
+    <li><strong>Some UI elements are hidden until the tab is initialised.</strong> They stay <code>display:none</code> until the JavaScript initialisation finishes.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-48">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">14. Areas skipped in the tests</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>Demo mode related.</strong> 4 authentication boundary tests remain <code>@pytest.mark.skip</code> (lines 11 / 51 / 56 / 157 of <code>tests/test_auth_boundary.py</code>). The reason text says "<code>--demo</code> モードでは認証バイパスが仕様", but because it was changed on 2026-07-29 into a form that enforces authentication even with a <code>--demo</code> startup, this reason no longer matches the implementation.</li>
+    <li><strong>Sources API.</strong> Because of the path registration form, 2 tests are skipped.</li>
+    <li><strong>Publish Semaphore.</strong> Because mock injection at module scope is difficult, 1 xfail.</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-49">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">15. Items that are not complete</span>
+</div>
+<div class="slide-body">
+    <p>The following are recorded as unfinished in <a href="../reference/changelog.md" target="_blank" rel="noopener">reference/changelog.md</a>. They are written here as the state of the current build, not as a schedule.</p>
+    <table>
+    <thead><tr><th>Item</th><th>Current state</th></tr></thead>
+    <tbody>
+    <tr><td>Bugs recorded as HIGH priority</td><td>The reversed DB → Chroma order in <code>import_workspace</code>, the race condition in <code>admin_cleanup_chromadb_orphans</code>, the physical boundary of workspace isolation (see §10, "Workspace separation"), the workspace-A → workspace-B cross-boundary check, and others</td></tr>
+    <tr><td>Indirect prompt injection detection</td><td>A detection mechanism aimed at attacks that come through ingested documents is not implemented</td></tr>
+    <tr><td>Reranker testing with a real model</td><td>Verification with CrossEncoder and others is not done</td></tr>
+    <tr><td>KnowledgeCatalog</td><td>Metadata search in the Chunks viewer and citation tracking are not implemented</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-50">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+</div>
+<div class="slide-body">
+    <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
+    <p>この文書は、Cynovela に <strong>できないこと</strong>、および気をつけることを書いたものです。できることの説明は <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> と<a href="concept.html" target="_blank" rel="noopener">concept.md</a> にあります。ここには、期待すると外れることだけを書きます。</p>
+    <p>版は <code>1.1.1</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-51">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(1/10)</span>
+</div>
+<div class="slide-body">
+    <p><strong>この節がいちばん重い節です。</strong> マスキングは「個人情報を隠す仕組み」ですが、隠せる範囲にははっきりした限界があります。<strong>マスキングが当たったからといって、資料の中の個人情報がすべて消えたわけではありません。</strong> 隠しきれないものが必ず残ります。</p>
+    <h3>1.1 決まった形をした 13 種類しか、規則では取れない</h3>
+    <p><code>guardrail.py</code> の <code>PII_PATTERNS</code> に書かれている種別は、次の 13 種類だけです。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-52">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(2/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>種別</th><th>何を指すか</th></tr></thead>
+    <tbody>
+    <tr><td><code>URL</code></td><td>http / https で始まるアドレス</td></tr>
+    <tr><td><code>EMAIL</code></td><td>電子メールアドレス</td></tr>
+    <tr><td><code>PHONE_JP</code></td><td>携帯電話番号（070 / 080 / 090）</td></tr>
+    <tr><td><code>PHONE_LAND</code></td><td>固定電話番号</td></tr>
+    <tr><td><code>CREDIT</code></td><td>クレジットカード番号</td></tr>
+    <tr><td><code>MYNUMBER</code></td><td>マイナンバー（個人番号）</td></tr>
+    <tr><td><code>PASSPORT</code></td><td>旅券番号（英字 2 + 数字 7）</td></tr>
+    <tr><td><code>IPV4</code></td><td>IPv4 アドレス</td></tr>
+    <tr><td><code>PASSWORD</code></td><td>「パスワード: ○○」のようなラベル付きの値</td></tr>
+    <tr><td><code>APIKEY</code></td><td>API キー・アクセストークン</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-53">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(3/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>種別</th><th>何を指すか</th></tr></thead>
+    <tbody>
+    <tr><td><code>PRIVATEKEY</code></td><td>秘密鍵のブロック（<code>-----BEGIN ... PRIVATE KEY-----</code>）</td></tr>
+    <tr><td><code>SSN</code></td><td>米国の社会保障番号（3-2-4 の形）</td></tr>
+    <tr><td><code>IBAN</code></td><td>国際銀行口座番号</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-54">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(4/10)</span>
+</div>
+<div class="slide-body">
+    <p>これ以外のものは、規則では 1 件もマスキングされません。たとえば社員番号・顧客番号・契約番号・口座番号（IBAN 以外）・車両番号・保険証番号などは、対象外です。</p>
+    <p>規則は「形」で当てています。形が崩れていれば当たりません。逆に、形が偶然一致した無関係な数字はマスキングされます（12 桁ちょうどの数値がマイナンバーとしてマスキングされるのはその例で、漏れを防ぐほうを優先した結果として意図的にそうしてあります）。</p>
+    <h3>1.2 氏名と住所は言語解析まかせ。<code>lite</code> にすると一切マスキングされない</h3>
+    <p>氏名と住所は、上の 13 種類には入っていません。形が決まっていないので規則では取れず、言語解析（NER）の側で扱っています。</p>
+    <ul>
+    <li>設定は <code>cynovela.yaml</code> の <code>pii_mode</code> です。既定は <code>standard</code> です。</li>
+    <li><code>standard</code> のときだけ、<code>PERSON_JP</code>（氏名）と <code>ADDRESS_JP</code>（住所）が働きます。</li>
+    <li><strong><code>pii_mode</code> を <code>lite</code> にすると、氏名も住所も一切マスキングされません。</strong> <code>lite</code> は正規表現だけで判定する道へ切り替わり、氏名・住所の認識器はそもそも組み立てられません（<code>utils/metadata/pii.py</code> の <code>get_active_recognizers()</code>と <code>detect_pii()</code> を参照）。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-55">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(5/10)</span>
+</div>
+<div class="slide-body">
+    <p>氏名の判定は、姓名として登録のある語しか当たりません。珍しい姓名、外国人名のカタカナ表記、あだ名、役職と一体になった書き方などは取りこぼします。住所も、都道府県から始まる書き方と郵便番号の形しか見ておらず、「本社ビル 3 階」「◯◯支店」のような書き方は住所として扱いません。</p>
+    <h3>1.3 組織名と地名は、名前だけあって中身がない</h3>
+    <p><code>get_active_recognizers()</code> は <code>ORG_JP</code>（組織名）と <code>LOC_JP</code>（地名）も返します。名前は返りますが、<strong>それを供給する認識器は 1 つも登録されていません</strong>（ツリー全体で、この 2 つの語はこの 1 行にしか出てきません）。</p>
+    <p>つまり <strong>組織名も地名もマスキングされません。</strong> 一覧に名前があるからといって、働いていると思わないでください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-56">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(6/10)</span>
+</div>
+<div class="slide-body">
+    <h3>1.4 言語モデルが入っていないと、<code>standard</code> でも規則だけに退行する</h3>
+    <p>氏名・住所の判定には spaCy / GiNZA の言語モデルが要ります。これが入っていない環境では、<code>pii_mode</code> が <code>standard</code> のままでも、判定は正規表現だけに退行します。</p>
+    <p>起動時に <code>launch.sh</code> が存在を確かめ、無ければ次の警告を出します。</p>
+    <pre><code>⚠️  spaCy モデル '...' が未導入です (standard PII が regex フォールバックします)。'pip install -r requirements.txt' を実行してください。</code></pre>
+    <p><strong>この警告が出ているときは、氏名も住所もマスキングされていません。</strong> 起動は止まらないので、警告を読み飛ばすと、マスキングが効いているつもりのまま使ってしまいます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-57">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(7/10)</span>
+</div>
+<div class="slide-body">
+    <h3>1.5 パスワードと API キーは、空白・日本語・改行で切れる</h3>
+    <p><code>PASSWORD</code> と <code>APIKEY</code> の規則は、値の部分を ASCII の図形文字だけで拾います（<code>guardrail.py</code> の該当ブロックに「値は ASCII 図形文字 <code>[!-~]</code> のみ（空白・CJK で必ず切れる）」と明記してあります）。このため、次のものは取れません。</p>
+    <ul>
+    <li>値の途中に空白が入っているもの（<code>パスワード: abc def</code>）→ <code>abc</code> までで切れます</li>
+    <li>値の途中に日本語が入っているもの</li>
+    <li>改行をまたぐ値（ラベルと値の間の空白は タブと空白だけに限られ、改行はまたぎません）</li>
+    </ul>
+    <p>また、ラベルと値の間に区切り（<code>:</code> <code>：</code> <code>=</code> <code>＝</code> または「は」）が無いものは対象外です。<code>password protection</code> のような一般的な語を巻き込まないための設計で、その代償として「パスワード　abcdefgh」のような空白区切りは取れません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-58">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(8/10)</span>
+</div>
+<div class="slide-body">
+    <h3>1.6 PDF から取り出した文字に空白が入り、電子メールがマスキングを逃れることがある</h3>
+    <p>PDF は文字の並びではなく、文字を置く位置の情報として組まれています。そこから文字を取り出すとき、元の見た目には無かった空白が語の途中に入ることがあります。</p>
+    <p>マスキングの規則は文字の並びを見ているので、空白が 1 個入るだけで当たらなくなります。電子メールアドレスの場合、次のようになります。</p>
+    <ul>
+    <li><code>taro.yamada@example.co.jp</code> → マスキングされる</li>
+    <li><code>taro.yamada @example.co.jp</code> → <strong>マスキングされない</strong>（<code>@</code> の前で切れる）</li>
+    <li><code>taro.yamada@ example.co.jp</code> → <strong>マスキングされない</strong>（<code>@</code> の後ろで切れる）</li>
+    <li><code>taro. yamada@example.co.jp</code> → <code>yamada@example.co.jp</code> の部分だけがマスキングされ、<code>taro.</code> は残る</li>
+    </ul>
+    <p>同じことは電話番号・カード番号など、他の種別でも起こり得ます。<strong>PDF を取り込んだときは、マスキングが当たっているかどうかを目で確かめてください。</strong>取り込み後のチャンク一覧から実際の本文を見られます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-59">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(9/10)</span>
+</div>
+<div class="slide-body">
+    <h3>1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい</h3>
+    <p>役割が <code>admin</code> のときは、マスキング前の原文を見られる設計です（<code>rag.py</code> の <code>tier_for_role</code>）。ただし、次の 3 つの場合は管理者でもマスキング済みのものしか出ません。</p>
+    <ol>
+    <li><strong>回答用 LLM の宛先が外部を向いているとき。</strong> <code>routers/chat.py</code> の <code>_effective_send_tier</code> は、送り先が自マシン内・コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらずマスキング済みへ落とします。宛先を判定できないときもマスキング済みに倒します。</li>
+    <li><strong>金庫（暗号化された保管）の鍵が合わないとき。</strong>原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行はマスキング済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
+    <li><strong>質問文そのもの。</strong>質問文へのマスキングは役割で分けていません。管理者が質問文に IP アドレスを書いても、その IP はマスキングされてから検索と LLM へ渡ります。</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-60">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">1. マスキング（マスキング）でできないこと</span>
+<span class="continued">(10/10)</span>
+</div>
+<div class="slide-body">
+    <p>以前の版のこの文書には「管理者でも IP がマスキングされる（調査中）」と書いてありましたが、上の 3 つが理由です。不具合ではありません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-61">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">2. 読み込めない資料の形式</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p>取り込める形式は <code>rag.py</code> の <code>SUPPORTED_EXTENSIONS</code> に書いてあるものだけです。</p>
+    <table>
+    <thead><tr><th>種類</th><th>拡張子</th></tr></thead>
+    <tbody>
+    <tr><td>文書</td><td><code>.txt</code> <code>.md</code> <code>.csv</code> <code>.pdf</code> <code>.docx</code></td></tr>
+    <tr><td>表計算・プレゼン</td><td><code>.xlsx</code> <code>.xls</code> <code>.pptx</code></td></tr>
+    <tr><td>ウェブ・メール</td><td><code>.html</code> <code>.htm</code> <code>.eml</code></td></tr>
+    <tr><td>書庫</td><td><code>.zip</code></td></tr>
+    <tr><td>画像</td><td><code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.heic</code> <code>.webp</code> <code>.gif</code></td></tr>
+    </tbody>
+    </table>
+    <p>これ以外は取り込みの対象から外れます。よく持ち込まれるもので、<strong>扱えない</strong>ものを挙げます。</p>
+    <ul>
+    <li>古い Office 形式: <code>.doc</code> <code>.ppt</code>（<code>.xls</code> だけは扱えます）、<code>.rtf</code></li>
+    <li>OpenDocument 系: <code>.odt</code> <code>.ods</code> <code>.odp</code></li>
+    <li>構造化データ: <code>.json</code> <code>.xml</code> <code>.yaml</code></li>
+    <li>メール: <code>.msg</code>（Outlook 形式。<code>.eml</code> のみ対応）</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-62">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">2. 読み込めない資料の形式</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li>電子書籍: <code>.epub</code></li>
+    <li>音声・動画: <code>.mp3</code> <code>.wav</code> <code>.m4a</code> <code>.mp4</code> <code>.mov</code> など</li>
+    <li>画像の一部: <code>.tif</code> <code>.tiff</code> <code>.bmp</code> <code>.svg</code></li>
+    <li>書庫の一部: <code>.7z</code> <code>.rar</code> <code>.tar</code> <code>.gz</code>（<code>.zip</code> のみ対応）</li>
+    </ul>
+    <p>そのほかの制限:</p>
+    <ul>
+    <li><strong>zip の入れ子は 1 段だけです。</strong> zip の中の zip は開きません（<code>rag.py</code> の取り出し処理が、中身の拡張子が <code>.zip</code> のものを飛ばします）。</li>
+    <li><strong>画像は既定では本文を読みません。</strong> 既定の動作はファイル名だけをインデックスに入れる<code>filename_only</code> です（<code>rag.py</code> の <code>_extract_image_text</code>）。画像の中の文字は読みません。説明文を作らせる設定（<code>caption</code> / <code>lm_studio</code>）もありますが、同梱の <code>cynovela.yaml</code> には <code>image:</code> の項目がなく、既定のままです。</li>
+    <li>PDF が画像として作られている（スキャンしただけの）場合、文字が 1 つも取れません。文字認識（OCR）の仕組みは入っていません。</li>
+    <li>暗号化された PDF や壊れた文書は飛ばされます。取り込み結果に「読めない/空: ○件」として出ます。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-63">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">3. 音声で話しかけること</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li>音声の機能は撤去済みです。この配布物に音声からの文字起こしはありません。</li>
+    <li>旧来の経路 <code>/api/transcribe</code> は<strong>もう繋がっていません</strong>。<code>server.py</code> で <code>include_router</code> を外してあります（マスキング前の文字起こしがそのまま返る穴だったため、あえて外したものです）。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-64">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">4. 資料をアップロードする受け口はない</span>
+</div>
+<div class="slide-body">
+    <p>画面やAPIからファイルを送りつける受け口は<strong>撤去済み</strong>です（<code>routers/sources.py</code> の冒頭に「アップロード保存先 <code>_uploads_root</code> と<code>/api/sources/upload</code> を撤去した。取り込みは取り込みフォルダ経由に一本化する」とあります）。</p>
+    <p>資料は、あらかじめ決めた<strong>取り込みフォルダに置いてから</strong>画面で選びます。アプリの中に資料のコピーを作る場所はもうありません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-65">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">5. 外部への送出が止まる条件</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p>これは「できないこと」というより「あえて止めていること」です。判定できないときは必ず止める側に倒します。そのぶん、機能が働かないように見えます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-66">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">5. 外部への送出が止まる条件</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>CRAG の下読み。</strong> 検索結果が質問に足りているかを LLM に下読みさせる処理は、宛先が自マシン内でないとき、および<strong>宛先を判定できないとき</strong>は実行しません（<code>rag.py</code>）。実行しない場合は「検索結果をそのまま採用」に落ちます。画面には <code>[CRAG] 非ローカル宛のため下読みをスキップします</code> と出ます。</li>
+    <li><strong>会話の要約と、回答からの手がかり抽出。</strong> どちらも同じ判定を使い、外部宛（判定不能を含む）では送らずに空を返します（<code>routers/chat.py</code>）。</li>
+    <li><strong>役割による原文送出。</strong> 宛先が外部なら、管理者であってもマスキング済みのものだけを送ります（前述の <code>_effective_send_tier</code>）。</li>
+    <li><strong>マスキングが失敗したら止まる。</strong> 質問文・回答のいずれも、マスキング処理が例外で落ちた場合は 503 を返して処理を打ち切ります。マスキング前のものを代わりに返すことはしません（<code>routers/chat.py</code>）。</li>
+    <li><strong>マスキングなし取り込みと外部埋め込みの組み合わせは拒否します。</strong>古い版で作られた「マスキングなし」のコレクションは、外部の埋め込みを有効にしている間は公開（publish）できません（<code>rag.py</code>）。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-67">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">6. 同時に使うときの制約</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>公開（Publish）は同時に 2 件までです。</strong> 3 件目は 5 秒待って空きが出なければ失敗として返します（<code>server.py</code>。画面には「他のPublishが多すぎます。少し待ってから再試行してください。」と出ます）。</li>
+    <li><strong>LLM の同時実行は既定で 3 件までです</strong>（<code>cynovela.yaml</code> の <code>llm.max_concurrent</code>。<code>server.py</code> がこの値でセマフォを作ります）。4 件目は前の呼び出しが終わるまで待ちます。</li>
+    <li><strong>保管は単一の SQLite ファイルです</strong>（WAL 方式）。書き込みが重なる場面では待ちが発生します。何十人も同時に取り込みを回す使い方は想定していません。</li>
+    <li>ベクターインデックス（ChromaDB）も同じマシンのファイルです。複数のプロセスから同じインデックスを書き換えないでください。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-68">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">7. モデルの差し替えの制約</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p>詳しい手順は <a href="operations.html" target="_blank" rel="noopener">operations.md</a> にあります。要点だけ書きます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-69">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">7. モデルの差し替えの制約</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>埋め込みモデルは、版（snapshot）まで一致していなければなりません。</strong> <code>BAAI/bge-m3</code> の snapshot 版まで揃える必要があります。<strong>版が違うとベクトルの数値が変わり、同梱済みのインデックスと混ざって検索順位が壊れます。</strong>版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるかインデックスを全部作り直してください。</li>
+    <li><strong>軽量版（AIモデルを含みません。約 2.4 MB）はモデルを同梱していません。</strong> モデルを置かないまま起動用スクリプトを実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。取得しない場合は、<strong>起動する前に止まります</strong>。</li>
+    <li><strong><code>host.containers.internal</code> はコンテナの外では名前解決できません。</strong>ホスト側で直接起動する場合は <code>127.0.0.1</code> に書き換えてください（コンテナ版の配布物は、この 1 語だけは自動で読み替えます。別のホスト名や IP を書いた場合は読み替えず、書いたとおりに使います）。</li>
+    <li><strong>外部アクセラレータの画像の受け口は未実装です。</strong> 呼ぶと 501 を返します。</li>
+    <li><strong>起動時の <code>--mode</code> は、実際には切り替わらないものがあります。</strong> <code>--mode</code> の説明文にそのまま書いてあります。<code>lite</code> と <code>lite-en</code> は軽量モデルへの切り替えが未配線で、現状は既定の <code>text</code> と同じ <code>bge-m3</code> で動きます。<code>minimal</code> は TF-IDF が未統合で、こちらも <code>bge-m3</code> が要ります（モデルを置いていない環境では取り込みができません）。<strong>どのモードを選んでも、必要なモデルの大きさは変わりません。</strong></li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-70">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. 骨組みだけで中身がない機能</span>
+<span class="continued">(1/4)</span>
+</div>
+<div class="slide-body">
+    <p>呼ぶと <code>NotImplementedError</code> になるもの、または抽象宣言だけのものです。（行番号は書きません。すぐにずれるためです。ファイル名とクラス・メソッド名で示します。）</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-71">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. 骨組みだけで中身がない機能</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>ファイル</th><th>クラス・メソッド</th><th>状態</th></tr></thead>
+    <tbody>
+    <tr><td><code>providers/classifier.py</code></td><td><code>ClassifierProvider.classify</code></td><td>抽象（差し替え用の口）</td></tr>
+    <tr><td><code>providers/embedding.py</code></td><td><code>EmbeddingProvider.embed</code> / <code>.test_connection</code></td><td>抽象</td></tr>
+    <tr><td><code>providers/embedding.py</code></td><td><code>MLXEmbeddingProvider.embed</code></td><td>未実装（将来）</td></tr>
+    <tr><td><code>providers/reranker.py</code></td><td><code>RerankerProvider.rerank</code> / <code>.test_connection</code></td><td>抽象</td></tr>
+    <tr><td><code>providers/reranker.py</code></td><td><code>MLXReranker.rerank</code></td><td>未実装（将来）</td></tr>
+    <tr><td><code>providers/vector_store.py</code></td><td><code>VectorStoreProvider.add</code> / <code>.search</code> / <code>.delete_collection</code> / <code>.export</code> / <code>.import_data</code> / <code>.test_connection</code></td><td>抽象</td></tr>
+    <tr><td><code>providers/vector_store.py</code></td><td><code>QdrantVectorStore.add</code> / <code>.search</code> / <code>.delete_collection</code> / <code>.export</code> / <code>.import_data</code></td><td>未実装（骨格のみ）</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-72">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. 骨組みだけで中身がない機能</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>ファイル</th><th>クラス・メソッド</th><th>状態</th></tr></thead>
+    <tbody>
+    <tr><td><code>providers/vector_store.py</code></td><td>LanceDB バックエンド</td><td>初期化のみで実体は未実装。パッケージ未導入時は拒否されます</td></tr>
+    <tr><td><code>services/rag_strategies.py</code></td><td><code>GraphRAGStrategy.retrieve</code> / <code>.build_graph</code> / <code>.traverse_with_acl</code></td><td>未実装（将来）</td></tr>
+    <tr><td><code>services/agent_runtime.py</code></td><td><code>AgentRuntime.run</code> / <code>.call_tool</code> / <code>.available_tools</code></td><td>抽象宣言のみ。実装したクラスは 1 つもありません</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-73">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">8. 骨組みだけで中身がない機能</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <p>つまり:</p>
+    <ul>
+    <li><strong>ベクターの保管先を Qdrant に替えることはできません。</strong> 動くのは ChromaDB だけです。</li>
+    <li><strong>Apple Silicon 向けの MLX 経路は使えません。</strong> 埋め込みも再ランクも未実装です。（Apple Silicon の GPU を使いたい場合は、外部アクセラレータ経由になります。<a href="operations.html" target="_blank" rel="noopener">operations.md</a> を参照してください。）</li>
+    <li><strong>ベクターの保管先を LanceDB に替えることもできません。</strong> 初期化しかありません。</li>
+    <li><strong>グラフを使った検索（GraphRAG）は使えません。</strong></li>
+    <li><strong>エージェントに作業をさせることはできません。</strong> 型の宣言だけがあります。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-74">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">9. Kubernetes 一式は、そのままでは動かない</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>コンテナ版の配布物には <code>deploy/k8s/20-deployment.yaml</code> が入っていません。</strong>配布物を作る <code>tools/build-dist.sh</code> が、<code>tar</code> を作る直前にこのファイルを落としています。残りの 3 つ（namespace / pvc / service）だけでは、アプリのコンテナが 1 つも立ちません。</li>
+    <li><strong>ホスト直起動版には <code>deploy/</code> そのものがありません。</strong></li>
+    </ul>
+    <p>Kubernetes で動かしたい場合は、Deployment の定義を自分で書く必要があります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-75">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. その他の制限と注意</span>
+<span class="continued">(1/7)</span>
+</div>
+<div class="slide-body">
+    <h3>起動の形態とデータの場所</h3>
+    <ul>
+    <li><code>--demo</code> を付けると、同梱のダミー資料が載ったデモのデータベースで起動します（<code>store/db/demo.db</code> と <code>store/vector/demo/chroma</code>）。</li>
+    <li>何も付けなければ本番で、<strong>空のデータベース</strong>で起動します（<code>store/db/cynovela.db</code> と <code>store/vector/default/chroma</code>）。</li>
+    <li><strong>どちらも再起動で消えません。</strong> 起動のたびに初期化されることはありません。消したい場合は自分でファイルを消してください。</li>
+    <li>同梱のインデックスとデータベースは、配布物を作るときに<strong>配布物の中の <code>dummy-corpus/</code> だけ</strong>から作っています。作った側の作業用の資料は 1 件も入っていません。実際に何が何件入っているかは、配布物の <code>BUNDLED-DATA.md</code> に書き出してあります。</li>
+    </ul>
+    <h3>横断検索</h3>
+    <p>MCP のツールには <code>search_across_collections</code>（複数のコレクションをまたぐ検索）がありますが、<strong>画面（GUI）には横断検索の入口がありません。</strong>画面からはワークスペースを 1 つ選んで検索します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-76">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. その他の制限と注意</span>
+<span class="continued">(2/7)</span>
+</div>
+<div class="slide-body">
+    <h3>workspace の分離</h3>
+    <ul>
+    <li><strong>ChromaDB 上の workspace の分離は論理境界（collection 名）であり、物理境界（別ディレクトリ等）は実装されていません。</strong> 1 つの Chroma の保管先ディレクトリにすべての collection が入り、分けているのは <code>{collection_id}__raw</code> と <code>{collection_id}__masked</code> という collection 名です（<code>providers/vector_store.py</code>）。</li>
+    <li>検索に <code>workspace_id</code> を渡すと、メタデータの <code>where</code> 条件でさらに絞り込みますが、これは同じ保管先の中での絞り込みであって、置き場所を分けているわけではありません。</li>
+    <li>BM25 のインデックスは <code>(workspace_id, tier)</code> をキーにした辞書としてメモリに持つため、こちらもディレクトリではなくキーで分けています（<code>rag.py</code>）。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-77">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. その他の制限と注意</span>
+<span class="continued">(3/7)</span>
+</div>
+<div class="slide-body">
+    <h3>MCP</h3>
+    <ul>
+    <li><code>mcp_server.py</code> は 25 個の道具（既定で見えるのは 22 個。管理系の 3 個は CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1 を設定したときだけ現れます）を提供します。</li>
+    <li>MCP サーバーは、内部で Cynovela の REST API に認証付きで問い合わせる作りです。つまり <strong>本体が動いていないと MCP も動きません。</strong></li>
+    <li>MCP を動かす Python の実行ファイルは、環境変数 <code>CYNOVELA_MCP_PYTHON</code> で指定できます。指定が無ければ、いま動いている Python をそのまま使います（<code>routers/mcp.py</code>）。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-78">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. その他の制限と注意</span>
+<span class="continued">(4/7)</span>
+</div>
+<div class="slide-body">
+    <h3>回答の作り</h3>
+    <ul>
+    <li><strong>構造化された回答は返せません。</strong> 回答は自由形式（必要に応じて Markdown）です。JSON や決まったタグでの応答は用意していません。出典の引用（<code>[1][2]</code> の形）は実装済みです。</li>
+    <li><strong>信頼度の低いときの自動切り替えはありません。</strong> <code>cynovela.yaml</code> に <code>confidence_threshold</code>（既定 <code>0.4</code>）がありますが、下回ったときに一般知識モードへ自動で切り替えるような動きは組み込まれていません。値は設定としては定義済みですが、検索結果が 0 件のときに<code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> へ自動切替する処理は未統合で、検索パイプラインからの除外ロジックも <strong>部分統合</strong> に留まります。</li>
+    <li><strong>回答の自己評価は単純な規則です。</strong> <code>adaptive_rag.py</code> の<code>evaluate_answer_quality()</code> は「回答が空」「60 文字未満でヒットも少ない」「否定的な言い回しを含む」で足りているかを決めます。LLM に評価させてはいません。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-79">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. その他の制限と注意</span>
+<span class="continued">(5/7)</span>
+</div>
+<div class="slide-body">
+    <h3>廃止した機能</h3>
+    <table>
+    <thead><tr><th>機能</th><th>状態</th></tr></thead>
+    <tbody>
+    <tr><td><code>--mock</code> 起動</td><td>撤去済み。起動の選択肢に存在しません。モデル不要の起動もできません</td></tr>
+    <tr><td><code>/chat-popup</code></td><td>410 Gone を返します。全画面のチャットへ移行しました</td></tr>
+    <tr><td><code>user_id</code> だけのログイン</td><td>撤去済み。<code>username</code> と <code>password</code> が必要です</td></tr>
+    <tr><td><code>/api/auth/users</code> の未認証許可</td><td>撤去済み。常に管理者の認証が要ります</td></tr>
+    <tr><td><code>--pii-mode</code> の起動指定</td><td>廃止。<code>cynovela.yaml</code> の <code>pii_mode</code> で指定します</td></tr>
+    <tr><td>旧 <code>/api/transcribe</code></td><td>撤去済み。音声の機能はありません</td></tr>
+    <tr><td><code>/api/sources/upload</code></td><td>撤去済み。取り込みフォルダ経由に一本化しました</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-80">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. その他の制限と注意</span>
+<span class="continued">(6/7)</span>
+</div>
+<div class="slide-body">
+    <h3>通行証（ログイン用のトークン）</h3>
+    <p>通行証は <code>POST /api/auth/login</code> が発行する JWT です。署名鍵は<strong>配布物には入っていません</strong>。受け取った側で初回起動時に暗号乱数から自動生成し、<code>store/db/jwt/secret.key</code> に保存します（<code>config.py</code> の<code>_load_or_create_jwt_signing_key</code>）。配布物を作るときに、この鍵は必ず落とします（共有すると、よそで発行された通行証が通ってしまうためです）。</p>
+    <p>鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります。この場合、再起動すると発行済みの通行証は無効になります（再ログインで通ります）。</p>
+    <p><strong>1.0.7 から、通行証は呼ぶ側が頼まないかぎり期限を持ちません。</strong> 従来は発行から8時間で必ず使えなくなっていました。いまは <code>POST /api/auth/login</code> に<code>expires_in_hours</code> か <code>expires_in_seconds</code> を渡さないかぎり、期限の入っていない通行証が出ます。承知しておくべきことが2つあります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-81">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">10. その他の制限と注意</span>
+<span class="continued">(7/7)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>ログアウトしても、その通行証は使えなくなりません。</strong> <code>POST /api/auth/logout</code> はリフレッシュトークンと記憶の中の入室記録を消しますが、通行証そのものは署名だけで確かめられるので、写しを持っている側は使い続けられます。従来は8時間という下限がありましたが、いまはありません。漏れた通行証を無効にする道は、<code>store/db/jwt/secret.key</code> を消して起動し直すことだけで、そのときは<strong>すべての</strong>通行証が無効になります。</li>
+    <li>自分の手の届かないところへ通行証を渡すときは、<code>expires_in_hours</code> を渡してください。</li>
+    </ul>
+    <h3>落とし穴</h3>
+    <ul>
+    <li>ChromaDB の <code>PersistentClient</code> は、間違ったパスを渡してもエラーになりません。空のデータベースを黙って作ります。<strong>検索が 0 件になったときは、まずインデックスの場所が合っているかを疑ってください。</strong></li>
+    <li>LM Studio の API に <code>max_tokens</code> を渡さないでください。思考する型のモデルで、考えるためのトークンを使い切ってしまいます。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-82">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. 1.0.7 で分かったこと</span>
+<span class="continued">(1/6)</span>
+</div>
+<div class="slide-body">
+    <p>1.0.7 を用意する過程で実際に測ったものです。近く変わるからではなく、知らないとつまずくのでここに書いてあります。</p>
+    <h3>11.1 API から控えに戻しても、控えの中身になるとはかぎらない</h3>
+    <p><code>POST /api/admin/backups/{name}/restore</code> は、保存してある <code>cynovela.db</code> を、<strong>サーバが動いたまま</strong>、いまのデータベースのファイルへ上書きします。SQLite はWAL の形で動いているので、動いているプロセスは上書きの前から<code>cynovela.db-wal</code> と <code>cynovela.db-shm</code> を握ったままです。∴ その相方が、戻したばかりの中身の上へ古い中身を書き戻すことがあります。口はどちらの場合も<code>{"ok": true}</code> を返します。</p>
+    <p><strong>通る道:</strong> サーバを止め（<code>bash stop.sh</code>）、ファイルを手で置き直してから起こし直します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-83">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. 1.0.7 で分かったこと</span>
+<span class="continued">(2/6)</span>
+</div>
+<div class="slide-body">
+    <pre><code>bash stop.sh
+cd store/db
+mv cynovela.db     cynovela.db.aside
+mv cynovela.db-wal cynovela.db-wal.aside   # 在れば
+mv cynovela.db-shm cynovela.db-shm.aside   # 在れば
+cp ../backups/&lt;控えの名前&gt;/cynovela.db .
+rm -rf ../vector/default/chroma
+cp -R ../backups/&lt;控えの名前&gt;/chroma ../vector/default/chroma
+cd ../..
+./launch.sh</code></pre>
+    <p><strong><code>-wal</code> と <code>-shm</code> の相方も、データベースと一緒に退けてください。</strong> <code>cynovela.db</code>だけを退けると、SQLite は隣にあるファイルのものではない WAL を見つけることになり、出来上がりは古い中身でも新しい中身でもなくなります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-84">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. 1.0.7 で分かったこと</span>
+<span class="continued">(3/6)</span>
+</div>
+<div class="slide-body">
+    <h3>11.2 控えに入るのはデータであって、設定ではない</h3>
+    <p><code>_create_backup</code> が写すのはちょうど2つ、データベース（<code>cynovela.db</code>）と索引（<code>chroma</code>）だけです。次は<strong>写しません</strong>。</p>
+    <ul>
+    <li><code>cynovela.yaml</code> — ファイルに書いてある設定の全部。LLM の宛先、伏字の強さ、置き場所の指定を含みます</li>
+    <li><code>store/db/jwt/secret.key</code> — 通行証に署名する鍵</li>
+    </ul>
+    <p>∴ 戻して返ってくるのは、資料・利用者・索引です。設定は戻りません。鍵が動いていないので、前に発行した通行証も全部そのまま通ります。設定も残したいなら<code>cynovela.yaml</code> は自分で写してください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-85">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. 1.0.7 で分かったこと</span>
+<span class="continued">(4/6)</span>
+</div>
+<div class="slide-body">
+    <h3>11.3 書き出しに書かれる「次元」は、決め打ちの数である</h3>
+    <p>フルエクスポートの <code>_meta.json</code> には <code>"embedding_dim": 1024</code> が入ります。この数は<code>routers/chat.py</code> に直に書かれていて、ベクターを測ってはいません。同梱の BGE-M3 に対しては正しい値です。幅の違う埋め込みモデルに差し替えると、この行は 1024 のまま事実と食い違います。同じファイルのモデルの<strong>名前</strong>のほうは、動いている設定から読んでいるので正しい値です。</p>
+    <h3>11.4 Ollama を使うと、文脈の長さは Ollama の既定のままになる</h3>
+    <p>Cynovela は <code>num_ctx</code> を Ollama へ送りません。送っているのは <code>top_p</code>・<code>top_k</code>・<code>max_tokens</code>・<code>repeat_penalty</code>・<code>seed</code>・<code>think</code> です。∴ Ollama は自分の既定の文脈の窓を使い、入りきらなかったぶんを<strong>黙って捨てます</strong>。捨てられた断片を無視した答えが返ってきます。渡す材料に見合う長さを Ollama 側で決めてください（Modelfile の <code>PARAMETER num_ctx</code>、または <code>OLLAMA_CONTEXT_LENGTH</code>）。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-86">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. 1.0.7 で分かったこと</span>
+<span class="continued">(5/6)</span>
+</div>
+<div class="slide-body">
+    <h3>11.5 取り込んだ作業場所は、ベクターだけで探される</h3>
+    <p><code>POST /api/workspaces/import</code> はベクターを戻します。1.0.7 からは、その中の番号も書き換えるので、取り込んだ作業場所は再度の公開なしで答えられます。戻<strong>さない</strong>のは<code>chunks</code> の表で、BM25 のキーワード索引はここから作られます。∴ 取り込んだ作業場所は、ベクターの近さと再並べ替えだけで探されます。合わせ技のうちキーワード側は効いていません（当たりの <code>bm25_score</code> が全て <code>0.0</code> になることで見えます）。キーワード側も効かせたいときは、そのまとまりをもう一度公開してください。</p>
+    <h3>11.6 測っていないこと: conda の入っていない Mac でのパッケージ版</h3>
+    <p>パッケージ版は Python も conda も要らない形として作られています。同梱の環境から起き上がることは作った機械の上で測りましたが、その機械には conda が入っています。∴ conda が<strong>まったく</strong>入っていない Mac で同じになるかは、この走行では言えません。「conda 不要」は、そう作られていて、conda の在る機械で確かめた、という意味にとどめてください。conda の無い機械で測った、ではありません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-87">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">11. 1.0.7 で分かったこと</span>
+<span class="continued">(6/6)</span>
+</div>
+<div class="slide-body">
+    <h3>11.7 chewie では直し、falcon では直していないもの</h3>
+    <p>次はアプリ版（chewie）で直し、コンテナ版（falcon）へは<strong>わざと</strong>当てていません。falcon はその箇所のコードが違っており、この版では falcon を書き換えて合わせることをしていないためです。</p>
+    <table>
+    <thead><tr><th>何</th><th>当てなかった理由</th></tr></thead>
+    <tbody>
+    <tr><td>同じフォルダの走査を2本同時に始められない件</td><td>falcon には <code>scan_jobs</code> の表が無く、<code>_do_scan</code> の引数も違う</td></tr>
+    <tr><td>時間切れの文言</td><td>falcon に <code>_timeout_answer</code> が無く、古い文が本文中の2か所に置かれている</td></tr>
+    <tr><td>出典の番号を MCP まで通すこと</td><td>falcon の MCP サーバは版が古い（道具 11件・chewie は 25件）</td></tr>
+    <tr><td><code>login</code> / <code>logout</code> を含む CLI</td><td>falcon に <code>cynovela-cli.py</code> が無い</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-88">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">12. 認証・認可と通信</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>認証は JWT です。</strong> <code>POST /api/auth/login</code> が発行し、<code>--demo</code> 起動でも必要です。旧 <code>Bearer demo-token-&lt;user_id&gt;</code> 形式の固定トークンは 2026-07-29 に廃止済みです。署名鍵の作られ方と置き場所は §10「通行証（ログイン用のトークン）」にあります。</li>
+    <li><strong>RBAC の実装範囲。</strong> <code>routers/</code> 配下の 36 ファイルのうち 34 ファイルに認可チェックが入っています。認証そのものは起動形態によらず強制され、<code>--demo</code> 起動でも緩みません。</li>
+    <li><strong>API キー管理機能はありません。</strong> ユーザー単位の API キー発行・失効機能は未実装です。</li>
+    <li><strong>HTTPS 化は未対応です。</strong> 本体は HTTP のみで待ち受けます。TLS 終端はリバースプロキシ（nginx 等）に委譲する必要があります。</li>
+    <li><strong>LLM との通信も平文です。</strong> LM Studio / Ollama への接続も HTTP 平文です。LAN 外への公開は推奨しません。</li>
+    <li><strong>Embedding / Reranker の設定は永続化されません。</strong> 実行時変更（UI 経由）は YAML に書き戻されず、再起動で既定値に戻ります。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-89">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">13. 定義はあるが統合されていない連携</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>DataSyncService は publish につながっていません。</strong> ハッシュ差分同期はログ出力のみで、実際の <code>rag.publish</code> への接続は noop です。</li>
+    <li><strong>差分検出はパス単位です。</strong> パスの集合に対する追加・削除は検出します（既定 60 秒間隔）が、<code>content_hash</code> 比較は実装されておらず比較方式も確定していないため、ファイルの*内容*の変更はこの経路では検出されません。</li>
+    <li><strong><code>confidence_threshold</code> の除外ロジックは検索パイプラインへ部分統合に留まります。</strong>実際の挙動は §10「回答の作り」にあります。</li>
+    <li><strong>構造化回答テンプレートは未実装です。</strong> LLM の回答を JSON や <code>&lt;answer&gt;</code> タグなどの構造化フォーマットで固定する機能はありません。自由形式の回答が標準です。導入するかどうかは決まっていません。</li>
+    <li><strong>i18n 切替の一部要素は固定です。</strong> 言語切替（日本語 / 英語）で表示制御される要素の一部が切替に追随しません。</li>
+    <li><strong>タブ初期化前に隠れている UI 要素があります。</strong> JavaScript の初期化が終わるまで<code>display:none</code> のままです。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-90">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">14. テストでスキップされている領域</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><strong>デモモード関連。</strong> 認証境界テスト 4 件が <code>@pytest.mark.skip</code> のままです（<code>tests/test_auth_boundary.py</code> の 11 / 51 / 56 / 157 行）。理由文には「<code>--demo</code> モードでは認証バイパスが仕様」と書かれていますが、2026-07-29 に <code>--demo</code> 起動でも認証を強制する形へ変えたため、この理由はすでに実装と合っていません。</li>
+    <li><strong>Sources API。</strong> path 登録形式のため一部テスト 2 件をスキップしています。</li>
+    <li><strong>Publish Semaphore。</strong> モジュールスコープでのモック注入困難により xfail 1 件です。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-91">
+<div class="slide-header">
+<span class="doc-name">limits</span>
+<span class="slide-title">15. 完了していない事項</span>
+</div>
+<div class="slide-body">
+    <p>以下は <a href="../reference/changelog.md" target="_blank" rel="noopener">reference/changelog.md</a> に未完了として記録されている事項です。予定ではなく、現在の作りの状態として書きます。</p>
+    <table>
+    <thead><tr><th>項目</th><th>現在の状態</th></tr></thead>
+    <tbody>
+    <tr><td>HIGH 優先度として記録されているバグ</td><td><code>import_workspace</code> の DB → Chroma 順序逆転、<code>admin_cleanup_chromadb_orphans</code> の競合状態、workspace 分離の物理境界（§10「workspace の分離」参照）、workspace-A → workspace-B の越境チェックなど</td></tr>
+    <tr><td>間接プロンプトインジェクション検出</td><td>取り込んだ文書を経由する攻撃を対象とした検出機構は未実装です</td></tr>
+    <tr><td>Reranker の実モデルでの試験</td><td>CrossEncoder などでの検証を行っていません</td></tr>
+    <tr><td>KnowledgeCatalog</td><td>Chunks ビューアのメタデータ検索と出典追跡は未実装です</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+</div>
+<nav class="nav-bar">
+<button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+<span id="slide-counter">1 / 91</span>
+<button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>

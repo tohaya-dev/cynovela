@@ -179,14 +179,14 @@ ctx_re = re.compile(r"""(?i)(password|passwd|\bpw\b|パスワード)[^\n]{0,20}?
 word_re = re.compile(r"[\w.\-]")
 # fixed-initial-credentials-20260802 (§3-2):
 #   初期のパスワードは固定値になり、受け取り手が入れるように配布物の中のガイドへ明記する。
-#   ∴ その2つは「ガイド (docs/STARTUP.md)」と「設定 (cynovela.yaml)」に限って許す。
+#   ∴ その2つは「設定 (cynovela.yaml)」に限って許す。
 #   それ以外の場所 (データベース・記録・コード・作業の残りかす) に出たら従来どおり止める。
 #   許した箇所も件数と場所を必ず画面へ出す (黙って通さない)。
 allowed_paths = {          # 記号 -> 出てよい相対パスの集合
-    "T3": {"docs/STARTUP.md", "cynovela.yaml"},   # 管理者の初期のパスワード
+    "T3": {"cynovela.yaml"},                      # 管理者の初期のパスワード
     # N-4 連動: 閲覧者の値も設定 (auth.viewer_initial_password) に書く形に
     #   なったため、管理者と同じく cynovela.yaml を許す。他の場所は従来どおり止める。
-    "T4": {"docs/STARTUP.md", "cynovela.yaml"},   # 閲覧者の初期のパスワード
+    "T4": {"cynovela.yaml"},                      # 閲覧者の初期のパスワード
 }
 hits = {}               # (記号, 相対パス) -> 箇所数
 allowed_hits = {}       # (記号, 相対パス) -> 箇所数 (許した分。止めないが必ず出す)
@@ -411,7 +411,7 @@ resolve_vault_key() {   # 金庫鍵 (store/secret.key) の実体を探す。見�
 # 外の推論サーバ (Mac Accelerator Service) と、その立て方の 1 ページ。
 # 追跡下ならこの呼び出しは何もしない (git archive 側で入っている)。
 add_if_untracked "mas" "外の推論サーバ (Mac Accelerator Service)"
-add_if_untracked "docs/SETUP-ACCELERATOR.md" "外の推論サーバの立て方 (受け取り手向け)"
+add_if_untracked "docs/operations.md" "外の推論サーバの立て方 (受け取り手向け)"
 
 # ── 金庫の鍵を同梱する (dist-vault-key-20260729) ──────────────────────
 # 同梱する demo.db のチャンクは金庫鍵で暗号化されている。鍵が無いと受け取り手の
@@ -503,7 +503,7 @@ echo "[dist] 既定の取り込み元に絶対パス: 0件"
 # 配布物のディレクトリの中には無い。接頭辞が全配布物で同じ既定値 (cyn) だったため、
 # 以前の配布物・以前の実行が作った cyn-db がその機材に残っていると podman はそれを黙って
 # 再利用し、この配布物が同梱した demo.db は保存領域へ写されない。
-# ∴ 画面までは開けるのに、ガイド (docs/STARTUP.md) に書いたパスワードが通らない。
+# ∴ 画面までは開けるのに、同梱の設定に書いたパスワードが通らない。
 # 配布物の身元 (名前・形態・作った日) から決めた接頭辞をパッケージングの場で焼き込み、
 # 別の配布物の保存領域を引き当てないようにする。値は手入力しない。
 # chewie にはこの節が無い (この Mac の中で直接動き、保存領域は store/ の下である)。
@@ -526,7 +526,7 @@ fi
 
 # ── 初期のパスワードを固定値にする (fixed-initial-credentials-20260802・§3-2) ──
 #   受け取り手が入れない配布物を作らないため、管理者と閲覧者の初期のパスワードは固定値にし、
-#   配布物の中のガイド (docs/STARTUP.md) に書く。乱数は使わない。
+#   配布物の中の設定 (cynovela.yaml) に書く。乱数は使わない。
 #   平文はこのリポジトリのどこにも置かない。tools/dist-initial-credentials.local
 #   (1 行 = 記号 TAB 値・git 追跡外・mode 600) から読み、ここで staging へ書き込む。
 #   このファイルが無いときは決められないので止める (フェイルクローズ)。
@@ -579,7 +579,7 @@ PYYAML
 
 # N-4: 閲覧者の初期のパスワードも同じ形で書く。従来は管理者だけを書いており、
 #   引数なし (本番) の閲覧者 seed (db.py・N-4 で demo 分岐の外へ移した) が乱数へ倒れ、
-#   ガイド (docs/STARTUP.md) に書いた値では入れなかった。新しい値は作らない (ガイドと同じ値)。
+#   同梱の設定に書いた値では入れなかった。新しい値は作らない (設定と同じ値)。
 python - "$STAGE/$NAME/cynovela.yaml" "$VIEWER_PW" <<'PYYAML'
 import re, sys
 path, pw = sys.argv[1], sys.argv[2]
@@ -594,7 +594,7 @@ open(path, "w", encoding="utf-8").write(new)
 print("[dist] 同梱の設定に閲覧者の初期のパスワードを書いた (cynovela.yaml auth.viewer_initial_password)")
 PYYAML
 
-# パスワードは docs/STARTUP.md に書かない (画面に出す形へ変えた)。
+# パスワードは同梱の文書に書かない (画面に出す形へ変えた)。
 #   以前はここでガイドの平文の2行を実際の値へ置き換えていたが、平文を持たせない
 #   ことにしたため、その処理を外した。値は上の cynovela.yaml へ書くだけで足り、
 #   受け取り手には launch.sh が初回起動時に画面へ出す。

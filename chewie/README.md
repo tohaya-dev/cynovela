@@ -5,6 +5,9 @@
 **The only entry document is [START-HERE.md](START-HERE.md). Open it first — setup, restart, reinstall and uninstall are all there.**
 **最初に開くのは [START-HERE.md](START-HERE.md) だけです（唯一の入口。セットアップ・再起動・再インストール・アンインストールはすべてそこにあります）。**
 
+**Every document bundled here is listed in [docs/INDEX.md](docs/INDEX.md), sorted by reader — using it / installing and running it / looking things up.**
+**同梱の文書の全数は [docs/INDEX.md](docs/INDEX.md) に、読み手ごと（使う人 / 入れる人・回す人 / 引く人）に並べてあります。**
+
 ## English
 
 <!-- cynovela:welcome-en:start -->
@@ -26,7 +29,7 @@
 Requires an Apple silicon Mac. This is a learning and demonstration tool, not a production system. Provided as is, without warranty. Answers can be wrong; always open the cited source and check.
 <!-- cynovela:welcome-en:end -->
 
-See docs/NOTICE.md ("Before You Start") before you rely on it.
+See [docs/NOTICE.md](docs/NOTICE.md) ("Before You Start") before you rely on it.
 
 **Which package to download**
 
@@ -62,7 +65,7 @@ Everything is on GitHub Releases (v1.1.1): https://github.com/tohaya-dev/cynovel
 
 **読み込むときに、氏名・電話番号・住所などを伏せる処理を挟みます。** 閲覧者に返るのはマスキング処理を通したあとの文だけです。API連携で外部へ送るのも、マスキング処理を通したあとの文です。**ただしマスキング処理は完全ではなく、伏せきれずに残るものがあります。**
 
-**学習と試用のためのツールです。** 業務の本番システムとして使うことを想定していません。**先に「使う前のご注意」(同梱の docs/NOTICE.md) をお読みください。**
+**学習と試用のためのツールです。** 業務の本番システムとして使うことを想定していません。**先に「使う前のご注意」(同梱の [docs/NOTICE.md](docs/NOTICE.md)) をお読みください。**
 <!-- cynovela:welcome:end -->
 
 ---
@@ -219,7 +222,8 @@ bash uninstall.sh
 
 ## ターミナルから使う
 
-コマンド一覧は同梱の「docs/USE-FROM-TERMINAL.txt」にあります（`./launch.sh --help` と同一の内容です）。
+コマンド一覧は同梱の [docs/USE-FROM-TERMINAL.txt](docs/USE-FROM-TERMINAL.txt) にあります（`./launch.sh --help` と同一の内容です）。
+`cynovela-cli.py` の命令と引数の全数は [docs/reference/cli.md](docs/reference/cli.md) にあります。
 
 ---
 
@@ -228,8 +232,8 @@ bash uninstall.sh
 - `LICENSE` — 本体のライセンス（MIT）
 - `LICENSES-MODELS.md` — 同梱・参照するAIモデルのライセンス表記
 - `THIRD_PARTY_NOTICES.md` — 画面側の部品とマスキングの仕組みが使う第三者ソフトウェアのライセンス表記
-- `docs/BUNDLED-DATA.md` — 同梱データについての説明
-- `docs/NOTICE.md` — 使う前のご注意（免責）
+- [`docs/BUNDLED-DATA.md`](docs/BUNDLED-DATA.md) — 同梱データについての説明
+- [`docs/NOTICE.md`](docs/NOTICE.md) — 使う前のご注意（免責）
 - `SECURITY.md` — セキュリティについて
 
 ---
@@ -238,7 +242,7 @@ bash uninstall.sh
 
 - 画面の表示は日本語のみです。英語には切り替わりません。
 - はじめての方へのガイドは、起動時に自動では出ません。最初の画面の「このツールについて」からいつでも開けます。
-- 環境の準備（--setup）は起動の画面から呼べません。ターミナルから実行してください。手順は同梱の「docs/USE-FROM-TERMINAL.txt」にあります。
+- 環境の準備（--setup）は起動の画面から呼べません。ターミナルから実行してください。手順は同梱の [docs/USE-FROM-TERMINAL.txt](docs/USE-FROM-TERMINAL.txt) にあります。
 - データの保存先を変えても、資料の中身そのものは元の場所に残ります。
 - 資料のフォルダを足したあと、起動し直す前に外そうとすると失敗します。起動し直してから外してください。
 - 構成の「動作確認用」は、いまは「容量を優先」と同じモデルを使います。容量は変わりません。

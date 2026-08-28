@@ -11,7 +11,7 @@
 `` を正とする。理由は 3 つ。
   1. 受け取り手の目に最も触れる (API 応答とファイル冒頭の両方に出る唯一の値)。
   2. ここ 1 か所を読むだけで /api/health と /openapi.json /docs が同時に追随する。
-  3. 既存の記録と矛盾しない (README・docs/quickstart.md・コード内の
+  3. 既存の記録と矛盾しない (README・docs/getting-started.md・コード内の
      `` を前提にした記述群と揃う)。
 
 なぜ config.py ではなくこの新しいファイルに置くか:

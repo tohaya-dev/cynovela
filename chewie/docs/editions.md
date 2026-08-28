@@ -53,7 +53,7 @@ Always download **`SHA256SUMS`** as well, whichever you pick.
 None of the four contains a language model for writing answers. Cynovela finds
 the passages; the sentences are written by a language model that runs outside it
 — LM Studio, or anything with an OpenAI-compatible endpoint. Set that up
-separately (see `docs/llm-connection.md`).
+separately (see `docs/operations.md`, "Connecting an LLM Provider").
 
 The name "models" on the fourth item means the **embedding and reranking**
 models — the ones that turn documents into something searchable. Despite the
@@ -110,7 +110,7 @@ file name, those parts are not conda packages.
 4つのどれにも、**答えの文章を書く**言語モデルは入っていません。Cynovela は
 資料の中から根拠になる文を見つけるところまでを行い、文章そのものは外で動く
 言語モデルが書きます。LM Studio でも、OpenAI と同じ形の口を持つものでも構いません。
-そちらは別に用意してください（`docs/llm-connection.md` を参照）。
+そちらは別に用意してください（`docs/operations.md` の「LLM プロバイダーを繋ぐ」を参照）。
 
 4つめの「models」は、**埋め込みと再並べ替え**のモデルのことです。資料を探せる形に
 変えるためのものです。ファイル名は models ですが、conda のパッケージではありません。

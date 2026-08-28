@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ハンズオン / Hands-on — Cynovela</title>
+<style>
+/* Cynovela Slide Base CSS — generated  */
+/* ダークモード禁止: @media prefers-color-scheme は一切書かない */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* docs/html/_tokens.txt から確定値を採用（frontend/style.css の :root と一致） */
+  --cyn-bg:           #f5f6f8;
+  --cyn-surface:      #ffffff;
+  --cyn-border:       #e0e7ef;
+  --cyn-text:         #0f1923;
+  --cyn-muted:        #637a96;
+  --cyn-accent:       #0078d4;
+  --cyn-accent-hover: #006abc;
+  --cyn-accent-light: #e6f3fc;
+  --cyn-success:      #0e8a4a;
+  --cyn-success-bg:   #eaf7f0;
+  --cyn-warn:         #b45309;
+  --cyn-warn-bg:      #fef9ec;
+  --cyn-error:        #c0392b;
+  --cyn-error-bg:     #fef2f2;
+  --cyn-radius:       10px;
+  --cyn-font:         'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  --cyn-mono:         'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html, body {
+  height: 100%; background: var(--cyn-bg);
+  font-family: var(--cyn-font); color: var(--cyn-text);
+  color-scheme: light only;
+  -webkit-font-smoothing: antialiased;
+}
+/* スライドデッキ */
+.slide-deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+/* スライド本体（16:9） */
+.slide {
+  display: none; position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--cyn-surface);
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 44px; /* nav-bar の高さ分 */
+}
+.slide.active { display: flex; }
+/* カバースライド */
+.slide.cover {
+  border-left: 8px solid var(--cyn-accent);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 72px 104px;
+}
+.cover-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 800;
+  color: var(--cyn-text); line-height: 1.2; margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.cover-sub {
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: var(--cyn-muted); font-weight: 400;
+}
+.cover-brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 28px; padding: 6px 12px;
+  background: var(--cyn-accent-light); border: 1px solid var(--cyn-accent);
+  border-radius: 6px;
+  font-size: 13px; font-weight: 700; color: var(--cyn-accent);
+}
+/* スライドヘッダー */
+.slide-header {
+  padding: 16px 40px 12px;
+  border-bottom: 1px solid var(--cyn-border);
+  display: flex; align-items: baseline; gap: 16px;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-header .doc-name {
+  font-size: clamp(11px, 1.2vw, 14px);
+  color: var(--cyn-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.slide-header .slide-title {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 700; color: var(--cyn-text);
+}
+/* コンテンツエリア */
+.slide-body {
+  padding: 28px 40px 16px;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* テキスト要素 */
+h3 { font-size: clamp(15px, 1.8vw, 20px); font-weight: 700; color: var(--cyn-accent); margin-bottom: 6px; margin-top: 4px; }
+h4 { font-size: clamp(14px, 1.6vw, 18px); font-weight: 700; color: var(--cyn-text); margin-bottom: 4px; margin-top: 4px; }
+p  { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.7; color: var(--cyn-text); }
+/* 箇条書き */
+ul, ol { padding-left: 1.4em; }
+li { font-size: clamp(13px, 1.5vw, 17px); line-height: 1.8; margin-bottom: 4px; color: var(--cyn-text); }
+li > ul, li > ol { margin-top: 2px; }
+/* コードブロック */
+pre {
+  background: #f8fafc; border: 1px solid var(--cyn-border);
+  border-radius: var(--cyn-radius); padding: 14px 18px;
+  font-family: var(--cyn-mono); font-size: clamp(11px, 1.3vw, 14px);
+  overflow-x: auto; flex-shrink: 0; color: #1e293b; line-height: 1.55;
+}
+code { font-family: var(--cyn-mono); }
+p code, li code, td code {
+  background: #f1f5f9; padding: 2px 6px;
+  border-radius: 4px; font-size: 0.88em; color: #0f1923;
+}
+/* テーブル */
+table {
+  border-collapse: collapse; width: 100%;
+  font-size: clamp(11px, 1.3vw, 15px);
+  background: var(--cyn-surface);
+  border-radius: var(--cyn-radius);
+  overflow: hidden;
+}
+th {
+  background: var(--cyn-accent-light); color: var(--cyn-accent);
+  padding: 8px 12px; text-align: left; font-weight: 700;
+  border: 1px solid var(--cyn-border);
+}
+td { padding: 7px 12px; border: 1px solid var(--cyn-border); color: var(--cyn-text); vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+/* 引用ブロック（免責・注意書き） */
+blockquote {
+  background: var(--cyn-accent-light);
+  border-left: 4px solid var(--cyn-accent);
+  border-radius: 0 var(--cyn-radius) var(--cyn-radius) 0;
+  padding: 12px 16px;
+  font-size: clamp(12px, 1.4vw, 15px); color: var(--cyn-text);
+  line-height: 1.6;
+}
+blockquote strong { color: var(--cyn-accent); }
+/* 続きスライドの小バッジ */
+.continued {
+  font-size: 11px; color: var(--cyn-muted);
+  background: #f1f5f9; border-radius: 4px;
+  padding: 2px 7px; margin-left: auto;
+  font-weight: 500;
+}
+/* フッター */
+.slide-footer {
+  padding: 8px 40px;
+  border-top: 1px solid var(--cyn-border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  background: var(--cyn-surface);
+}
+.slide-footer span {
+  font-size: 11px; color: var(--cyn-muted);
+  font-family: var(--cyn-mono);
+}
+.slide-footer .brand {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--cyn-font); font-weight: 700; color: var(--cyn-text);
+}
+.slide-footer .brand .accent { color: var(--cyn-accent); }
+/* リンク */
+a { color: var(--cyn-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* 章タイトル（manual-complete 用） */
+.chapter-slide {
+  background: var(--cyn-accent-light) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-title {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 800; color: var(--cyn-accent);
+  text-align: center;
+}
+/* ナビバー */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: var(--cyn-surface);
+  border-top: 1px solid var(--cyn-border);
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  z-index: 100;
+}
+.nav-bar button {
+  background: var(--cyn-accent); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 14px; cursor: pointer;
+  font-family: var(--cyn-font); font-weight: 500;
+  transition: background 0.15s;
+}
+.nav-bar button:hover { background: var(--cyn-accent-hover); }
+.nav-bar button:disabled { background: var(--cyn-border); color: var(--cyn-muted); cursor: default; }
+#slide-counter { font-size: 14px; color: var(--cyn-muted); min-width: 60px; text-align: center; font-family: var(--cyn-mono); }
+/* 印刷 */
+@media print {
+  .nav-bar { display: none; }
+  .slide { display: flex !important; position: relative;
+    width: 297mm; height: 167mm; page-break-after: always; padding-bottom: 0; }
+}
+</style>
+</head>
+<body>
+<div class="slide-deck" id="deck">
+<div class="slide cover active" id="slide-1">
+<div class="cover-brand">📊 Cynovela</div>
+<div class="cover-title">ハンズオン / Hands-on</div>
+<div class="cover-sub">Cynovela — 非公式・個人学習目的</div>
+</div>
+<div class="slide" id="slide-2">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">English — About this document</span>
+</div>
+<div class="slide-body">
+    <p><strong>日本語版はこちら → 日本語</strong></p>
+    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built by an individual to understand the concepts of AI infrastructure tools by actually running them. It is not a commercial offering and not an official implementation. The implementation is entirely original, and consists of an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company.</blockquote>
+    <p>This document is a set of exercises you run against the sample material that ships inside this package. You ask real questions, look at the answers, and check them against the file the answer actually came from.</p>
+    <p>Every exercise below uses only the seven files under <code>dummy-corpus/</code>. They describe a fictional company; the people, organizations, addresses, phone numbers, and mail addresses in them do not exist.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-3">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">1. Getting ready</span>
+<span class="continued">(1/3)</span>
+</div>
+<div class="slide-body">
+    <p>The exercises assume Cynovela is already running with the bundled demo data.</p>
+    <ul>
+    <li>For how to start it, see <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a>.</li>
+    <li>Start with the demo data, open <code>http://127.0.0.1:8765</code> in a browser, and log in. The user names and passwords are the ones described in <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a>.</li>
+    <li>On a demo start, one workspace holding the bundled sample material is present, and one source named <code>src-dummy</code> pointing at the ingest root <code>./dummy-corpus</code> is already registered. The collection under it is already published, so you can ask questions right away.</li>
+    </ul>
+    <p>Two things are worth turning on before you begin.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-4">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">1. Getting ready</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li>In RAG Chat, the display mode can be switched between <strong>Standard</strong> (<code>normal</code>), <strong>Explain</strong> (<code>explain</code>), and <strong>Developer</strong> (<code>developer</code>). In <code>developer</code> you can see the vector score / BM25 score / hybrid score of each chunk. Exercises A to C are much easier to read in <code>developer</code>.</li>
+    <li>The audit log screen (admin only) shows what the server recorded for each question. Exercises C and D end by looking at it.</li>
+    </ul>
+    <p>How to read the scores. The vector score is a cosine similarity against the Embedding model that Cynovela uses by default (<code>BAAI/bge-m3</code>, BGE-M3).</p>
+    <table>
+    <thead><tr><th>Score band</th><th>Interpretation</th></tr></thead>
+    <tbody>
+    <tr><td>0.35 to 0.45</td><td>Noise floor. Appears even for an unrelated question</td></tr>
+    <tr><td>0.40</td><td>The effective default of the confidence threshold (<code>confidence_threshold</code>)</td></tr>
+    <tr><td>0.55 to 0.75</td><td>The usual band for a question the material really answers</td></tr>
+    <tr><td>0.75 and above</td><td>Very strongly related</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">1. Getting ready</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+    <p>For the search itself (hybrid of vector and BM25, RRF, MMR, and the rest), see <a href="architecture.html" target="_blank" rel="noopener">architecture.md</a> §4 "How search works".</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-6">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">2. What is inside the sample material</span>
+<span class="continued">(1/4)</span>
+</div>
+<div class="slide-body">
+    <p><code>dummy-corpus/</code> holds seven files. Knowing what is in which file is the whole point of the exercises: you can check every answer against the source yourself.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-7">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">2. What is inside the sample material</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>File</th><th>What it is</th><th>Used in</th></tr></thead>
+    <tbody>
+    <tr><td><code>00-はじめに.md</code></td><td>A short guide to the other six files</td><td>Exercise A (as an orientation, not as an answer source)</td></tr>
+    <tr><td><code>01-company-overview.md</code></td><td>Company profile: outline, product categories, locations, history, management</td><td>Exercises A, B, C</td></tr>
+    <tr><td><code>02-work-rules.md</code></td><td>Work rules (excerpt): working hours, holidays, leave, pay, expenses</td><td>Exercises A, B, C</td></tr>
+    <tr><td><code>03-system-guide.md</code></td><td>Operating guide for the in-house inventory system: login, goods receipt, stocktaking, monthly closing</td><td>Exercises A, B, D</td></tr>
+    <tr><td><code>04-faq.md</code></td><td>20 in-house questions and answers, summarizing the three files above</td><td>Exercises A, B</td></tr>
+    <tr><td><code>05-meeting-notes.md</code></td><td>Minutes of three monthly meetings (May, June, July 2026)</td><td>Exercises B, C</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-8">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">2. What is inside the sample material</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>File</th><th>What it is</th><th>Used in</th></tr></thead>
+    <tbody>
+    <tr><td><code>06-company-overview-en.md</code></td><td>The company profile in English</td><td>Exercises A, B, C</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-9">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">2. What is inside the sample material</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <p>Note that <code>04-faq.md</code> restates content that also lives in <code>01</code>, <code>02</code>, and <code>03</code>. That overlap is deliberate: it is what makes the citation list in the answer interesting to look at.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-10">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">3. Exercise A — questions one file can answer</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p><strong>What you are checking</strong>: that a question whose answer sits in a single file is answered from that file, and that the citation points at it.</p>
+    <p>Ask these in RAG Chat, one at a time.</p>
+    <ol>
+    <li>就業時間は何時から何時までですか</li>
+    <li>年次有給休暇は何日もらえますか</li>
+    <li>有給休暇はいつまでに届け出ればよいですか</li>
+    <li>従業員は何名ですか</li>
+    </ol>
+    <ol start="5">
+    <li>支社はどこにありますか</li>
+    <li>給与の支払日はいつですか</li>
+    <li>在庫台帳のログインに何回失敗するとロックされますか</li>
+    <li>入庫登録はいつまでに行いますか</li>
+    </ol>
+    <p>And in English, against <code>06-company-overview-en.md</code>:</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-11">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">3. Exercise A — questions one file can answer</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ol start="9">
+    <li>How many employees does the company have, and when was it founded?</li>
+    <li>What are the four product categories?</li>
+    <li>When was the Fukuoka branch opened?</li>
+    </ol>
+    <p><strong>How to check</strong>: the expected answer and the place it comes from are in the table in section 8. Open the file named there and compare. In <code>developer</code> mode, the top chunk for these questions usually lands in the 0.55 to 0.75 band.</p>
+    <p>A thing worth noticing: for questions 1 to 8 the citation list often contains <strong>two</strong> files — the original one and <code>04-faq.md</code>, which restates it. That is the hybrid search finding both, not a mistake.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-12">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">4. Exercise B — questions that span more than one file</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p><strong>What you are checking</strong>: that a question no single file answers is still answered, by pulling chunks out of several files at once.</p>
+    <ol>
+    <li>在庫台帳の月次締めと経費精算の締めは同じものですか。それぞれいつ行いますか</li>
+    <li>差異報告の登録漏れが問題になったのはどの支社ですか。差異報告の正しい手順も教えてください</li>
+    <li>社長は誰ですか。2026年6月の会議には出席しましたか</li>
+    <li>「アオゾラ在庫台帳」はいつ導入され、その月次締めは毎月何日ですか</li>
+    <li>季節雑貨はどの棚に保管しますか。2026年7月の会議では季節雑貨について何が報告されましたか</li>
+    <li>経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください</li>
+    </ol>
+    <p>And one in English, deliberately asked against material that is mostly Japanese:</p>
+    <ol start="7">
+    <li>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-13">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">4. Exercise B — questions that span more than one file</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <p><strong>How to check</strong>: for each of these, the table in section 8 names <strong>two or more</strong> files. Confirm that the citation list contains more than one file. Question 7 is the interesting one: the branch list is in the English file, but the error counts exist only in the Japanese minutes, so an answer that covers both had to cross the language boundary. BGE-M3 is a multilingual Embedding model, which is why this can work at all.</p>
+    <p>Question 1 is the trap the sample material was built around. Two different closing dates exist on purpose — the inventory monthly closing on the 25th and the expense closing at month end. An answer that merges them into one is wrong, and you can see it is wrong by opening the two files.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-14">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">5. Exercise C — questions the material does not answer</span>
+<span class="continued">(1/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>What you are checking</strong>: what comes back when the material simply does not contain the answer. This is the exercise that matters most.</p>
+    <ol>
+    <li>退職金はいくら支払われますか</li>
+    <li>名古屋支社の住所を教えてください</li>
+    <li>アオゾラ商事の株価はいくらですか</li>
+    <li>2026年8月の月次業務改善会議の決定事項を教えてください</li>
+    </ol>
+    <p>And in English:</p>
+    <ol start="5">
+    <li>What is the retail price of the cooling goods?</li>
+    <li>Who is the president of Aozora Trading's largest supplier?</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-15">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">5. Exercise C — questions the material does not answer</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>How the current build behaves</strong>: search still returns chunks for these questions — something is always the nearest neighbour. What the build does is look at the highest <strong>vector</strong> score among them, and compare it with <code>confidence_threshold</code>, whose effective default is <strong>0.40</strong>. When the highest score falls below that threshold, the LLM is not called at all; instead a low-confidence reply is returned, saying that no reliable answer was found and naming the score and the threshold, together with a few suggested rephrasings built from the headings of the chunks that were found. The server also records a <code>LOW_CONFIDENCE_FALLBACK</code> entry in the audit log.</p>
+    <p>So the reply you get is not the LLM guessing. It is the pipeline declining to guess.</p>
+    <p><strong>How to check</strong>:</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-16">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">5. Exercise C — questions the material does not answer</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+    <ol>
+    <li>Ask one of the six questions above in <code>developer</code> mode and read the top score.</li>
+    <li>Open the audit log screen as <code>admin</code> and look for the <code>LOW_CONFIDENCE_FALLBACK</code> entry for that question. The detail line carries the score and the threshold.</li>
+    <li>Verify the claim yourself: <code>grep -i 退職 dummy-corpus/*.md</code> and the equivalent for the other five return nothing. The words are genuinely absent from all seven files.</li>
+    </ol>
+    <p>Do not expect this to fire every single time. Whether a given question lands above or below 0.40 depends on the wording, and a question that is <em>near</em> the material (for example asking about parental leave, when the work rules do mention leave for a spouse giving birth) can score high enough to be answered from the closest thing present. The six above were chosen because the subject matter is absent outright.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-17">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">6. Exercise D — how the same material looks to different roles</span>
+<span class="continued">(1/4)</span>
+</div>
+<div class="slide-body">
+    <p><strong>What you are checking</strong>: that the role you logged in with changes both which vault is searched and what the answer is allowed to show.</p>
+    <p>The effective roles that the database holds are the two values <code>admin</code> and <code>viewer</code>. Names such as <code>curator</code> are normalized to <code>viewer</code>.</p>
+    <table>
+    <thead><tr><th>Role</th><th>Vault searched</th><th>Exit mask on the answer</th></tr></thead>
+    <tbody>
+    <tr><td><code>admin</code></td><td>raw (the original text)</td><td>Not applied</td></tr>
+    <tr><td><code>viewer</code></td><td>masked</td><td>Applied</td></tr>
+    </tbody>
+    </table>
+    <p>The sample material contains contact details on purpose, which is what makes this exercise possible without preparing anything:</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-18">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">6. Exercise D — how the same material looks to different roles</span>
+<span class="continued">(2/4)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><code>01-company-overview.md</code> — two mail addresses in "5. 経営体制とお問い合わせ"</li>
+    <li><code>03-system-guide.md</code> — a phone number, a mail address, and an IPv4 address in "情報システム担当の連絡先"</li>
+    <li><code>05-meeting-notes.md</code> — mail addresses inside two of the decisions</li>
+    </ul>
+    <p><strong>Steps</strong>:</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-19">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">6. Exercise D — how the same material looks to different roles</span>
+<span class="continued">(3/4)</span>
+</div>
+<div class="slide-body">
+    <ol>
+    <li>Log in as <code>admin</code> and ask 情報システム担当の連絡先を教えてください. The phone number, the mail address, and the IP address appear as written.</li>
+    <li>Log out, log in as <code>viewer</code>, and ask exactly the same question. The same fields come back as <code>[MASKED:PHONE]</code>, <code>[MASKED:EMAIL]</code>, <code>[MASKED:IP]</code>.</li>
+    <li>Ask 会社案内の問い合わせ先を教えてください under both roles and compare in the same way.</li>
+    <li>Still as <code>viewer</code>, try to open the audit log screen. It is refused with 403 Forbidden — the admin-only endpoints are closed to <code>viewer</code> outright, not merely hidden in the GUI.</li>
+    <li>Go back to <code>admin</code>, open the audit log, and find the <code>pii_detected</code> entries left by the questions you just asked.</li>
+    </ol>
+    <p>For what is detected and how the two tiers of masking work, see <a href="security.html" target="_blank" rel="noopener">security.md</a> §5 "PII detection and masking". For the permissions of each role, see <a href="security.html" target="_blank" rel="noopener">security.md</a> §3 "Roles and permissions".</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-20">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">6. Exercise D — how the same material looks to different roles</span>
+<span class="continued">(4/4)</span>
+</div>
+<div class="slide-body">
+    <p><strong>Going further — workspace boundaries</strong>: a collection lives under a workspace, and a user sees only the collections of the workspaces they belong to. Create a second workspace, put a user in one but not the other, and confirm from the collection list that the visible set differs. Note that in ChromaDB this boundary is a logical one by collection name; a physical boundary is not implemented. See <a href="limits.html" target="_blank" rel="noopener">limits.md</a>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-21">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">7. Exercise E — ingest and publish material of your own</span>
+<span class="continued">(1/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>What you are checking</strong>: the path a file takes from disk to being answerable — ingest root → source → scan → file → collection → publish → chunk.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-22">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">7. Exercise E — ingest and publish material of your own</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+    <ol>
+    <li>Create a workspace, and pick one of the seed guardrail policies for it (<code>pol-pii</code>, <code>pol-strict</code>, <code>pol-log</code>). The differences are in <a href="security.html" target="_blank" rel="noopener">security.md</a> §4 "Guardrails".</li>
+    <li>Add an ingest root and register it as a source, or reuse the existing <code>src-dummy</code> source, which points at <code>./dummy-corpus</code>.</li>
+    <li>Run a scan on the source. The files under the root are enumerated and appear as file rows.</li>
+    <li>Create a collection under the workspace and link the files you want into it.</li>
+    <li>Press publish. Each file is split into chunks, each chunk is embedded, and both a raw and a masked copy are written. When it finishes, the collection turns <code>ready</code>.</li>
+    <li>Open the file list and look at the category and the confidence assigned to each file. The classification runs at ingest time and sorts each document into one of the fourteen categories — you should see <code>meeting_minutes</code> for <code>05-meeting-notes.md</code> and <code>faq</code> for <code>04-faq.md</code>. For the categories and the three classification engines, see <a href="architecture.html" target="_blank" rel="noopener">architecture.md</a> §3 "How ingest and classification work".</li>
+    <li>Ask a question from exercise A against your own collection and confirm you get the same answer as from the demo collection.</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-23">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">7. Exercise E — ingest and publish material of your own</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>A worthwhile variation</strong>: write a small text file of your own containing a mail address and a phone number, publish it, and then run exercise D against it. You will see the masking applied to text you wrote yourself.</p>
+    <p><strong>Before you throw the workspace away</strong>: take an Export of the collection, or a Full Export, and try an Import into a fresh collection. Together with backup and restore, that is the round trip described in <a href="operations.html" target="_blank" rel="noopener">operations.md</a>.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-24">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(1/10)</span>
+</div>
+<div class="slide-body">
+    <p>Every question used above, with the answer and the exact place the answer is written. Each entry was checked by reading the file.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-25">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(2/10)</span>
+</div>
+<div class="slide-body">
+    <h3>(a) Answerable from a single file</h3>
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Where the answer is</th></tr></thead>
+    <tbody>
+    <tr><td>就業時間は何時から何時までですか</td><td>始業 9:00、終業 18:00。休憩は 60 分で、原則 12:00 から 13:00 の間に取る</td><td><code>02-work-rules.md</code>, 第2章 第4条（勤務時間）</td></tr>
+    <tr><td>年次有給休暇は何日もらえますか</td><td>勤続 1 年以上に年間 20 日。入社初年度は入社 6 か月経過時点で 10 日、以後段階的に増加</td><td><code>02-work-rules.md</code>, 第3章 第8条（年次有給休暇）</td></tr>
+    <tr><td>有給休暇はいつまでに届け出ればよいですか</td><td>原則、取得日の 3 営業日前までに所属長へ届け出る</td><td><code>02-work-rules.md</code>, 第8条 第3項（<code>04-faq.md</code> Q8 にも同内容）</td></tr>
+    <tr><td>従業員は何名ですか</td><td>142 名（2026年4月1日現在）</td><td><code>01-company-overview.md</code>, 「1. 会社概要」（<code>04-faq.md</code> Q3、<code>06-company-overview-en.md</code> にも同内容）</td></tr>
+    <tr><td>支社はどこにありますか</td><td>大阪支社と福岡支社の 2 か所</td><td><code>01-company-overview.md</code>, 「1. 会社概要」および「3. 拠点」</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-26">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(3/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Where the answer is</th></tr></thead>
+    <tbody>
+    <tr><td>給与の支払日はいつですか</td><td>毎月末日締め、翌月 25 日に指定口座へ支払う</td><td><code>02-work-rules.md</code>, 第5章 第14条（給与の支払）</td></tr>
+    <tr><td>在庫台帳のログインに何回失敗するとロックされますか</td><td>5 回連続で失敗するとロック。解除は情報システム担当に依頼する</td><td><code>03-system-guide.md</code>, 「2. ログイン手順」の 5</td></tr>
+    <tr><td>入庫登録はいつまでに行いますか</td><td>商品が到着した当日中が原則。できない事情があれば所属長に報告のうえ翌営業日の午前中</td><td><code>03-system-guide.md</code>, 「3. 入庫登録の手順」冒頭と「入庫登録の注意事項」</td></tr>
+    <tr><td>How many employees does the company have, and when was it founded?</td><td>142 employees as of April 1, 2026; founded in April 1998</td><td><code>06-company-overview-en.md</code>, "1. About Us"</td></tr>
+    <tr><td>What are the four product categories?</td><td>Kitchenware / Bath and Toiletries / Storage and Organization / Seasonal Goods</td><td><code>06-company-overview-en.md</code>, "2. Product Categories"</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-27">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(4/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Where the answer is</th></tr></thead>
+    <tbody>
+    <tr><td>When was the Fukuoka branch opened?</td><td>2012, as the sales base for the Kyushu region</td><td><code>06-company-overview-en.md</code>, "3. Locations" and "4. History"</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-28">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(5/10)</span>
+</div>
+<div class="slide-body">
+    <h3>(b) Needs two or more files</h3>
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Where the answer is</th></tr></thead>
+    <tbody>
+    <tr><td>在庫台帳の月次締めと経費精算の締めは同じものですか。それぞれいつ行いますか</td><td>別のもの。在庫台帳の月次締めは毎月 25 日（25 日が休日なら直前の営業日）、経費精算は月末締め・翌月 15 日払い</td><td><code>03-system-guide.md</code> 「5. 月次締めの手順」＋ <code>02-work-rules.md</code> 第15条（経費精算）。<code>04-faq.md</code> Q20 にも要約</td></tr>
+    <tr><td>差異報告の登録漏れが問題になったのはどの支社ですか。差異報告の正しい手順も教えてください</td><td>大阪支社（5 月度のエラー 5 件のうち 4 件）。手順は、再確認しても差異が解消しない場合に「差異報告」画面から登録し所属長の確認を受ける</td><td><code>05-meeting-notes.md</code> 「議事録2」討議内容 ＋ <code>03-system-guide.md</code> 「4. 棚卸しの手順」の 6</td></tr>
+    <tr><td>社長は誰ですか。2026年6月の会議には出席しましたか</td><td>代表取締役社長は山田花子。6 月 11 日の会議は出張のため欠席</td><td><code>01-company-overview.md</code> 「5. 経営体制とお問い合わせ」＋ <code>05-meeting-notes.md</code> 「議事録2」出席者・欠席</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-29">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(6/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Where the answer is</th></tr></thead>
+    <tbody>
+    <tr><td>「アオゾラ在庫台帳」はいつ導入され、その月次締めは毎月何日ですか</td><td>2020 年に導入。月次締めは毎月 25 日</td><td><code>01-company-overview.md</code> 「4. 沿革」（英語なら <code>06-company-overview-en.md</code> "4. History"）＋ <code>03-system-guide.md</code> 「5. 月次締めの手順」</td></tr>
+    <tr><td>季節雑貨はどの棚に保管しますか。2026年7月の会議では季節雑貨について何が報告されましたか</td><td>保管は S で始まる専用棚で、通常棚と混在させない。7 月の会議では夏物の出荷が好調で冷感グッズの一部に欠品、追加発注済みで 7 月下旬に入庫予定と報告</td><td><code>03-system-guide.md</code> 「入庫登録の注意事項」＋ <code>05-meeting-notes.md</code> 「議事録3」討議内容</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-30">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(7/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Where the answer is</th></tr></thead>
+    <tbody>
+    <tr><td>経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください</td><td>規則は月末締め・翌月 15 日払いで、締め日を過ぎた申請は翌月分として処理。課題は締め日直前に申請が集中して経理の確認作業が逼迫していることで、営業部門へ都度申請を依頼することにした</td><td><code>02-work-rules.md</code> 第15条 ＋ <code>05-meeting-notes.md</code> 「議事録2」討議内容・決定事項 2</td></tr>
+    <tr><td>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</td><td>Osaka and Fukuoka. The Fukuoka branch had 12 errors at the April closing; of the 5 errors in May, 4 were at the Osaka branch</td><td><code>06-company-overview-en.md</code> "3. Locations" (English) + <code>05-meeting-notes.md</code> 「議事録1」「議事録2」(Japanese) — the answer has to cross the language boundary</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-31">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(8/10)</span>
+</div>
+<div class="slide-body">
+    <h3>(c) Not written anywhere</h3>
+    <p>For these, the build is expected to return a low-confidence reply rather than to answer, because the highest vector score falls below the <code>confidence_threshold</code> of 0.40 and the LLM is therefore not called.</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-32">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(9/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Why nothing answers it</th></tr></thead>
+    <tbody>
+    <tr><td>退職金はいくら支払われますか</td><td>Cannot be answered from the material</td><td><code>02-work-rules.md</code> is an excerpt running from 第1条 to 第18条 plus 附則, and none of them covers 退職金. The word does not appear in any of the seven files</td></tr>
+    <tr><td>名古屋支社の住所を教えてください</td><td>Cannot be answered from the material</td><td>The branch offices are Osaka and Fukuoka only (<code>01-company-overview.md</code> 「3. 拠点」). 名古屋 appears nowhere in the seven files</td></tr>
+    <tr><td>アオゾラ商事の株価はいくらですか</td><td>Cannot be answered from the material</td><td>Nothing about listing or share price exists; <code>01-company-overview.md</code> gives revenue and headcount but no capital-market information</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-33">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. Questions and expected answers</span>
+<span class="continued">(10/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>Question</th><th>Expected answer</th><th>Why nothing answers it</th></tr></thead>
+    <tbody>
+    <tr><td>2026年8月の月次業務改善会議の決定事項を教えてください</td><td>Cannot be answered from the material</td><td><code>05-meeting-notes.md</code> holds exactly three sets of minutes — May, June, and July 2026. There is no August record</td></tr>
+    <tr><td>What is the retail price of the cooling goods?</td><td>Cannot be answered from the material</td><td>Cooling goods appear in <code>01-company-overview.md</code>, <code>06-company-overview-en.md</code>, and <code>05-meeting-notes.md</code>, but no price is given anywhere</td></tr>
+    <tr><td>Who is the president of Aozora Trading's largest supplier?</td><td>Cannot be answered from the material</td><td><code>06-company-overview-en.md</code> says the company sources from approximately 320 suppliers, but no supplier is named and no supplier's management is described</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-34">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">日本語 — このドキュメントについて</span>
+</div>
+<div class="slide-body">
+    <blockquote><strong>この文書について</strong> Cynovela は、AI 基盤ツールの考え方を実際に動かして理解するために個人が作った、完全に非公式の学習用ツールです。商用のものでも公式の実装でもありません。実装はすべて独自で、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカル LLM というOSS のスタックで構成されています。いかなる企業の公式見解も表しません。</blockquote>
+    <p>この文書は、この配布物に同梱されているサンプル資料を相手に、実際に手を動かして確かめるための演習集です。実際に質問し、返ってきた答えを見て、その答えがどのファイルから来たのかを自分で突き合わせます。</p>
+    <p>以下の演習は、すべて <code>dummy-corpus/</code> の 7 本のファイルだけを使います。7 本は架空の会社を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスはすべて実在しません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-35">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">1. 準備</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p>演習は、同梱のデモデータで Cynovela が動いていることを前提にします。</p>
+    <ul>
+    <li>起動のしかたは <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> を見てください。</li>
+    <li>デモデータで起動し、ブラウザで <code>http://127.0.0.1:8765</code> を開いてログインします。ユーザー名とパスワードは <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> に書いてあるものです。</li>
+    <li>デモ起動では、同梱のサンプル資料が入った workspace が 1 件入っており、ingest root <code>./dummy-corpus</code> を指す source が <code>src-dummy</code> という名前で最初から登録されています。その下の collection は publish 済みなので、そのまま質問を試せます。</li>
+    </ul>
+    <p>始める前に、2 つだけ入れておくとよいものがあります。</p>
+    <ul>
+    <li>RAG Chat の表示モードは、<strong>標準</strong>（<code>normal</code>）・<strong>解説</strong>（<code>explain</code>）・<strong>開発者</strong>（<code>developer</code>）に切り替えられます。<code>developer</code> にすると、各 chunk のベクタースコア / BM25 スコア / ハイブリッドスコアが見えます。演習 A から C は <code>developer</code> のほうが格段に読みやすくなります。</li>
+    <li>監査ログの画面（<code>admin</code> のみ）には、質問ごとにサーバが記録した内容が並びます。演習 C と D は、最後にここを見て終わります。</li>
+    </ul>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-36">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">1. 準備</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <p>スコアの読み方です。ベクタースコアは、Cynovela が既定で使う Embedding モデル（<code>BAAI/bge-m3</code>、BGE-M3）に対するコサイン類似度です。</p>
+    <table>
+    <thead><tr><th>スコア帯</th><th>意味</th></tr></thead>
+    <tbody>
+    <tr><td>0.35〜0.45</td><td>ノイズ床。関係のない質問でもこのあたりは出る</td></tr>
+    <tr><td>0.40</td><td>信頼度しきい値（<code>confidence_threshold</code>）の実効既定値</td></tr>
+    <tr><td>0.55〜0.75</td><td>資料が本当に答えを持っている質問で通常出る帯</td></tr>
+    <tr><td>0.75 以上</td><td>非常に強く関連している</td></tr>
+    </tbody>
+    </table>
+    <p>検索そのもの（ベクターと BM25 のハイブリッド、RRF、MMR など）については<a href="architecture.html" target="_blank" rel="noopener">architecture.md</a> §4「検索のしくみ」 を見てください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-37">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">2. サンプル資料には何が入っているか</span>
+</div>
+<div class="slide-body">
+    <p><code>dummy-corpus/</code> には 7 本のファイルが入っています。どのファイルに何が書いてあるかを把握しておくことが演習の要です。そうすれば、返ってきた答えを自分で突き合わせられます。</p>
+    <table>
+    <thead><tr><th>ファイル</th><th>内容</th><th>使う演習</th></tr></thead>
+    <tbody>
+    <tr><td><code>00-はじめに.md</code></td><td>残り 6 本の案内</td><td>演習 A（案内としてのみ。答えの出どころには使わない）</td></tr>
+    <tr><td><code>01-company-overview.md</code></td><td>会社案内。概要・取扱品目・拠点・沿革・経営体制</td><td>演習 A・B・C</td></tr>
+    <tr><td><code>02-work-rules.md</code></td><td>就業規則（抜粋）。勤務時間・休日・休暇・給与・経費</td><td>演習 A・B・C</td></tr>
+    <tr><td><code>03-system-guide.md</code></td><td>社内在庫システムの利用手順。ログイン・入庫・棚卸し・月次締め</td><td>演習 A・B・D</td></tr>
+    <tr><td><code>04-faq.md</code></td><td>社内からの 20 問。上の 3 本の内容を要約したもの</td><td>演習 A・B</td></tr>
+    <tr><td><code>05-meeting-notes.md</code></td><td>2026 年 5 月・6 月・7 月の定例会議 3 本の議事録</td><td>演習 B・C</td></tr>
+    <tr><td><code>06-company-overview-en.md</code></td><td>会社案内の英語版</td><td>演習 A・B・C</td></tr>
+    </tbody>
+    </table>
+    <p><code>04-faq.md</code> は <code>01</code> <code>02</code> <code>03</code> にもある内容を言い直しています。この重なりは意図的なもので、答えに付く出典の一覧を見るときに面白くなるのはそのためです。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-38">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">3. 演習A: 1 本で答えられる問い</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p><strong>何を確かめるか</strong>: 答えが 1 本のファイルの中にある質問が、そのファイルから答えられ、出典がそのファイルを指すこと。</p>
+    <p>RAG Chat で 1 問ずつ聞いてみてください。</p>
+    <ol>
+    <li>就業時間は何時から何時までですか</li>
+    <li>年次有給休暇は何日もらえますか</li>
+    <li>有給休暇はいつまでに届け出ればよいですか</li>
+    <li>従業員は何名ですか</li>
+    </ol>
+    <ol start="5">
+    <li>支社はどこにありますか</li>
+    <li>給与の支払日はいつですか</li>
+    <li>在庫台帳のログインに何回失敗するとロックされますか</li>
+    <li>入庫登録はいつまでに行いますか</li>
+    </ol>
+    <p>英語では、<code>06-company-overview-en.md</code> を相手にこう聞きます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-39">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">3. 演習A: 1 本で答えられる問い</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <ol start="9">
+    <li>How many employees does the company have, and when was it founded?</li>
+    <li>What are the four product categories?</li>
+    <li>When was the Fukuoka branch opened?</li>
+    </ol>
+    <p><strong>確かめかた</strong>: 期待される答えと、その答えが書かれている場所は 8 節の表にあります。そこに書かれたファイルを開いて突き合わせてください。<code>developer</code> モードで見ると、これらの質問の最上位 chunk はたいてい 0.55〜0.75 の帯に入ります。</p>
+    <p>見ておくとよいところ。1〜8 の質問では、出典の一覧に<strong>2 本</strong>のファイルが並ぶことがよくあります。元のファイルと、それを言い直している <code>04-faq.md</code> です。これはハイブリッド検索が両方を見つけているということで、誤りではありません。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-40">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">4. 演習B: 複数の文書をまたぐ問い</span>
+<span class="continued">(1/2)</span>
+</div>
+<div class="slide-body">
+    <p><strong>何を確かめるか</strong>: 1 本だけでは答えられない質問でも、複数のファイルから同時にchunk を引いてきて答えられること。</p>
+    <ol>
+    <li>在庫台帳の月次締めと経費精算の締めは同じものですか。それぞれいつ行いますか</li>
+    <li>差異報告の登録漏れが問題になったのはどの支社ですか。差異報告の正しい手順も教えてください</li>
+    <li>社長は誰ですか。2026年6月の会議には出席しましたか</li>
+    <li>「アオゾラ在庫台帳」はいつ導入され、その月次締めは毎月何日ですか</li>
+    <li>季節雑貨はどの棚に保管しますか。2026年7月の会議では季節雑貨について何が報告されましたか</li>
+    <li>経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください</li>
+    </ol>
+    <p>もう 1 問は英語です。相手にする資料はほとんど日本語であるのに、あえて英語で聞きます。</p>
+    <ol start="7">
+    <li>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-41">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">4. 演習B: 複数の文書をまたぐ問い</span>
+<span class="continued">(2/2)</span>
+</div>
+<div class="slide-body">
+    <p><strong>確かめかた</strong>: どの質問についても、8 節の表は<strong>2 本以上</strong>のファイルを挙げています。出典の一覧に 2 本以上並ぶことを確認してください。7 番目が面白いところです。支社の一覧は英語のファイルにありますが、エラーの件数は日本語の議事録にしかないので、両方を含む答えは言語の境をまたいだことになります。BGE-M3 が多言語の Embeddingモデルであることが、これが成立しうる理由です。</p>
+    <p>1 番目は、このサンプル資料がそのために作られた罠です。締め日が 2 つ、意図的に書き分けられています。在庫の月次締めは毎月 25 日、経費精算の締めは月末です。この 2 つを 1 つに混ぜた答えは誤りであり、2 本のファイルを開けば誤りだと分かります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-42">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">5. 演習C: 答えが無い問い</span>
+<span class="continued">(1/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>何を確かめるか</strong>: 資料が答えを持っていないとき、何が返ってくるか。これがいちばん大事な演習です。</p>
+    <ol>
+    <li>退職金はいくら支払われますか</li>
+    <li>名古屋支社の住所を教えてください</li>
+    <li>アオゾラ商事の株価はいくらですか</li>
+    <li>2026年8月の月次業務改善会議の決定事項を教えてください</li>
+    </ol>
+    <p>英語では次の 2 問です。</p>
+    <ol start="5">
+    <li>What is the retail price of the cooling goods?</li>
+    <li>Who is the president of Aozora Trading's largest supplier?</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-43">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">5. 演習C: 答えが無い問い</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>現在の作り</strong>: これらの質問でも検索は chunk を返します。いちばん近いものは必ず存在するからです。この作りがやっていることは、その中で最も高い<strong>ベクター</strong>スコアを見て、<code>confidence_threshold</code>（実効の既定値は <strong>0.40</strong>）と比べることです。最も高いスコアがしきい値を下回ると、LLM はそもそも呼ばれません。代わりに低信頼の返しが返り、確かな答えが見つからなかったこと、そのスコアとしきい値、そして見つかったchunk の見出しから作った言い換えの候補がいくつか示されます。サーバは監査ログに<code>LOW_CONFIDENCE_FALLBACK</code> の記録も残します。</p>
+    <p>つまり返ってくるのは、LLM が当てずっぽうを言った結果ではありません。当てずっぽうを言わずに降りた結果です。</p>
+    <p><strong>確かめかた</strong>:</p>
+    <ol>
+    <li>上の 6 問のどれかを <code>developer</code> モードで聞き、最上位のスコアを読む。</li>
+    <li><code>admin</code> で監査ログの画面を開き、その質問の <code>LOW_CONFIDENCE_FALLBACK</code> の記録を探す。詳細の行にスコアとしきい値が入っています。</li>
+    <li>主張そのものを自分で検証する。<code>grep -i 退職 dummy-corpus/*.md</code> は何も返しません。残る 5 問も同様で、これらの語は 7 本のどこにも本当に存在しません。</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-44">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">5. 演習C: 答えが無い問い</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+    <p>毎回必ずこうなると考えないでください。ある質問が 0.40 の上に出るか下に出るかは言い回しに左右されますし、資料の*近く*にある質問（たとえば育児休業について聞くと、就業規則には配偶者の出産に伴う特別休暇の定めがある）は、いちばん近いものから答えられる程度に高いスコアを取ることがあります。上の 6 問は、題材そのものがまったく存在しないという理由で選んであります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-45">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">6. 演習D: 役割による見え方の違い</span>
+<span class="continued">(1/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>何を確かめるか</strong>: ログインした役割によって、検索する保管庫と、答えに出してよいものの両方が変わること。</p>
+    <p>データベースが保持する実効の役割は <code>admin</code> と <code>viewer</code> の 2 値です。<code>curator</code> のような名前は <code>viewer</code> に正規化されます。</p>
+    <table>
+    <thead><tr><th>役割</th><th>検索する保管庫</th><th>答えへの出口マスク</th></tr></thead>
+    <tbody>
+    <tr><td><code>admin</code></td><td>raw（原文）</td><td>適用しない</td></tr>
+    <tr><td><code>viewer</code></td><td>masked</td><td>適用する</td></tr>
+    </tbody>
+    </table>
+    <p>サンプル資料には、意図的に連絡先が入れてあります。だからこの演習は何も準備せずに始められます。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-46">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">6. 演習D: 役割による見え方の違い</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+    <ul>
+    <li><code>01-company-overview.md</code> —「5. 経営体制とお問い合わせ」にメールアドレスが 2 件</li>
+    <li><code>03-system-guide.md</code> —「情報システム担当の連絡先」に電話番号・メールアドレス・IPv4 アドレス</li>
+    <li><code>05-meeting-notes.md</code> — 決定事項 2 か所の中にメールアドレス</li>
+    </ul>
+    <p><strong>手順</strong>:</p>
+    <ol>
+    <li><code>admin</code> でログインし、情報システム担当の連絡先を教えてください と聞く。電話番号・メールアドレス・IP アドレスが書かれたとおりに出ます。</li>
+    <li>ログアウトして <code>viewer</code> でログインし、まったく同じ質問をする。同じ箇所が<code>[MASKED:PHONE]</code> <code>[MASKED:EMAIL]</code> <code>[MASKED:IP]</code> になって返ります。</li>
+    <li>会社案内の問い合わせ先を教えてください を両方の役割で聞き、同じように比べる。</li>
+    <li><code>viewer</code> のまま、監査ログの画面を開こうとする。403 Forbidden で拒まれます。<code>admin</code> 専用の口は <code>viewer</code> に対して端から閉じており、画面上で隠しているだけではありません。</li>
+    <li><code>admin</code> に戻って監査ログを開き、いま聞いた質問が残した <code>pii_detected</code> の記録を見つける。</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-47">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">6. 演習D: 役割による見え方の違い</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+    <p>何が検出され、2 段のマスキングがどう働くかは <a href="security.html" target="_blank" rel="noopener">security.md</a> §5「PII の検出とマスキング」 を、役割ごとの権限は <a href="security.html" target="_blank" rel="noopener">security.md</a> §3「役割と権限」 を見てください。</p>
+    <p><strong>発展 — workspace の境界</strong>: collection は workspace の下にあり、利用者は自分が属する workspace の collection しか見えません。もう 1 つ workspace を作り、片方だけに利用者を入れて、collection の一覧で見える範囲が変わることを確かめてください。なおChromaDB におけるこの境界は collection 名による論理的なもので、物理的な境界は実装されていません。<a href="limits.html" target="_blank" rel="noopener">limits.md</a> を見てください。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-48">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">7. 演習E: 自分の資料を取り込んで publish する</span>
+<span class="continued">(1/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>何を確かめるか</strong>: ファイルがディスクから「質問に答えられる状態」へ至るまでの道筋。ingest root → source → scan → file → collection → publish → chunk です。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-49">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">7. 演習E: 自分の資料を取り込んで publish する</span>
+<span class="continued">(2/3)</span>
+</div>
+<div class="slide-body">
+    <ol>
+    <li>workspace を作り、シードのガードレール方針から 1 つを選ぶ（<code>pol-pii</code>・<code>pol-strict</code>・<code>pol-log</code>）。違いは <a href="security.html" target="_blank" rel="noopener">security.md</a> §4「ガードレール」 にあります。</li>
+    <li>ingest root を足して source として登録するか、<code>./dummy-corpus</code> を指す既存の<code>src-dummy</code> の source をそのまま使う。</li>
+    <li>source に対して scan を走らせる。root の下のファイルが数え上げられ、file の行として並びます。</li>
+    <li>workspace の下に collection を作り、入れたい file を結び付ける。</li>
+    <li>publish を押す。各 file が chunk に分割され、各 chunk が埋め込まれ、raw と masked の両方の写しが書かれます。終わると collection は <code>ready</code> になります。</li>
+    <li>file の一覧を開き、各 file に付いた分類と確信度を見る。分類は取り込みのときに走り、各文書を 14 の分類のどれかに振り分けます。<code>05-meeting-notes.md</code> には<code>meeting_minutes</code>、<code>04-faq.md</code> には <code>faq</code> が付くはずです。分類と 3 種類の分類エンジンについては <a href="architecture.html" target="_blank" rel="noopener">architecture.md</a> §3「取り込みと分類のしくみ」 を見てください。</li>
+    <li>演習 A の質問を自分の collection に対して聞き、デモの collection と同じ答えが返ることを確かめる。</li>
+    </ol>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-50">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">7. 演習E: 自分の資料を取り込んで publish する</span>
+<span class="continued">(3/3)</span>
+</div>
+<div class="slide-body">
+    <p><strong>やってみる価値のある変え方</strong>: メールアドレスと電話番号を含む小さなテキストファイルを自分で書いて publish し、それに対して演習 D をやってみてください。自分で書いた文章にマスキングが掛かるのが見えます。</p>
+    <p><strong>workspace を捨てる前に</strong>: その collection の Export、あるいは Full Export を取り、空の collection への Import を試してください。backup と restore と合わせて、<a href="operations.html" target="_blank" rel="noopener">operations.md</a> に書かれている一巡りになります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-51">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(1/10)</span>
+</div>
+<div class="slide-body">
+    <p>上で使った質問の全数と、その答え、そして答えが書かれている正確な場所です。各項目は実際にファイルを読んで確かめてあります。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-52">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(2/10)</span>
+</div>
+<div class="slide-body">
+    <h3>(a) 1 本で答えられるもの</h3>
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>答えの所在</th></tr></thead>
+    <tbody>
+    <tr><td>就業時間は何時から何時までですか</td><td>始業 9:00、終業 18:00。休憩は 60 分で、原則 12:00 から 13:00 の間に取る</td><td><code>02-work-rules.md</code> 第2章 第4条（勤務時間）</td></tr>
+    <tr><td>年次有給休暇は何日もらえますか</td><td>勤続 1 年以上に年間 20 日。入社初年度は入社 6 か月経過時点で 10 日、以後段階的に増加</td><td><code>02-work-rules.md</code> 第3章 第8条（年次有給休暇）</td></tr>
+    <tr><td>有給休暇はいつまでに届け出ればよいですか</td><td>原則、取得日の 3 営業日前までに所属長へ届け出る</td><td><code>02-work-rules.md</code> 第8条 第3項（<code>04-faq.md</code> Q8 にも同内容）</td></tr>
+    <tr><td>従業員は何名ですか</td><td>142 名（2026年4月1日現在）</td><td><code>01-company-overview.md</code>「1. 会社概要」（<code>04-faq.md</code> Q3、<code>06-company-overview-en.md</code> にも同内容）</td></tr>
+    <tr><td>支社はどこにありますか</td><td>大阪支社と福岡支社の 2 か所</td><td><code>01-company-overview.md</code>「1. 会社概要」および「3. 拠点」</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-53">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(3/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>答えの所在</th></tr></thead>
+    <tbody>
+    <tr><td>給与の支払日はいつですか</td><td>毎月末日締め、翌月 25 日に指定口座へ支払う</td><td><code>02-work-rules.md</code> 第5章 第14条（給与の支払）</td></tr>
+    <tr><td>在庫台帳のログインに何回失敗するとロックされますか</td><td>5 回連続で失敗するとロック。解除は情報システム担当に依頼する</td><td><code>03-system-guide.md</code>「2. ログイン手順」の 5</td></tr>
+    <tr><td>入庫登録はいつまでに行いますか</td><td>商品が到着した当日中が原則。できない事情があれば所属長に報告のうえ翌営業日の午前中</td><td><code>03-system-guide.md</code>「3. 入庫登録の手順」冒頭と「入庫登録の注意事項」</td></tr>
+    <tr><td>How many employees does the company have, and when was it founded?</td><td>142 employees as of April 1, 2026; founded in April 1998</td><td><code>06-company-overview-en.md</code> "1. About Us"</td></tr>
+    <tr><td>What are the four product categories?</td><td>Kitchenware / Bath and Toiletries / Storage and Organization / Seasonal Goods</td><td><code>06-company-overview-en.md</code> "2. Product Categories"</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-54">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(4/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>答えの所在</th></tr></thead>
+    <tbody>
+    <tr><td>When was the Fukuoka branch opened?</td><td>2012 年、九州エリアの営業拠点として開設</td><td><code>06-company-overview-en.md</code> "3. Locations" および "4. History"</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-55">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(5/10)</span>
+</div>
+<div class="slide-body">
+    <h3>(b) 2 本以上をまたぐもの</h3>
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>答えの所在</th></tr></thead>
+    <tbody>
+    <tr><td>在庫台帳の月次締めと経費精算の締めは同じものですか。それぞれいつ行いますか</td><td>別のもの。在庫台帳の月次締めは毎月 25 日（25 日が休日なら直前の営業日）、経費精算は月末締め・翌月 15 日払い</td><td><code>03-system-guide.md</code>「5. 月次締めの手順」＋ <code>02-work-rules.md</code> 第15条（経費精算）。<code>04-faq.md</code> Q20 にも要約</td></tr>
+    <tr><td>差異報告の登録漏れが問題になったのはどの支社ですか。差異報告の正しい手順も教えてください</td><td>大阪支社（5 月度のエラー 5 件のうち 4 件）。手順は、再確認しても差異が解消しない場合に「差異報告」画面から登録し所属長の確認を受ける</td><td><code>05-meeting-notes.md</code>「議事録2」討議内容 ＋ <code>03-system-guide.md</code>「4. 棚卸しの手順」の 6</td></tr>
+    <tr><td>社長は誰ですか。2026年6月の会議には出席しましたか</td><td>代表取締役社長は山田花子。6 月 11 日の会議は出張のため欠席</td><td><code>01-company-overview.md</code>「5. 経営体制とお問い合わせ」＋ <code>05-meeting-notes.md</code>「議事録2」出席者・欠席</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-56">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(6/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>答えの所在</th></tr></thead>
+    <tbody>
+    <tr><td>「アオゾラ在庫台帳」はいつ導入され、その月次締めは毎月何日ですか</td><td>2020 年に導入。月次締めは毎月 25 日</td><td><code>01-company-overview.md</code>「4. 沿革」（英語なら <code>06-company-overview-en.md</code> "4. History"）＋ <code>03-system-guide.md</code>「5. 月次締めの手順」</td></tr>
+    <tr><td>季節雑貨はどの棚に保管しますか。2026年7月の会議では季節雑貨について何が報告されましたか</td><td>保管は S で始まる専用棚で、通常棚と混在させない。7 月の会議では夏物の出荷が好調で冷感グッズの一部に欠品、追加発注済みで 7 月下旬に入庫予定と報告</td><td><code>03-system-guide.md</code>「入庫登録の注意事項」＋ <code>05-meeting-notes.md</code>「議事録3」討議内容</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-57">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(7/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>答えの所在</th></tr></thead>
+    <tbody>
+    <tr><td>経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください</td><td>規則は月末締め・翌月 15 日払いで、締め日を過ぎた申請は翌月分として処理。課題は締め日直前に申請が集中して経理の確認作業が逼迫していることで、営業部門へ都度申請を依頼することにした</td><td><code>02-work-rules.md</code> 第15条 ＋ <code>05-meeting-notes.md</code>「議事録2」討議内容・決定事項 2</td></tr>
+    <tr><td>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</td><td>大阪と福岡。福岡支社は 4 月度の締めで 12 件、5 月度の 5 件のうち 4 件は大阪支社</td><td><code>06-company-overview-en.md</code> "3. Locations"（英語）＋ <code>05-meeting-notes.md</code>「議事録1」「議事録2」（日本語）。答えは言語の境をまたぐ</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-58">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(8/10)</span>
+</div>
+<div class="slide-body">
+    <h3>(c) どこにも書いていないもの</h3>
+    <p>これらでは、最も高いベクタースコアが <code>confidence_threshold</code> の 0.40 を下回るためLLM は呼ばれず、答えるのではなく低信頼の返しが返ることを期待します。</p>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-59">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(9/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>なぜどこにも無いのか</th></tr></thead>
+    <tbody>
+    <tr><td>退職金はいくら支払われますか</td><td>資料からは答えられない</td><td><code>02-work-rules.md</code> は第1条から第18条と附則までの抜粋で、退職金を扱う条文が無い。この語は 7 本のどこにも現れない</td></tr>
+    <tr><td>名古屋支社の住所を教えてください</td><td>資料からは答えられない</td><td>支社は大阪と福岡の 2 か所だけ（<code>01-company-overview.md</code>「3. 拠点」）。名古屋は 7 本のどこにも現れない</td></tr>
+    <tr><td>アオゾラ商事の株価はいくらですか</td><td>資料からは答えられない</td><td>上場や株価に関する記述が無い。<code>01-company-overview.md</code> に年商と従業員数はあるが資本市場の情報は無い</td></tr>
+    <tr><td>2026年8月の月次業務改善会議の決定事項を教えてください</td><td>資料からは答えられない</td><td><code>05-meeting-notes.md</code> に入っている議事録は 2026 年 5 月・6 月・7 月のちょうど 3 本。8 月の記録は無い</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+<div class="slide" id="slide-60">
+<div class="slide-header">
+<span class="doc-name">handson</span>
+<span class="slide-title">8. 設問と正解の対応表</span>
+<span class="continued">(10/10)</span>
+</div>
+<div class="slide-body">
+    <table>
+    <thead><tr><th>設問</th><th>期待される答え</th><th>なぜどこにも無いのか</th></tr></thead>
+    <tbody>
+    <tr><td>What is the retail price of the cooling goods?</td><td>資料からは答えられない</td><td>冷感グッズは <code>01-company-overview.md</code>・<code>06-company-overview-en.md</code>・<code>05-meeting-notes.md</code> に出てくるが、価格はどこにも書かれていない</td></tr>
+    <tr><td>Who is the president of Aozora Trading's largest supplier?</td><td>資料からは答えられない</td><td><code>06-company-overview-en.md</code> は仕入先が約 320 社であると述べるだけで、個々の社名も、その経営陣も書かれていない</td></tr>
+    </tbody>
+    </table>
+</div>
+<div class="slide-footer">
+<span class="brand">Cyno<span class="accent">vela</span></span>
+<span>非公式・個人学習目的</span>
+</div>
+</div>
+</div>
+<nav class="nav-bar">
+<button id="btn-prev" onclick="navigate(-1)">← 前へ</button>
+<span id="slide-counter">1 / 60</span>
+<button id="btn-next" onclick="navigate(1)">次へ →</button>
+</nav>
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+function show(n) {
+  slides.forEach((s,i) => s.classList.toggle('active', i===n));
+  document.getElementById('slide-counter').textContent = (n+1)+' / '+slides.length;
+  document.getElementById('btn-prev').disabled = n===0;
+  document.getElementById('btn-next').disabled = n===slides.length-1;
+  current = n;
+  location.hash = 'slide-'+(n+1);
+}
+function navigate(dir) { show(Math.max(0,Math.min(slides.length-1,current+dir))); }
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') { navigate(1); e.preventDefault(); }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') { navigate(-1); e.preventDefault(); }
+});
+const hash = location.hash.match(/slide-(\d+)/);
+show(hash ? Math.min(parseInt(hash[1])-1, slides.length-1) : 0);
+</script>
+</body>
+</html>
