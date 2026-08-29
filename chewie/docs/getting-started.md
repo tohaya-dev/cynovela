@@ -101,10 +101,10 @@ There are 3 forms, plus the AI models as a separate download. **The package edit
 
 | Package | Who it is for | What to do |
 |---|---|---|
-| **Package edition** `cynovela-chewie-package-1.1.1.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
-| **Source edition, all-in-one** `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`–`part02` (3 split files, models included) | Those who want everything in one go | Join, extract, then follow section 7 below. |
-| **Source edition, lightweight** `cynovela-chewie-lightweight-1.1.1.tar.gz` (1 file, a few MB) | Those who want to build the environment themselves, or want a small download | Extract it, add the AI models (last row), then follow section 7 below. |
-| **AI models** `cynovela-chewie-models-1.1.1.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the lightweight edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-chewie-models-1.1.1.tar.gz` **inside the extracted chewie folder** — `store/models/` is created. |
+| **Package edition** `cynovela-chewie-package-1.1.2.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
+| **Source edition, all-in-one** `cynovela-chewie-all-in-one-1.1.2.tar.gz.part00`–`part02` (3 split files, models included) | Those who want everything in one go | Join, extract, then follow section 7 below. |
+| **Source edition, lightweight** `cynovela-chewie-lightweight-1.1.2.tar.gz` (1 file, a few MB) | Those who want to build the environment themselves, or want a small download | Extract it, add the AI models (last row), then follow section 7 below. |
+| **AI models** `cynovela-chewie-models-1.1.2.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the lightweight edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz` **inside the extracted chewie folder** — `store/models/` is created. |
 
 With the source edition you choose, at startup, one of 2 ways to build the environment.
 
@@ -126,7 +126,7 @@ The AI models are downloaded separately (see section 8, "First run only").
 
 ## 2. The gentle way in — the package edition, step by step
 
-This section is for the **package edition** (`cynovela-chewie-package-1.1.1.tar.gz`).
+This section is for the **package edition** (`cynovela-chewie-package-1.1.2.tar.gz`).
 It assumes you have never opened Terminal. Nothing is skipped.
 
 Do these in order. Do not read ahead for reasons; the reasons are in section 3.
@@ -136,10 +136,10 @@ Do these in order. Do not read ahead for reasons; the reasons are in section 3.
 On the releases page, download these into your **Downloads** folder:
 
 ```
-cynovela-chewie-package-1.1.1.tar.gz
-cynovela-chewie-models-1.1.1.tar.gz.part00
-cynovela-chewie-models-1.1.1.tar.gz.part01
-cynovela-chewie-models-1.1.1.tar.gz.part02
+cynovela-chewie-package-1.1.2.tar.gz
+cynovela-chewie-models-1.1.2.tar.gz.part00
+cynovela-chewie-models-1.1.2.tar.gz.part01
+cynovela-chewie-models-1.1.2.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -168,7 +168,7 @@ Nothing will be printed. That is correct.
 Type this as **one line** and press return:
 
 ```
-cat cynovela-chewie-models-1.1.1.tar.gz.part* > cynovela-chewie-models-1.1.1.tar.gz
+cat cynovela-chewie-models-1.1.2.tar.gz.part* > cynovela-chewie-models-1.1.2.tar.gz
 ```
 
 This takes **one to three minutes** and prints nothing while it works. When the
@@ -184,8 +184,8 @@ This takes **one to three minutes**. It then prints one line per file. Every lin
 must end in `OK`:
 
 ```
-cynovela-chewie-models-1.1.1.tar.gz: OK
-cynovela-chewie-package-1.1.1.tar.gz: OK
+cynovela-chewie-models-1.1.2.tar.gz: OK
+cynovela-chewie-package-1.1.2.tar.gz: OK
 ```
 
 If any line says `FAILED`, download that file again and repeat from step 4. Do
@@ -194,7 +194,7 @@ not go on.
 #### Step 6. Unpack the program
 
 ```
-tar -xzf cynovela-chewie-package-1.1.1.tar.gz
+tar -xzf cynovela-chewie-package-1.1.2.tar.gz
 ```
 
 This takes **three to ten minutes** and prints nothing. A folder named `chewie`
@@ -211,7 +211,7 @@ Nothing is printed.
 #### Step 8. Unpack the AI models inside it
 
 ```
-tar -xzf ../cynovela-chewie-models-1.1.1.tar.gz
+tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz
 ```
 
 This takes **two to five minutes** and prints nothing.
@@ -388,7 +388,7 @@ Closing the window does not stop it. That is why there is a separate
 
 ## 4. The short route, for those in a hurry
 
-These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `1.1.1` (working directory `<the folder where you extracted the package>`).
+These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `1.1.2` (working directory `<the folder where you extracted the package>`).
 
 ### 4-1. Setting up the environment (source edition only)
 
@@ -1304,10 +1304,10 @@ More detail is in the bundled `README.md`.
 
 | 配布物 | 対象 | することは |
 |---|---|---|
-| **パッケージ版** `cynovela-chewie-package-1.1.1.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
-| **ソース版・全部入り** `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`〜`part02`（分割3本・モデル込み） | とにかく1回で全部落としたい方 | つないで展開し、下の7節へ。 |
-| **ソース版・モデル別取得版（軽量）** `cynovela-chewie-lightweight-1.1.1.tar.gz`（1本・数MB） | 自分で環境を作りたい方、軽く落としたい方 | 展開し、AIモデル（最終行）を重ねてから、下の7節へ。 |
-| **AIモデル** `cynovela-chewie-models-1.1.1.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とモデル別取得版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.1.1.tar.gz` を実行します（`store/models/` が作られます）。 |
+| **パッケージ版** `cynovela-chewie-package-1.1.2.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
+| **ソース版・全部入り** `cynovela-chewie-all-in-one-1.1.2.tar.gz.part00`〜`part02`（分割3本・モデル込み） | とにかく1回で全部落としたい方 | つないで展開し、下の7節へ。 |
+| **ソース版・モデル別取得版（軽量）** `cynovela-chewie-lightweight-1.1.2.tar.gz`（1本・数MB） | 自分で環境を作りたい方、軽く落としたい方 | 展開し、AIモデル（最終行）を重ねてから、下の7節へ。 |
+| **AIモデル** `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とモデル別取得版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz` を実行します（`store/models/` が作られます）。 |
 
 ソース版では、起動時に、環境の作り方を2つから選びます。
 
@@ -1329,7 +1329,7 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 
 ## 2. やさしい入口 — パッケージ版を一歩ずつ
 
-この節は**パッケージ版**（`cynovela-chewie-package-1.1.1.tar.gz`）向けです。
+この節は**パッケージ版**（`cynovela-chewie-package-1.1.2.tar.gz`）向けです。
 ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。
 
 上から順に行ってください。理由は3節にあります。先に読む必要はありません。
@@ -1339,10 +1339,10 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 リリースのページから、次の5つを**ダウンロード**フォルダへ落とします。
 
 ```
-cynovela-chewie-package-1.1.1.tar.gz
-cynovela-chewie-models-1.1.1.tar.gz.part00
-cynovela-chewie-models-1.1.1.tar.gz.part01
-cynovela-chewie-models-1.1.1.tar.gz.part02
+cynovela-chewie-package-1.1.2.tar.gz
+cynovela-chewie-models-1.1.2.tar.gz.part00
+cynovela-chewie-models-1.1.2.tar.gz.part01
+cynovela-chewie-models-1.1.2.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -1371,7 +1371,7 @@ cd ~/Downloads
 次を**1行で**打って return を押します。
 
 ```
-cat cynovela-chewie-models-1.1.1.tar.gz.part* > cynovela-chewie-models-1.1.1.tar.gz
+cat cynovela-chewie-models-1.1.2.tar.gz.part* > cynovela-chewie-models-1.1.2.tar.gz
 ```
 
 **1〜3分**かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。
@@ -1386,8 +1386,8 @@ shasum -a 256 --ignore-missing -c SHA256SUMS
 終わっていなければなりません。
 
 ```
-cynovela-chewie-models-1.1.1.tar.gz: OK
-cynovela-chewie-package-1.1.1.tar.gz: OK
+cynovela-chewie-models-1.1.2.tar.gz: OK
+cynovela-chewie-package-1.1.2.tar.gz: OK
 ```
 
 `FAILED` と出た行があれば、そのファイルを落とし直して手順4からやり直します。
@@ -1396,7 +1396,7 @@ cynovela-chewie-package-1.1.1.tar.gz: OK
 #### 手順6. 本体を取り出す
 
 ```
-tar -xzf cynovela-chewie-package-1.1.1.tar.gz
+tar -xzf cynovela-chewie-package-1.1.2.tar.gz
 ```
 
 **3〜10分**かかります。何も出ません。ダウンロードの中に `chewie` という名前の
@@ -1413,7 +1413,7 @@ cd chewie
 #### 手順8. その中で AIモデルを取り出す
 
 ```
-tar -xzf ../cynovela-chewie-models-1.1.1.tar.gz
+tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz
 ```
 
 **2〜5分**かかります。何も出ません。
@@ -1585,7 +1585,7 @@ Finder は隠します。これは「触らなくてよいもの」という mac
 
 ## 4. 急ぐ人のための最短の道
 
-Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.1.1`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
+Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.1.2`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
 
 ### 4-1. 環境のセットアップ（ソース版のみ）
 

@@ -217,7 +217,7 @@ a:hover { text-decoration: underline; }
     <p><strong>日本語版はこちら → 日本語</strong></p>
     <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that one individual could understand the concepts behind AI infrastructure tools by working through them by hand. It is not a commercial product and not an official implementation. The implementation is entirely original, built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.</blockquote>
     <p>This document describes what Cynovela <strong>cannot</strong> do, and what to watch out for. Explanations of what it can do are in <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> and <a href="concept.html" target="_blank" rel="noopener">concept.md</a>. Only the things that will disappoint you if you expect them are written here.</p>
-    <p>The version is <code>1.1.1</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
+    <p>The version is <code>1.1.2</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
     <p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
@@ -236,9 +236,9 @@ a:hover { text-decoration: underline; }
     <li><a href="#slide-6">1. What masking cannot do</a>
       <ul>
       <li><a href="#slide-6">1.1 Rules can only catch the 13 types that have a fixed shape</a></li>
-      <li><a href="#slide-9">1.2 Personal names and addresses depend on language analysis; with <code>lite</code> nothing is masked at all</a></li>
+      <li>1.2 Personal names and addresses depend on language analysis; with <code>lite</code> nothing is masked at all</li>
       <li><a href="#slide-11">1.3 Organisation names and place names exist in name only, with nothing behind them</a></li>
-      <li><a href="#slide-11">1.4 Without a language model, even <code>standard</code> degrades to rules only</a></li>
+      <li>1.4 Without a language model, even <code>standard</code> degrades to rules only</li>
       <li><a href="#slide-12">1.5 Passwords and API keys are cut off by whitespace, Japanese text, or newlines</a></li>
       <li><a href="#slide-13">1.6 Whitespace can enter text extracted from a PDF, letting an email escape masking</a></li>
       <li><a href="#slide-15">1.7 Whether an administrator can see the original text depends on the key and the destination</a></li>
@@ -298,7 +298,7 @@ a:hover { text-decoration: underline; }
       <ul>
       <li><a href="#slide-41">11.1 Restoring a backup through the API does not reliably give you the backup</a></li>
       <li><a href="#slide-43">11.2 A backup holds data, not settings</a></li>
-      <li><a href="#slide-44">11.3 The "dimension" written into an export is a fixed number</a></li>
+      <li>11.3 The "dimension" written into an export is a fixed number</li>
       <li><a href="#slide-45">11.4 With Ollama, the context length is whatever Ollama defaults to</a></li>
       <li><a href="#slide-46">11.5 An imported workspace searches by vector only</a></li>
       <li><a href="#slide-47">11.6 Not measured: the package edition on a Mac without conda</a></li>
@@ -1216,7 +1216,7 @@ cd ../..
 <div class="slide-body">
     <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
     <p>この文書は、Cynovela に <strong>できないこと</strong>、および気をつけることを書いたものです。できることの説明は <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> と<a href="concept.html" target="_blank" rel="noopener">concept.md</a> にあります。ここには、期待すると外れることだけを書きます。</p>
-    <p>版は <code>1.1.1</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
+    <p>版は <code>1.1.2</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
     <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
@@ -1235,9 +1235,9 @@ cd ../..
     <li><a href="#slide-57">1. マスキング（マスキング）でできないこと</a>
       <ul>
       <li><a href="#slide-57">1.1 決まった形をした 13 種類しか、規則では取れない</a></li>
-      <li><a href="#slide-60">1.2 氏名と住所は言語解析まかせ。<code>lite</code> にすると一切マスキングされない</a></li>
+      <li>1.2 氏名と住所は言語解析まかせ。<code>lite</code> にすると一切マスキングされない</li>
       <li><a href="#slide-61">1.3 組織名と地名は、名前だけあって中身がない</a></li>
-      <li><a href="#slide-62">1.4 言語モデルが入っていないと、<code>standard</code> でも規則だけに退行する</a></li>
+      <li>1.4 言語モデルが入っていないと、<code>standard</code> でも規則だけに退行する</li>
       <li><a href="#slide-63">1.5 パスワードと API キーは、空白・日本語・改行で切れる</a></li>
       <li><a href="#slide-64">1.6 PDF から取り出した文字に空白が入り、電子メールがマスキングを逃れることがある</a></li>
       <li><a href="#slide-65">1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい</a></li>

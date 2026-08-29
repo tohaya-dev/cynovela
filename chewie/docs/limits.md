@@ -17,7 +17,7 @@ of what it can do are in [getting-started.md](getting-started.md) and
 [concept.md](concept.md). Only the things that will disappoint you if you expect them are
 written here.
 
-The version is `1.1.1` (`APP_VERSION` in `core/version.py` is the only source, and
+The version is `1.1.2` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -653,7 +653,7 @@ They are written here as the state of the current build, not as a schedule.
 できることの説明は [getting-started.md](getting-started.md) と
 [concept.md](concept.md) にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.1.1` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `1.1.2` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
