@@ -866,13 +866,25 @@ if [ "$FLAVOR" = "package" ]; then
   #   さらに pip はホイールを使い回すため、前の走行の置き場が残ることもある
   #   (実測: 3 回目の走行の成果物に 1 回目の置き場が入っていた)。
   #   install_name_tool で外すだけにする。バイトを手で書き換えない。
+  #   🔴 使い回しは**梱包工程をまたぐ**。実測 (macOS の .pkg を組んだとき):
+  #      こちらの置き場 cynovela-portable-build-<番号> が、別の道具
+  #      tools/build-macos-app.sh が作った環境に焼き込まれて出てきた。
+  #      ∴ 外す相手は自分の作った置き場だけに絞らず、この企ての置き場の
+  #      **すべての形**とする。build-macos-app.sh の同じ所と揃えてある。
+  #      (向こうにはさらに、外し損ねを機械で捕まえる関門が付いている。)
   _rp_fixed=0
   while IFS= read -r -d '' _so; do
-    _rp="$(otool -l "$_so" 2>/dev/null | awk '/LC_RPATH/{f=1} f&&/ path /{print $2; f=0}' || true)"
-    case "$_rp" in
-      */cynovela-portable-build-*)
-        install_name_tool -delete_rpath "$_rp" "$_so" 2>/dev/null && _rp_fixed=$((_rp_fixed+1)) ;;
-    esac
+    while IFS= read -r _rp; do
+      [ -n "$_rp" ] || continue
+      case "$_rp" in
+        /private/tmp/cynovela-*|/tmp/cynovela-*)
+          if install_name_tool -delete_rpath "$_rp" "$_so" 2>/dev/null; then
+            _rp_fixed=$((_rp_fixed+1))
+          fi ;;
+      esac
+    done < <(otool -l "$_so" 2>/dev/null \
+               | awk '/^ *cmd LC_RPATH$/{f=1; next} f&&$1=="path"{print $2; f=0}' \
+               | sort -u)
   done < <(find "$STAGE/$NAME/.condapack-cynovela" \( -name '*.so' -o -name '*.dylib' \) -print0 2>/dev/null)
   echo "[dist]   組み立て時の置き場を指す LC_RPATH を外した: $_rp_fixed 本"
 

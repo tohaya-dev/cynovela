@@ -205,20 +205,13 @@ rm -f "$ENV_DIR/conda-meta/history"
 find "$ENV_DIR" -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
 find "$ENV_DIR" -name '*.pyc' -delete 2>/dev/null || true
 
-# 組み立てのときの置き場を指す LC_RPATH を外す
-_rp_fixed=0
-while IFS= read -r -d '' _so; do
-  _rp="$(otool -l "$_so" 2>/dev/null | awk '/LC_RPATH/{f=1} f&&/ path /{print $2; f=0}' || true)"
-  case "$_rp" in
-    */cynovela-macos-app-build-*)
-      install_name_tool -delete_rpath "$_rp" "$_so" 2>/dev/null && _rp_fixed=$((_rp_fixed+1)) ;;
-  esac
-done < <(find "$ENV_DIR" \( -name '*.so' -o -name '*.dylib' \) -print0 2>/dev/null)
-say "  組み立て時の置き場を指す LC_RPATH を外した: $_rp_fixed 本"
-
-# ── 3. 署名の壊れた Mach-O を数えて、ad-hoc で署名し直す ──────
-say "──────────────────────────────────────────────"
-say "3/7 署名の壊れた Mach-O を直す (--dest-prefix は署名し直さないため)"
+# ── Mach-O の一覧を作る (この先の 2 つの段が同じ一覧を使う) ────
+#   🔴 見分けは**先頭の魔法の数**で行う。file(1) の出力を ':' で切って道を
+#      取り出してはいけない。ユニバーサルバイナリでは
+#      「<道> (for architecture arm64)」が返り、道でないものを道として扱う。
+#      実測で 1 つの数え上げがこれで誤っていた。
+#   🔴 名前 (*.so / *.dylib) で拾ってもいけない。同梱環境の Mach-O には
+#      bin/ の実行ファイルのように拡張子を持たないものが多数ある。
 MACHO_LIST="$WORK/macho.txt"
 python3 - "$ENV_DIR" > "$MACHO_LIST" <<'PYMACHO'
 import os, sys
@@ -241,7 +234,70 @@ for dirpath, dirnames, filenames in os.walk(root):
 print("\n".join(out))
 PYMACHO
 MACHO_N="$(grep -c . "$MACHO_LIST" || true)"
-say "  Mach-O のファイル数: $MACHO_N"
+say "  Mach-O のファイル数 (魔法の数で判別): $MACHO_N"
+
+# ── 組み立てのときの置き場を指す LC_RPATH を外す ───────────────
+#   🔴 外す相手は「この走りが作った置き場」だけではない。pip はホイールを
+#      使い回すため、**この企ての別の梱包工程が別の走りで作った置き場**が
+#      焼き込まれて出てくる。実測 (公開した .pkg):
+#        _zlib_state…so と cbor/_cbor…so の LC_RPATH が
+#        /private/tmp/cynovela-portable-build-<番号>/lib を指していた。
+#      これは Portable 版の梱包工程 (tools/build-dist.sh) の置き場であって、
+#      この道具が作ったものではない。作った人の名前も home も入らないので
+#      身元の関門は素通りするが、受け取り手の機械には無い場所である。
+#      ∴ この企ての置き場の**すべての形**を外す。build-dist.sh の同じ所と
+#      やり方 (install_name_tool -delete_rpath・バイトは手で書かない) は
+#      揃えてある。
+_rp_fixed=0; _rp_files=0
+while IFS= read -r _so; do
+  [ -n "$_so" ] || continue
+  _hit=0
+  while IFS= read -r _rp; do
+    [ -n "$_rp" ] || continue
+    case "$_rp" in
+      /private/tmp/cynovela-*|/tmp/cynovela-*)
+        if install_name_tool -delete_rpath "$_rp" "$_so" 2>/dev/null; then
+          _rp_fixed=$((_rp_fixed+1)); _hit=1
+        fi ;;
+    esac
+  done < <(otool -l "$_so" 2>/dev/null \
+             | awk '/^ *cmd LC_RPATH$/{f=1; next} f&&$1=="path"{print $2; f=0}' \
+             | sort -u)
+  if [ "$_hit" -eq 1 ]; then _rp_files=$((_rp_files+1)); fi
+done < "$MACHO_LIST"
+say "  組み立て時の置き場を指す LC_RPATH を外した: $_rp_fixed 本 ($_rp_files ファイル)"
+
+# ── フェイルクローズ: 一時の置き場を指す積み荷命令が 1 つも無いこと ──
+#   黙って外し損ねるのが、上の欠陥が一度通ってしまった理由である。∴ 外した
+#   あとに機械で確かめ、1 つでも残っていたら組み立てを止める。
+#   見るのは**積み荷命令 (LC_RPATH / LC_LOAD_DYLIB / LC_LOAD_WEAK_DYLIB)** で
+#   あって、ファイルの中身に出てくる文字列ではない。上流 conda-forge の
+#   バイナリは中身に CI の道を持っているが、それはここで見るものではない。
+_LC_BAD="$WORK/lc-tmp.txt"; : > "$_LC_BAD"
+while IFS= read -r _m; do
+  [ -n "$_m" ] || continue
+  otool -l "$_m" 2>/dev/null \
+    | awk -v f="$_m" '
+        /^ *cmd LC_RPATH$/           {k="LC_RPATH";           next}
+        /^ *cmd LC_LOAD_DYLIB$/      {k="LC_LOAD_DYLIB";      next}
+        /^ *cmd LC_LOAD_WEAK_DYLIB$/ {k="LC_LOAD_WEAK_DYLIB"; next}
+        /^ *cmd LC_/                 {k="";                   next}
+        k!="" && ($1=="path" || $1=="name") { print k"\t"$2"\t"f; k="" }
+      ' \
+    | grep -E "^[A-Z_]+"$'\t'"(/private)?/tmp/" >> "$_LC_BAD" || true
+done < "$MACHO_LIST"
+_lc_n="$(sort -u "$_LC_BAD" | grep -c . || true)"
+if [ "$_lc_n" != "0" ]; then
+  echo "[app] 一時の置き場を指す積み荷命令が残っています: $_lc_n 件" >&2
+  sort -u "$_LC_BAD" | sed "s|$ENV_DIR/|env/|g;s|^|[app]     |" >&2
+  die "積み荷命令の関門に通りませんでした。組み立てを止めます。"
+fi
+say "  一時の置き場 (/private/tmp・/tmp) を指す積み荷命令: 0 件"
+
+# ── 3. 署名の壊れた Mach-O を数えて、ad-hoc で署名し直す ──────
+say "──────────────────────────────────────────────"
+say "3/7 署名の壊れた Mach-O を直す (--dest-prefix は署名し直さないため)"
+say "  対象の Mach-O: $MACHO_N 本 (上で作った一覧をそのまま使う)"
 _bad=0; _fixed=0; _failed=0
 while IFS= read -r _m; do
   [ -n "$_m" ] || continue
