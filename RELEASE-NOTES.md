@@ -4,16 +4,34 @@
 
 ## 1.1.2 (2026-08-29)
 
-配布物の中身を作り直した版です。読み込んだ資料・設定・鍵には何も起きません。
-1.1.1 の入れ物はそのまま置き換えられます。
+A release that rebuilds what is distributed, and adds a second way to install it.
+Nothing happens to ingested material, settings or keys; a 1.1.1 installation can
+be replaced in place.
 
-- 配布物の中に、作った人の機械のフォルダ名が残っていました。使う分には支障は
-  ありませんでしたが、配るものに載せるべきものではないため、中身を作り直して
-  取り除きました。
-- 配布物を組み立てる手順を改め、毎回まっさらな状態から作るようにしました。
-  これまでは手元で用意したものを持ち込んでおり、そこに上の情報が紛れ込んでいました。
-- 配るものを世に出す前に、作った人の情報が残っていないかを機械で確かめる関門を
-  設けました。1 件でも残っていれば、そこで止まります。
+- **New: an app edition.** `Cynovela-1.1.2-macos-arm64.pkg` installs
+  `Cynovela.app` into `/Applications`. Double-click it like any other Mac
+  application — no terminal, no Python, no conda. Its Python environment and the
+  AI models are inside the app, so dragging the app to the Trash removes all
+  three together. Your documents, index, settings and keys are kept outside it,
+  in `~/Library/Application Support/Cynovela/`, so they survive an upgrade; the
+  app's menu has an entry for deleting them when you do want them gone. The
+  package edition is unchanged and remains the way to run it without installing
+  anything.
+  - The installer is too large for a single release file, so it is split into
+    three parts; `Cynovela-assemble.command` joins them, checks them and opens
+    the installer.
+  - 🔴 It is **not signed with an Apple certificate.** macOS refuses the first
+    double-click and calls it "from an unidentified developer". Right-click the
+    `.pkg` → Open → Open. Signing an installer package requires an Apple
+    Developer Program certificate this project does not have.
+- The distributables carried a folder name from the machine they were built on.
+  It did no harm in use, but it does not belong in something handed to other
+  people, so the contents were rebuilt without it.
+- The way the distributables are assembled was changed to build everything from
+  scratch every time. Previously a locally prepared copy was carried in, and that
+  is how the above got in.
+- A gate now checks, before anything is published, that nothing identifying the
+  person who built it remains. A single hit stops the build.
 
 ## 1.0.7 (2026-08-22)
 
@@ -300,9 +318,23 @@ from the old folder into the new one before starting.
 
 ## 1.1.2 (2026-08-29)
 
-配布物の中身を作り直した版です。読み込んだ資料・設定・鍵には何も起きません。
-1.1.1 の入れ物はそのまま置き換えられます。
+配布物の中身を作り直し、入れ方をもう1つ増やした版です。読み込んだ資料・設定・鍵には
+何も起きません。1.1.1 の入れ物はそのまま置き換えられます。
 
+- **新しく「アプリ版」を用意しました。** `Cynovela-1.1.2-macos-arm64.pkg` を開くと、
+  `/Applications` に `Cynovela.app` が入ります。ほかの Mac のアプリと同じように
+  ダブルクリックで起動します。ターミナルも Python も conda も要りません。Python の
+  環境と AIモデルはアプリの中に入っているため、アプリをゴミ箱へ入れれば3つとも
+  まとめて消えます。資料・索引・設定・鍵はアプリの外の
+  `~/Library/Application Support/Cynovela/` に置くので、入れ替えても残ります。
+  そちらも消したいときのための項目を、アプリのメニューに用意しました。
+  パッケージ版はこれまでどおりで、この Mac に何も入れずに使う道として残ります。
+  - 入れ物は1つのファイルに収まらない大きさのため、3つに分けてあります。
+    `Cynovela-assemble.command` がつなぎ、確かめ、入れる画面まで開きます。
+  - 🔴 この入れ物には **Apple の証明書による署名を付けていません。** macOS は最初の
+    ダブルクリックを断り、「開発元が未確認」と言います。`.pkg` を右クリック →
+    「開く」→「開く」で入れられます。入れ物に署名を付けるには Apple Developer
+    Program の証明書が要り、この企画は持っていません。
 - 配布物の中に、作った人の機械のフォルダ名が残っていました。使う分には支障は
   ありませんでしたが、配るものに載せるべきものではないため、中身を作り直して
   取り除きました。

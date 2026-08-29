@@ -419,3 +419,55 @@ subcommands that read or write `ingest-roots.json` directly — `--add`, `--list
 rather than the one in the data root. The `.app` never invokes those; folders are
 added through the running application. It is recorded here rather than fixed,
 because changing that file was out of scope for this change.
+
+### 15.10 The finished `.pkg` is split for transport only
+
+Measured: `Cynovela-1.1.2-macos-arm64.pkg` is **3,883,932,927 bytes**
+(sha256 `50173617b5887fb53c449c56d5c57526e993c48c53fa12380337ae4ff854d710`).
+GitHub Releases accepts no single file above 2 GiB, while the total size of a
+release is not capped, so the artifact is cut into three parts of at most
+1,500,000,000 bytes each — the same chunk size the AI models already use. The
+logical deliverable remains **one** `.pkg`; nothing about the package changes.
+
+`tools/split-pkg.sh` performs the cut and writes `Cynovela-assemble.command`
+next to the parts, with each part's SHA256 and the whole file's SHA256 and byte
+count baked in. The assembler checks the parts are all present, verifies each one,
+joins them, verifies the joined size **and** the joined SHA256, and only then opens
+the installer. It refuses below the 2 GiB threshold, so a smaller future artifact
+is shipped whole rather than being split for no reason.
+
+Verified end to end, with a positive control:
+
+- split → join → the result is byte-identical to the original (`cmp` reported no
+  difference; both sides hash to the value above);
+- one byte overwritten at offset 700,000,000 of `part01` → the assembler names
+  that part, prints the expected and actual hashes, exits 1, and **leaves no joined
+  file behind**. Without this control, "the check passed" would say nothing about
+  whether the check can fail.
+
+### 15.11 Two measured limitations of the `.app` form
+
+Neither is a defect in the shipped artifact. Both are recorded so that the next
+person does not have to rediscover them.
+
+**Settings that write `cynovela.yaml` cannot work in the installed app.**
+`config.py:130` and `config.py:326` resolve `cynovela.yaml` **relative to the
+current directory**, and the launcher's current directory is the application tree
+inside the bundle — which is read-only by design. `PUT /api/settings/pii-mode`
+(`routers/settings.py`) and `tools/conf.sh`'s `conf_set` both rewrite that file in
+place, so in the `.app` form they have nowhere to write. Moving the configuration
+file into the data root would be a change to how settings are located, which is
+outside the scope of adding a package form; it is left for a separate decision.
+
+**Running from a *writable* copy of the bundle invalidates its signature.**
+Measured: with the bundle in a writable location, a run wrote 87 `.pyc` files into
+`Contents/Resources/cynovela/` and `codesign -v` then failed; deleting them
+restored validity. This cannot happen to a package-installed app — the payload is
+laid down root-owned (BOM: `0/0`, modes 755/644), so the user cannot write into it,
+and a run against a read-only bundle was confirmed to start normally and create no
+bytecode there. It would happen to anyone who copies the `.app` somewhere writable
+and runs it from there. The one-line hardening is to set
+`PYTHONDONTWRITEBYTECODE=1` in the environment the launcher hands to the child; it
+was **not** applied in this change, because doing so would require rebuilding the
+package and would otherwise leave the shipped `.pkg` and the recorded commit out of
+correspondence.

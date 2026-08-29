@@ -100,7 +100,37 @@ Two different situations, two different routes:
 
 ### 6. Uninstalling
 
-`bash uninstall.sh` — it confirms twice, then:
+**App edition** (installed from the `.pkg` into `/Applications`) — this is two
+separate things, and the difference matters:
+
+1. **Removing the program.** Quit Cynovela, then drag `/Applications/Cynovela.app`
+   to the Trash. That takes the program, its Python environment and the AI models
+   with it, because all three live inside the app. Nothing else on this Mac is
+   touched. Disk space returns when you empty the Trash.
+2. **Removing your data.** Your ingested documents, the search index, the settings
+   and the keys are kept **outside** the app, at
+
+   ```
+   ~/Library/Application Support/Cynovela/
+   ```
+
+   so that they survive an upgrade. Trashing the app does **not** remove them.
+
+   To see what is there, use **Cynovela ▸ 保存先を Finder で開く** in the menu bar.
+
+   To remove it, use **Cynovela ▸ 保存されているデータを削除…** *before* you trash
+   the app. It shows the exact path and asks you to confirm; then it stops the
+   server, **deletes the folder outright — this does not go to the Trash and cannot
+   be undone** — and quits.
+
+   If the app is already gone, delete the folder yourself: in Finder,
+   **Go ▸ Go to Folder…**, paste the path above, and drag the `Cynovela` folder to
+   the Trash.
+
+Nothing is written anywhere else: there is no launch agent, no login item, and no
+files outside `/Applications/Cynovela.app` and the folder above.
+
+**Package edition and source editions** — `bash uninstall.sh`. It confirms twice, then:
 
 | It removes / stops | It does NOT touch |
 |---|---|
@@ -119,6 +149,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | `Cynovela-start.command` | **Starts it. Double-click.** |
 | `Cynovela-stop.command` | **Stops it. Double-click.** |
 | `Cynovela-add-folder.command` | **Adds a folder to be ingested. Double-click.** |
+| `check-managed-mac.command` | **Checks whether this Mac will let you install it. Double-click.** It only measures — it changes no setting and works around no management policy. Useful on a Mac handed to you by an employer. |
 | `launch.sh` | **What the three above call internally. Use this one from the terminal.** |
 | `uninstall.sh` | **Removes what this package created.** |
 | `cynovela-cli.py` | **Use it from the terminal. Run `doctor` first — it tells you what is missing.** |
@@ -313,7 +344,35 @@ that one. The same documents are repeated below.
 
 ### 6. 消すには
 
-`bash uninstall.sh` — 2回確認したあと、次を行います。
+**アプリ版**（`.pkg` から `/Applications` へ入れた形）は、消すものが2つに分かれています。
+ここが分かれている点が大事です。
+
+1. **プログラムを消す。** Cynovela を終了してから、`/Applications/Cynovela.app` を
+   ゴミ箱へ入れてください。プログラムと Python の環境と AIモデルが、まとめて消えます。
+   3つともアプリの中に入っているからです。この Mac の他の場所には何も触れません。
+   ディスクの容量は、ゴミ箱を空にすると戻ります。
+2. **資料と設定を消す。** 取り込んだ資料・索引・設定・鍵は、アプリの**外**に置いてあります。
+
+   ```
+   ~/Library/Application Support/Cynovela/
+   ```
+
+   入れ替えても残るようにするためです。∴ アプリをゴミ箱へ入れても、こちらは**消えません**。
+
+   中身を見るには、メニューバーの **Cynovela ▸ 保存先を Finder で開く** を使います。
+
+   消すには、アプリをゴミ箱へ入れる**前**に **Cynovela ▸ 保存されているデータを削除…**
+   を使ってください。消す場所をそのまま出して確認を求め、本体を止めてから
+   **ゴミ箱を経由せず完全に削除し（取り消せません）**、アプリを終了します。
+
+   アプリを先に捨ててしまった場合は、上のフォルダを自分でゴミ箱へ入れてください。
+   Finder では **移動 ▸ フォルダへ移動…** に上の場所を貼り付け、出てきた `Cynovela`
+   フォルダをゴミ箱へ入れます。
+
+それ以外の場所には何も書きません。ログイン項目も、自動起動の仕掛けも作りません。
+`/Applications/Cynovela.app` と上のフォルダの2か所だけです。
+
+**パッケージ版とソース版**は `bash uninstall.sh` です。2回確認したあと、次を行います。
 
 | 消す・止めるもの | 触らないもの |
 |---|---|
@@ -332,6 +391,7 @@ that one. The same documents are repeated below.
 | `Cynovela-start.command` | **起動する。ダブルクリック** |
 | `Cynovela-stop.command` | **止める。ダブルクリック** |
 | `Cynovela-add-folder.command` | **読み込むフォルダを足す。ダブルクリック** |
+| `check-managed-mac.command` | **この Mac に入れられるかを下調べする。ダブルクリック**。測るだけで、設定は変えず、管理の仕組みも迂回しない。会社から配られた Mac で役に立つ |
 | `launch.sh` | **上の3つが内側で呼んでいるもの。ターミナルから使うときはこれ** |
 | `uninstall.sh` | **この配布物が作ったものを消す** |
 | `cynovela-cli.py` | **端末から使う。まず `doctor` を叩けば、足りないものが分かる** |

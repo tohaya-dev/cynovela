@@ -16,6 +16,40 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## v1.1.2 (2026-08-30)
+
+- **New: an app edition, installed from a `.pkg`.**
+  `Cynovela-1.1.2-macos-arm64.pkg` puts `Cynovela.app` into `/Applications`. It is
+  a new outer shell around the existing startup path, not a replacement for it: the
+  launcher starts `launch.sh` as a child process, shows its output in a window,
+  opens the browser when the server answers, and stops the process group when you
+  quit. `launch.sh` and `tools/launch-body.sh` are otherwise unchanged — one guard
+  line was added to `launch.sh` (see below) and nothing else.
+  - The bundled Python environment is built with `conda-pack --dest-prefix`, so the
+    prefix is rewritten at build time to the path it will occupy inside the
+    installed app. There is no `conda-unpack` step on the receiving machine.
+  - The AI models are inside the app, at
+    `Contents/Resources/cynovela/store/models/`. Dragging the app to the Trash
+    removes the program, the environment and the models together.
+  - The installer is not relocatable: `BundleIsRelocatable` is false, so the
+    Installer cannot redirect it onto some other copy found elsewhere on the disk.
+  - It is split into three parts for transport only; the finished artifact is one
+    `.pkg`. `Cynovela-assemble.command` joins the parts, verifies each one and the
+    joined whole, and then opens the installer.
+  - The `.app` is ad-hoc signed. The `.pkg` is **unsigned** — signing an installer
+    package needs an Apple Developer Program Installer identity this project does
+    not have. macOS therefore refuses the first double-click; right-click → Open →
+    Open gets past it.
+- **The data root can now be moved out of the tree.** An installed app is
+  read-only, so the database, index, logs, backups and keys cannot live inside it.
+  When `CYNOVELA_DATA_ROOT` is set — which only the app's launcher does — those go
+  under `~/Library/Application Support/Cynovela/` instead. When it is unset, which
+  is every other edition, the behaviour is byte-for-byte what it was.
+- **`launch.sh` skips clearing extended attributes when its own folder is not
+  writable.** A package-installed app is owned by root, and the recursive
+  `xattr -rc` printed a warning line per entry on every launch. Every folder-based
+  edition has a writable root, so the guard is never taken there.
+
 ## v1.1.0 (2026-08-25)
 
 - **The distributables for this version were rebuilt and replaced on 2026-08-25.** The
@@ -252,6 +286,38 @@ The following are recorded as unfinished. They describe the state of the current
 Cynovela の主要な変更内容を時系列で記録します。
 
 ---
+
+## v1.1.2（2026-08-30）
+
+- **新しく「アプリ版」を用意した（`.pkg` で入れる形）。**
+  `Cynovela-1.1.2-macos-arm64.pkg` は `/Applications` へ `Cynovela.app` を置く。
+  これは既存の起動の道を**置き換えるものではなく、その外側を包む新しい殻**である。
+  入口は `launch.sh` を子プロセスとして起こし、その出力を窓に流し、応答が返ったら
+  ブラウザを開き、終了のときに process group を止める。`launch.sh` と
+  `tools/launch-body.sh` はそれ以外に変えていない（`launch.sh` に下記の判定を
+  1 行足しただけである）。
+  - 同梱する Python の環境は `conda-pack --dest-prefix` で作る。∴ 前置きの書き換えは
+    組み立てのときに済み、入れた先の場所がそのまま書かれている。受け取り手の機械で
+    `conda-unpack` を走らせる工程は無い。
+  - AIモデルはアプリの中の `Contents/Resources/cynovela/store/models/` に在る。
+    アプリをゴミ箱へ入れれば、プログラムと環境とモデルがまとめて消える。
+  - 入れ物は置き場を動かさない。`BundleIsRelocatable` を false にしてあるため、
+    Installer がディスクの別の場所に在る写しを見つけてそちらへ入れることはない。
+  - 3 つに分けてあるのは送るあいだだけで、出来上がりは 1 本の `.pkg` である。
+    `Cynovela-assemble.command` が片ごとに確かめ、つなぎ、つないだ全体をもう一度
+    確かめてから、入れる画面を開く。
+  - `.app` は ad-hoc 署名である。`.pkg` は**署名していない** — 入れ物に署名を付けるには
+    Apple Developer Program の Installer 用の証明書が要り、この企画は持っていない。
+    ∴ macOS は最初のダブルクリックを断る。右クリック →「開く」→「開く」で入れられる。
+- **保存先の根を、木の外へ移せるようにした。** 入れたあとのアプリは読み取り専用のため、
+  データベース・索引・記録・控え・鍵をその中に置けない。`CYNOVELA_DATA_ROOT` が
+  与えられたとき（与えるのはアプリ版の入口だけである）、それらは
+  `~/Library/Application Support/Cynovela/` の下へ行く。与えられないとき ＝ ほかの
+  すべての形では、振る舞いは 1 バイトも変わらない。
+- **`launch.sh` は、自分の置き場に書けないときは拡張属性を落とす処理を行わない。**
+  `.pkg` で入れた包みは root の持ち物であり、再帰的な `xattr -rc` が 1 つにつき 1 行の
+  警告を毎回出していた。フォルダで配る形はどれも根が書けるため、そちらでこの判定に
+  当たることはない。
 
 ## v1.1.0（2026-08-25）
 

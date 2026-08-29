@@ -20,7 +20,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
-| `chewie` | Mac の上で直に動く形 | GitHub Releases (v1.1.0) で公開しています |
+| `chewie` | Mac の上で直に動く形 | GitHub Releases (v1.1.2) で公開しています |
 | `falcon` | コンテナの中で動く形（Podman） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 | `falcon-docker-beta` | コンテナの中で動く形（Docker・開発中のベータ・モデル同梱なし） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 
@@ -29,6 +29,9 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 ## 要るもの
 
 - Apple silicon の macOS。
+- `chewie` のアプリ版 ＝ **Python も `conda` も要りません。** `/Applications` へ
+  `Cynovela.app` を入れる形で、自分用の Python と AIモデルをアプリの中に持っています。
+  macOS 12 以降、入れるときに管理者のパスワード、空き 8 GB ほどが要ります。
 - `chewie` のパッケージ版 ＝ **Python も `conda` も要りません。** フォルダの中に
   自分用の Python を持っており、この Mac には何も入れません。
 - `chewie` のソース版 ＝ Python 3.12 以降が要ります。環境は `launch.sh` が作ります。
@@ -42,7 +45,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 ## 落とすもの
 
-すべて GitHub Releases (v1.1.0) にあります。
+すべて GitHub Releases (v1.1.2) にあります。
 https://github.com/tohaya-dev/cynovela/releases
 
 「どれを落とすか」の1枚での答えは
@@ -50,21 +53,34 @@ https://github.com/tohaya-dev/cynovela/releases
 
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
-| **パッケージ版** `cynovela-chewie-package-1.1.0.tar.gz` | Mac の上で直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
-| **ソース版・全部入り** `cynovela-chewie-all-in-one-1.1.0.tar.gz.part00`〜`part02` | Mac の上で直に | 入っています | 分割ファイル（組み立てが要る） | Python 3.12 以降 |
-| **ソース版・軽量** `cynovela-chewie-lightweight-1.1.0.tar.gz` | Mac の上で直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | Python 3.12 以降 |
-| **AIモデル** `cynovela-chewie-models-1.1.0.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
+| **アプリ版** `Cynovela-1.1.2-macos-arm64.pkg.part00`〜`part02` | `/Applications` のアプリとして | 入っています | 分割ファイル（`Cynovela-assemble.command` がつなぎます） | **Python も `conda` も要りません。** 入れるときに管理者のパスワード |
+| **パッケージ版** `cynovela-chewie-package-1.1.2.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
+| **ソース版・全部入り** `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`〜`part02` | 置いた場所のフォルダで直に | 入っています | 分割ファイル（組み立てが要る） | Python 3.12 以降 |
+| **ソース版・軽量** `cynovela-chewie-lightweight-1.1.1.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | Python 3.12 以降 |
+| **AIモデル** `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
-要件がいちばん少ないのは **パッケージ版** です。展開し、AIモデルを重ねて
-`./launch.sh` を叩きます。
+**アプリ版**＝ほかの Mac のアプリと同じ扱いにしたい方向け。1回入れれば中に全部入って
+おり、ゴミ箱へ入れればプログラムと Python の環境と AIモデルがまとめて消えます。資料と
+設定はアプリの外の `~/Library/Application Support/Cynovela/` に置くため、入れ替えても
+残ります（＝一緒には消えません）。
+
+**パッケージ版**＝この Mac に何も入れたくない方向け。展開し、AIモデルを重ねて
+`./launch.sh` を叩きます。書き込みはそのフォルダの中で完結します。
 
 **全部入り**＝モデルも同じダウンロードに入れて、あとから取りに行かせたくない方向け。
-**軽量**＝落とすものを小さくしたい方、初回の起動で環境を作ってよい方向け。
+**軽量**＝落とすものを小さくしたい方、初回の起動で環境を作ってよい方向け。ソース版の
+2 つは 1.1.2 では作り直していないため、1.1.1 のリリースに在ります。
 
 リリースには `SHA256SUMS` と `HOW-TO-ASSEMBLE.md` も置いてあります。どの形を選んでも
-`SHA256SUMS` は一緒に落としてください。全部入りとAIモデルは1つのファイルに収まらない
-大きさのため分割してあります。[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) のとおりに
-つなぎ、`SHA256SUMS` と突き合わせてから起動してください。
+`SHA256SUMS` は一緒に落としてください。アプリ版・全部入り・AIモデルは1つのファイルに
+収まらない大きさのため分割してあります。[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) の
+とおりにつなぎ、`SHA256SUMS` と突き合わせてから起動してください。
+
+> 🔴 **入れ物（.pkg）には Apple の証明書による署名を付けていません。** そのため macOS は
+> 最初のダブルクリックを断り、「開発元が未確認のため開けません」と言います。Finder で
+> `.pkg` を右クリック →「**開く**」→ もう一度「**開く**」で入れられます。入れ物に署名を
+> 付けるには Apple Developer Program の証明書が要り、この企画は持っていません。考え方は
+> [MACOS-DISTRIBUTION-STRATEGY.md](MACOS-DISTRIBUTION-STRATEGY.md) の 15.7 に書いてあります。
 
 `falcon` と `falcon-docker-beta` は、このリポジトリのソースから自分で組み立てる形で
 あり、配布物は用意していません。
@@ -78,12 +94,12 @@ https://github.com/tohaya-dev/cynovela/releases
 |---|---|
 | [chewie/START-HERE.md](chewie/START-HERE.md) | 入口。初回の起動・起こし直し・入れ直し・消し方と、他の文書の在りか |
 | [chewie/docs/editions.md](chewie/docs/editions.md) | 4つの落とし物のどれを選ぶか。1枚 |
-| [chewie/docs/first-run.md](chewie/docs/first-run.md) | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし |
-| [chewie/docs/restart.md](chewie/docs/restart.md) | 止め方と起こし直し方 |
-| [chewie/docs/cli-reference.md](chewie/docs/cli-reference.md) | ターミナルの命令と引数の全数 |
-| [chewie/docs/mcp-reference.md](chewie/docs/mcp-reference.md) | MCP の道具の全数。何を渡すと何が返るか |
-| [chewie/docs/api-reference.md](chewie/docs/api-reference.md) | HTTP の口の全数。コードから起こしたもの |
-| [chewie/docs/quickstart.md](chewie/docs/quickstart.md) | 急ぐ方向けの短い手順 |
+| [chewie/docs/getting-started.md](chewie/docs/getting-started.md) | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし |
+| [chewie/docs/operations.md](chewie/docs/operations.md) | 動かし続けるために。止め方と起こし直し方、LLM のつなぎ方、控えと戻し方、利用者、記録 |
+| [chewie/docs/reference/cli.md](chewie/docs/reference/cli.md) | ターミナルの命令と引数の全数 |
+| [chewie/docs/reference/mcp.md](chewie/docs/reference/mcp.md) | MCP の道具の全数。何を渡すと何が返るか |
+| [chewie/docs/reference/api.md](chewie/docs/reference/api.md) | HTTP の口の全数。コードから起こしたもの |
+| [chewie/docs/handson.md](chewie/docs/handson.md) | 動き出したあと、同梱の資料で試すための練習 |
 
 `falcon` は [falcon/docs/HAJIMETE.md](falcon/docs/HAJIMETE.md) から読み、そのあと
 [falcon/docs/STARTUP.md](falcon/docs/STARTUP.md) へ進んでください。
