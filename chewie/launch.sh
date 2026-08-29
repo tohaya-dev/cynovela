@@ -81,6 +81,13 @@ DIST_ENV="cynovela-dist"
 #   落とせないもの (非 ASCII 名で OS 側が失敗する等) は名前を出して先へ進む。1件で止めない。
 _drop_marks() {
     [ -x /usr/bin/xattr ] || return 0
+    # macos-app-20260830: 書き込めない置き場 (.app の中) では何もしない。
+    #   pkg で入れた包みは root の持ち物になり、xattr -rc は 1 ファイルにつき
+    #   1 行の警告を出す。落とす対象は「配布物に付いた印」であって、
+    #   読み取り専用で配られた包みには元から付いていない。
+    #   Portable はどの置き方でも根が書ける ∴ この判定は必ず真になり、
+    #   従来の道がそのまま走る (Portable への影響は無い)。
+    [ -w "$WRAP_DIR" ] || return 0
     local _err
     _err="$(/usr/bin/xattr -rc "$WRAP_DIR" 2>&1 >/dev/null | head -20 || true)"
     if [ -n "$_err" ]; then

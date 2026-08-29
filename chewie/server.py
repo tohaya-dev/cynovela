@@ -148,6 +148,23 @@ except Exception:
     _backup_rel    = "backups"
     _log_rel       = "logs"
     _models_rel    = "models"
+# macos-app-20260830: .app の形で配るときだけ、保存先の根を包みの外へ移す。
+#   .app は /Applications の下に置かれ、中身は書き込めない。よって保存先
+#   (データベース・インデックス・記録・控え) を包みの中に置くことができない。
+#   受け取り手の ~/Library/Application Support/Cynovela を根にする。
+#   この環境変数を渡すのは .app の入口 (macos-app の launcher) だけである。
+#   未設定・空のときは下の if が偽になり、この 2 行は何もしない。
+#   ∴ Portable と全部入りの振る舞いは 1 バイトも変わらない。
+#   名前を CYNOVELA_DATA_DIR にしてはいけない。その名前は下の
+#   _CYNOVELA_PATHS_PID と対で見る受け渡し (1 回の走りの中で、1 度目が決めた
+#   場所を 2 度目へ渡すためのもの) に使われている。外から同じ名前で与えると、
+#   2 度目がそれを「1 度目が決めた値」と誤認して掴み、記号リンクの下で保存先が
+#   2 つに割れるという既知の食い違いが別の形で戻る。
+#   ∴ 外から与える口は別の名前にする。
+#   ~ を解くのはここだけである (下の 4 つは組み立てるだけで解かない)。
+_cyn_data_root = os.environ.get("CYNOVELA_DATA_ROOT", "").strip()
+if _cyn_data_root:
+    _data_dir_root = os.path.realpath(os.path.expanduser(_cyn_data_root))
 # 保存先の正は cynovela.yaml の paths だけとする。
 #   従来は setdefault だったため、外から環境変数を与えると設定より強く効いた。
 #   ここで必ず入れ直し、外からの上書きを効かせない。
