@@ -258,11 +258,30 @@ say "  署名が妥当でなかった Mach-O: $_bad / 直した: $_fixed / 直�
 [ "$_failed" -eq 0 ] || die "署名し直せない Mach-O が在ります。組み立てを止めます。"
 
 # 直したうえで、同梱の python が本当に動くところまで見る (版だけでは足りない)
-say "  同梱の python を動かして確かめる"
-"$ENV_DIR/bin/python" -c 'import sys; print("[app]   python", sys.version.split()[0])' \
+# 直したうえで、同梱の python が本当に動くところまで見る。版だけの判定では、
+# 署名が壊れていても「使える」と答えてしまう (壊れた python は exit 137 で黙って死ぬ)。
+# 🔴 ただし、動かすと python はバイトコードを書く。実測: この 2 行だけで
+#    __pycache__ 319 件・.pyc 1,680 件が同梱環境の中に生まれ、関門で止まった。
+#    公開中の v1.1.1 に 2 万件の .pyc が入っていたのと同じ型である
+#    (環境を一度動かしてから包み直した)。∴ -B と環境変数の両方で書かせない。
+#    環境変数の方は、この走りから枝分かれする子にも効かせるために要る。
+say "  同梱の python を動かして確かめる (バイトコードは書かせない)"
+export PYTHONDONTWRITEBYTECODE=1
+"$ENV_DIR/bin/python" -B -c 'import sys; print("[app]   python", sys.version.split()[0])' \
   || die "同梱の python が動きません (署名の直しが効いていない可能性)"
-"$ENV_DIR/bin/python" -c 'import fastapi, uvicorn, chromadb, torch; print("[app]   fastapi/uvicorn/chromadb/torch: 読み込めました")' \
+"$ENV_DIR/bin/python" -B -c 'import fastapi, uvicorn, chromadb, torch; print("[app]   fastapi/uvicorn/chromadb/torch: 読み込めました")' \
   || die "同梱の環境で必要な部品を読み込めません"
+
+# 念のためもう一度掃いて、0 件であることをここで確かめる。署名は次の段で
+# 包み全体を封じるので、それより前に片づいていなければならない。
+find "$ENV_DIR" -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+find "$ENV_DIR" -name '*.pyc' -delete 2>/dev/null || true
+_pyc_n="$(find "$APP" -name '*.pyc' 2>/dev/null | wc -l | tr -d ' ')"
+_pycache_n="$(find "$APP" -name '__pycache__' -type d 2>/dev/null | wc -l | tr -d ' ')"
+say "  バイトコード: .pyc $_pyc_n 件 / __pycache__ $_pycache_n 件"
+if [ "$_pyc_n" != "0" ] || [ "$_pycache_n" != "0" ]; then
+  die "バイトコードが残っています。署名の前に止めます。"
+fi
 
 # ── 4. 入口を組む ────────────────────────────────────────────
 say "──────────────────────────────────────────────"
