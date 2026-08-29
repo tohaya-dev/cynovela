@@ -460,9 +460,13 @@ file into the data root would be a change to how settings are located, which is
 outside the scope of adding a package form; it is left for a separate decision.
 
 **Running from a *writable* copy of the bundle invalidates its signature.**
-Measured: with the bundle in a writable location, a run wrote 87 `.pyc` files into
-`Contents/Resources/cynovela/` and `codesign -v` then failed; deleting them
-restored validity. This does not happen to a package-installed app, because the
+Measured on the shipped package, with the bundle's own BOM modes restored so that
+it is owner-writable: one run wrote **4,768 `.pyc` files into 728 new
+`__pycache__` directories** inside `Contents/Resources/cynovela/`, and
+`codesign --verify` then reported *a sealed resource is missing or invalid*. No
+pre-existing file was modified; deleting the bytecode restored the bundle to
+byte-identical with a valid seal. (An earlier, smaller figure of 87 files was
+measured on a partial run and is superseded by this one.) This does not happen to a package-installed app, because the
 payload is laid down root-owned and the user cannot write into it. That claim is
 now enforced rather than assumed: the build reads the finished `.pkg`'s own BOM and
 aborts unless **every** entry is `0/0` and carries a well-formed mode (regular
