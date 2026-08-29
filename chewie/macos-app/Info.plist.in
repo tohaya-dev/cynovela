@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Cynovela.app の Info.plist の雛形 (macos-app-20260830)。
+  __VERSION__ は tools/build-macos-app.sh が VERSION から入れる。
+  絵 (アイコン) はこのリポジトリに 1 つも無いため、CFBundleIconFile は置かない。
+  勝手に作らない (決定: 無いものを作って配らない)。
+-->
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>Cynovela</string>
+    <key>CFBundleDisplayName</key>
+    <string>Cynovela</string>
+    <key>CFBundleExecutable</key>
+    <string>Cynovela</string>
+    <key>CFBundleIdentifier</key>
+    <string>dev.tohaya.cynovela</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>__VERSION__</string>
+    <key>CFBundleVersion</key>
+    <string>__VERSION__</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>12.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <!-- 終了の要求を自分で受けて、子の process group を止めてから終わる。
+         OS に黙って落とされると本体が残る。 -->
+    <key>NSSupportsSuddenTermination</key>
+    <false/>
+    <key>NSSupportsAutomaticTermination</key>
+    <false/>
+    <key>LSUIElement</key>
+    <false/>
+    <key>NSHumanReadableCopyright</key>
+    <string>MIT License. Copyright (c) 2026 tohaya-dev</string>
+</dict>
+</plist>

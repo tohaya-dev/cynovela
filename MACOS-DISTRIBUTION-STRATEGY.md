@@ -247,3 +247,175 @@ The next step is implementation-level validation, not further abstract packaging
 6. test the PKG on both personal and managed Mac environments and record the actual result.
 
 No release version number is decided by this document.
+
+---
+
+## 15. Implementation record: the `.app` + `.pkg` as actually built (2026-08-30)
+
+This section records what was implemented, and where it **deviates from the
+architecture sketched in sections 7 and 14 above**. The deviations are
+deliberate and measured; they are recorded here rather than silently applied.
+
+### 15.1 Deviation: conda-pack `--dest-prefix`, not Constructor
+
+Section 7 proposed `formal Conda package -> Constructor -> .pkg`. The
+implementation does **not** use Constructor. It uses the existing conda-pack
+mechanism with `--dest-prefix` pointing at the final install location.
+
+Reason: Constructor's objection in section 7 was to *relocating a developer
+environment snapshot*. `--dest-prefix` removes that objection directly — the
+environment is built fresh every time at a throwaway prefix and the prefix is
+rewritten **at pack time** to the exact path it will occupy inside the
+installed bundle. Nothing is relocated on the receiving machine; there is no
+`conda-unpack` step at all. This reuses the packaging pipeline the project
+already has and already gates, instead of introducing a second one.
+
+The two-artifact release policy in sections 1-2 is unchanged.
+
+### 15.2 Constraint: the build prefix must be *longer* than the install prefix
+
+conda-pack rewrites prefixes on raw bytes and can only ever **shorten** a path,
+never lengthen it. The install prefix is
+
+```text
+/Applications/Cynovela.app/Contents/Resources/env      (49 characters)
+```
+
+so the build prefix must be at least that long, with margin. `build-macos-app.sh`
+computes the requirement as `len(install prefix) + 32` and pads its own build
+prefix until it satisfies it, failing closed if it cannot. The build prefix is
+placed under `/private/tmp` and asserted not to contain the developer's home,
+for the same reason the Portable build does this.
+
+### 15.3 Measured defect: `--dest-prefix` does not re-sign on Apple Silicon
+
+conda-pack 0.9.2 has two prefix-rewriting paths and they are **not symmetric**:
+
+- `prefixes.py` `update_prefix()` — used by the `conda-unpack` path — calls
+  `/usr/bin/codesign -s - -f` on Darwin arm64 after modifying a file;
+- `core.py` `replace_prefix()` — used by `--dest-prefix` — rewrites in-memory
+  bytes and **does not re-sign**.
+
+On arm64 an unsigned-after-modification Mach-O is killed by the kernel. Measured:
+**26 of 664** Mach-O files in the packed environment had invalid signatures, and
+the extracted `python` died with **exit 137 (SIGKILL) and no message**.
+
+The fix is applied at build time: every Mach-O in the environment is checked with
+`codesign -v` and any invalid one is re-signed ad-hoc with `codesign -s - -f`
+(26/26 repaired in 9 seconds). Signatures live in the file bytes and survive the
+tar round trip, so the receiving machine does nothing.
+
+### 15.4 Deviation: models live in the tree, not beside it
+
+The drawn layout put models at `Contents/Resources/models/`. They are instead at
+
+```text
+Contents/Resources/cynovela/store/models/
+```
+
+Reason, measured: `config.py:503 resolve_model_path()` searches candidate 1 at
+`{app_dir}/store/models/models--<org>--<name>/snapshots/*`, where `app_dir` is
+the directory of `config.py` — the **application tree**, not the data directory.
+Placing the models there means the models are found with **zero code change**.
+They are still inside the bundle, so trashing the app removes them, which was the
+requirement. `tools/launch-body.sh:56` looks in the same place.
+
+### 15.5 The data root moves out of the bundle
+
+An installed `.app` is read-only and root-owned, so the data root cannot stay
+inside the tree. It is `~/Library/Application Support/Cynovela/`, passed in by
+the launcher as `CYNOVELA_DATA_ROOT`.
+
+Two things had to be true for this to be a one-line change:
+
+- The existing `CYNOVELA_*` variables could not be reused. `server.py`
+  overwrites all five unconditionally, deliberately, so a value inherited from a
+  parent cannot decide where data goes. A new variable was required.
+- The name is deliberately **not** `CYNOVELA_DATA_DIR`. That name is the in-run
+  handoff read together with `_CYNOVELA_PATHS_PID`; a value arriving from outside
+  would be mistaken for the one the run itself decided.
+
+`CYNOVELA_LOG_DIR` must **also** be exported by the launcher, because the logging
+`dictConfig` is decided about 120 lines *before* the data root is resolved. That
+variable was already honoured there, so no second code change was needed.
+
+Because the data root starts empty, the launcher seeds it on first run from the
+bundle's own `store/` skeleton — excluding `models/`, which stays in the bundle.
+That makes "start fresh" mean exactly what a freshly unpacked Portable tree means.
+`store/ingest-roots.json` carries the portable form `@app/dummy-corpus`, and
+`scripts/ingest_roots.py:54 default_repo()` resolves `@app` against the directory
+holding the helper — the bundle tree — not against the data root, so seeding it
+into the data root resolves correctly.
+
+### 15.6 The `.pkg` must not be relocatable, and the obvious attribute is a trap
+
+The discriminator is **not** the `relocatable="false"` attribute in `PackageInfo`
+— that is present in every package, including relocatable ones. The discriminator
+is whether `<relocate>` has a `<bundle>` child:
+
+```text
+non-relocatable : <relocate/>
+relocatable     : <relocate><bundle id="..."/></relocate>
+```
+
+The only way to get the first form is `pkgbuild --root` together with a
+`--component-plist` whose `BundleIsRelocatable` is false. `pkgbuild --component`
+cannot be used: it accepts no `--component-plist`, so relocation cannot be
+disabled on that path. Nested bundles are carried under `ChildBundles` inside the
+single top-level element, so one bare-key `plutil -replace` covers all of them.
+
+`build-macos-app.sh` expands the finished `.pkg` and asserts the empty form.
+
+### 15.7 Signing, and why the `.pkg` is what makes the app runnable
+
+Measured on this OS: an **ad-hoc signed and quarantined** app is a Gatekeeper hard
+block. A `.zip`-delivered `.app` would therefore not run at all. Installing via
+`.pkg` is what makes it runnable, because `installer` strips the quarantine flag —
+which also means **no app translocation occurs** for a pkg-installed app.
+
+Current signing policy, unchanged from section 10:
+
+- the `.app` code is **ad-hoc** signed (`codesign -s -`; ad-hoc carries no
+  identity, so no real name is embedded);
+- the `.pkg` ships **unsigned** — a signed installer package requires an Apple
+  Developer Program Installer identity the project does not have. `productsign`
+  is not used;
+- Developer ID and notarization remain out of scope.
+
+Inner Mach-O is signed first and the bundle last. `--deep` is deprecated and is
+not used; the tree is walked explicitly.
+
+### 15.8 The launcher does not reimplement startup
+
+`Contents/MacOS/Cynovela` is a small AppKit program (`chewie/macos-app/main.swift`,
+built with `xcrun swiftc`; no Xcode). It has exactly five responsibilities: start
+`launch.sh` in its own process group, show its output in a window that follows the
+tail, show progress while starting, open the browser when the server answers, and
+send a normal termination request to the process group on quit. It starts the
+existing path unchanged:
+
+```text
+cwd = <bundle>/Contents/Resources/cynovela
+bash launch.sh --no-prompt --python <bundle>/Contents/Resources/env/bin/python
+```
+
+`cwd` must be the tree: `config.py` resolves `cynovela.yaml` relative to the
+current directory. The child is given `/dev/null` on stdin, so `launch.sh` takes
+its existing passthru branch and `exec`s `tools/launch-body.sh`; `--python` is
+already present, so bundled-environment detection is correctly skipped. The
+interactive branch — which writes into the tree — is therefore never reached.
+
+`launch.sh`'s `_drop_marks` gained one guard, `[ -w "$WRAP_DIR" ] || return 0`,
+because a package-installed bundle is root-owned and `xattr -rc` against it
+printed up to twenty warning lines on every launch. Every Portable layout has a
+writable root, so the guard is true there and the existing path is unchanged.
+
+### 15.9 Known limitation
+
+`tools/launch-body.sh:81` computes `DATA_DIR` from `cynovela.yaml`'s
+`paths.data_dir` and does **not** consult `CYNOVELA_DATA_ROOT`. The entry-point
+subcommands that read or write `ingest-roots.json` directly — `--add`, `--list`,
+`--remove`, `--add-path` — would therefore act on the copy inside the bundle
+rather than the one in the data root. The `.app` never invokes those; folders are
+added through the running application. It is recorded here rather than fixed,
+because changing that file was out of scope for this change.

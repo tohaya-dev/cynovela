@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  productbuild へ渡す組み立ての宣言 (macos-app-20260830)。
+  __VERSION__ は tools/build-macos-app.sh が VERSION から入れる。
+
+  ・hostArchitectures="arm64"  … Apple Silicon 専用。同梱の環境も arm64 で固めてある。
+  ・options customize="never"  … 受け取り手に選ばせる項目を作らない。入るのは 1 つだけである。
+  ・domains enable_localSystem … 置き場は /Applications に固定する。
+  ・pkg-ref に <bundle-version> を置かない。置くと productbuild が
+    「置き換え先を探す」側の記述を作る余地ができる。入れ替えは同じ場所への上書きで足りる。
+
+  🔴 置き場を動かさない (relocate しない) ことの決め手は、この宣言ではなく
+     component.plist の BundleIsRelocatable=false 側である。仕上がった .pkg を
+     展開して PackageInfo の <relocate/> が空であることを必ず確かめること
+     (build-macos-app.sh の最後の関門がそれを見ている)。
+-->
+<installer-gui-script minSpecVersion="2">
+    <title>Cynovela</title>
+    <organization>dev.tohaya</organization>
+    <options customize="never" require-scripts="false" hostArchitectures="arm64"/>
+    <volume-check>
+        <allowed-os-versions>
+            <os-version min="12.0"/>
+        </allowed-os-versions>
+    </volume-check>
+    <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="dev.tohaya.cynovela"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="dev.tohaya.cynovela" visible="false">
+        <pkg-ref id="dev.tohaya.cynovela"/>
+    </choice>
+    <pkg-ref id="dev.tohaya.cynovela" version="__VERSION__" onConclusion="none">component.pkg</pkg-ref>
+</installer-gui-script>
