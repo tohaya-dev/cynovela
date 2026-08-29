@@ -225,6 +225,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var ticker: Timer?
     var poller: Timer?
     var quitting = false
+    var deferredTermination = false   // .terminateLater を返したときだけ真
     var demoMode = false
 
     // ── 立ち上げ ─────────────────────────────────────────────
@@ -245,6 +246,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminate(_ s: NSApplication) -> NSApplication.TerminateReply {
         guard child.isRunning, !quitting else { return .terminateNow }
         quitting = true
+        deferredTermination = true
         setStatus("終了しています…")
         spinner.startAnimation(nil)
         child.requestStop()
@@ -509,7 +511,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ticker?.invalidate(); poller?.invalidate()
         spinner.stopAnimation(nil)
         if quitting {
-            NSApp.reply(toApplicationShouldTerminate: true)
+            // 遅らせた終了を返していないときは、返す先が無いので呼ばない
+            if deferredTermination { NSApp.reply(toApplicationShouldTerminate: true) }
             return
         }
         openButton.isEnabled = false
@@ -604,7 +607,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         child.requestStop()
 
         // 止まるのを少し待ってから消す。動いている最中に消さない。
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) { [weak self] in
             guard let self = self else { return }
             do {
                 if FileManager.default.fileExists(atPath: self.layout.dataRoot.path) {
@@ -621,7 +624,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 e.informativeText = error.localizedDescription
                 e.runModal()
             }
-            NSApp.reply(toApplicationShouldTerminate: true)
+            if self.deferredTermination { NSApp.reply(toApplicationShouldTerminate: true) }
             NSApp.terminate(nil)
         }
     }
@@ -646,6 +649,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func setStatus(_ s: String) { statusLabel.stringValue = s }
 
     func fail(_ message: String) {
+        ticker?.invalidate(); poller?.invalidate()
         spinner.stopAnimation(nil)
         setStatus("起動できませんでした。")
         append("\n[入口] " + message)

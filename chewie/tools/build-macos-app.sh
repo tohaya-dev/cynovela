@@ -71,14 +71,22 @@ xcrun --find swiftc >/dev/null 2>&1 || die "swiftc が見つかりません (Com
 [ -x "$CONDA_BIN" ] || die "conda が見つかりません: $CONDA_BIN"
 [ -f "$ROOT/macos-app/main.swift" ] || die "入口の素が在りません: $ROOT/macos-app/main.swift"
 
-# ── 版。VERSION と、走っているサーバが名乗る出どころの両方を見て、食い違ったら止める ──
-#   版を上げるとき VERSION だけを直して core/version.py を忘れる事故が実際にあった。
-VERSION="$(awk -F': *' '/^version:/{print $2; exit}' "$ROOT/VERSION" | tr -d ' \r')"
-[ -n "$VERSION" ] || die "VERSION から版を読めません"
-CODE_VERSION="$(awk -F'"' '/^APP_VERSION *=/{print $2; exit}' "$ROOT/core/version.py")"
-[ "$VERSION" = "$CODE_VERSION" ] \
-  || die "版が食い違っています: VERSION=$VERSION core/version.py=$CODE_VERSION"
-say "版: $VERSION (VERSION と core/version.py が一致)"
+# ── 版を読む道具 ────────────────────────────────────────────
+#   VERSION と、走っているサーバが名乗る出どころ (core/version.py) の両方を見て、
+#   食い違ったら止める。版を上げるとき VERSION だけを直して core/version.py を
+#   忘れる事故が実際にあった。
+read_version() {   # read_version <木のルート>
+  local _t="$1" _v _c
+  _v="$(awk -F': *' '/^version:/{print $2; exit}' "$_t/VERSION" | tr -d ' \r')"
+  [ -n "$_v" ] || die "VERSION から版を読めません: $_t/VERSION"
+  _c="$(awk -F'"' '/^APP_VERSION *=/{print $2; exit}' "$_t/core/version.py")"
+  [ "$_v" = "$_c" ] || die "版が食い違っています ($_t): VERSION=$_v core/version.py=$_c"
+  echo "$_v"
+}
+# ここで見るのは、組み立てを始める前の手元の確認だけである。
+# 正として使う版は**取り出した木**のもので、展開の直後に読み直す。
+VERSION="$(read_version "$ROOT")"
+say "版 (手元): $VERSION (VERSION と core/version.py が一致)"
 
 # ── 検査値 (梱包直前の検査に要る)。無ければ組まない (フェイルクローズ) ──
 CHECK_VALUES=""
@@ -133,6 +141,16 @@ tar -xzf "$PAYLOAD_TGZ" -C "$WORK/extract"
 mv "$WORK/extract/$TOP" "$TREE_DIR"
 rm -rf "$WORK/extract" "$PAYLOAD_OUT"
 say "展開: Contents/Resources/cynovela (元の名前は $TOP)"
+# 🔴 ここから先で使う版と入口の素は、机の上ではなく**取り出した木**のものである。
+#    従来はここが机の上を見ていた。ref を指定して組んだときや、手直しが残ったまま
+#    組んだときに「中身は ref・入口は机の上」という食い違いが黙って出る。
+VERSION="$(read_version "$TREE_DIR")"
+say "版 (取り出した木): $VERSION ← 以後はこの値だけを使う"
+SRC_DIR="$TREE_DIR/macos-app"
+for _f in main.swift Info.plist.in Distribution.xml.in; do
+  [ -f "$SRC_DIR/$_f" ] || die "取り出した木に入口の素が在りません: macos-app/$_f"
+done
+say "入口の素: 取り出した木の macos-app/ から採る"
 # 🔴 モデルは Resources/models ではなく、この木の store/models に置く。
 #    config.py の探索の 1 番目が {この木}/store/models/… であり、そこに在れば
 #    コードを 1 行も変えずに見つかる。包みの中なので、包みを捨てれば一緒に消える。
@@ -247,8 +265,8 @@ say "  同梱の python を動かして確かめる"
 say "──────────────────────────────────────────────"
 say "4/7 入口 (Swift) を組む"
 xcrun swiftc -target arm64-apple-macos12.0 -O \
-  -o "$APP/Contents/MacOS/${APP_NAME}" "$ROOT/macos-app/main.swift"
-sed "s/__VERSION__/${VERSION}/g" "$ROOT/macos-app/Info.plist.in" > "$APP/Contents/Info.plist"
+  -o "$APP/Contents/MacOS/${APP_NAME}" "$SRC_DIR/main.swift"
+sed "s/__VERSION__/${VERSION}/g" "$SRC_DIR/Info.plist.in" > "$APP/Contents/Info.plist"
 /usr/bin/plutil -lint "$APP/Contents/Info.plist" >/dev/null || die "Info.plist が壊れています"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 say "  Contents/MacOS/${APP_NAME} / Info.plist / PkgInfo"
@@ -271,7 +289,27 @@ say "5/7 ad-hoc で署名する (中の Mach-O が先・包みが最後)"
 # ── 6. 組み上がった .app を、もう一度 3 種の検査にかける ──────
 say "──────────────────────────────────────────────"
 say "6/7 組み上がった .app を検査する (build-dist.sh inspect・3種)"
-bash "$ROOT/tools/build-dist.sh" inspect "$APP" "$CHECK_VALUES"
+# 🔴 検査は .app のルートに直接当ててはいけない。dist_inspect の除外と許可は
+#    **ルート直下からの相対パスで固定**されているためである。実測 (初回走行):
+#      ・(c-2) の除外 './.condapack-cynovela/*' が当たらず、同梱環境の
+#        conda-meta/*.json (conda が書く 32 桁の md5) と CPython の
+#        secrets.py / uuid.py が 19 件の偽の検出になった。
+#      ・(a) の許可 {"cynovela.yaml"} が当たらず、配布物に**わざと**書いてある
+#        初期のパスワード 2 件が偽の検出になった。
+#    ∴ 中身を Portable と同じ並び (木がルート・環境が .condapack-cynovela) へ
+#    写してから当てる。写しは APFS の複製なので場所を食わない。
+#    こうすると効く規則は Portable のときと 1 つも変わらない。加えて、この形態
+#    だけのファイル (組んだ入口と Info.plist) も検査の対象に入る。
+INSPECT_VIEW="$WORK/inspect-view"
+rm -rf "$INSPECT_VIEW"
+cp -Rc "$TREE_DIR" "$INSPECT_VIEW" 2>/dev/null || cp -R "$TREE_DIR" "$INSPECT_VIEW"
+cp -Rc "$ENV_DIR" "$INSPECT_VIEW/.condapack-cynovela" 2>/dev/null \
+  || cp -R "$ENV_DIR" "$INSPECT_VIEW/.condapack-cynovela"
+mkdir -p "$INSPECT_VIEW/macos-app-built"
+cp "$APP/Contents/MacOS/${APP_NAME}" "$APP/Contents/Info.plist" "$INSPECT_VIEW/macos-app-built/"
+say "  検査の並び: 木=ルート / 環境=.condapack-cynovela / 組んだ入口=macos-app-built"
+bash "$ROOT/tools/build-dist.sh" inspect "$INSPECT_VIEW" "$CHECK_VALUES"
+rm -rf "$INSPECT_VIEW"
 
 # ── 7. 梱包 ──────────────────────────────────────────────────
 say "──────────────────────────────────────────────"
@@ -295,7 +333,7 @@ COMPONENT_PKG="$WORK/component.pkg"
   --install-location /Applications "$COMPONENT_PKG" >&2
 
 DIST_XML="$WORK/Distribution.xml"
-sed "s/__VERSION__/${VERSION}/g" "$ROOT/macos-app/Distribution.xml.in" > "$DIST_XML"
+sed "s/__VERSION__/${VERSION}/g" "$SRC_DIR/Distribution.xml.in" > "$DIST_XML"
 OUT_PKG="$OUT_DIR/${APP_NAME}-${VERSION}-macos-arm64.pkg"
 rm -f "$OUT_PKG"
 /usr/bin/productbuild --distribution "$DIST_XML" --package-path "$WORK" "$OUT_PKG" >&2
