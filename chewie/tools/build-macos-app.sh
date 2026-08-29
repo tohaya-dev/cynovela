@@ -352,7 +352,43 @@ say "  Contents/MacOS/${APP_NAME} / Info.plist / PkgInfo"
 # ── 5. 署名 (ad-hoc) ─────────────────────────────────────────
 say "──────────────────────────────────────────────"
 say "5/7 ad-hoc で署名する (中の Mach-O が先・包みが最後)"
+
+# 🔴 署名の**前に**、包みの中の名前を NFD へ揃える。理由 (実測):
+#    pkgbuild は、拡張属性を持つファイルに対して AppleDouble の相方
+#    (`._<名前>`) を目録 (Bom) に足す。このとき相方の名前は **NFD** で書く。
+#    ところが元のファイルの名前は APFS が受け取ったままの並び (git が置いた
+#    NFC) である。∴ 名前が NFC のファイルだけ、相方と字が一致しなくなる。
+#    一致しないと pkgbuild の後始末が両者を組にできず、
+#      ・相方の mode が 0 (`?---------`) のまま埋まらない
+#      ・本体の持ち主が root に書き換えられず、組んだ人の uid のまま残る
+#    という 2 つが同時に起きる。公開した .pkg では、木の中で唯一 ASCII でない
+#    名前を持つ dummy-corpus/00-…md の 1 件がこれに当たっていた
+#    (93,155 件中 1 件が 501/0・相方 1 件が mode 0)。PackageInfo は
+#    overwrite-permissions="true" なので、この持ち主はそのまま受け取り手の
+#    機械に載る。root の包みの中に、その機械の最初の利用者が書ける穴が開く。
+#    --ownership を recommended/preserve/preserve-other のどれにしても直らない
+#    (実測)。∴ 名前の方を先に NFD へ揃えて、pkgbuild が組にできるようにする。
+#    APFS は正規化を区別しないので、NFC の名前で開いても同じ物に届く (実測)。
+#    署名は名前を封じるので、この付け替えは **必ず署名より前**に行う。
+_nfd_n="$(python3 - "$APP" <<'PYNFD'
+import os, sys, unicodedata
+root = sys.argv[1]
+n = 0
+for dirpath, dirnames, filenames in os.walk(root, topdown=False):
+    for name in filenames + dirnames:
+        nfd = unicodedata.normalize("NFD", name)
+        if nfd != name:
+            os.rename(os.path.join(dirpath, name), os.path.join(dirpath, nfd))
+            n += 1
+print(n)
+PYNFD
+)"
+say "  名前を NFD へ揃えた: $_nfd_n 件 (pkgbuild の AppleDouble と字を合わせるため)"
+
 # 印 (拡張属性) は署名の前に全部落とす。残ると署名の封に混ざる。
+# 🔴 com.apple.provenance だけは落ちない (この属性は消せない)。∴ 拡張属性を
+#    持つファイルは残り、pkgbuild は相方を作り続ける。上の NFD 揃えは、
+#    それを前提にした直しである。
 /usr/bin/xattr -cr "$APP" 2>/dev/null || true
 # 自分で組んだ入口を先に署名する
 /usr/bin/codesign -s - -f "$APP/Contents/MacOS/${APP_NAME}" \
@@ -516,6 +552,33 @@ for _g in "$GATE_DEV_USER" "$GATE_WORK_PAT" "DD-CYN-[0-9]{4}"; do
   _n="$( { grep -rlE "$_g" "$GATE" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
   say "  参考: 記号を含むファイル数 = $_n"
 done
+
+# (7) 目録 (Bom) の持ち主と mode。受け取り手の機械に実際に載るのはこの目録の
+#     値である (PackageInfo が overwrite-permissions="true" のため)。1 件でも
+#     root 以外が混ざれば、root の包みの中に、その機械の利用者が書ける穴が開く。
+#     実測 (公開した .pkg): 名前が NFC のファイル 1 件が 501/0 で、その
+#     AppleDouble の相方 1 件が mode 0 (`?---------`) だった。段 5 の NFD 揃えが
+#     その直しであり、ここはそれが効いたことを機械で確かめる関門である。
+#     mode は形も見る: 通常ファイル(100)・ディレクトリ(40)・記号リンク(120) の
+#     どれかで、権限 3 桁が付いていること。
+_bom="$(find "$GATE" -name 'Bom' -type f | head -1)"
+if [ -z "$_bom" ]; then
+  echo "[app] 展開した中に Bom が在りません。持ち主を確かめられません。" >&2
+  gate_fail=1
+else
+  _bom_total="$(/usr/bin/lsbom -p mugf "$_bom" | grep -c . || true)"
+  _bom_bad="$WORK/bom-bad.txt"
+  /usr/bin/lsbom -p mugf "$_bom" \
+    | awk -F'\t' '$2!="0" || $3!="0" || $1 !~ /^(100|40|120)[0-7][0-7][0-7]$/' \
+    > "$_bom_bad" || true
+  _bom_bad_n="$(grep -c . "$_bom_bad" || true)"
+  say "  目録の件数: $_bom_total / 0/0 でないか mode の形が壊れている件数: $_bom_bad_n"
+  if [ "$_bom_bad_n" != "0" ]; then
+    echo "[app] 目録に root/wheel でない項、または壊れた mode の項が在ります (先頭50件):" >&2
+    head -50 "$_bom_bad" | sed 's|^|[app]     |' >&2
+    gate_fail=1
+  fi
+fi
 
 rm -rf "$GATE"
 
