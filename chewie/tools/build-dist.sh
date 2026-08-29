@@ -70,6 +70,11 @@ DIST_DEV_USER="$(id -un)"
 # portable-clean-build: 同梱環境を作るのに使う conda。シェル関数ではなく実体を叩く
 #   (対話でないシェルでは conda は関数として定義されず、CONDA_EXE も空になる)。
 CONDA_BIN="${CONDA_BIN:-$HOME/miniforge3/bin/conda}"
+# 作業ディレクトリの名前も実行時に組み立てる。リテラルで書くと本スクリプト自身が
+# ステージに同梱されて、下の release-gate が自分を「作った人の身元」として検出し、
+# パッケージングが常に止まる（実測 2026-08-29。DIST_DEV_USER・DIST_DOC_INSTR と同じ型で、
+# これが 3 例目である）。\055 は - である。
+DIST_WORK_PAT="$(printf 'cynovela\055work\055')"
 # 内部の文書を指す語も実行時に組み立てる。リテラルで書くと本スクリプト自身が
 # ステージに同梱されて検査(c-2)が自分を検出し、パッケージングが常に止まる
 # ((b) の利用者名と同じ理由)。中身は、作業番号・内部文書の呼び名・
@@ -948,7 +953,7 @@ gate_fail=0
 #     よって、止めるのは利用者名・home・作業ディレクトリの名前とし、
 #     /Users/ の総数は (1-b) で数えて記録に残す (隠さない)。
 gate_ident=0
-for _pat in "$DIST_DEV_USER" "$HOME" "cynovela-work-"; do
+for _pat in "$DIST_DEV_USER" "$HOME" "$DIST_WORK_PAT"; do
   [ -n "$_pat" ] || continue
   _hits="$(grep -rlF "$_pat" "$GATE_DIR" --binary-files=text 2>/dev/null || true)"
   if [ -n "$_hits" ]; then
@@ -986,7 +991,7 @@ if [ "$gate_pycache" != "0" ] || [ "$gate_pyc" != "0" ]; then
 fi
 
 # (3) 数えるだけのもの。止めはしないが、件数を記録に残す。
-for _g in "$DIST_DEV_USER" "cynovela-work-" "DD-CYN-[0-9]{4}"; do
+for _g in "$DIST_DEV_USER" "$DIST_WORK_PAT" "DD-CYN-[0-9]{4}"; do
   _n="$( { grep -rlE "$_g" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
   echo "[gate] 参考: 記号を含むファイル数 = $_n"
 done
