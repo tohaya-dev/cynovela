@@ -63,7 +63,10 @@ cd "$ROOT"
 
 # ── 前提 ─────────────────────────────────────────────────────
 [ "$(uname -m)" = "arm64" ] || die "この道具は Apple Silicon (arm64) でしか組めません: $(uname -m)"
-for _t in /usr/bin/pkgbuild /usr/bin/productbuild /usr/bin/codesign /usr/bin/plutil /usr/bin/xattr; do
+#   pkgutil だけ /usr/sbin に在る (/usr/bin ではない)。ここに並べていなかったため、
+#   初回は 50 分かけて最後の関門まで来てから「無い」で落ちた。
+for _t in /usr/bin/pkgbuild /usr/bin/productbuild /usr/bin/codesign /usr/bin/plutil \
+          /usr/bin/xattr /usr/sbin/pkgutil; do
   [ -x "$_t" ] || die "$_t が見つかりません"
 done
 command -v xcrun >/dev/null 2>&1 || die "xcrun が見つかりません (Command Line Tools を入れてください)"
@@ -316,7 +319,16 @@ say "─────────────────────────
 say "7/7 .pkg に梱包する (置き場を動かさない形)"
 PKGROOT="$WORK/pkgroot"; mkdir -p "$PKGROOT"
 mv "$APP" "$PKGROOT/"
+# 🔴 動かしたら、そこから導いていた道もすべて付け直す。付け直さないと、
+#    このあと木の中を読む所 (Distribution.xml.in) が消えた場所を見に行く。
 APP="$PKGROOT/${APP_NAME}.app"
+TREE_DIR="$APP/Contents/Resources/cynovela"
+ENV_DIR="$APP/Contents/Resources/env"
+SRC_DIR="$TREE_DIR/macos-app"
+
+# 木がまだ在るうちに、組み立ての宣言を作っておく (下で木ごと消すため)
+DIST_XML="$WORK/Distribution.xml"
+sed "s/__VERSION__/${VERSION}/g" "$SRC_DIR/Distribution.xml.in" > "$DIST_XML"
 
 COMPONENT_PLIST="$WORK/component.plist"
 /usr/bin/pkgbuild --analyze --root "$PKGROOT" "$COMPONENT_PLIST" >&2
@@ -332,13 +344,16 @@ COMPONENT_PKG="$WORK/component.pkg"
   --root "$PKGROOT" --component-plist "$COMPONENT_PLIST" \
   --install-location /Applications "$COMPONENT_PKG" >&2
 
-DIST_XML="$WORK/Distribution.xml"
-sed "s/__VERSION__/${VERSION}/g" "$SRC_DIR/Distribution.xml.in" > "$DIST_XML"
+# 中身は component.pkg に入り切っている。ここで木を消して場所を空ける
+# (このあと productbuild と、関門の展開で、それぞれ同じだけの場所が要る)。
+rm -rf "$PKGROOT"
+say "  梱包前の木を片づけた (空き $(df -g / | awk 'NR==2{print $4}')Gi)"
+
 OUT_PKG="$OUT_DIR/${APP_NAME}-${VERSION}-macos-arm64.pkg"
 rm -f "$OUT_PKG"
 /usr/bin/productbuild --distribution "$DIST_XML" --package-path "$WORK" "$OUT_PKG" >&2
 [ -f "$OUT_PKG" ] || die "productbuild が .pkg を作りませんでした"
-rm -rf "$PKGROOT" "$COMPONENT_PKG"
+rm -f "$COMPONENT_PKG"
 
 say "完成: $OUT_PKG"
 say "$(stat -f%z "$OUT_PKG") bytes"
@@ -348,7 +363,7 @@ shasum -a 256 "$OUT_PKG" | sed 's/^/[app] /'
 say "──────────────────────────────────────────────"
 say "関門: 出来上がった .pkg を展開して確かめる"
 GATE="$WORK/gate"; rm -rf "$GATE"
-/usr/bin/pkgutil --expand-full "$OUT_PKG" "$GATE" >&2
+/usr/sbin/pkgutil --expand-full "$OUT_PKG" "$GATE" >&2
 gate_fail=0
 
 # (1) 置き場を動かさない形になっているか。決め手は relocate に bundle の子が
