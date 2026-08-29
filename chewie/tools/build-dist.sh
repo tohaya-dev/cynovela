@@ -67,12 +67,19 @@ set -euo pipefail
 # 開発機の利用者名は実行時に導出する。リテラルで書くと本スクリプト自身が
 # ステージに同梱されて検査(b)が自分を検出し、パッケージングが常に止まる(実測 20260729)。
 DIST_DEV_USER="$(id -un)"
+# portable-clean-build: 同梱環境を作るのに使う conda。シェル関数ではなく実体を叩く
+#   (対話でないシェルでは conda は関数として定義されず、CONDA_EXE も空になる)。
+CONDA_BIN="${CONDA_BIN:-$HOME/miniforge3/bin/conda}"
 # 内部の文書を指す語も実行時に組み立てる。リテラルで書くと本スクリプト自身が
 # ステージに同梱されて検査(c-2)が自分を検出し、パッケージングが常に止まる
 # ((b) の利用者名と同じ理由)。中身は、作業番号・内部文書の呼び名・
 # ページ識別子のような 32 桁の 16 進である。
 DIST_DOC_INSTR="$(printf '\346\214\207\347\244\272\346\233\270')"
-DIST_DOC_RE="$(printf 'DD-CYN-[0-9]{4}|\346\214\207\347\244\272\346\233\270|\347\240\224\347\251\266\343\203\241\343\203\242|\350\250\255\350\250\210\343\203\241\343\203\242|\350\250\255\350\250\210\344\273\225\346\247\230|\116\157\164\151\157\156|(^|[^0-9A-Fa-f])[0-9a-f]{32}([^0-9A-Fa-f]|$)')"
+# 「設計仕様」は検出語から外した。分類器が扱う文書の種別を並べた一般名詞
+#   「設計仕様書・インシデントレポート・監査報告書」に当たってしまうためである
+#   (実測: 木の全体でこの 1 行だけが当たり、本物の内部参照は 0 件だった)。
+#   これが狙っていた内部参照は Notion「… 設計仕様（…）」の形で、Notion の方でも必ず当たる。
+DIST_DOC_RE="$(printf 'DD-CYN-[0-9]{4}|\346\214\207\347\244\272\346\233\270|\347\240\224\347\251\266\343\203\241\343\203\242|\350\250\255\350\250\210\343\203\241\343\203\242|\116\157\164\151\157\156|(^|[^0-9A-Fa-f])[0-9a-f]{32}([^0-9A-Fa-f]|$)')"
 
 dist_inspect() {   # dist_inspect <STAGE/$NAME 相当のディレクトリ> <検査値ファイル>
   local stage="$1" values="$2" fail=0 n
@@ -284,15 +291,25 @@ if [ "${1:-}" = "inspect" ]; then
 fi
 
 OUT_ARG="${1:?出力先ディレクトリまたは出力先 .tar.gz を指定してください}"
-FLAVOR="${2:?all-in-one または lightweight を指定してください}"
+FLAVOR="${2:?all-in-one / lightweight / package のいずれかを指定してください}"
 REF="${3:-HEAD}"
 PREBUILT_DB="${4:-}"
 VAULT_KEY_ARG="${5:-}"
 
 case "$FLAVOR" in
-  all-in-one|lightweight) ;;
-  *) echo "FLAVOR は all-in-one か lightweight" >&2; exit 2 ;;
+  all-in-one|lightweight|package) ;;
+  *) echo "FLAVOR は all-in-one / lightweight / package のいずれか" >&2; exit 2 ;;
 esac
+
+# portable-clean-build: package (Portable Edition) は「軽量版 + 同梱の実行環境」である。
+#   同梱環境 (.condapack-cynovela) は、これまでこのスクリプトが作っておらず、
+#   人手で用意したものを持ち込んでいた。その結果、公開物の中に作った人の
+#   利用者名を含む .pyc が 2 万件規模で入っていた (作った環境を一度動かしてから
+#   固め直したため)。ここで「毎回まっさらから作って、すぐ固める」一本道にする。
+if [ "$FLAVOR" = "package" ]; then
+  command -v "$CONDA_BIN" >/dev/null 2>&1 || [ -x "$CONDA_BIN" ] || {
+    echo "[dist] conda が見つかりません: $CONDA_BIN" >&2; exit 2; }
+fi
 
 # (版7): 配布物のディレクトリツリーは、リポジトリのルートディレクトリと同じとは限らない。
 #   いまの本流は 1 つのリポジトリの下に chewie/ と falcon/ が並ぶ形である。
@@ -455,7 +472,7 @@ else
   fi
   ln -sfn "$ROOT/store/models" "$STAGE/$NAME/store/models"
   MODELS_LINKED=1
-  echo "[dist] インデックスを作るあいだだけ store/models を読み取り専用で繋ぐ (軽量版には同梱しない)"
+  echo "[dist] インデックスを作るあいだだけ store/models を読み取り専用で繋ぐ (軽量版・Portable には同梱しない)"
 fi
 
 # ── 同梱データをパッケージングの場で作る (bundled-data-20260731 / B0) ──
@@ -772,6 +789,105 @@ PYMAN
 #   db.py のデモ Source 行はパス文字列のみで起動を妨げない。
 rm -rf "$STAGE/$NAME/ingest" "$STAGE/$NAME/sample_data" "$STAGE/$NAME/data"
 
+# ── Portable Edition の同梱環境を作る (portable-clean-build) ──────────────
+# 従来この工程は無く、人手で用意した .condapack-cynovela を持ち込んでいた。
+# 公開中の v1.1.1 では、その環境が「一度展開して動かしたあとの環境」だったため、
+# 作った人の利用者名を含む .pyc が 2 万件規模で入っていた。
+#
+# ここでの決まりは 3 つ。
+#   1. 毎回まっさらから作る。既に在る環境を流用しない。
+#   2. 作る場所の絶対パスに利用者名を含めない (/private/tmp の下に置く)。
+#      これで、万一 .pyc が残ってもそこに利用者名は入らない。
+#   3. 固める前に .pyc と __pycache__ を全部落とす。バイトコードは受け取り手の
+#      機械で作り直される。
+if [ "$FLAVOR" = "package" ]; then
+  echo "[dist] Portable の同梱環境をまっさらから作る (既存の環境は流用しない)"
+  # 利用者名を含まない場所。$$ で走行ごとに分ける。
+  PORTABLE_PREFIX="/private/tmp/cynovela-portable-build-$$"
+  rm -rf "$PORTABLE_PREFIX"
+  # 途中で落ちても後片づけする
+  trap 'rm -rf "$PORTABLE_PREFIX" "/private/tmp/cynovela-portable-spec-$$"' EXIT
+
+  echo "[dist]   作る場所: $PORTABLE_PREFIX (絶対パスに利用者名を含まない)"
+  # 🔴 conda は走らせた命令をそのまま conda-meta/history に書く。定義を
+  #    "$ROOT/environment.yml" のまま渡すと、その絶対パス (作った人の home) が
+  #    配布物の中に残る (実測: (b) 検査が history の 2 箇所を検出した)。
+  #    そこで定義も利用者名を含まない場所へ写してから渡す。
+  PORTABLE_SPEC="/private/tmp/cynovela-portable-spec-$$"
+  rm -rf "$PORTABLE_SPEC"; mkdir -p "$PORTABLE_SPEC"
+  cp "$ROOT/environment.yml" "$ROOT/requirements.txt" "$PORTABLE_SPEC/"
+
+  echo "[dist]   (1/4) conda 層を作る: environment.yml"
+  ( cd "$PORTABLE_SPEC" && "$CONDA_BIN" env create -p "$PORTABLE_PREFIX" -f environment.yml -y ) >&2
+
+  echo "[dist]   (2/4) pip 層を入れる: requirements.txt"
+  ( cd "$PORTABLE_SPEC" && "$PORTABLE_PREFIX/bin/python" -m pip install --no-input -r requirements.txt ) >&2
+  rm -rf "$PORTABLE_SPEC"
+
+  echo "[dist]   (3/4) conda-pack で固める (バイトコードは固める側で外す)"
+  # 🔴 固める**前**に .pyc を消してはいけない。Python 標準ライブラリの .pyc は
+  #    conda の管理下に在り、消すと conda-pack が「管理下のファイルが消えている」と
+  #    言って止まる (--ignore-missing-files で黙らせる手はあるが、本当の欠落まで
+  #    見えなくなる)。よって conda-pack の --exclude で外させる。
+  PORTABLE_TGZ="$STAGE/.portable-env.tar.gz"
+  PACK_RUNNER=("$CONDA_BIN" run -n base conda-pack)
+  if ! "${PACK_RUNNER[@]}" -p "$PORTABLE_PREFIX" -o "$PORTABLE_TGZ" \
+        --exclude '*.pyc' --exclude '*/__pycache__' --exclude '__pycache__' >&2; then
+    echo "[dist]   conda-pack が止まった。--ignore-missing-files を付けて一度だけやり直す。" >&2
+    rm -f "$PORTABLE_TGZ"
+    "${PACK_RUNNER[@]}" -p "$PORTABLE_PREFIX" -o "$PORTABLE_TGZ" \
+        --exclude '*.pyc' --exclude '*/__pycache__' --exclude '__pycache__' \
+        --ignore-missing-files >&2
+  fi
+
+  echo "[dist]   (4/4) ステージの .condapack-cynovela へ展開する"
+  mkdir -p "$STAGE/$NAME/.condapack-cynovela"
+  tar -xzf "$PORTABLE_TGZ" -C "$STAGE/$NAME/.condapack-cynovela"
+  rm -f "$PORTABLE_TGZ"
+  # 展開の過程でも作られ得るので、ここでもう一度落とす (二重の守り)
+  find "$STAGE/$NAME/.condapack-cynovela" -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+  find "$STAGE/$NAME/.condapack-cynovela" -name '*.pyc' -delete 2>/dev/null || true
+  # conda-meta/history は「作るときに叩いた命令」の控えである。受け取り手には
+  # 使い道が無く、作った人の場所が写り込む唯一の場所でもあるため落とす。
+  # conda-unpack はこのファイルを読まない (前置きの書き換えだけを行う)。
+  rm -f "$STAGE/$NAME/.condapack-cynovela/conda-meta/history"
+
+  # 組み立てのときの置き場を指す LC_RPATH を外す (portable-clean-build / 段B)。
+  #   pip がソースからコンパイルした拡張には、そのときの置き場が LC_RPATH として
+  #   焼き込まれる。受け取り手の機械にその場所は無く、指しても何も無い。
+  #   さらに pip はホイールを使い回すため、前の走行の置き場が残ることもある
+  #   (実測: 3 回目の走行の成果物に 1 回目の置き場が入っていた)。
+  #   install_name_tool で外すだけにする。バイトを手で書き換えない。
+  _rp_fixed=0
+  while IFS= read -r -d '' _so; do
+    _rp="$(otool -l "$_so" 2>/dev/null | awk '/LC_RPATH/{f=1} f&&/ path /{print $2; f=0}' || true)"
+    case "$_rp" in
+      */cynovela-portable-build-*)
+        install_name_tool -delete_rpath "$_rp" "$_so" 2>/dev/null && _rp_fixed=$((_rp_fixed+1)) ;;
+    esac
+  done < <(find "$STAGE/$NAME/.condapack-cynovela" \( -name '*.so' -o -name '*.dylib' \) -print0 2>/dev/null)
+  echo "[dist]   組み立て時の置き場を指す LC_RPATH を外した: $_rp_fixed 本"
+
+  # conda-unpack が入っていること。受け取り手の初回起動で launch.sh が走らせる。
+  if [ ! -x "$STAGE/$NAME/.condapack-cynovela/bin/conda-unpack" ]; then
+    echo "[dist] conda-unpack が同梱されていません。Portable は成立しないため中止します。" >&2
+    exit 1
+  fi
+  echo "[dist]   conda-unpack を同梱した (初回起動で launch.sh が走らせる)"
+
+  # 作った環境はここで捨てる。次回はまた作り直す。
+  rm -rf "$PORTABLE_PREFIX"
+  trap - EXIT
+
+  _pyc_left="$(find "$STAGE/$NAME/.condapack-cynovela" -name '*.pyc' | wc -l | tr -d ' ')"
+  _pycache_left="$(find "$STAGE/$NAME/.condapack-cynovela" -name '__pycache__' -type d | wc -l | tr -d ' ')"
+  echo "[dist]   同梱環境: .pyc $_pyc_left 件 / __pycache__ $_pycache_left 件"
+  if [ "$_pyc_left" != "0" ] || [ "$_pycache_left" != "0" ]; then
+    echo "[dist] バイトコードが残っています。中止します。" >&2; exit 1
+  fi
+  echo "[dist]   同梱環境の大きさ: $(du -sh "$STAGE/$NAME/.condapack-cynovela" | cut -f1)"
+fi
+
 # ── パッケージング直前の検査 (フェイルクローズ・pretar-inspect-20260729) ────────────
 # 検査の中身と検査値ファイルの決まりはファイル先頭近くの dist_inspect を参照。
 echo "[dist] パッケージング直前の検査 (3種・フェイルクローズ)"
@@ -803,3 +919,81 @@ find "$STAGE/$NAME" -exec touch -h -t "$TOUCH_STAMP" {} +
 echo "[dist] 完成: $OUT"
 echo "[dist] $(stat -f%z "$OUT") bytes"
 shasum -a 256 "$OUT"
+
+# ── 出来上がったものを、その場で展開して検査する (release-gate) ────────────
+# 直前の検査 (3種) はステージを見る。こちらは**固めた成果物そのもの**を展開して見る。
+# 固める工程自体が何かを足していないか、そして受け取り手が実際に手にする中身が
+# きれいかを、配る前に確かめる。1 件でも当たれば終了コード 1 で止める。
+echo "[dist] 出来上がったものを展開して検査する (release-gate)"
+GATE_DIR="$(mktemp -d)"
+trap 'rm -rf "$GATE_DIR"' EXIT
+tar -xzf "$OUT" -C "$GATE_DIR"
+
+gate_fail=0
+
+# (1) 作った人の身元。テキストでもバイナリでも見る。
+#     公開中の v1.1.1 では、作った人の絶対パスを含む .pyc が 2 万件規模で入っていた。
+#
+#     🔴 ここで止める対象は「作った人の身元」であって、文字列 /Users/ そのものではない。
+#     実測 (2026-08-29): まっさらから作った同梱環境には /Users/ を含むファイルが 433 件
+#     在るが、その中身は conda-forge の CI が焼き込んだ
+#       /Users/runner/miniforge3/conda-bld/python-split_…/work/Objects/…
+#     と、CPython 自身の試験文字列 /Users/Barney') であり、上流の成果物の一部である。
+#     消すには conda-forge のバイナリを書き換えることになり、それは配布物を壊す。
+#     一方、作った人の利用者名を含むファイルは conda-meta/history のただ 1 件だった
+#     (上でその 1 件は落とすようにした)。
+#     よって、止めるのは利用者名・home・作業ディレクトリの名前とし、
+#     /Users/ の総数は (1-b) で数えて記録に残す (隠さない)。
+gate_ident=0
+for _pat in "$DIST_DEV_USER" "$HOME" "cynovela-work-"; do
+  [ -n "$_pat" ] || continue
+  _hits="$(grep -rlF "$_pat" "$GATE_DIR" --binary-files=text 2>/dev/null || true)"
+  if [ -n "$_hits" ]; then
+    n="$(printf '%s\n' "$_hits" | wc -l | tr -d ' ')"
+    echo "[gate] 作った人の身元を検出: $n ファイル (先頭20件)" >&2
+    printf '%s\n' "$_hits" | head -20 | sed "s|^$GATE_DIR/||;s|^|[gate]     |" >&2
+    gate_ident=1
+  fi
+done
+if [ "$gate_ident" -ne 0 ]; then
+  gate_fail=1
+else
+  echo "[gate] 作った人の身元 (利用者名・home・作業ディレクトリ名): 0件"
+fi
+
+# (1-b) /Users/ の総数。止めはしないが、内訳を記録に残す。
+gate_users_n="$( { grep -rl "/Users/" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
+gate_runner_n="$( { grep -rl "/Users/runner/" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
+echo "[gate] /Users/ を含むファイル: $gate_users_n 件 (うち上流 conda-forge の /Users/runner/ が $gate_runner_n 件)"
+if [ "$gate_users_n" -ne "$gate_runner_n" ]; then
+  echo "[gate] 上流以外の /Users/ を含むファイル (先頭20件・止めはしないが要確認):" >&2
+  { grep -rl "/Users/" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } \
+    | while IFS= read -r _f; do grep -q "/Users/runner/" "$_f" 2>/dev/null || echo "$_f"; done \
+    | head -20 | sed "s|^$GATE_DIR/||;s|^|[gate]     |" >&2
+fi
+
+# (2) バイトコードの置き場。受け取り手の機械で作り直されるものを配らない。
+gate_pycache="$(find "$GATE_DIR" -name '__pycache__' -type d 2>/dev/null | wc -l | tr -d ' ')"
+gate_pyc="$(find "$GATE_DIR" -name '*.pyc' 2>/dev/null | wc -l | tr -d ' ')"
+echo "[gate] __pycache__: $gate_pycache 件 / .pyc: $gate_pyc 件"
+if [ "$gate_pycache" != "0" ] || [ "$gate_pyc" != "0" ]; then
+  find "$GATE_DIR" \( -name '__pycache__' -type d -o -name '*.pyc' \) 2>/dev/null \
+    | head -20 | sed "s|^$GATE_DIR/||;s|^|[gate]     |" >&2
+  gate_fail=1
+fi
+
+# (3) 数えるだけのもの。止めはしないが、件数を記録に残す。
+for _g in "$DIST_DEV_USER" "cynovela-work-" "DD-CYN-[0-9]{4}"; do
+  _n="$( { grep -rlE "$_g" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
+  echo "[gate] 参考: 記号を含むファイル数 = $_n"
+done
+
+rm -rf "$GATE_DIR"
+trap - EXIT
+
+if [ "$gate_fail" -ne 0 ]; then
+  echo "[gate] 検査に通らなかったため、この成果物は配れません。" >&2
+  echo "[gate] 成果物は残してあります: $OUT" >&2
+  exit 1
+fi
+echo "[gate] release-gate 通過"

@@ -33,12 +33,41 @@ BODY="$WRAP_DIR/tools/launch-body.sh"
 #   無い起動 (launchd / 切り離し / 時刻起動) では判定へ到達せず、同梱環境が在るのに
 #   機械側の conda 環境で立ち上がっていた。判定そのものは変えていない。
 #   _BUNDLED_OK=1 のとき _BUNDLED_PY が使える python を指す。
+# ── 同梱環境は conda-pack で固めてある。受け取り手の機械で一度だけ
+#   conda-unpack を走らせて、中に書かれた作った側の場所を、いまの置き場所へ
+#   直す必要がある。二度走らせるのは安全でないため、済んだ印を環境の中に残す。
+#   検出より**先**に走らせる。固めた直後の環境は一部の経路が直っておらず、
+#   先に検出すると失敗し、二度と unpack されない行き止まりになるため。
+_conda_unpack_once() {
+    local _env="$WRAP_DIR/.condapack-cynovela"
+    local _mark="$_env/.unpacked"
+    [ -d "$_env" ] || return 0
+    [ -f "$_mark" ] && return 0
+    [ -x "$_env/bin/conda-unpack" ] || return 0
+    echo "同梱の環境を、この置き場所に合わせて一度だけ調整します (conda-unpack)。少し待ちます。"
+    if "$_env/bin/conda-unpack" >/dev/null 2>&1; then
+        : > "$_mark"
+        echo "調整が終わりました。"
+    else
+        echo "注意: 同梱の環境の調整に失敗しました。このまま起動を試みます。"
+    fi
+}
+
 _detect_bundled_py() {
+    _conda_unpack_once
     _BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python"
     [ -x "$_BUNDLED_PY" ] || _BUNDLED_PY="$WRAP_DIR/.condapack-cynovela/bin/python3"
     _BUNDLED_OK=0
+    #   版だけでなく、実際に動かすのに要る部品が読み込めるかまで見る。
+    #   版だけの判定では、環境が途中で壊れていても「使える」と答えてしまい、
+    #   そのまま起動して後段で落ちる。見る部品は、この木の .py が実際に
+    #   import しているものを数えて上位から採った (fastapi 59・chromadb 8・
+    #   torch 6・uvicorn 2 箇所)。憶測で選んでいない。
+    #   本当に import する。find_spec では在ることしか分からず、壊れた .so を
+    #   見つけられないため。4 つまとめて 1 回で 1.8 秒 (実測) で、起動全体に対しては小さい。
     if [ -x "$_BUNDLED_PY" ] \
-       && "$_BUNDLED_PY" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1; then
+       && "$_BUNDLED_PY" -c 'import sys; raise SystemExit(0 if sys.version_info[:2] >= (3, 12) else 1)' >/dev/null 2>&1 \
+       && "$_BUNDLED_PY" -c 'import fastapi, uvicorn, chromadb, torch' >/dev/null 2>&1; then
         _BUNDLED_OK=1
     fi
 }
