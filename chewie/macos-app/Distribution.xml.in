@@ -6,8 +6,21 @@
   ・hostArchitectures="arm64"  … Apple Silicon 専用。同梱の環境も arm64 で固めてある。
   ・options customize="never"  … 受け取り手に選ばせる項目を作らない。入るのは 1 つだけである。
   ・domains enable_localSystem … 置き場は /Applications に固定する。
-  ・pkg-ref に <bundle-version> を置かない。置くと productbuild が
-    「置き換え先を探す」側の記述を作る余地ができる。入れ替えは同じ場所への上書きで足りる。
+  ・この素の pkg-ref には <bundle-version> を書かない。ただし**配られる物には
+    載る**。productbuild は、この宣言をそのまま通すのではなく、component.pkg を
+    読んで 2 本目の pkg-ref を継ぎ足す。実測 (公開した .pkg の Distribution):
+
+      <pkg-ref id="dev.tohaya.cynovela"><bundle-version>
+        <bundle CFBundleShortVersionString="…" CFBundleVersion="…"
+                id="dev.tohaya.cynovela" path="Cynovela.app"/>
+      </bundle-version></pkg-ref>
+
+    これは害が無い。置き場を動かすかどうかを決めているのは <bundle-version>
+    ではなく <relocate/> の中身であり、そちらは component.plist の
+    BundleIsRelocatable=false によって空のまま作られるからである
+    (下の 🔴 と、build-macos-app.sh の最後の関門を参照)。
+    ∴ ここに書かないのは「配られる物に載らないようにするため」ではなく、
+    版の出どころを VERSION 1 か所に保つためである。
 
   🔴 置き場を動かさない (relocate しない) ことの決め手は、この宣言ではなく
      component.plist の BundleIsRelocatable=false 側である。仕上がった .pkg を

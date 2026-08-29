@@ -462,12 +462,94 @@ outside the scope of adding a package form; it is left for a separate decision.
 **Running from a *writable* copy of the bundle invalidates its signature.**
 Measured: with the bundle in a writable location, a run wrote 87 `.pyc` files into
 `Contents/Resources/cynovela/` and `codesign -v` then failed; deleting them
-restored validity. This cannot happen to a package-installed app — the payload is
-laid down root-owned (BOM: `0/0`, modes 755/644), so the user cannot write into it,
-and a run against a read-only bundle was confirmed to start normally and create no
+restored validity. This does not happen to a package-installed app, because the
+payload is laid down root-owned and the user cannot write into it. That claim is
+now enforced rather than assumed: the build reads the finished `.pkg`'s own BOM and
+aborts unless **every** entry is `0/0` and carries a well-formed mode (regular
+file, directory or symlink, with three permission digits). The enforcement was
+added because it was not universally true before it existed — in the first build,
+1 of 93,155 entries was `501/0` and 1 more carried the mode `?---------`, both
+consequences of a single file whose name is not ASCII (see §15.12). A run against a
+read-only bundle was confirmed to start normally and create no
 bytecode there. It would happen to anyone who copies the `.app` somewhere writable
 and runs it from there. The one-line hardening is to set
 `PYTHONDONTWRITEBYTECODE=1` in the environment the launcher hands to the child; it
 was **not** applied in this change, because doing so would require rebuilding the
 package and would otherwise leave the shipped `.pkg` and the recorded commit out of
 correspondence.
+
+### 15.12 Measured defect: one payload file was not root-owned, because its name is not ASCII
+
+The first `.pkg` was built and shipped before this was noticed. Of its 93,155 BOM
+entries, 93,154 were `0/0`; exactly one was **`501/0`**:
+
+```
+100644  501  0  ./Cynovela.app/Contents/Resources/cynovela/dummy-corpus/00-はじめに.md
+0         0  0  ./Cynovela.app/Contents/Resources/cynovela/dummy-corpus/._00-はじめに.md
+```
+
+The second line is that file's AppleDouble sidecar, and its mode is `0` —
+`lsbom` renders it `?---------`. It is the only file in the whole payload whose
+name is not ASCII.
+
+The cause is a Unicode normalization mismatch inside `pkgbuild`. Every file in the
+tree carries `com.apple.provenance`, an extended attribute that `xattr -c` cannot
+remove, so `pkgbuild` records an AppleDouble sidecar entry for each one. It writes
+the sidecar's name in **NFD**, while the real entry keeps the bytes the filesystem
+returned — which for this file is the **NFC** form git checked out. The two names
+therefore differ byte for byte, `pkgbuild` cannot pair `._X` with `X`, and the pass
+that pairs them is the same pass that fills in the sidecar's mode and rewrites the
+real file's owner to root. Both are consequently left alone.
+
+Reproduced in eight lines: a directory holding one NFC-named file and one
+NFD-named file, run through `pkgbuild --root`. Only the NFC one comes out `501/0`
+with a mode-`0` sidecar; the NFD one is clean. It reproduces identically under
+`--ownership recommended`, `preserve` and `preserve-other`, so the ownership mode
+is not involved, and it reproduces with the file's other extended attributes
+cleared, so only `com.apple.provenance` is needed to trigger it.
+
+This matters because `PackageInfo` carries `overwrite-permissions="true"`: the BOM's
+ownership is what the installer actually applies. On a real installation that one
+file would land owned by the receiving machine's first user account inside an
+otherwise root-owned bundle — writable by that user, and editing it would
+invalidate `codesign --verify`.
+
+The fix is to normalize every name in the assembled bundle to NFD immediately
+before signing, so that `pkgbuild`'s synthesized sidecar names match. It must
+happen before signing, because the signature seals the names. APFS does not
+distinguish normalizations on lookup — measured: opening the NFD-named file by its
+NFC name succeeds — so nothing that reads the tree is affected, and in any case no
+code in the tree opens that file by name; only two documentation tables mention it.
+
+The build now also reads the finished `.pkg`'s BOM and aborts unless every entry is
+`0/0` with a well-formed mode. Run against the first `.pkg`'s BOM, that gate
+reports exactly the two lines above.
+
+### 15.13 Measured defect: a build prefix from a *different* builder survived in two libraries
+
+Also found in the first `.pkg`. Two shared libraries in the bundled environment
+carried an `LC_RPATH` pointing at
+`/private/tmp/cynovela-portable-build-<pid>/lib` — the temporary prefix of the
+**Portable** builder (`tools/build-dist.sh`), from an earlier, unrelated run. pip
+reuses its wheel cache across builds, so a path baked into a wheel by one builder
+reappears in the output of another.
+
+The strip loop in `tools/build-macos-app.sh` matched only
+`*/cynovela-macos-app-build-*`, the prefix that script creates itself, so it could
+not see this. The path contains no user name and no home directory, which is why
+the identity gate passed it; it is simply a directory that exists on no receiving
+machine.
+
+Three changes: both builders now strip **any** of this project's own temporary
+prefixes rather than only their own; the strip iterates every `LC_RPATH` in a file
+rather than only the first; and the macOS builder then asserts, fail-closed, that
+no Mach-O in the finished environment carries an `LC_RPATH`, `LC_LOAD_DYLIB` or
+`LC_LOAD_WEAK_DYLIB` pointing under `/private/tmp` or `/tmp`. A silent strip that
+misses a case is how this got through the first time.
+
+Two notes on measurement. The check looks at **load commands**, not file contents:
+upstream conda-forge binaries legitimately contain their CI paths as strings, and
+that is not the same thing. And Mach-O files are identified by their leading magic
+bytes, not by parsing `file(1)` — for a universal binary `file` prints
+`<path> (for architecture arm64)`, and cutting that at the first `:` yields
+something that is not a path. One earlier count was wrong for exactly that reason.
