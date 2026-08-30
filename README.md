@@ -66,9 +66,13 @@ The one-page answer to "which of these do I take" is in
 
 Take the **App edition** if you want it to behave like any other Mac application:
 one install, everything inside it, and drag it to the Trash to remove the program,
-its Python environment and the AI models together. Your documents and settings are
-kept outside the app, in `~/Library/Application Support/Cynovela/`, so they survive
-an upgrade — and are not removed with it.
+its Python environment (about 2.3 GB) and the embedded model `bge-m3` (about
+4.8 GB) together — all three are inside the app, not fetched afterwards. It always
+installs into `/Applications`; the installer offers no other location, and
+installing it again goes to the same place. While it runs, it writes only to
+`~/Library/Application Support/Cynovela/` — the app's own contents are not changed
+by a single byte. That folder holds your documents and settings, so they survive an
+upgrade — and are not removed with the app. Quit it with **Cmd+Q**.
 
 Take the **Package edition** if you would rather not install anything: extract it,
 add the AI models, and run `./launch.sh`. It writes inside its own folder.
@@ -78,11 +82,13 @@ fetched afterwards. Take **lightweight** if you want a small download and are
 happy to build the environment on first start. The two source editions were not
 rebuilt for 1.1.2; they are on the 1.1.1 release.
 
-The release also carries `SHA256SUMS` and `HOW-TO-ASSEMBLE.md`. Download
-`SHA256SUMS` whichever edition you pick. The app installer, the all-in-one and the
-AI models are too large for a single file, so they are split; join the parts as
-[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) describes and check the result against
-`SHA256SUMS` before starting.
+The release also carries `HOW-TO-ASSEMBLE.md` and two checksum lists: `SHA256SUMS`
+for the tar.gz editions and the AI models, and `SHA256SUMS-pkg-assets.txt` for the
+app installer's parts and `Cynovela-assemble.command`. Download the one that
+covers the edition you picked. A single release file cannot exceed 2 GiB, so the
+app installer, the all-in-one and the AI models are split into parts; join them as
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) describes and check the result against the
+matching checksum list before starting.
 
 > 🔴 **The installer package is not signed with an Apple certificate.** macOS will
 > refuse the first double-click and say it is "from an unidentified developer". To
@@ -117,9 +123,24 @@ then [falcon/docs/STARTUP.md](falcon/docs/STARTUP.md). For
 [falcon-docker-beta/docs/HAJIMETE.md](falcon-docker-beta/docs/HAJIMETE.md),
 then [falcon-docker-beta/docs/STARTUP.md](falcon-docker-beta/docs/STARTUP.md).
 
-Every guide is bilingual: English first, Japanese after. Whichever form you
-pick, the administrator account is asked to change its password on first
-sign-in.
+Every guide is bilingual: English first, Japanese after.
+
+**The first password.** The administrator user name is `cynovela` and the viewer
+account is `demo`. Their first passwords are **written inside the download
+itself, in `cynovela.yaml`** — read the value of `auth.admin_initial_password`
+(and `auth.viewer_initial_password` for the viewer). Nothing is sent to you
+separately, and no password is written in any of these documents.
+
+- **Package edition and source editions:** `cynovela.yaml` is in the folder you
+  unpacked, next to `launch.sh`.
+- **App edition:** in Finder, right-click `/Applications/Cynovela.app` → **Show
+  Package Contents** → `Contents/Resources/cynovela/cynovela.yaml`.
+
+The start-up screen also prints it once on the ordinary `./launch.sh` start, but
+**not** on the demo start (`./launch.sh --demo`) — the sample database ships
+inside the package, so that route is treated as "not the first start". Whichever
+form you pick, the administrator account is asked to change its password on
+first sign-in.
 
 ## What it does not do
 

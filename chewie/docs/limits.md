@@ -321,6 +321,17 @@ Detailed steps are in [operations.md](operations.md). Only the key points are wr
   (the container package rewrites this one word automatically.
   If you write a different host name or IP it is not rewritten and is used exactly as written).
 - **The image endpoint of the external accelerator is unimplemented.** Calling it returns 501.
+- **The reranker is set to an external accelerator that no distributable carries.**
+  In the `cynovela.yaml` that ships, `reranker.device` is `external` and
+  `reranker.base_url` is `http://localhost:18850`, but nothing that answers on that
+  address is included in any of the downloads. Every search therefore tries that
+  address, fails, and falls back — to reranking inside the process when the reranker
+  weights are in place (they are, in the `models` download), and to no reranking at
+  all when they are not. One log line is written each time it falls back, and the
+  settings screen shows the state. Answers are still produced. What selects the
+  accelerator is `reranker.device`; the shipped `reranker.provider` is already
+  `cross_encoder`, so on an edition whose `cynovela.yaml` you can edit, emptying
+  `device` makes the in-process path the first choice instead of the fallback.
 - **Some values of `--mode` at startup do not actually switch anything.**
   This is written directly in the description text of `--mode`.
   `lite` and `lite-en` have no wiring to a lightweight model, and currently run on the same
@@ -388,6 +399,20 @@ If you want to run on Kubernetes, you need to write the Deployment definition yo
   at the time the package is built. Not a single working document from the builder's side is
   included.
   What is actually included, and how many, is written out in `BUNDLED-DATA.md` in the package.
+- **Where `store/` itself sits depends on the edition.** In every edition that is a folder
+  you unpack, it is `store/` inside that folder. In the app edition the installed bundle is
+  read-only, so the launcher sets `CYNOVELA_DATA_ROOT` and the same paths are taken relative
+  to `~/Library/Application Support/Cynovela/` instead.
+- **The first password is not printed on the screen when you start with the bundled sample
+  material.** The startup script prints the first sign-in name and password only when it
+  decides this is a first run, and it decides that by asking whether the database file
+  already exists. The packages ship a pre-built `store/db/demo.db`, and the default answer
+  at the first question starts with `--demo`, which is the database it looks for — so the
+  file is already there, the check says "not a first run", and nothing is printed. Starting
+  without `--demo` looks for `store/db/cynovela.db`, which is not shipped, and does print.
+  Until this is repaired, read the password out of the `cynovela.yaml` next to the startup
+  script, on the `admin_initial_password:` line under `auth:` (`grep admin_initial_password
+  cynovela.yaml`). You are asked to change it at the first sign-in either way.
 
 ### Cross-collection search
 
@@ -474,6 +499,13 @@ issues a pass with no expiry unless you pass `expires_in_hours` or
   first suspect whether the index location is correct.**
 - Do not pass `max_tokens` to the LM Studio API.
   With a reasoning-type model, it will use up the tokens it needs for thinking.
+- **The screen asks for `/api/settings/embedding` before anyone has signed in, and keeps
+  asking after they have.** The banner that reports the state of the embedding path polls
+  that endpoint every 5 seconds for the first five minutes and every 60 seconds after that,
+  and the polling starts when the page loads rather than when a sign-in succeeds. Before a
+  sign-in, and for a viewer, the endpoint answers 401 or 403; the banner swallows that and
+  shows nothing, but the request is made and logged all the same. It is noise in the log,
+  not a leak — the endpoint refuses, it does not answer.
 
 
 ## 11. Things recorded in 1.0.7
@@ -559,16 +591,24 @@ machine that happens to have conda, not as measured on a machine without it.
 
 ### 11.7 Fixed in chewie, not in falcon
 
-The following were repaired in the application build (chewie) and deliberately
-**not** carried into the container build (falcon), because falcon's code differs
-at those places and this release does not rewrite falcon to match:
+The following were repaired in chewie and deliberately **not** carried into the
+container build (falcon) at 1.0.7, because falcon's code differs at those places
+and that release did not rewrite falcon to match:
 
 | What | Why not |
 |---|---|
-| The scan of one folder cannot start twice | falcon has no `scan_jobs` table and its `_do_scan` takes different arguments |
 | The generation-timeout wording | falcon has no `_timeout_answer`; the old sentence sits inline in two places |
 | Citation numbers carried through to MCP | falcon's MCP server is an older build (11 tools against 25) |
-| The CLI, including `login` / `logout` | falcon ships no `cynovela-cli.py` |
+| The CLI, including `login` / `logout` | falcon ships no `cynovela-cli.py`. Its own, older `cynovela_cli.py` has neither `login` nor `logout` |
+
+**One of them has since been carried over.** "Two scans of one folder cannot run
+at once" was ported into falcon on 2026-08-26. `_do_scan` in `falcon/server.py` is
+now a thin guarded entry point — a module-level lock plus a set of source ids,
+added before the work and discarded in a `finally` — wrapped around the previous
+body, which was renamed `_do_scan_body`. All eight call sites into the scan are
+covered by it. falcon still has no `scan_jobs` table, so the write-back to a job
+row that chewie does inside its own guard has no counterpart there; the guard
+itself is the same.
 
 ---
 
@@ -940,6 +980,16 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
   （コンテナ版の配布物は、この 1 語だけは自動で読み替えます。
   別のホスト名や IP を書いた場合は読み替えず、書いたとおりに使います）。
 - **外部アクセラレータの画像の受け口は未実装です。** 呼ぶと 501 を返します。
+- **再ランクの宛先は、どの配布物にも入っていない外部アクセラレータになっています。**
+  同梱の `cynovela.yaml` は `reranker.device` が `external`、`reranker.base_url` が
+  `http://localhost:18850` ですが、その番地で答えるものはどの落とし物にも入って
+  いません。∴ 検索のたびにその番地へ当たりに行って失敗し、退避します。再ランクの
+  重みが置かれていれば本体の中で再ランクし（`models` の落とし物に入っています）、
+  置かれていなければ再ランクなしで素通しします。退避のたびにログが 1 行出て、
+  設定の画面にも状態が出ます。答えそのものは返ります。外部を選んでいるのは
+  `reranker.device` で、同梱の `reranker.provider` はすでに `cross_encoder` です。
+  ∴ `cynovela.yaml` を書き換えられる形態では、`device` を空にすれば本体の中で
+  再ランクする道が退避ではなく最初の選択になります。
 - **起動時の `--mode` は、実際には切り替わらないものがあります。**
   `--mode` の説明文にそのまま書いてあります。
   `lite` と `lite-en` は軽量モデルへの切り替えが未配線で、現状は既定の `text` と
@@ -1003,6 +1053,21 @@ Kubernetes で動かしたい場合は、Deployment の定義を自分で書く�
 - 同梱のインデックスとデータベースは、配布物を作るときに**配布物の中の `dummy-corpus/` だけ**から
   作っています。作った側の作業用の資料は 1 件も入っていません。
   実際に何が何件入っているかは、配布物の `BUNDLED-DATA.md` に書き出してあります。
+- **`store/` 自体の場所は形態で違います。** 展開して使うフォルダの形では、そのフォルダの
+  中の `store/` です。アプリ版は入れたあとの包みが読み取り専用のため、入口が
+  `CYNOVELA_DATA_ROOT` を与え、上の道筋は
+  `~/Library/Application Support/Cynovela/` からの相対として扱われます。
+- **同梱のお試し資料で始めると、最初のパスワードは画面に出ません。** 起動用スクリプトは
+  「初回である」と判定したときだけ最初のユーザー名とパスワードを出し、その判定は
+  データベースのファイルがすでに在るかどうかで行っています。配布物には作り置きの
+  `store/db/demo.db` が入っており、最初の問いで Enter を押す道（既定）は `--demo` で
+  起動します。∴ 見に行く先のファイルはすでに在り、判定は「初回ではない」となって、
+  何も出ません。`--demo` を付けずに起動した場合は `store/db/cynovela.db` を見に行き、
+  こちらは同梱していないため、ちゃんと出ます。
+  直るまでは、起動用スクリプトと同じ場所にある `cynovela.yaml` の `auth:` の下、
+  `admin_initial_password:` の行から読んでください
+  （`grep admin_initial_password cynovela.yaml`）。どちらの道でも、最初のログインで
+  変更を求められる点は同じです。
 
 ### 横断検索
 
@@ -1087,6 +1152,13 @@ MCP のツールには `search_across_collections`（複数のコレクション
   まずインデックスの場所が合っているかを疑ってください。**
 - LM Studio の API に `max_tokens` を渡さないでください。
   思考する型のモデルで、考えるためのトークンを使い切ってしまいます。
+- **画面は、誰もログインしていないうちから `/api/settings/embedding` を叩き、
+  ログインした後も叩き続けます。** 埋め込み経路の状態を出す帯が、最初の5分は5秒ごと、
+  その後は60秒ごとにこの受け口を見に行きます。見に行き始めるのはページを開いた
+  ときであって、ログインが通ったときではありません。ログイン前と閲覧者では受け口は
+  401 か 403 を返し、帯はそれを飲み込んで何も出しませんが、要求そのものは飛び、
+  記録にも残ります。漏れではありません（受け口は断っており、答えてはいません）。
+  記録が賑やかになるだけです。
 
 ---
 
@@ -1171,16 +1243,23 @@ Cynovela は `num_ctx` を Ollama へ送りません。送っているのは `to
 
 ### 11.7 chewie では直し、falcon では直していないもの
 
-次はアプリ版（chewie）で直し、コンテナ版（falcon）へは**わざと**当てていません。
-falcon はその箇所のコードが違っており、この版では falcon を書き換えて合わせることを
+次は chewie で直し、コンテナ版（falcon）へは 1.0.7 の時点では**わざと**当てていません。
+falcon はその箇所のコードが違っており、その版では falcon を書き換えて合わせることを
 していないためです。
 
 | 何 | 当てなかった理由 |
 |---|---|
-| 同じフォルダの走査を2本同時に始められない件 | falcon には `scan_jobs` の表が無く、`_do_scan` の引数も違う |
 | 時間切れの文言 | falcon に `_timeout_answer` が無く、古い文が本文中の2か所に置かれている |
 | 出典の番号を MCP まで通すこと | falcon の MCP サーバは版が古い（道具 11件・chewie は 25件） |
-| `login` / `logout` を含む CLI | falcon に `cynovela-cli.py` が無い |
+| `login` / `logout` を含む CLI | falcon に `cynovela-cli.py` は無い。falcon 自身の古い `cynovela_cli.py` には `login` も `logout` も無い |
+
+**このうち1件は、その後 falcon へも当てました。**「同じフォルダの走査を2本同時に
+始められない件」は 2026-08-26 に falcon へ移してあります。`falcon/server.py` の
+`_do_scan` は、モジュール階層の錠と source の id の集合で守る薄い入口になり
+（始める前に足し、`finally` で外す）、元の本体は `_do_scan_body` へ改名されました。
+走査を呼ぶ 8 か所すべてがこの入口を通ります。falcon には今も `scan_jobs` の表が
+無いため、chewie が同じ錠の中で行っている job の行への書き戻しに当たるものは
+falcon にはありません。錠そのものは同じです。
 
 
 ---

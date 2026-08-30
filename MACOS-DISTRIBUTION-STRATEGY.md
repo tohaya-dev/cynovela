@@ -366,6 +366,13 @@ single top-level element, so one bare-key `plutil -replace` covers all of them.
 
 `build-macos-app.sh` expands the finished `.pkg` and asserts the empty form.
 
+Together with `pkgbuild --install-location /Applications` (line 456 of that
+script) and the `auth="root"` that the resulting `PackageInfo` carries — both
+read back off the shipped `.pkg` in DD-CYN-0187 — this fixes where the app lands:
+the installer offers the receiver no choice of location, and a second install of
+the same package goes to `/Applications` as well rather than beside an existing
+copy.
+
 ### 15.7 Signing, and why the `.pkg` is what makes the app runnable
 
 Measured on this OS: an **ad-hoc signed and quarantined** app is a Gatekeeper hard
@@ -420,14 +427,42 @@ rather than the one in the data root. The `.app` never invokes those; folders ar
 added through the running application. It is recorded here rather than fixed,
 because changing that file was out of scope for this change.
 
+The same `DATA_DIR` also decides whether the first password is shown.
+`print_first_login()` (`tools/launch-body.sh:1478`) prints it only when the
+database file under `DATA_DIR` does **not** yet exist, and `print_next_steps()`
+tells the reader it will appear "the first time you start". Two consequences,
+neither of them fixed in 1.1.2:
+
+- **Portable, demo start (`./launch.sh --demo`): it is never shown.** A built
+  `store/db/demo.db` ships inside the package, so the very first start is already
+  judged "not the first one". The ordinary `./launch.sh` start is unaffected —
+  `store/db/cynovela.db` is not shipped, so it is shown once, correctly.
+- **`.app`: the check is answered by the bundle, not by the data root.** The
+  launcher runs without `--demo`, so the file looked for is
+  `Contents/Resources/cynovela/store/db/cynovela.db`, which is never created —
+  the real database is created under `CYNOVELA_DATA_ROOT`, which the shell does
+  not read (only `server.py:165` does).
+
+The reliable source in every form is the package's own `cynovela.yaml`, key
+`auth.admin_initial_password` (`auth.viewer_initial_password` for the viewer),
+which `tools/build-dist.sh` writes at packaging time. The public documents were
+changed in DD-CYN-0188 to say that instead; the code was left alone because the
+Portable startup path was under a non-regression condition.
+
 ### 15.10 The finished `.pkg` is split for transport only
 
-Measured: `Cynovela-1.1.2-macos-arm64.pkg` is **3,883,932,927 bytes**
-(sha256 `50173617b5887fb53c449c56d5c57526e993c48c53fa12380337ae4ff854d710`).
+Measured on the shipped artifact (DD-CYN-0187): `Cynovela-1.1.2-macos-arm64.pkg`
+is **3,883,787,408 bytes**
+(sha256 `ef099204d02d6d0d1fcba8942b514bb290542f4bc2180ffb7f74fc156cf9aa0b`).
+(An earlier figure of 3,883,932,927 bytes / sha256 `50173617…` was measured on a
+build that preceded the shipped one and is superseded by this.)
 GitHub Releases accepts no single file above 2 GiB, while the total size of a
 release is not capped, so the artifact is cut into three parts of at most
 1,500,000,000 bytes each — the same chunk size the AI models already use. The
 logical deliverable remains **one** `.pkg`; nothing about the package changes.
+The release therefore carries five files for this form:
+`Cynovela-1.1.2-macos-arm64.pkg.part00`, `.part01`, `.part02`,
+`Cynovela-assemble.command`, and `SHA256SUMS-pkg-assets.txt`.
 
 `tools/split-pkg.sh` performs the cut and writes `Cynovela-assemble.command`
 next to the parts, with each part's SHA256 and the whole file's SHA256 and byte
@@ -475,7 +510,10 @@ added because it was not universally true before it existed — in the first bui
 1 of 93,155 entries was `501/0` and 1 more carried the mode `?---------`, both
 consequences of a single file whose name is not ASCII (see §15.12). A run against a
 read-only bundle was confirmed to start normally and create no
-bytecode there. It would happen to anyone who copies the `.app` somewhere writable
+bytecode there — DD-CYN-0187 took a manifest of all **41,258** files in the
+installed `Cynovela.app` before and after a start, and the two were identical
+(difference: 0). Everything the run writes goes to
+`~/Library/Application Support/Cynovela/`. It would happen to anyone who copies the `.app` somewhere writable
 and runs it from there. The one-line hardening is to set
 `PYTHONDONTWRITEBYTECODE=1` in the environment the launcher hands to the child; it
 was **not** applied in this change, because doing so would require rebuilding the

@@ -17,9 +17,17 @@ be replaced in place.
   app's menu has an entry for deleting them when you do want them gone. The
   package edition is unchanged and remains the way to run it without installing
   anything.
+  - It always installs into `/Applications`; the installer offers no other
+    location, and installing it again goes to the same place. While it runs it
+    writes only to `~/Library/Application Support/Cynovela/` — the app's own
+    contents are not changed by a single byte. Quit it with **Cmd+Q** (the
+    package edition still uses `bash stop.sh`). Measured first answer: about 46
+    seconds on a cold start, about 26 seconds warm.
   - The installer is too large for a single release file, so it is split into
-    three parts; `Cynovela-assemble.command` joins them, checks them and opens
-    the installer.
+    three parts — `Cynovela-1.1.2-macos-arm64.pkg.part00`–`part02`.
+    `Cynovela-assemble.command` joins them, checks them and opens the installer.
+    `SHA256SUMS-pkg-assets.txt` lists those files so you can check them yourself
+    as well.
   - 🔴 It is **not signed with an Apple certificate.** macOS refuses the first
     double-click and calls it "from an unidentified developer". Right-click the
     `.pkg` → Open → Open. Signing an installer package requires an Apple
@@ -173,9 +181,16 @@ enter the chat screen.
 
 **4. Initial passwords are no longer written in any file (security)**
 
-The initial passwords are gone from the repository and from the documents.
-The package prints the sign-in name and password on the screen at the first
-start only, and you are asked to change it at the first sign-in.
+The initial passwords are gone from the repository and from the documents. They
+are written into each package's own `cynovela.yaml` when that package is built,
+under `auth.admin_initial_password` and `auth.viewer_initial_password` — read
+them there. You are asked to change the password at the first sign-in.
+
+(Correction, recorded in 1.1.2: this entry originally said the package prints the
+name and password on the screen at the first start. That happens on the ordinary
+`./launch.sh` start, but **not** on the demo start (`./launch.sh --demo`), because
+the sample database ships inside the package and the check for "is this the first
+start" looks for that database. `cynovela.yaml` is the reliable place to read it.)
 
 **5. Certificate problems on inspected networks are now visible (fix)**
 
@@ -329,8 +344,17 @@ from the old folder into the new one before starting.
   `~/Library/Application Support/Cynovela/` に置くので、入れ替えても残ります。
   そちらも消したいときのための項目を、アプリのメニューに用意しました。
   パッケージ版はこれまでどおりで、この Mac に何も入れずに使う道として残ります。
-  - 入れ物は1つのファイルに収まらない大きさのため、3つに分けてあります。
+  - 入る場所は `/Applications` に固定です。ほかの場所は選べず、2回目に入れ直しても
+    同じ場所に入ります。動いているあいだ書き込むのは
+    `~/Library/Application Support/Cynovela/` だけで、アプリの中身は1バイトも
+    変わりません。終わらせるときは **Cmd+Q** です（パッケージ版はこれまでどおり
+    `bash stop.sh`）。最初の答えが返るまでの実測は、冷えた状態で約 46 秒、
+    温まっていれば約 26 秒でした。
+  - 入れ物は1つのファイルに収まらない大きさのため、3つに分けてあります
+    （`Cynovela-1.1.2-macos-arm64.pkg.part00`〜`part02`）。
     `Cynovela-assemble.command` がつなぎ、確かめ、入れる画面まで開きます。
+    自分でも確かめられるように、その3本の一覧を `SHA256SUMS-pkg-assets.txt` に
+    載せてあります。
   - 🔴 この入れ物には **Apple の証明書による署名を付けていません。** macOS は最初の
     ダブルクリックを断り、「開発元が未確認」と言います。`.pkg` を右クリック →
     「開く」→「開く」で入れられます。入れ物に署名を付けるには Apple Developer
@@ -475,9 +499,16 @@ N 件あります」の知らせと **追加する** ボタンを出し、再 Pu
 
 **4. 最初のパスワードを、どのファイルにも書かないようにしました（セキュリティ）**
 
-リポジトリとドキュメントから初期パスワードの平文を消しました。配布物は
-はじめて起動したときだけ、ログインの名前とパスワードを画面に出します。
-最初のログインで変更を求められます。
+リポジトリとドキュメントから初期パスワードの平文を消しました。値は、配布物を
+組み立てるときにその配布物自身の `cynovela.yaml` へ書き込まれます
+（`auth.admin_initial_password` と `auth.viewer_initial_password`）。
+受け取り手はそこを見てください。最初のログインで変更を求められます。
+
+（1.1.2 で記録した訂正: この項目はもともと「はじめて起動したときだけ、ログインの
+名前とパスワードを画面に出します」と書いていました。それが起きるのは普通の
+`./launch.sh` の起動のときで、デモ起動（`./launch.sh --demo`）では出ません。
+同梱のデモ用データベースが最初から入っており、「初回かどうか」の判定がその
+データベースの有無を見ているためです。確実に読めるのは `cynovela.yaml` です。）
 
 **5. 証明書で止まる問題を、見えるようにしました（修正）**
 

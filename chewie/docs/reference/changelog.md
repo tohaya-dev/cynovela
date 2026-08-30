@@ -69,7 +69,8 @@ This records the main changes to Cynovela in chronological order.
   `.venv-cynovela` and `FORM_SEL="venv"` unchanged — nothing about how it is built or
   where it lives has changed.
 - **Compatibility note (why this is a minor version, not a patch):** `START-HERE.md` and
-  `docs/mcp-guide.md` used to show the package edition's own Python as a direct path —
+  the MCP document (`docs/mcp-guide.md` then, `docs/reference/mcp.md` now) used to show
+  the package edition's own Python as a direct path —
   `./.venv-cynovela/bin/python3 cynovela-cli.py doctor`, or
   `export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3`. Anyone who copied one
   of those commands into a script or shell alias will find it points at a path that no
@@ -88,7 +89,7 @@ This records the main changes to Cynovela in chronological order.
   `collection_ids` no longer lets the BM25 half reach outside that set.
 - **The pass no longer expires after 8 hours.** `POST /api/auth/login` issues a pass with
   no expiry unless the caller passes `expires_in_hours` or `expires_in_seconds`; the same
-  applies to `POST /api/auth/refresh`. See `known-limitations.md` §11 for what that means
+  applies to `POST /api/auth/refresh`. See `limits.md` §11 for what that means
   for a leaked pass.
 - **`cynovela-cli login` and `logout`.** `login` takes the password from standard input or
   from the terminal (never from the command line by default), stores the pass in
@@ -116,8 +117,12 @@ This records the main changes to Cynovela in chronological order.
   has never opened Terminal), `docs/restart.md`, `docs/editions.md` (which of the four
   downloads to take). `docs/api-reference.md` was replaced by a list of all 186 endpoints
   read out of the code. `docs/known-limitations.md` gained section 11.
+  (Those are the file names as they were at 1.0.7. The documents were reorganised
+  afterwards — `known-limitations.md` is now `limits.md`, `first-run.md` is now
+  `getting-started.md`, and the four reference documents moved under `docs/reference/`.
+  `docs/INDEX.md` lists what exists now.)
 - The same repairs were carried into falcon wherever its code is identical; where it is not,
-  `known-limitations.md` §11.7 says so.
+  `limits.md` §11.7 says so.
 
 ## v1.0.6 (2026-08-20)
 
@@ -335,7 +340,8 @@ Cynovela の主要な変更内容を時系列で記録します。
   ソース版が作る本物の `venv` の名前 `.venv-cynovela`・`FORM_SEL="venv"` は変えていない。
   作り方も置き場所も、これまでどおりである。
 - **互換性についての注記（パッチ版ではなくマイナー版へ上げた理由）：** `START-HERE.md` と
-  `docs/mcp-guide.md` は、パッケージ版が用意した Python を、直書きのパスとして
+  MCP の文書（当時は `docs/mcp-guide.md`・いまは `docs/reference/mcp.md`）は、
+  パッケージ版が用意した Python を、直書きのパスとして
   `./.venv-cynovela/bin/python3 cynovela-cli.py doctor` や
   `export CYNOVELA_MCP_PYTHON=/path/to/.venv-cynovela/bin/python3` の形で示していた。
   このコマンドをスクリプトやシェルのエイリアスへそのまま写した方は、指す先が
@@ -354,7 +360,7 @@ Cynovela の主要な変更内容を時系列で記録します。
   その外へ届いてしまう経路を塞いだ。
 - **通行証が8時間で切れなくなった。** `POST /api/auth/login` は、呼ぶ側が
   `expires_in_hours` か `expires_in_seconds` を渡さないかぎり期限の無い通行証を出す。
-  `POST /api/auth/refresh` も同じ。漏れたときにどうなるかは `known-limitations.md` の
+  `POST /api/auth/refresh` も同じ。漏れたときにどうなるかは `limits.md` の
   §11 に書いた。
 - **`cynovela-cli login` と `logout` を足した。** `login` は合言葉を標準入力かターミナルから
   受け取り（既定では命令の行に書かせない）、通行証を自分だけが読める形で
@@ -380,8 +386,12 @@ Cynovela の主要な変更内容を時系列で記録します。
   `docs/restart.md`・`docs/editions.md`（4つのうちどれを落とすか）を新設。
   `docs/api-reference.md` は、コードから起こした全186件の口の一覧に差し替えた。
   `docs/known-limitations.md` に第11節を足した。
+  （これらは 1.0.7 当時のファイル名である。文書はその後に組み替えており、
+  `known-limitations.md` は `limits.md`、`first-run.md` は `getting-started.md` に、
+  引くための4本は `docs/reference/` の下へ移った。いま在るものは `docs/INDEX.md` に
+  並んでいる。）
 - 同じ直しは、コードが同じ箇所であれば falcon へも当てた。当てていない箇所は
-  `known-limitations.md` の §11.7 に書いた。
+  `limits.md` の §11.7 に書いた。
 
 ## v1.0.6（2026-08-20）
 

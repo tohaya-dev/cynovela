@@ -17,16 +17,23 @@ This package is the **application build (runs on macOS directly, no container)**
 ### 1. Which package did you download?
 
 ```
-1) Package edition (for Apple silicon Macs — ready to use)
+1) App edition (for Apple silicon Macs — installed from the .pkg)
+     Cynovela.app goes into /Applications. No Python and no conda are needed.
+     Its Python environment and the AI models are inside the app.
+     To remove it, drag the app to the Trash.
+2) Package edition (for Apple silicon Macs — ready to use)
      Extract it and run one line. No Python and no conda are needed.
      Nothing is installed on this Mac. To remove it, delete the folder.
-2) Source edition (for everyone else, or those who want to build the environment themselves)
+3) Source edition (for everyone else, or those who want to build the environment themselves)
      At startup you choose one of 2 ways to build the environment:
        1) create a dedicated conda environment (name: cynovela-dist), or
        2) use this Mac's Python (3.12 or later) and build a venv only inside this folder.
 ```
 
-**The AI models are downloaded separately** (a separate file on the release page, or the first start offers to fetch them). Neither package contains them.
+**The AI models are already inside the app edition** — nothing else to download.
+**For the package edition and the source editions they are downloaded separately**
+(a separate file on the release page, or the first start offers to fetch them);
+neither of those two packages contains them.
 
 ---
 
@@ -60,10 +67,27 @@ Nothing is installed on this Mac; the bundled environment inside the folder is u
 
 Then:
 
-1. **Sign in.** The user name and the first password are printed on the screen at the first start. You will be asked to change the password straight away.
+1. **Sign in.** The administrator user name is `cynovela`; the viewer account is
+   `demo`. **The first password is written inside this package, in
+   `cynovela.yaml`** — open that file and read the value of
+   `auth.admin_initial_password` (the viewer's is `auth.viewer_initial_password`).
+   Nothing is sent to you separately, and no password is written in any of these
+   documents.
+   - **Package edition and source editions:** `cynovela.yaml` sits in the folder
+     you unpacked, next to `launch.sh`.
+   - **App edition:** in Finder, right-click `/Applications/Cynovela.app` →
+     **Show Package Contents** → `Contents/Resources/cynovela/cynovela.yaml`.
+
+   The start-up screen also prints it once on the ordinary `./launch.sh` start,
+   but **not** on the demo start (`./launch.sh --demo`): the sample database is
+   already inside the package, so that route is treated as "not the first
+   start". Reading `cynovela.yaml` works whichever route you took. You will be
+   asked to change the password straight after the first sign-in.
 2. **Add search targets.** Answer the question shown at startup; or use "Add a search folder" under "Settings" in the app screen; or run `./launch.sh --add` (list with `./launch.sh --list`; icon: `Cynovela-add-folder.command`).
 3. **Ask a question.** Open `http://localhost:8765` and type in plain language. Every answer carries the passage it came from — open it and check.
-4. **Stop it.** Double-click `Cynovela-stop.command` (or run `bash stop.sh`).
+4. **Stop it.** Package edition and source editions: double-click
+   `Cynovela-stop.command` (or run `bash stop.sh`). App edition: **Cmd+Q**
+   (menu **Cynovela ▸ Quit Cynovela**) — it has no stop script.
 
 ---
 
@@ -261,16 +285,22 @@ that one. The same documents are repeated below.
 ### 1. どちらの配布物を落としましたか
 
 ```
-1) パッケージ版（M系 Mac の方はこちら・すぐ使える形）
+1) アプリ版（M系 Mac・.pkg から入れる形）
+     /Applications に Cynovela.app が入ります。Python も conda も要りません。
+     Python の環境も AIモデルも、アプリの中に入っています。
+     消すときはアプリをゴミ箱へ入れます。
+2) パッケージ版（M系 Mac の方はこちら・すぐ使える形）
      展開して1行叩くだけで動きます。Python も conda も要りません。
      この Mac には何も入れません。消すときはフォルダごと削除します。
-2) ソース版（上記以外の方、または自分で環境を作りたい方）
+3) ソース版（上記以外の方、または自分で環境を作りたい方）
      起動時に、環境の作り方を2つから選びます:
        1) conda に専用の環境を作る（名前: cynovela-dist）
        2) この Mac の Python（3.12 以上）を使い、このフォルダの中だけに venv を作る
 ```
 
-**AIモデルは別に落とします**（リリースページの別ファイル、または初回起動が取得を提案します）。どちらの配布物にも入っていません。
+**アプリ版には AIモデルが最初から入っています。**ほかに落とすものはありません。
+**パッケージ版とソース版では AIモデルを別に落とします**（リリースページの別ファイル、
+または初回起動が取得を提案します）。この2つの配布物には入っていません。
 
 ---
 
@@ -304,10 +334,26 @@ that one. The same documents are repeated below.
 
 そのあとは:
 
-1. **ログインする。** ユーザー名と最初のパスワードは、はじめて起動したときに画面に出ます。入るとすぐパスワードの変更を求められます。
+1. **ログインする。** 管理者のユーザー名は `cynovela`、閲覧者は `demo` です。
+   **最初のパスワードは、この配布物の中の `cynovela.yaml` に書いてあります。**
+   そのファイルを開き、`auth.admin_initial_password` の値を見てください
+   （閲覧者のぶんは `auth.viewer_initial_password` です）。別便で届くものはなく、
+   この一連の文書にもパスワードは書いてありません。
+   - **パッケージ版・ソース版:** `cynovela.yaml` は展開したフォルダの中、
+     `launch.sh` と同じ場所に在ります。
+   - **アプリ版:** Finder で `/Applications/Cynovela.app` を右クリック →
+     「**パッケージの内容を表示**」→ `Contents/Resources/cynovela/cynovela.yaml`。
+
+   起動の画面にも、普通の `./launch.sh` の起動のときには1回だけ出ます。ただし
+   デモ起動（`./launch.sh --demo`）では出ません。同梱のデモ用データベースが
+   最初から入っているため、その経路は「初回ではない」と判定されるからです。
+   `cynovela.yaml` を見る道は、どちらの経路でも同じように使えます。入るとすぐ
+   パスワードの変更を求められます。
 2. **検索の対象を足す。** 起動したときに聞かれる画面で足す / アプリ画面の「設定」の「検索の対象フォルダを足す」から足す / ターミナルで `./launch.sh --add`（一覧は `./launch.sh --list`。アイコンなら `Cynovela-add-folder.command`）。
 3. **質問する。** `http://localhost:8765` を開き、普通の言葉で聞きます。答えには必ず根拠にした箇所が付きます。開いて原文を確かめてください。
-4. **止める。** `Cynovela-stop.command` をダブルクリックします（または `bash stop.sh`）。
+4. **止める。** パッケージ版・ソース版は `Cynovela-stop.command` をダブルクリック
+   します（または `bash stop.sh`）。アプリ版は **Cmd+Q**（メニューの
+   **Cynovela →「Cynovela を終了」**）です。止めるためのスクリプトはありません。
 
 ---
 

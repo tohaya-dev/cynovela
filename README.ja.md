@@ -60,9 +60,13 @@ https://github.com/tohaya-dev/cynovela/releases
 | **AIモデル** `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
 **アプリ版**＝ほかの Mac のアプリと同じ扱いにしたい方向け。1回入れれば中に全部入って
-おり、ゴミ箱へ入れればプログラムと Python の環境と AIモデルがまとめて消えます。資料と
-設定はアプリの外の `~/Library/Application Support/Cynovela/` に置くため、入れ替えても
-残ります（＝一緒には消えません）。
+おり、ゴミ箱へ入れればプログラムと Python の環境（約 2.3 GB）と埋め込みモデル
+`bge-m3`（約 4.8 GB）がまとめて消えます。この3つはアプリの中に入っており、あとから
+取りに行くことはありません。入る場所は `/Applications` に固定です（ほかの場所は選べず、
+2回目に入れ直しても同じ場所に入ります）。動いているあいだ書き込むのは
+`~/Library/Application Support/Cynovela/` だけで、**アプリの中身は1バイトも
+変わりません**。資料と設定はその外側にあるため、入れ替えても残ります（＝一緒には
+消えません）。終わらせるときは **Cmd+Q** です。
 
 **パッケージ版**＝この Mac に何も入れたくない方向け。展開し、AIモデルを重ねて
 `./launch.sh` を叩きます。書き込みはそのフォルダの中で完結します。
@@ -71,10 +75,13 @@ https://github.com/tohaya-dev/cynovela/releases
 **軽量**＝落とすものを小さくしたい方、初回の起動で環境を作ってよい方向け。ソース版の
 2 つは 1.1.2 では作り直していないため、1.1.1 のリリースに在ります。
 
-リリースには `SHA256SUMS` と `HOW-TO-ASSEMBLE.md` も置いてあります。どの形を選んでも
-`SHA256SUMS` は一緒に落としてください。アプリ版・全部入り・AIモデルは1つのファイルに
-収まらない大きさのため分割してあります。[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) の
-とおりにつなぎ、`SHA256SUMS` と突き合わせてから起動してください。
+リリースには `HOW-TO-ASSEMBLE.md` と、突き合わせ用の一覧が2本置いてあります。
+tar.gz の各版と AIモデルのぶんが `SHA256SUMS`、アプリ版の入れ物の片と
+`Cynovela-assemble.command` のぶんが `SHA256SUMS-pkg-assets.txt` です。選んだ形を
+覆うほうを一緒に落としてください。リリースの1ファイルは 2 GiB までのため、
+アプリ版・全部入り・AIモデルは片に分けてあります。
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) のとおりにつなぎ、対応する一覧と
+突き合わせてから起動してください。
 
 > 🔴 **入れ物（.pkg）には Apple の証明書による署名を付けていません。** そのため macOS は
 > 最初のダブルクリックを断り、「開発元が未確認のため開けません」と言います。Finder で
@@ -108,8 +115,23 @@ https://github.com/tohaya-dev/cynovela/releases
 そのあと [falcon-docker-beta/docs/STARTUP.md](falcon-docker-beta/docs/STARTUP.md) へ
 進んでください。
 
-手引きはすべて英語と日本語の併記です（英語が先・日本語が後ろ）。どの形でも、
-管理者は最初のログインでパスワードの変更を求められます。
+手引きはすべて英語と日本語の併記です（英語が先・日本語が後ろ）。
+
+**最初のパスワードについて。** 管理者のユーザー名は `cynovela`、閲覧者は `demo` です。
+最初のパスワードは**落としたもの自身の中の `cynovela.yaml` に書いてあります**。
+`auth.admin_initial_password` の値を見てください（閲覧者のぶんは
+`auth.viewer_initial_password` です）。別便で届くものはなく、この一連の文書にも
+パスワードは書いてありません。
+
+- **パッケージ版・ソース版:** `cynovela.yaml` は展開したフォルダの中、`launch.sh` と
+  同じ場所に在ります。
+- **アプリ版:** Finder で `/Applications/Cynovela.app` を右クリック →
+  「**パッケージの内容を表示**」→ `Contents/Resources/cynovela/cynovela.yaml`。
+
+起動の画面にも、普通の `./launch.sh` の起動のときには1回だけ出ます。ただしデモ起動
+（`./launch.sh --demo`）では出ません。同梱のデモ用データベースが最初から入っている
+ため、その経路は「初回ではない」と判定されるからです。どの形でも、管理者は最初の
+ログインでパスワードの変更を求められます。
 
 ## できないこと
 
