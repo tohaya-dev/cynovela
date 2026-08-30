@@ -16,6 +16,10 @@ set -u
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 PASS=0; WARN=0; FAIL=0
+# .pkg の道だけが塞がっているのか、この Mac では何も動かないのかを分けて数える。
+# 前者なら Portable 版へ倒せる。後者は倒しても同じである。
+PKG_RISK=0      # .pkg の道に障りが在る数
+ANY_BLOCK=0     # どちらの道でも動かない数
 
 line()  { printf '%s\n' "──────────────────────────────────────────────"; }
 head2() { printf '\n== %s ==\n' "$1"; }
@@ -39,7 +43,8 @@ info "macOS $_prod ($_build)"
 info "利用者: $(whoami)"
 case "$_arch" in
   arm64) ok "Apple シリコン ($_arch)" ;;
-  *)     ng "Apple シリコンではありません ($_arch)。Cynovela は Apple シリコン専用です" ;;
+  *)     ng "Apple シリコンではありません ($_arch)。Cynovela は Apple シリコン専用です"
+         ANY_BLOCK=$((ANY_BLOCK+1)) ;;
 esac
 # 版の下限は 12 とする (配布物の Distribution が要求する版に合わせている)
 _major="${_prod%%.*}"
@@ -47,6 +52,7 @@ if [ -n "$_major" ] && [ "$_major" -ge 12 ] 2>/dev/null; then
   ok "macOS の版は足りています (12 以上)"
 else
   ng "macOS の版が足りません (12 以上が要ります)"
+  ANY_BLOCK=$((ANY_BLOCK+1))
 fi
 
 # ── 2. 権限 ────────────────────────────────────────────────
@@ -57,6 +63,7 @@ else
   warn "この利用者は管理者ではありません"
   info "→ .pkg は入れるときに管理者の名前とパスワードを聞きます。"
   info "  分からない場合は情報システム部門へ問い合わせるか、Portable 版を使ってください。"
+  PKG_RISK=$((PKG_RISK+1))
 fi
 
 # ── 3. 入れ先へ書けるか ────────────────────────────────────
@@ -69,6 +76,7 @@ else
   warn "/Applications へ直接は書けません"
   info "→ .pkg は installer が root として書くため、これだけでは判断できません。"
   info "  管理者のパスワードを聞かれたら入力してください。"
+  PKG_RISK=$((PKG_RISK+1))
 fi
 if [ -d "$HOME/Applications" ]; then
   if ( : > "$HOME/Applications/$_probe" ) 2>/dev/null; then
@@ -79,6 +87,19 @@ if [ -d "$HOME/Applications" ]; then
   fi
 else
   info "~/Applications は在りません (無くて構いません)"
+fi
+# 🔴 資料・索引・鍵が実際に書かれるのはここである。どちらの形態でも要る。
+#    ここが書けないと、入れられても最初の起動で止まる。
+_sup="$HOME/Library/Application Support"
+if [ -d "$_sup" ] && ( : > "$_sup/$_probe" ) 2>/dev/null; then
+  rm -f "$_sup/$_probe" 2>/dev/null
+  ok "~/Library/Application Support へ書けます (資料と索引の置き場)"
+else
+  ng "~/Library/Application Support へ書けません"
+  info "→ Cynovela は資料・索引・鍵をここに置きます。書けないと起動できません。"
+  info "  .pkg でも Portable でも同じ場所を使うため、形態を変えても直りません。"
+  info "  情報システム部門へ、この行をそのまま見せてください。"
+  ANY_BLOCK=$((ANY_BLOCK+1))
 fi
 
 # ── 4. 入れる操作の可否 (Gatekeeper) ───────────────────────
@@ -91,6 +112,8 @@ case "$_spctl" in
     info "→ 配る .pkg は署名していません (Apple の Developer Program の証明書を持たないため)。"
     info "  そのままダブルクリックすると「開けません」と言われます。"
     info "  Finder で .pkg を右クリック →「開く」→ もう一度「開く」で入れられます。"
+    info "  この操作そのものを管理の仕組みが止めている場合は、Portable 版を使ってください。"
+    PKG_RISK=$((PKG_RISK+1))
     ;;
   *"assessments disabled"*) ok "Gatekeeper は無効です (そのまま開けます)" ;;
   *) info "判定できませんでした (管理の仕組みが応答を絞っていることがあります)" ;;
@@ -176,17 +199,53 @@ head2 "9. 空き容量"
 _avail_k="$(df -k / | awk 'NR==2{print $4}')"
 _avail_g=$(( _avail_k / 1024 / 1024 ))
 info "起動ディスクの空き: ${_avail_g} GiB"
-if [ "$_avail_g" -ge 12 ]; then ok "空きは足りています (12 GiB 以上)"; else ng "空きが足りません (12 GiB 以上が要ります)"; fi
+# 形態ごとに要る量が違う。まとめて 1 つの敷居で測ると、
+# 「.pkg は無理だが Portable なら入る」を見落とす。
+#   .pkg     … 配布物 3.7GiB + 入った後の .app 7.1GiB が同時に載る = 11GiB
+#   Portable … 配布物 2.1GiB + 展開後 8GiB が同時に載る            =  8GiB
+_need_pkg=11
+_need_portable=8
+if [ "$_avail_g" -ge "$_need_pkg" ]; then
+  ok ".pkg の道に足ります (${_need_pkg} GiB 以上)"
+else
+  ng ".pkg の道には足りません (${_need_pkg} GiB 以上が要ります)"
+  PKG_RISK=$((PKG_RISK+1))
+fi
+if [ "$_avail_g" -ge "$_need_portable" ]; then
+  ok "Portable の道に足ります (${_need_portable} GiB 以上)"
+else
+  ng "Portable の道にも足りません (${_need_portable} GiB 以上が要ります)"
+  info "→ 先に空きを作ってください。どちらの形態でも足りません。"
+  ANY_BLOCK=$((ANY_BLOCK+1))
+fi
 
 # ── まとめ ─────────────────────────────────────────────────
 line
 printf ' まとめ: OK %d 件 / 注意 %d 件 / 不可 %d 件\n' "$PASS" "$WARN" "$FAIL"
-if [ "$FAIL" -gt 0 ]; then
-  echo " 「不可」が在ります。上の内容を情報システム部門へそのまま見せてください。"
+echo ""
+# 🔴 「入れてみて失敗した」ではなく「入れる前に、どちらの道を行けばよいか」を出す。
+#    Cynovela には形態が 2 つ在り、片方が塞がっていても、もう片方が通ることが多い。
+if [ "$ANY_BLOCK" -gt 0 ]; then
+  echo " この Mac では、どちらの形態も動きません。"
+  echo " 上の [ 不可 ] の行を、そのまま情報システム部門へ見せてください。"
+  echo " 形態を変えても直りません (Apple シリコン・macOS の版・資料の置き場・空き容量)。"
+elif [ "$PKG_RISK" -gt 0 ]; then
+  echo " 🔴 .pkg (Cynovela.app) の道には、この Mac で障りが $PKG_RISK 件 在ります。"
+  echo ""
+  echo " → Portable 版を使ってください。こちらは管理者の権限を使いません。"
+  echo "   ・/Applications へ書きません (置いた場所でそのまま動きます)"
+  echo "   ・インストーラを走らせません (Gatekeeper の許可を求めません)"
+  echo "   ・止めるのはフォルダを捨てるだけです"
+  echo ""
+  echo "   取り寄せ方と始め方は、配布ページの HOW-TO-ASSEMBLE.md に書いてあります。"
+  echo "   ファイル名は cynovela-chewie-package-<版>.tar.gz です。"
+  echo ""
+  echo " (.pkg を使いたい場合は、上の [ 注意 ] の行を情報システム部門へ見せてください。)"
 elif [ "$WARN" -gt 0 ]; then
-  echo " 「注意」の項目に目を通してから進めてください。"
+  echo " 「注意」の項目に目を通してから進めてください。どちらの形態も使えます。"
 else
-  echo " この Mac で入れられます。"
+  echo " この Mac では、.pkg と Portable のどちらも使えます。"
+  echo " 迷う場合は .pkg (Cynovela.app) をお勧めします。"
 fi
 line
 echo ""

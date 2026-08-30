@@ -106,7 +106,13 @@ say "検査値: $CHECK_VALUES"
 #   余裕は 32 文字とする (入れる先の道が将来伸びても効くようにする)。
 PREFIX_MARGIN=32
 PREFIX_NEED=$(( ${#ENV_DEST} + PREFIX_MARGIN ))
-BUILD_PREFIX="/private/tmp/cynovela-macos-app-build-$$"
+# 🔴 作る場所の道の幹は、字のまま書かない。8 進で組み立てる。
+#    このファイルは配布物の tools/ に入る。下の関門は、出来上がった .pkg を
+#    展開して「作る場所の道が残っていないか」を**幹で**当てる。幹を字のまま
+#    書くと、関門が配布物の中のこのファイル自身を見つけて必ず止まる
+#    (実測: 1 件を検出して落ちた)。頭書きの注意と同じ罠である。
+BUILD_PREFIX_STEM="/private/tmp/$(printf 'cynovela\055macos\055app\055build\055')"
+BUILD_PREFIX="${BUILD_PREFIX_STEM}$$"
 while [ ${#BUILD_PREFIX} -lt "$PREFIX_NEED" ]; do BUILD_PREFIX="${BUILD_PREFIX}-pad"; done
 if [ ${#BUILD_PREFIX} -lt "$PREFIX_NEED" ]; then
   die "作る場所が短すぎます: ${#BUILD_PREFIX} < $PREFIX_NEED"
@@ -609,8 +615,8 @@ if [ "$_pycache" != "0" ] || [ "$_pyc" != "0" ]; then gate_fail=1; fi
 #        環境を使い回すようにしたため、包みの中の環境は**別の走行の**作る場所で
 #        作られていることがある。今回の PID を含む道だけを当てていると、
 #        使い回した環境に前の走行の道が残っていても素通りしてしまう。
-#        ∴ PID を外した幹 (…/cynovela-macos-app-build-) で当てる。
-BUILD_PREFIX_STEM="${BUILD_PREFIX%%-[0-9]*}-"
+#        ∴ PID を外した幹で当てる。幹は上で 8 進から組み立ててある
+#        (ここで字のまま書くと、この関門がこのファイル自身を見つけて止まる)。
 _dest_n="$( { grep -rl "$ENV_DEST" "$GATE" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
 _build_n="$( { grep -rl "$BUILD_PREFIX_STEM" "$GATE" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
 say "  入れる先の道を含むファイル: $_dest_n 件 / 作る場所の道を含むファイル: $_build_n 件 (幹で照合: $BUILD_PREFIX_STEM)"

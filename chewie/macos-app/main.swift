@@ -216,6 +216,30 @@ enum DataRoot {
         return essentials.filter { !fm.fileExists(atPath: root.appendingPathComponent($0).path) }
     }
 
+    /// 保存先そのものが記号リンクか。
+    /// 🔴 追わない。リンクの先は、こちらが面倒を見られる場所ではない
+    ///    (外付けが外れている・同期の途中・別の利用者の持ち物、のいずれもあり得る)。
+    static func isSymlink(_ root: URL) -> Bool {
+        let a = try? FileManager.default.attributesOfItem(atPath: root.path)   // 追わない
+        return (a?[.type] as? FileAttributeType) == .typeSymbolicLink
+    }
+
+    /// 書けるか。読み取り専用の保存先は、揃っていても使えない。
+    static func isWritable(_ root: URL) -> Bool {
+        FileManager.default.isWritableFile(atPath: root.path)
+    }
+
+    /// 同期の下に置かれていないか。置かれていると、走っている最中に
+    /// 同期の仕組みがファイルを掴み、データベースが壊れることがある。
+    static let cloudMarkers: [String] = [
+        "/Library/Mobile Documents/", "/Dropbox/", "/Google Drive",
+        "/GoogleDrive", "/OneDrive", "/Box/", "/Box Sync/", "/pCloud",
+    ]
+    static func cloudMarker(_ root: URL) -> String? {
+        let p = root.resolvingSymlinksInPath().path + "/"
+        return cloudMarkers.first { p.contains($0) }
+    }
+
     enum SeedError: LocalizedError {
         case cannotRead(name: String)
         case incomplete(missing: [String])
@@ -493,7 +517,63 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// 初回だけ。黙って引き継がない・黙って捨てない (受け取り手に選ばせる)。
     func prepareDataRoot() -> Bool {
         let fm = FileManager.default
+
+        // 🔴 記号リンクは追わない。中身を見る前に断る。
+        if DataRoot.isSymlink(layout.dataRoot) {
+            let dest = (try? fm.destinationOfSymbolicLink(atPath: layout.dataRoot.path)) ?? "(読めません)"
+            fail("""
+            保存先が別の場所への近道 (シンボリックリンク) になっています。
+
+                \(layout.dataRoot.path)
+                → \(dest)
+
+            \(appName) は、この近道をたどりません。たどった先が外れている外付けや、
+            同期の途中のフォルダだと、資料と索引が壊れるためです。
+
+            どうすればよいか:
+              Finder でこの近道を取り除いてから、\(appName) をもう一度開いてください。
+              資料を別の場所に置きたい場合は、近道ではなく、その場所を直接
+              取り込み先として登録してください。
+            """)
+            return false
+        }
+
+        // 同期の下は、壊れると分かっている置き方なので、進む前に知らせる。
+        if let marker = DataRoot.cloudMarker(layout.dataRoot) {
+            let a = NSAlert()
+            a.alertStyle = .warning
+            a.messageText = "保存先が同期フォルダの下にあります"
+            a.informativeText = """
+            \(layout.dataRoot.path)
+
+            この場所は同期の仕組み (\(marker.trimmingCharacters(in: CharacterSet(charactersIn: "/")))) の下にあります。
+            \(appName) が動いている最中に同期がファイルを掴むと、
+            データベースが壊れることがあります。
+
+            続けられますが、お勧めしません。
+            """
+            a.addButton(withTitle: "それでも続ける")
+            a.addButton(withTitle: "終了")
+            if a.runModal() != .alertFirstButtonReturn { NSApp.terminate(nil); return false }
+            append("[入口] 注意: 保存先が同期フォルダの下にあります (\(marker))")
+        }
+
         if fm.fileExists(atPath: layout.dataRoot.path) {
+            // 揃っていても書けなければ使えない。
+            if !DataRoot.isWritable(layout.dataRoot) {
+                fail("""
+                保存先に書き込めません。
+
+                    \(layout.dataRoot.path)
+
+                \(appName) はここに資料・索引・記録を書きます。読むだけでは動きません。
+
+                どうすればよいか:
+                  Finder でこのフォルダを選び、[ファイル] → [情報を見る] を開いて、
+                  一番下の「共有とアクセス権」で、ご自身に「読み/書き」を与えてください。
+                """)
+                return false
+            }
             if DataRoot.isComplete(layout.dataRoot) {
                 try? fm.createDirectory(at: layout.logDir, withIntermediateDirectories: true)
                 isFirstRun = false      // 揃っている = 2 回目以降
