@@ -451,11 +451,14 @@ Portable startup path was under a non-regression condition.
 
 ### 15.10 The finished `.pkg` is split for transport only
 
-Measured on the shipped artifact (DD-CYN-0187): `Cynovela-1.1.2-macos-arm64.pkg`
-is **3,883,787,408 bytes**
-(sha256 `ef099204d02d6d0d1fcba8942b514bb290542f4bc2180ffb7f74fc156cf9aa0b`).
-(An earlier figure of 3,883,932,927 bytes / sha256 `50173617…` was measured on a
-build that preceded the shipped one and is superseded by this.)
+Measured on the shipped artifact: `Cynovela-1.1.2-macos-arm64.pkg`
+is **3,883,851,229 bytes**
+(sha256 `abbfb04d687a51fd2a793296b7b1ddbf3f91774a1bd957da8c47018c5112c08d`),
+built from `e0f21aa`.
+(Two earlier builds are superseded by this one: 3,883,787,408 bytes / sha256
+`ef099204…`, which predates the entry point's display fixes, and 3,883,932,927
+bytes / sha256 `50173617…` before that. Their digests are kept in the DD-CYN-0188
+evidence under `superseded-pkg-hashes.txt`.)
 GitHub Releases accepts no single file above 2 GiB, while the total size of a
 release is not capped, so the artifact is cut into three parts of at most
 1,500,000,000 bytes each — the same chunk size the AI models already use. The
