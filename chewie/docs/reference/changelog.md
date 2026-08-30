@@ -18,28 +18,9 @@ This records the main changes to Cynovela in chronological order.
 
 ## v1.1.2 (2026-08-30)
 
-- **New: an app edition, installed from a `.pkg`.**
-  `Cynovela-1.1.2-macos-arm64.pkg` puts `Cynovela.app` into `/Applications`. It is
-  a new outer shell around the existing startup path, not a replacement for it: the
-  launcher starts `launch.sh` as a child process, shows its output in a window,
-  opens the browser when the server answers, and stops the process group when you
-  quit. `launch.sh` and `tools/launch-body.sh` are otherwise unchanged — one guard
-  line was added to `launch.sh` (see below) and nothing else.
-  - The bundled Python environment is built with `conda-pack --dest-prefix`, so the
-    prefix is rewritten at build time to the path it will occupy inside the
-    installed app. There is no `conda-unpack` step on the receiving machine.
-  - The AI models are inside the app, at
-    `Contents/Resources/cynovela/store/models/`. Dragging the app to the Trash
-    removes the program, the environment and the models together.
-  - The installer is not relocatable: `BundleIsRelocatable` is false, so the
-    Installer cannot redirect it onto some other copy found elsewhere on the disk.
-  - It is split into three parts for transport only; the finished artifact is one
-    `.pkg`. `Cynovela-assemble.command` joins the parts, verifies each one and the
-    joined whole, and then opens the installer.
-  - The `.app` is ad-hoc signed. The `.pkg` is **unsigned** — signing an installer
-    package needs an Apple Developer Program Installer identity this project does
-    not have. macOS therefore refuses the first double-click; right-click → Open →
-    Open gets past it.
+- **An app edition (`.pkg`) is in preparation.** It is not part of this release.
+  The code below that was written for it is in this version, and changes nothing
+  for the editions that do ship.
 - **The data root can now be moved out of the tree.** An installed app is
   read-only, so the database, index, logs, backups and keys cannot live inside it.
   When `CYNOVELA_DATA_ROOT` is set — which only the app's launcher does — those go
@@ -294,26 +275,9 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ## v1.1.2（2026-08-30）
 
-- **新しく「アプリ版」を用意した（`.pkg` で入れる形）。**
-  `Cynovela-1.1.2-macos-arm64.pkg` は `/Applications` へ `Cynovela.app` を置く。
-  これは既存の起動の道を**置き換えるものではなく、その外側を包む新しい殻**である。
-  入口は `launch.sh` を子プロセスとして起こし、その出力を窓に流し、応答が返ったら
-  ブラウザを開き、終了のときに process group を止める。`launch.sh` と
-  `tools/launch-body.sh` はそれ以外に変えていない（`launch.sh` に下記の判定を
-  1 行足しただけである）。
-  - 同梱する Python の環境は `conda-pack --dest-prefix` で作る。∴ 前置きの書き換えは
-    組み立てのときに済み、入れた先の場所がそのまま書かれている。受け取り手の機械で
-    `conda-unpack` を走らせる工程は無い。
-  - AIモデルはアプリの中の `Contents/Resources/cynovela/store/models/` に在る。
-    アプリをゴミ箱へ入れれば、プログラムと環境とモデルがまとめて消える。
-  - 入れ物は置き場を動かさない。`BundleIsRelocatable` を false にしてあるため、
-    Installer がディスクの別の場所に在る写しを見つけてそちらへ入れることはない。
-  - 3 つに分けてあるのは送るあいだだけで、出来上がりは 1 本の `.pkg` である。
-    `Cynovela-assemble.command` が片ごとに確かめ、つなぎ、つないだ全体をもう一度
-    確かめてから、入れる画面を開く。
-  - `.app` は ad-hoc 署名である。`.pkg` は**署名していない** — 入れ物に署名を付けるには
-    Apple Developer Program の Installer 用の証明書が要り、この企画は持っていない。
-    ∴ macOS は最初のダブルクリックを断る。右クリック →「開く」→「開く」で入れられる。
+- **アプリ版（`.pkg`）は準備中である。** この版には入っていない。
+  そのために書いた下記のコードはこの版に入っており、配布している形の動きは
+  何も変えない。
 - **保存先の根を、木の外へ移せるようにした。** 入れたあとのアプリは読み取り専用のため、
   データベース・索引・記録・控え・鍵をその中に置けない。`CYNOVELA_DATA_ROOT` が
   与えられたとき（与えるのはアプリ版の入口だけである）、それらは

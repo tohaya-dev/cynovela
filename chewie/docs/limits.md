@@ -400,9 +400,10 @@ If you want to run on Kubernetes, you need to write the Deployment definition yo
   included.
   What is actually included, and how many, is written out in `BUNDLED-DATA.md` in the package.
 - **Where `store/` itself sits depends on the edition.** In every edition that is a folder
-  you unpack, it is `store/` inside that folder. In the app edition the installed bundle is
-  read-only, so the launcher sets `CYNOVELA_DATA_ROOT` and the same paths are taken relative
-  to `~/Library/Application Support/Cynovela/` instead.
+  you unpack, it is `store/` inside that folder. In the app edition — in preparation, not
+  part of this release — the installed bundle is read-only, so the launcher sets
+  `CYNOVELA_DATA_ROOT` and the same paths are taken relative to
+  `~/Library/Application Support/Cynovela/` instead.
 - **The first password is not printed on the screen when you start with the bundled sample
   material.** The startup script prints the first sign-in name and password only when it
   decides this is a first run, and it decides that by asking whether the database file
@@ -1054,8 +1055,8 @@ Kubernetes で動かしたい場合は、Deployment の定義を自分で書く�
   作っています。作った側の作業用の資料は 1 件も入っていません。
   実際に何が何件入っているかは、配布物の `BUNDLED-DATA.md` に書き出してあります。
 - **`store/` 自体の場所は形態で違います。** 展開して使うフォルダの形では、そのフォルダの
-  中の `store/` です。アプリ版は入れたあとの包みが読み取り専用のため、入口が
-  `CYNOVELA_DATA_ROOT` を与え、上の道筋は
+  中の `store/` です。アプリ版（準備中。この版には入っていません）は入れたあとの包みが
+  読み取り専用のため、入口が `CYNOVELA_DATA_ROOT` を与え、上の道筋は
   `~/Library/Application Support/Cynovela/` からの相対として扱われます。
 - **同梱のお試し資料で始めると、最初のパスワードは画面に出ません。** 起動用スクリプトは
   「初回である」と判定したときだけ最初のユーザー名とパスワードを出し、その判定は

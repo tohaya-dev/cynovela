@@ -263,14 +263,18 @@ A sign-in screen appears.
 #### Step 11. Sign in
 
 * **User name:** `cynovela`
-* **Password:** it is printed on the terminal screen the very first time you start it,
-  and only that once. The value itself is written in the file `cynovela.yaml` inside the
-  folder you unpacked, on the line that begins `admin_initial_password:`. To see it, type
+* **Password:** it is written in the file `cynovela.yaml` inside the folder you
+  unpacked, on the line that begins `admin_initial_password:`. To see it, type
   this in Terminal:
 
   ```
   grep admin_initial_password cynovela.yaml
   ```
+
+  (On the ordinary `./launch.sh` start it is also printed on the terminal screen
+  once, the very first time — but **not** on this `--demo` start, because the
+  bundled sample database makes that route count as "not the first start".
+  Reading `cynovela.yaml` works either way.)
 
 It will ask you to choose a new password straight away. Do that.
 
@@ -591,14 +595,16 @@ What to check when it does not work:
 | Viewer user name | `demo` |
 
 The default user names are **administrator `cynovela`** / **viewer `demo`** (not `admin`).
-**The initial passwords are printed on the screen the first time you start it.**
-They are not written in this file, so that a copy of the documentation cannot
-be used to sign in. Look at the terminal window that opens on the first start.
-(The value itself is the one written into `cynovela.yaml` when the package was built:
-`grep admin_initial_password cynovela.yaml`.)
+**The initial passwords are written into this package's own `cynovela.yaml`** —
+read them with `grep admin_initial_password cynovela.yaml` (the viewer's line is
+`viewer_initial_password:`). They are not written in this documentation, so that
+a copy of the documentation cannot be used to sign in. The ordinary
+`./launch.sh` start also prints them on the terminal once, the very first time —
+but the `--demo` start does not, because the bundled sample database makes that
+route count as "not the first start".
 
 1. Enter **`cynovela`** as the user name.
-2. For the password, enter the administrator value that was printed on the first start.
+2. For the password, enter the administrator value read out of `cynovela.yaml`.
 3. When you log in, "**初回パスワードの変更**" (change your initial password) appears.
    Enter the value you received in "現在のパスワード" (current password), a value of your own choosing in
    "新しいパスワード（8文字以上）" (new password, 8 characters or more), enter the same value in the confirmation
@@ -631,8 +637,8 @@ With `--demo`, demo users are inserted automatically, but authentication is enfo
 
 | User name (default. It is not `admin`) | Role | Password |
 |---|---|---|
-| `cynovela` | admin | A change is forced at the first login (no fixed password is distributed) |
-| `demo` | viewer | Printed on the screen at the first start, together with the administrator's. No fixed password is distributed |
+| `cynovela` | admin | The first value is in this package's `cynovela.yaml` (`admin_initial_password:`). A change is forced at the first login |
+| `demo` | viewer | The first value is in this package's `cynovela.yaml` (`viewer_initial_password:`) |
 
 ### How to create a viewer when you started with nothing loaded
 
@@ -1464,14 +1470,18 @@ Chrome のアドレス欄にそのまま打ち込みます。
 #### 手順11. ログインする
 
 * **利用者の名前:** `cynovela`
-* **合言葉:** はじめて起動したとき、その1回だけターミナルの画面に出ます。
-  値そのものは、取り出したフォルダの中の `cynovela.yaml` というファイルの、
+* **合言葉:** 取り出したフォルダの中の `cynovela.yaml` というファイルの、
   `admin_initial_password:` で始まる行に書いてあります。見るには、ターミナルで
   次を打ちます。
 
   ```
   grep admin_initial_password cynovela.yaml
   ```
+
+  （普通の `./launch.sh` の起動なら、はじめての1回だけターミナルの画面にも
+  出ます。ただしこの `--demo` の起動では出ません。同梱のデモ用データベースが
+  最初から入っているため、この経路は「初回ではない」と判定されるからです。
+  `cynovela.yaml` を見る道は、どちらでも使えます。）
 
 入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。
 
@@ -1784,14 +1794,16 @@ http://localhost:8765
 | 閲覧者の利用者名 | `demo` |
 
 既定の利用者名は **管理者 `cynovela`** / **閲覧者 `demo`** です（`admin` ではありません）。
-**初期パスワードは、はじめて起動したときに画面に出ます。**
-この文書には書いていません。文書のコピーだけでログインできてしまうのを避けるためです。
-初回の起動で開くターミナルの画面をご覧ください。
-（値そのものは、配布物を作るときに `cynovela.yaml` へ書き込まれたものです:
-`grep admin_initial_password cynovela.yaml`。）
+**初期パスワードは、この配布物自身の `cynovela.yaml` に書き込まれています** —
+`grep admin_initial_password cynovela.yaml` で見られます（閲覧者のぶんは
+`viewer_initial_password:` の行です）。この文書には書いていません。文書のコピー
+だけでログインできてしまうのを避けるためです。普通の `./launch.sh` の起動なら、
+はじめての1回だけターミナルの画面にも出ます。ただし `--demo` の起動では出ません。
+同梱のデモ用データベースが最初から入っているため、その経路は「初回ではない」と
+判定されるからです。
 
 1. ユーザー名に **`cynovela`** を入力します。
-2. パスワードは、初回起動の画面に出た管理者の値を入力します。
+2. パスワードは、`cynovela.yaml` から読み取った管理者の値を入力します。
 3. ログインすると「**初回パスワードの変更**」が出ます。
    「現在のパスワード」に受け取った値、「新しいパスワード（8文字以上）」に自分で決めた値を入れ、
    確認欄にも同じ値を入れて「**パスワードを変更して続行**」を押します。
@@ -1823,8 +1835,8 @@ http://localhost:8765
 
 | ユーザー名（既定。`admin` ではありません） | ロール | パスワード |
 |---|---|---|
-| `cynovela` | admin | 初回ログイン時に変更を強制（固定 PW は配布しません） |
-| `demo` | viewer | 管理者の値と一緒に、初回起動の画面に出ます。固定 PW は配布しません |
+| `cynovela` | admin | 最初の値はこの配布物の `cynovela.yaml`（`admin_initial_password:`）に在ります。初回ログイン時に変更を強制 |
+| `demo` | viewer | 最初の値はこの配布物の `cynovela.yaml`（`viewer_initial_password:`）に在ります |
 
 ### 何も入れずに始めた場合の、閲覧者の作り方
 

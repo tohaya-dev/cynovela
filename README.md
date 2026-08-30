@@ -30,10 +30,8 @@ You only need one of them. They are three ways of running the same thing.
 ## Requirements
 
 - macOS on Apple silicon.
-- `chewie`, App edition: **neither Python nor conda is needed.** It installs
-  `Cynovela.app` into `/Applications` and carries its own Python and the AI models
-  inside the app. Needs macOS 12 or later, an administrator password at install
-  time, and about 8 GB of free space.
+- `chewie`, App edition (`.pkg`): **in preparation.** It is not part of this
+  release.
 - `chewie`, Package edition: **neither Python nor conda is needed.** The folder
   carries its own Python inside it, and nothing is installed on this Mac.
 - `chewie`, Source editions: Python 3.12 or later. `launch.sh` builds the
@@ -58,44 +56,32 @@ The one-page answer to "which of these do I take" is in
 
 | Edition | Runs as | Models bundled | Download shape | What it needs |
 |---|---|---|---|---|
-| **App edition** `Cynovela-1.1.2-macos-arm64.pkg.part00`–`part02` | an app in `/Applications` | yes | split into parts — `Cynovela-assemble.command` joins them | **Neither Python nor conda.** An administrator password at install time |
+| **App edition** (`.pkg`) | — | — | **In preparation.** Not part of this release | — |
 | **Package edition** `cynovela-chewie-package-1.1.2.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
 | **Source edition, all-in-one** `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`–`part02` | a folder you run in place | yes | split into parts — needs assembling | Python 3.12 or later |
 | **Source edition, lightweight** `cynovela-chewie-lightweight-1.1.1.tar.gz` | a folder you run in place | no — take the AI models as well | single file | Python 3.12 or later |
 | **AI models** `cynovela-chewie-models-1.1.2.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
 
-Take the **App edition** if you want it to behave like any other Mac application:
-one install, everything inside it, and drag it to the Trash to remove the program,
-its Python environment (about 2.3 GB) and the embedded model `bge-m3` (about
-4.8 GB) together — all three are inside the app, not fetched afterwards. It always
-installs into `/Applications`; the installer offers no other location, and
-installing it again goes to the same place. While it runs, it writes only to
-`~/Library/Application Support/Cynovela/` — the app's own contents are not changed
-by a single byte. That folder holds your documents and settings, so they survive an
-upgrade — and are not removed with the app. Quit it with **Cmd+Q**.
+The **App edition** (`.pkg`) is **in preparation** and is not part of this
+release.
 
 Take the **Package edition** if you would rather not install anything: extract it,
-add the AI models, and run `./launch.sh`. It writes inside its own folder.
+add the AI models, and run `./launch.sh`. It writes inside its own folder, and the
+extracted folder can be moved to another location later — start it again from the
+new place with the same `./launch.sh`.
 
 Take **all-in-one** if you want the models in the same download and nothing
 fetched afterwards. Take **lightweight** if you want a small download and are
 happy to build the environment on first start. The two source editions were not
 rebuilt for 1.1.2; they are on the 1.1.1 release.
 
-The release also carries `HOW-TO-ASSEMBLE.md` and two checksum lists: `SHA256SUMS`
-for the tar.gz editions and the AI models, and `SHA256SUMS-pkg-assets.txt` for the
-app installer's parts and `Cynovela-assemble.command`. Download the one that
-covers the edition you picked. A single release file cannot exceed 2 GiB, so the
-app installer, the all-in-one and the AI models are split into parts; join them as
-[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) describes and check the result against the
-matching checksum list before starting.
-
-> 🔴 **The installer package is not signed with an Apple certificate.** macOS will
-> refuse the first double-click and say it is "from an unidentified developer". To
-> get past it, right-click the `.pkg` in Finder → **Open** → **Open**. Signing an
-> installer package needs an Apple Developer Program certificate this project does
-> not have; the reasoning is in
-> [MACOS-DISTRIBUTION-STRATEGY.md](MACOS-DISTRIBUTION-STRATEGY.md) §15.7.
+The release also carries `HOW-TO-ASSEMBLE.md`, the checksum list `SHA256SUMS`
+for the tar.gz editions and the AI models, and `check-managed-mac.command`, a
+diagnostic that tells you — without changing any setting — whether a
+company-managed Mac will let you run this. A single release file cannot exceed
+2 GiB, so the all-in-one and the AI models are split into parts; join them as
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) describes and check the result against
+`SHA256SUMS` before starting.
 
 `falcon` and `falcon-docker-beta` are built from the source in this repository.
 Distribution packages for them are not provided.
@@ -133,8 +119,6 @@ separately, and no password is written in any of these documents.
 
 - **Package edition and source editions:** `cynovela.yaml` is in the folder you
   unpacked, next to `launch.sh`.
-- **App edition:** in Finder, right-click `/Applications/Cynovela.app` → **Show
-  Package Contents** → `Contents/Resources/cynovela/cynovela.yaml`.
 
 The start-up screen also prints it once on the ordinary `./launch.sh` start, but
 **not** on the demo start (`./launch.sh --demo`) — the sample database ships

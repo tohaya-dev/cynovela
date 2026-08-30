@@ -50,7 +50,7 @@ For the person who puts it on a machine and keeps it going.
 
 | Document | What is in it |
 |---|---|
-| [editions.md](editions.md) | Which of the five downloads to take, on one page: how many files each is, its size once installed or unpacked, whether Python or conda is needed, and whether the AI models are inside. |
+| [editions.md](editions.md) | Which of the four downloads to take, on one page: how many files each is, its size once unpacked, whether Python or conda is needed, and whether the AI models are inside. |
 | [getting-started.md](getting-started.md) | The first run itself: extracting, building the runtime environment, the model download question, the first sign-in, connecting the LLM, and adding the first ingest root. |
 | [operations.md](operations.md) | Keeping it running over time: starting and stopping, where to place it, connecting an LLM provider, driving it from external tools over MCP, sharing over a LAN, backup and restore, logs, exporting the audit log, user management, health checks, notifications, and changing the port. |
 | [security.md](security.md) | How access control and the guardrails are actually built: the three roles, how `access_level` and `allowed_roles` decide what a search returns, PII detection and masking, the layers against prompt injection, and the ways of use that are not recommended. |
@@ -114,7 +114,7 @@ For the person who needs an exact name, argument or return value.
 
 | 文書 | 何が書いてあるか |
 |---|---|
-| [editions.md](editions.md) | 5 つの落とし物のどれを選ぶか、1 枚で。何本あるか・入れた後や展開後の大きさ・Python や conda が要るか・AIモデルが中に入っているか。 |
+| [editions.md](editions.md) | 4 つの落とし物のどれを選ぶか、1 枚で。何本あるか・展開後の大きさ・Python や conda が要るか・AIモデルが中に入っているか。 |
 | [getting-started.md](getting-started.md) | 初回そのもの。展開・実行環境の作成・モデル取得の問い・最初のログイン・LLM の接続・最初の ingest root の追加。 |
 | [operations.md](operations.md) | 使い続けるための運用。起動と停止・置き方・LLM プロバイダの接続・MCP で外部の道具から使う・LAN 共有・backup と restore・ログ・監査ログの Export・利用者の管理・死活確認・通知・番号の変更。 |
 | [security.md](security.md) | アクセス制御とガードレールが実際にどう組まれているか。3 つの役割・`access_level` と `allowed_roles` が検索の返りをどう決めるか・PII の検出とマスキング・プロンプトインジェクションへの層・推奨しない使用方法。 |

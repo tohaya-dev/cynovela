@@ -4,34 +4,12 @@
 
 ## 1.1.2 (2026-08-29)
 
-A release that rebuilds what is distributed, and adds a second way to install it.
+A release that rebuilds what is distributed.
 Nothing happens to ingested material, settings or keys; a 1.1.1 installation can
 be replaced in place.
 
-- **New: an app edition.** `Cynovela-1.1.2-macos-arm64.pkg` installs
-  `Cynovela.app` into `/Applications`. Double-click it like any other Mac
-  application — no terminal, no Python, no conda. Its Python environment and the
-  AI models are inside the app, so dragging the app to the Trash removes all
-  three together. Your documents, index, settings and keys are kept outside it,
-  in `~/Library/Application Support/Cynovela/`, so they survive an upgrade; the
-  app's menu has an entry for deleting them when you do want them gone. The
-  package edition is unchanged and remains the way to run it without installing
-  anything.
-  - It always installs into `/Applications`; the installer offers no other
-    location, and installing it again goes to the same place. While it runs it
-    writes only to `~/Library/Application Support/Cynovela/` — the app's own
-    contents are not changed by a single byte. Quit it with **Cmd+Q** (the
-    package edition still uses `bash stop.sh`). Measured first answer: about 46
-    seconds on a cold start, about 26 seconds warm.
-  - The installer is too large for a single release file, so it is split into
-    three parts — `Cynovela-1.1.2-macos-arm64.pkg.part00`–`part02`.
-    `Cynovela-assemble.command` joins them, checks them and opens the installer.
-    `SHA256SUMS-pkg-assets.txt` lists those files so you can check them yourself
-    as well.
-  - 🔴 It is **not signed with an Apple certificate.** macOS refuses the first
-    double-click and calls it "from an unidentified developer". Right-click the
-    `.pkg` → Open → Open. Signing an installer package requires an Apple
-    Developer Program certificate this project does not have.
+- **An app edition (`.pkg`) is in preparation.** It is not part of this release.
+  The package edition remains the way to run it without installing anything.
 - The distributables carried a folder name from the machine they were built on.
   It did no harm in use, but it does not belong in something handed to other
   people, so the contents were rebuilt without it.
@@ -333,32 +311,11 @@ from the old folder into the new one before starting.
 
 ## 1.1.2 (2026-08-29)
 
-配布物の中身を作り直し、入れ方をもう1つ増やした版です。読み込んだ資料・設定・鍵には
+配布物の中身を作り直した版です。読み込んだ資料・設定・鍵には
 何も起きません。1.1.1 の入れ物はそのまま置き換えられます。
 
-- **新しく「アプリ版」を用意しました。** `Cynovela-1.1.2-macos-arm64.pkg` を開くと、
-  `/Applications` に `Cynovela.app` が入ります。ほかの Mac のアプリと同じように
-  ダブルクリックで起動します。ターミナルも Python も conda も要りません。Python の
-  環境と AIモデルはアプリの中に入っているため、アプリをゴミ箱へ入れれば3つとも
-  まとめて消えます。資料・索引・設定・鍵はアプリの外の
-  `~/Library/Application Support/Cynovela/` に置くので、入れ替えても残ります。
-  そちらも消したいときのための項目を、アプリのメニューに用意しました。
+- **アプリ版（`.pkg`）は準備中です。** この版には入っていません。
   パッケージ版はこれまでどおりで、この Mac に何も入れずに使う道として残ります。
-  - 入る場所は `/Applications` に固定です。ほかの場所は選べず、2回目に入れ直しても
-    同じ場所に入ります。動いているあいだ書き込むのは
-    `~/Library/Application Support/Cynovela/` だけで、アプリの中身は1バイトも
-    変わりません。終わらせるときは **Cmd+Q** です（パッケージ版はこれまでどおり
-    `bash stop.sh`）。最初の答えが返るまでの実測は、冷えた状態で約 46 秒、
-    温まっていれば約 26 秒でした。
-  - 入れ物は1つのファイルに収まらない大きさのため、3つに分けてあります
-    （`Cynovela-1.1.2-macos-arm64.pkg.part00`〜`part02`）。
-    `Cynovela-assemble.command` がつなぎ、確かめ、入れる画面まで開きます。
-    自分でも確かめられるように、その3本の一覧を `SHA256SUMS-pkg-assets.txt` に
-    載せてあります。
-  - 🔴 この入れ物には **Apple の証明書による署名を付けていません。** macOS は最初の
-    ダブルクリックを断り、「開発元が未確認」と言います。`.pkg` を右クリック →
-    「開く」→「開く」で入れられます。入れ物に署名を付けるには Apple Developer
-    Program の証明書が要り、この企画は持っていません。
 - 配布物の中に、作った人の機械のフォルダ名が残っていました。使う分には支障は
   ありませんでしたが、配るものに載せるべきものではないため、中身を作り直して
   取り除きました。

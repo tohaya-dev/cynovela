@@ -17,10 +17,7 @@ This package is the **application build (runs on macOS directly, no container)**
 ### 1. Which package did you download?
 
 ```
-1) App edition (for Apple silicon Macs — installed from the .pkg)
-     Cynovela.app goes into /Applications. No Python and no conda are needed.
-     Its Python environment and the AI models are inside the app.
-     To remove it, drag the app to the Trash.
+1) App edition (.pkg) — in preparation. Not part of this release.
 2) Package edition (for Apple silicon Macs — ready to use)
      Extract it and run one line. No Python and no conda are needed.
      Nothing is installed on this Mac. To remove it, delete the folder.
@@ -30,10 +27,9 @@ This package is the **application build (runs on macOS directly, no container)**
        2) use this Mac's Python (3.12 or later) and build a venv only inside this folder.
 ```
 
-**The AI models are already inside the app edition** — nothing else to download.
-**For the package edition and the source editions they are downloaded separately**
-(a separate file on the release page, or the first start offers to fetch them);
-neither of those two packages contains them.
+**For the package edition and the source editions the AI models are downloaded
+separately** (a separate file on the release page, or the first start offers to
+fetch them); neither of those two packages contains them.
 
 ---
 
@@ -61,7 +57,26 @@ neither of those two packages contains them.
 ./launch.sh
 ```
 
-Nothing is installed on this Mac; the bundled environment inside the folder is used as is.
+Nothing is installed on this Mac; the bundled environment inside the folder is
+used as is. On the very first start, `launch.sh` runs the bundled `conda-unpack`
+once by itself to settle that environment into where you unpacked it — you do not
+run it yourself, and it does not run again.
+
+Three notes about **where you put the folder**:
+
+- **Do not extract it under a cloud-synced folder** (iCloud Drive, Dropbox,
+  OneDrive, Google Drive). Sync replaces files with placeholders that cannot be
+  executed. `./launch.sh` warns when it detects this, but the safe move is
+  `~/Downloads` or your home folder.
+- **A folder received through a browser or a shared link carries macOS's
+  quarantine mark.** `./launch.sh` removes that mark — inside the extracted
+  folder only — at the start of every launch. To remove it by hand instead:
+  `xattr -dr com.apple.quarantine <extracted folder>`. Whether macOS blocks
+  anything before that depends on the receiving Mac's settings.
+- **You can move the extracted folder to another location later** — documents
+  and settings travel with it, because everything it writes lives in `store/`
+  inside the folder. Stop it first, move the whole folder, then start it again
+  from the new place with the same `./launch.sh`.
 
 **Source edition:** extract the archive, then run `./launch.sh` (or double-click `Cynovela-start.command`). On the first run it asks which of the 2 ways to build the environment (see section 1) and builds it. **Either way, the shared conda environment is never created and never modified.**
 
@@ -72,11 +87,8 @@ Then:
    `cynovela.yaml`** — open that file and read the value of
    `auth.admin_initial_password` (the viewer's is `auth.viewer_initial_password`).
    Nothing is sent to you separately, and no password is written in any of these
-   documents.
-   - **Package edition and source editions:** `cynovela.yaml` sits in the folder
-     you unpacked, next to `launch.sh`.
-   - **App edition:** in Finder, right-click `/Applications/Cynovela.app` →
-     **Show Package Contents** → `Contents/Resources/cynovela/cynovela.yaml`.
+   documents. `cynovela.yaml` sits in the folder you unpacked, next to
+   `launch.sh`.
 
    The start-up screen also prints it once on the ordinary `./launch.sh` start,
    but **not** on the demo start (`./launch.sh --demo`): the sample database is
@@ -85,9 +97,7 @@ Then:
    asked to change the password straight after the first sign-in.
 2. **Add search targets.** Answer the question shown at startup; or use "Add a search folder" under "Settings" in the app screen; or run `./launch.sh --add` (list with `./launch.sh --list`; icon: `Cynovela-add-folder.command`).
 3. **Ask a question.** Open `http://localhost:8765` and type in plain language. Every answer carries the passage it came from — open it and check.
-4. **Stop it.** Package edition and source editions: double-click
-   `Cynovela-stop.command` (or run `bash stop.sh`). App edition: **Cmd+Q**
-   (menu **Cynovela ▸ Quit Cynovela**) — it has no stop script.
+4. **Stop it.** Double-click `Cynovela-stop.command` (or run `bash stop.sh`).
 
 ---
 
@@ -124,42 +134,14 @@ Two different situations, two different routes:
 
 ### 6. Uninstalling
 
-**App edition** (installed from the `.pkg` into `/Applications`) — this is two
-separate things, and the difference matters:
-
-1. **Removing the program.** Quit Cynovela, then drag `/Applications/Cynovela.app`
-   to the Trash. That takes the program, its Python environment and the AI models
-   with it, because all three live inside the app. Nothing else on this Mac is
-   touched. Disk space returns when you empty the Trash.
-2. **Removing your data.** Your ingested documents, the search index, the settings
-   and the keys are kept **outside** the app, at
-
-   ```
-   ~/Library/Application Support/Cynovela/
-   ```
-
-   so that they survive an upgrade. Trashing the app does **not** remove them.
-
-   To see what is there, use **Cynovela ▸ 保存先を Finder で開く** in the menu bar.
-
-   To remove it, use **Cynovela ▸ 保存されているデータを削除…** *before* you trash
-   the app. It shows the exact path and asks you to confirm; then it stops the
-   server, **deletes the folder outright — this does not go to the Trash and cannot
-   be undone** — and quits.
-
-   If the app is already gone, delete the folder yourself: in Finder,
-   **Go ▸ Go to Folder…**, paste the path above, and drag the `Cynovela` folder to
-   the Trash.
-
-Nothing is written anywhere else: there is no launch agent, no login item, and no
-files outside `/Applications/Cynovela.app` and the folder above.
+**App edition** (`.pkg`) — in preparation; not part of this release.
 
 **Package edition and source editions** — `bash uninstall.sh`. It confirms twice, then:
 
 | It removes / stops | It does NOT touch |
 |---|---|
 | The running Cynovela started from this folder | conda itself (kept for your other uses) |
-| The dedicated conda environment (`cynovela-dist`) | **Shared conda environments — never** |
+| Source editions only: the dedicated conda environment (`cynovela-dist`). The package edition never created one — its Python lives in `.condapack-cynovela` inside this folder and goes with it | **Shared conda environments — never** |
 | This folder, including ingested documents and settings (moved to the **Trash**, not deleted) | Anything whose name does not match |
 
 Disk space returns only after you empty the Trash. You can restore from the Trash.
@@ -173,12 +155,27 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | `Cynovela-start.command` | **Starts it. Double-click.** |
 | `Cynovela-stop.command` | **Stops it. Double-click.** |
 | `Cynovela-add-folder.command` | **Adds a folder to be ingested. Double-click.** |
-| `check-managed-mac.command` | **Checks whether this Mac will let you install it. Double-click.** It only measures — it changes no setting and works around no management policy. Useful on a Mac handed to you by an employer. |
+| `check-managed-mac.command` | **Checks whether this Mac will let you run it. Double-click.** It only measures — it changes no setting, needs no administrator password, and works around no management policy. Useful on a Mac handed to you by an employer: it prints a judgement for each item it checks and ends with an overall verdict, and when something is blocked it says which edition that blocks. The same file is also downloadable from the release page, so you can run it *before* downloading anything big. |
 | `launch.sh` | **What the three above call internally. Use this one from the terminal.** |
 | `uninstall.sh` | **Removes what this package created.** |
 | `cynovela-cli.py` | **Use it from the terminal. Run `doctor` first — it tells you what is missing.** |
 
 `launcher-core.sh` and `tools/launch-body.sh` are internal parts. You never need to touch them.
+
+**The `./launch.sh` flags** (the full text is `./launch.sh --help`, kept verbatim
+in `docs/USE-FROM-TERMINAL.txt`):
+
+| Flag | What it does |
+|---|---|
+| (none) | Starts by asking questions you answer with a number |
+| `--demo` | Starts with the bundled dummy documents loaded |
+| `--add` / `--list` / `--remove <name>` | Add / list / remove folders to be read |
+| `--setup` | Installs what is required to run, then stops |
+| `--check` | Does not start; only checks the conditions for running |
+| `--base conda\|venv\|none` | Decides in advance where python is prepared (used with `--setup`) |
+| `--port <number>` | Changes the number it listens on (default 8765) |
+| `--local-only` | Limits listening to the inside of your own machine only |
+| `--help` / `--help-all` | The list above / the testing and development flags as well |
 
 ---
 
@@ -285,10 +282,7 @@ that one. The same documents are repeated below.
 ### 1. どちらの配布物を落としましたか
 
 ```
-1) アプリ版（M系 Mac・.pkg から入れる形）
-     /Applications に Cynovela.app が入ります。Python も conda も要りません。
-     Python の環境も AIモデルも、アプリの中に入っています。
-     消すときはアプリをゴミ箱へ入れます。
+1) アプリ版（.pkg）— 準備中です。この版には入っていません。
 2) パッケージ版（M系 Mac の方はこちら・すぐ使える形）
      展開して1行叩くだけで動きます。Python も conda も要りません。
      この Mac には何も入れません。消すときはフォルダごと削除します。
@@ -298,7 +292,6 @@ that one. The same documents are repeated below.
        2) この Mac の Python（3.12 以上）を使い、このフォルダの中だけに venv を作る
 ```
 
-**アプリ版には AIモデルが最初から入っています。**ほかに落とすものはありません。
 **パッケージ版とソース版では AIモデルを別に落とします**（リリースページの別ファイル、
 または初回起動が取得を提案します）。この2つの配布物には入っていません。
 
@@ -329,6 +322,21 @@ that one. The same documents are repeated below.
 ```
 
 この Mac には何も入れません。フォルダの中に同梱された環境をそのまま使います。
+いちばん最初の起動では、`launch.sh` が同梱の `conda-unpack` を1回だけ自分で走らせ、
+展開した場所に環境をなじませます。自分で叩く必要はなく、2回目からは走りません。
+
+**フォルダをどこに置くか**について、3つ:
+
+- **クラウド同期のフォルダの下には展開しないでください**（iCloud Drive・Dropbox・
+  OneDrive・Google Drive）。同期はファイルを実行できない置き代わりに差し替えます。
+  `./launch.sh` は検出して警告しますが、安全なのは `~/Downloads` かホームフォルダです。
+- **ブラウザや共有リンク経由で受け取ったフォルダには、macOS の検疫の印が付きます。**
+  `./launch.sh` は毎回の起動の頭で、この印を**展開したフォルダの中に限って**外します。
+  手で外すなら `xattr -dr com.apple.quarantine <展開したフォルダ>` です。それより前に
+  macOS が何かを止めるかどうかは、受け取った Mac の設定によります。
+- **展開したフォルダは、あとから別の場所へ移せます。** 資料と設定も一緒に移ります。
+  書き込む先がすべてフォルダの中の `store/` だからです。止めてから、フォルダごと移し、
+  移した先で同じ `./launch.sh` で起こしてください。
 
 **ソース版:** 展開して `./launch.sh` を叩きます（または `Cynovela-start.command` をダブルクリック）。初回に、環境の作り方（1節の2択）を聞かれ、作られます。**どちらを選んでも、共有の conda 環境は作りません・書き換えません。**
 
@@ -338,11 +346,8 @@ that one. The same documents are repeated below.
    **最初のパスワードは、この配布物の中の `cynovela.yaml` に書いてあります。**
    そのファイルを開き、`auth.admin_initial_password` の値を見てください
    （閲覧者のぶんは `auth.viewer_initial_password` です）。別便で届くものはなく、
-   この一連の文書にもパスワードは書いてありません。
-   - **パッケージ版・ソース版:** `cynovela.yaml` は展開したフォルダの中、
-     `launch.sh` と同じ場所に在ります。
-   - **アプリ版:** Finder で `/Applications/Cynovela.app` を右クリック →
-     「**パッケージの内容を表示**」→ `Contents/Resources/cynovela/cynovela.yaml`。
+   この一連の文書にもパスワードは書いてありません。`cynovela.yaml` は展開した
+   フォルダの中、`launch.sh` と同じ場所に在ります。
 
    起動の画面にも、普通の `./launch.sh` の起動のときには1回だけ出ます。ただし
    デモ起動（`./launch.sh --demo`）では出ません。同梱のデモ用データベースが
@@ -351,9 +356,8 @@ that one. The same documents are repeated below.
    パスワードの変更を求められます。
 2. **検索の対象を足す。** 起動したときに聞かれる画面で足す / アプリ画面の「設定」の「検索の対象フォルダを足す」から足す / ターミナルで `./launch.sh --add`（一覧は `./launch.sh --list`。アイコンなら `Cynovela-add-folder.command`）。
 3. **質問する。** `http://localhost:8765` を開き、普通の言葉で聞きます。答えには必ず根拠にした箇所が付きます。開いて原文を確かめてください。
-4. **止める。** パッケージ版・ソース版は `Cynovela-stop.command` をダブルクリック
-   します（または `bash stop.sh`）。アプリ版は **Cmd+Q**（メニューの
-   **Cynovela →「Cynovela を終了」**）です。止めるためのスクリプトはありません。
+4. **止める。** `Cynovela-stop.command` をダブルクリックします（または
+   `bash stop.sh`）。
 
 ---
 
@@ -390,40 +394,14 @@ that one. The same documents are repeated below.
 
 ### 6. 消すには
 
-**アプリ版**（`.pkg` から `/Applications` へ入れた形）は、消すものが2つに分かれています。
-ここが分かれている点が大事です。
-
-1. **プログラムを消す。** Cynovela を終了してから、`/Applications/Cynovela.app` を
-   ゴミ箱へ入れてください。プログラムと Python の環境と AIモデルが、まとめて消えます。
-   3つともアプリの中に入っているからです。この Mac の他の場所には何も触れません。
-   ディスクの容量は、ゴミ箱を空にすると戻ります。
-2. **資料と設定を消す。** 取り込んだ資料・索引・設定・鍵は、アプリの**外**に置いてあります。
-
-   ```
-   ~/Library/Application Support/Cynovela/
-   ```
-
-   入れ替えても残るようにするためです。∴ アプリをゴミ箱へ入れても、こちらは**消えません**。
-
-   中身を見るには、メニューバーの **Cynovela ▸ 保存先を Finder で開く** を使います。
-
-   消すには、アプリをゴミ箱へ入れる**前**に **Cynovela ▸ 保存されているデータを削除…**
-   を使ってください。消す場所をそのまま出して確認を求め、本体を止めてから
-   **ゴミ箱を経由せず完全に削除し（取り消せません）**、アプリを終了します。
-
-   アプリを先に捨ててしまった場合は、上のフォルダを自分でゴミ箱へ入れてください。
-   Finder では **移動 ▸ フォルダへ移動…** に上の場所を貼り付け、出てきた `Cynovela`
-   フォルダをゴミ箱へ入れます。
-
-それ以外の場所には何も書きません。ログイン項目も、自動起動の仕掛けも作りません。
-`/Applications/Cynovela.app` と上のフォルダの2か所だけです。
+**アプリ版**（`.pkg`）は準備中です。この版には入っていません。
 
 **パッケージ版とソース版**は `bash uninstall.sh` です。2回確認したあと、次を行います。
 
 | 消す・止めるもの | 触らないもの |
 |---|---|
 | このフォルダから起こした稼働中の Cynovela | conda そのもの（他の用途のため残します） |
-| 専用の conda 環境（`cynovela-dist`） | **共有の conda 環境 — 決して消しません** |
+| ソース版のみ: 専用の conda 環境（`cynovela-dist`）。パッケージ版はこれを作っておらず、Python はこのフォルダの中の `.condapack-cynovela` に在り、フォルダと一緒に消えます | **共有の conda 環境 — 決して消しません** |
 | このフォルダ全体（取り込んだ資料・設定を含む。削除ではなく**ゴミ箱へ**） | 名前が一致しないもの |
 
 ディスクの容量は、ゴミ箱を空にするまで戻りません。ゴミ箱から戻すこともできます。
@@ -437,12 +415,27 @@ that one. The same documents are repeated below.
 | `Cynovela-start.command` | **起動する。ダブルクリック** |
 | `Cynovela-stop.command` | **止める。ダブルクリック** |
 | `Cynovela-add-folder.command` | **読み込むフォルダを足す。ダブルクリック** |
-| `check-managed-mac.command` | **この Mac に入れられるかを下調べする。ダブルクリック**。測るだけで、設定は変えず、管理の仕組みも迂回しない。会社から配られた Mac で役に立つ |
+| `check-managed-mac.command` | **この Mac で動かせるかを下調べする。ダブルクリック**。測るだけで、設定は変えず、管理者のパスワードも要らず、管理の仕組みも迂回しない。会社から配られた Mac で役に立つ: 調べる項目ごとに判定を出し、最後に全体の判定を出す。何かが止められているときは、それがどの形を止めるのかまで言う。同じファイルはリリースのページにも置いてあり、大きなものを落とす**前**に試せる |
 | `launch.sh` | **上の3つが内側で呼んでいるもの。ターミナルから使うときはこれ** |
 | `uninstall.sh` | **この配布物が作ったものを消す** |
 | `cynovela-cli.py` | **端末から使う。まず `doctor` を叩けば、足りないものが分かる** |
 
 `launcher-core.sh` と `tools/launch-body.sh` は内側の部品です。触る必要はありません。
+
+**`./launch.sh` の指定の一覧**（全文は `./launch.sh --help`。同じものが
+`docs/USE-FROM-TERMINAL.txt` に置いてあります）:
+
+| 指定 | すること |
+|---|---|
+| （何も付けない） | 聞かれたことに番号で答えるだけで起動します |
+| `--demo` | 同梱のダミー資料が載った状態で起動します |
+| `--add` / `--list` / `--remove <名前>` | 読み込むフォルダを足す / 一覧で出す / 外す |
+| `--setup` | 動かすのに要るものを入れます（入れたら止まります） |
+| `--check` | 起動せず、動く条件だけを調べます |
+| `--base conda\|venv\|none` | python を用意する場所を先に決めます（`--setup` と一緒に使います） |
+| `--port <番号>` | 待ち受ける番号を変えます（既定 8765） |
+| `--local-only` | 待ち受けを自分のマシンの中だけに絞ります |
+| `--help` / `--help-all` | 上の一覧 / 試験・開発のための指定も含めた全数 |
 
 ---
 

@@ -29,9 +29,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 ## 要るもの
 
 - Apple silicon の macOS。
-- `chewie` のアプリ版 ＝ **Python も `conda` も要りません。** `/Applications` へ
-  `Cynovela.app` を入れる形で、自分用の Python と AIモデルをアプリの中に持っています。
-  macOS 12 以降、入れるときに管理者のパスワード、空き 8 GB ほどが要ります。
+- `chewie` のアプリ版（`.pkg`）＝ **準備中です。** この版には入っていません。
 - `chewie` のパッケージ版 ＝ **Python も `conda` も要りません。** フォルダの中に
   自分用の Python を持っており、この Mac には何も入れません。
 - `chewie` のソース版 ＝ Python 3.12 以降が要ります。環境は `launch.sh` が作ります。
@@ -53,41 +51,28 @@ https://github.com/tohaya-dev/cynovela/releases
 
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
-| **アプリ版** `Cynovela-1.1.2-macos-arm64.pkg.part00`〜`part02` | `/Applications` のアプリとして | 入っています | 分割ファイル（`Cynovela-assemble.command` がつなぎます） | **Python も `conda` も要りません。** 入れるときに管理者のパスワード |
+| **アプリ版**（`.pkg`） | — | — | **準備中です。** この版には入っていません | — |
 | **パッケージ版** `cynovela-chewie-package-1.1.2.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
 | **ソース版・全部入り** `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`〜`part02` | 置いた場所のフォルダで直に | 入っています | 分割ファイル（組み立てが要る） | Python 3.12 以降 |
 | **ソース版・軽量** `cynovela-chewie-lightweight-1.1.1.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | Python 3.12 以降 |
 | **AIモデル** `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
-**アプリ版**＝ほかの Mac のアプリと同じ扱いにしたい方向け。1回入れれば中に全部入って
-おり、ゴミ箱へ入れればプログラムと Python の環境（約 2.3 GB）と埋め込みモデル
-`bge-m3`（約 4.8 GB）がまとめて消えます。この3つはアプリの中に入っており、あとから
-取りに行くことはありません。入る場所は `/Applications` に固定です（ほかの場所は選べず、
-2回目に入れ直しても同じ場所に入ります）。動いているあいだ書き込むのは
-`~/Library/Application Support/Cynovela/` だけで、**アプリの中身は1バイトも
-変わりません**。資料と設定はその外側にあるため、入れ替えても残ります（＝一緒には
-消えません）。終わらせるときは **Cmd+Q** です。
+**アプリ版**（`.pkg`）＝ **準備中です。** この版には入っていません。
 
 **パッケージ版**＝この Mac に何も入れたくない方向け。展開し、AIモデルを重ねて
-`./launch.sh` を叩きます。書き込みはそのフォルダの中で完結します。
+`./launch.sh` を叩きます。書き込みはそのフォルダの中で完結します。展開したフォルダは
+あとから別の場所へ移せます。移した先でも同じ `./launch.sh` で起こしてください。
 
 **全部入り**＝モデルも同じダウンロードに入れて、あとから取りに行かせたくない方向け。
 **軽量**＝落とすものを小さくしたい方、初回の起動で環境を作ってよい方向け。ソース版の
 2 つは 1.1.2 では作り直していないため、1.1.1 のリリースに在ります。
 
-リリースには `HOW-TO-ASSEMBLE.md` と、突き合わせ用の一覧が2本置いてあります。
-tar.gz の各版と AIモデルのぶんが `SHA256SUMS`、アプリ版の入れ物の片と
-`Cynovela-assemble.command` のぶんが `SHA256SUMS-pkg-assets.txt` です。選んだ形を
-覆うほうを一緒に落としてください。リリースの1ファイルは 2 GiB までのため、
-アプリ版・全部入り・AIモデルは片に分けてあります。
-[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) のとおりにつなぎ、対応する一覧と
+リリースには `HOW-TO-ASSEMBLE.md` と、突き合わせ用の一覧 `SHA256SUMS`（tar.gz の
+各版と AIモデルのぶん）、そして `check-managed-mac.command`（会社から渡された Mac で
+動かせるかを、設定を変えずに測るだけの診断）を置いてあります。リリースの1ファイルは
+2 GiB までのため、全部入りと AIモデルは片に分けてあります。
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) のとおりにつなぎ、`SHA256SUMS` と
 突き合わせてから起動してください。
-
-> 🔴 **入れ物（.pkg）には Apple の証明書による署名を付けていません。** そのため macOS は
-> 最初のダブルクリックを断り、「開発元が未確認のため開けません」と言います。Finder で
-> `.pkg` を右クリック →「**開く**」→ もう一度「**開く**」で入れられます。入れ物に署名を
-> 付けるには Apple Developer Program の証明書が要り、この企画は持っていません。考え方は
-> [MACOS-DISTRIBUTION-STRATEGY.md](MACOS-DISTRIBUTION-STRATEGY.md) の 15.7 に書いてあります。
 
 `falcon` と `falcon-docker-beta` は、このリポジトリのソースから自分で組み立てる形で
 あり、配布物は用意していません。
@@ -125,8 +110,6 @@ tar.gz の各版と AIモデルのぶんが `SHA256SUMS`、アプリ版の入れ
 
 - **パッケージ版・ソース版:** `cynovela.yaml` は展開したフォルダの中、`launch.sh` と
   同じ場所に在ります。
-- **アプリ版:** Finder で `/Applications/Cynovela.app` を右クリック →
-  「**パッケージの内容を表示**」→ `Contents/Resources/cynovela/cynovela.yaml`。
 
 起動の画面にも、普通の `./launch.sh` の起動のときには1回だけ出ます。ただしデモ起動
 （`./launch.sh --demo`）では出ません。同梱のデモ用データベースが最初から入っている

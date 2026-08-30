@@ -1382,7 +1382,7 @@ An administrator user is created at first startup. The user name and password ca
 | Environment variable | Use | Default |
 |---------|------|------|
 | `CYNOVELA_ADMIN_USERNAME` | User name of the first administrator | `cynovela` |
-| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | Password of the first administrator | (If neither the env var nor `auth.admin_initial_password` in `cynovela.yaml` is set, a password change is forced at first login. No known fixed password is distributed. Set a value only if you want to fix it.) |
+| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | Password of the first administrator | (The shipped packages write a fixed value into their own `cynovela.yaml` at `auth.admin_initial_password` — read it there. If neither the env var nor that key is set — which is the state of the repository source, not of a shipped package — a password change is forced at first login. Set the env var only if you want to override it.) |
 
 ### 9-3. Login Information of the Shipped demo.db
 
@@ -1390,8 +1390,8 @@ The `demo.db` distributed with `--demo` already has the following accounts loade
 
 | User name | Role | Password |
 |-----------|--------|-----------|
-| `cynovela` | admin | A change is forced at first login (no fixed password is distributed) |
-| `demo` | viewer | See `viewer_password` in the bundled credential file (`*.admin-password.txt`, received separately from the package tar). No fixed password is distributed |
+| `cynovela` | admin | The first value is in this package's `cynovela.yaml` (`auth.admin_initial_password`). A change is forced at first login |
+| `demo` | viewer | The first value is in this package's `cynovela.yaml` (`auth.viewer_initial_password`). Nothing is delivered separately |
 
 ### 9-4. Adding and Deleting Users, and Changing Passwords
 
@@ -2879,7 +2879,7 @@ Cynovela には 2 種類のロールがあります。
 | 環境変数 | 用途 | 既定値 |
 |---------|------|------|
 | `CYNOVELA_ADMIN_USERNAME` | 初回 admin ユーザー名 | `cynovela` |
-| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | 初回 admin パスワード | （env・`cynovela.yaml` の `auth.admin_initial_password` いずれも未設定なら、初回ログインでパスワード変更を強制します。既知の固定 PW は配布しません。固定したい場合のみ値を設定） |
+| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | 初回 admin パスワード | （配布物は固定値を配布物自身の `cynovela.yaml` の `auth.admin_initial_password` へ書き込んで出荷します。値はそこで読めます。env・当該キーのいずれも未設定＝リポジトリのソースそのままの状態なら、初回ログインでパスワード変更を強制します。上書きしたい場合のみ env に値を設定） |
 
 ### 9-3. 出荷 demo.db のログイン情報
 
@@ -2887,8 +2887,8 @@ Cynovela には 2 種類のロールがあります。
 
 | ユーザー名 | ロール | パスワード |
 |-----------|--------|-----------|
-| `cynovela` | admin | 初回ログイン時に変更を強制（固定 PW は配布しません） |
-| `demo` | viewer | 同梱の資格情報ファイル（配布物の tar とは別便で受け取る `*.admin-password.txt`）の `viewer_password` を参照。固定 PW は配布しません |
+| `cynovela` | admin | 最初の値はこの配布物の `cynovela.yaml`（`auth.admin_initial_password`）に在ります。初回ログイン時に変更を強制 |
+| `demo` | viewer | 最初の値はこの配布物の `cynovela.yaml`（`auth.viewer_initial_password`）に在ります。別便で渡すファイルはありません |
 
 ### 9-4. ユーザー追加・削除・パスワード変更
 
