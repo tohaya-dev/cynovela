@@ -928,13 +928,27 @@ dist_inspect "$STAGE/$NAME" "$CHECK_VALUES"
 # ── 決定論的な tar ───────────────────────────────────────────────
 # macOS の tar は bsdtar で --mtime を持たないため、固める前にステージ側の時刻を
 # 揃える (ref のコミット時刻)。所有者・並び順も固定し、gzip は -n で時刻を書かない。
-echo "[dist] 決定論的に固める (mtime=$SOURCE_EPOCH)"
+#
+# 🔴 圧縮の強さ (2026-08-30 の走行)
+#   既定は 9 のまま**変えない**。Portable の配布物は公開した SHA256 と結び付いて
+#   おり、強さを変えるとバイト列が変わるためである (中身は変わらないが、照合が
+#   通らなくなる)。
+#   変えてよいのは、作った直後に自分で展開して捨てる**中間の成果物**だけである。
+#   .app の梱包工程 (tools/build-macos-app.sh) がそれで、あちらは
+#   DIST_GZIP_LEVEL=1 を渡してくる。実測 (M4 Max・800MB): -9 が 51.87 秒、
+#   -1 が 11.41 秒で 4.5 倍速い。全部入りは 4.8GB あるので、ここが律速だった。
+DIST_GZIP_LEVEL="${DIST_GZIP_LEVEL:-9}"
+case "$DIST_GZIP_LEVEL" in
+  [1-9]) ;;
+  *) echo "[dist] DIST_GZIP_LEVEL は 1〜9 の 1 桁で指定してください: $DIST_GZIP_LEVEL" >&2; exit 2 ;;
+esac
+echo "[dist] 決定論的に固める (mtime=$SOURCE_EPOCH / 圧縮の強さ=$DIST_GZIP_LEVEL)"
 TOUCH_STAMP="$(date -r "$SOURCE_EPOCH" +%Y%m%d%H%M.%S)"
 find "$STAGE/$NAME" -exec touch -h -t "$TOUCH_STAMP" {} +
 ( cd "$STAGE" && find "$NAME" -print0 | LC_ALL=C sort -z \
     | tar --create --file - --null --files-from - --no-recursion \
           --format=ustar --numeric-owner --uid 0 --gid 0 --uname '' --gname '' \
-) | gzip -9 -n > "$OUT"
+) | gzip -"$DIST_GZIP_LEVEL" -n > "$OUT"
 
 echo "[dist] 完成: $OUT"
 echo "[dist] $(stat -f%z "$OUT") bytes"

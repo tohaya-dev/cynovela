@@ -132,7 +132,15 @@ TREE_DIR="$APP/Contents/Resources/cynovela"
 say "──────────────────────────────────────────────"
 say "1/7 中身を作る (build-dist.sh all-in-one ref=$REF)"
 PAYLOAD_OUT="$WORK/payload"; mkdir -p "$PAYLOAD_OUT"
+# 🔴 中間の成果物なので、圧縮を最弱にする (2026-08-30 の走行)
+#    この .tar.gz は、この 20 行あとで展開して**その場で捨てる**。配らない。
+#    強さ 9 で固める意味は無く、実測で 4.5 倍の差が出ていた
+#    (M4 Max・800MB: -9 が 51.87 秒 / -1 が 11.41 秒。全部入りは 4.8GB)。
+#    既定 (9) を変えていないので、Portable の配布物のバイト列は 1 ビットも動かない。
+export DIST_GZIP_LEVEL=1
+say "  中間の成果物なので圧縮の強さを 1 にする (配る Portable の既定 9 は変えない)"
 bash "$ROOT/tools/build-dist.sh" "$PAYLOAD_OUT" all-in-one "$REF"
+unset DIST_GZIP_LEVEL
 PAYLOAD_TGZ="$(ls -1 "$PAYLOAD_OUT"/*.tar.gz | head -1)"
 [ -f "$PAYLOAD_TGZ" ] || die "中身の配布物が作られませんでした"
 say "中身: $PAYLOAD_TGZ ($(stat -f%z "$PAYLOAD_TGZ") bytes)"
@@ -162,7 +170,38 @@ say "モデル: $TREE_DIR/store/models ($(du -sh "$TREE_DIR/store/models" | cut 
 
 # ── 2. 環境を作って、入れる先の場所へ書き換えて固める ─────────
 say "──────────────────────────────────────────────"
-say "2/7 同梱の環境を作る (毎回まっさらから作る)"
+say "2/7 同梱の環境を作る"
+# ── 🔴 固めた環境の使い回し (2026-08-30 の走行) ────────────────────
+#   環境の中身を決めているのは environment.yml と requirements.txt の 2 つだけで、
+#   組む ref には一切依存しない。∴ この 2 つが 1 バイトも変わっていなければ、
+#   conda env create → pip install → conda-pack の結果は同じものになる。
+#   毎回作り直していたため、直しを 1 行入れるたびに同じ 2.3GB を作り直していた。
+#
+#   合鍵に入れるもの (1 つでも変われば作り直す):
+#     ・environment.yml の中身      ・requirements.txt の中身
+#     ・入れる先の道 (--dest-prefix がこれを焼き込むため)
+#     ・conda の版 (作られる中身が変わり得るため)
+#   使い回しをやめたいときは CYNOVELA_ENV_CACHE=0 を渡す。
+ENV_CACHE_DIR="${CYNOVELA_ENV_CACHE_DIR:-$HOME/.cache/cynovela-build}"
+ENV_CACHE_KEY="$(
+  { shasum -a 256 "$ROOT/environment.yml" "$ROOT/requirements.txt" | awk '{print $1}'
+    printf '%s\n' "$ENV_DEST"
+    "$CONDA_BIN" --version 2>/dev/null || echo "conda-unknown"
+  } | shasum -a 256 | cut -c1-32
+)"
+ENV_CACHE_TGZ="$ENV_CACHE_DIR/env-$ENV_CACHE_KEY.tar.gz"
+ENV_TGZ="$WORK/.env.tar.gz"
+say "  使い回しの合鍵: $ENV_CACHE_KEY"
+say "  使い回しの置き場: $ENV_CACHE_TGZ"
+
+if [ "${CYNOVELA_ENV_CACHE:-1}" = "1" ] && [ -f "$ENV_CACHE_TGZ" ]; then
+  say "  🟢 使い回せる環境が在った。conda env create / pip install / conda-pack を飛ばす"
+  say "     ($(stat -f%z "$ENV_CACHE_TGZ") bytes / $(shasum -a 256 "$ENV_CACHE_TGZ" | cut -c1-16)…)"
+  cp "$ENV_CACHE_TGZ" "$ENV_TGZ"
+  ENV_FROM_CACHE=1
+else
+  ENV_FROM_CACHE=0
+  say "  使い回せる環境が無い。まっさらから作る"
 rm -rf "$BUILD_PREFIX" "$BUILD_SPEC"; mkdir -p "$BUILD_SPEC"
 # 🔴 conda は叩いた命令をそのまま conda-meta/history に書く。定義ファイルの道を
 #    そのまま渡すと、作った人の home がそこに残る。∴ 定義も先に写してから渡す。
@@ -174,7 +213,6 @@ say "  (2/4) pip 層: requirements.txt"
 rm -rf "$BUILD_SPEC"
 
 say "  (3/4) conda-pack --dest-prefix で固める"
-ENV_TGZ="$WORK/.env.tar.gz"
 PACK=("$CONDA_BIN" run -n base conda-pack)
 if ! "${PACK[@]}" -p "$BUILD_PREFIX" --dest-prefix "$ENV_DEST" -o "$ENV_TGZ" \
       --exclude '*.pyc' --exclude '*/__pycache__' --exclude '__pycache__' >&2; then
@@ -185,7 +223,16 @@ if ! "${PACK[@]}" -p "$BUILD_PREFIX" --dest-prefix "$ENV_DEST" -o "$ENV_TGZ" \
       --ignore-missing-files >&2
 fi
 
-say "  (4/4) Contents/Resources/env へ展開する"
+  # 次の走行のために控える。中身は入れる先の道だけを見て作られており、
+  # 作った場所には依存しない (--dest-prefix が焼き込むのは入れる先の道である)。
+  if [ "${CYNOVELA_ENV_CACHE:-1}" = "1" ]; then
+    mkdir -p "$ENV_CACHE_DIR"
+    cp "$ENV_TGZ" "$ENV_CACHE_TGZ.tmp" && mv "$ENV_CACHE_TGZ.tmp" "$ENV_CACHE_TGZ"
+    say "  次の走行のために控えた: $ENV_CACHE_TGZ ($(stat -f%z "$ENV_CACHE_TGZ") bytes)"
+  fi
+fi
+
+say "  (4/4) Contents/Resources/env へ展開する (使い回し=$ENV_FROM_CACHE)"
 mkdir -p "$ENV_DIR"
 tar -xzf "$ENV_TGZ" -C "$ENV_DIR"
 rm -f "$ENV_TGZ"
@@ -437,6 +484,39 @@ TREE_DIR="$APP/Contents/Resources/cynovela"
 ENV_DIR="$APP/Contents/Resources/env"
 SRC_DIR="$TREE_DIR/macos-app"
 
+# ── 🔴 持ち主が root になることに、mode を合わせる (2026-08-30 の走行) ──
+#   pkgbuild は目録の持ち主を 0/0 に付け替えるが、**mode は配布元のものを
+#   そのまま引き継ぐ**。∴ 作った人の手元で 600/700 だったファイルは、
+#   `600 root:wheel` = **root 以外は誰も読めない**ファイルになって配られる。
+#
+#   実測 (公開直前だった .pkg):
+#     ・store/secret.key            0600 root:wheel → 保存先を作る写しが必ず失敗する
+#     ・store/models/** の 18 本     0700 root:wheel → 埋め込みも再ランクも読めない
+#       (うち 2 本は 2.27GB の重み本体。models は写さず包みの中から直接読む作り)
+#   受け取り手の Mac では、この 19 本が一度も読めなかった。
+#
+#   直し = 梱包の直前に、包み全体へ「持ち主に読めるものは、その他にも読ませる」を
+#   当てる。go+rX なので、実行権は元から実行できたものにしか付かず、
+#   書き権は 1 つも足さない。
+#
+#   🔴 secret.key を 644 にしてよい理由:
+#     ・.pkg は全利用者共通の /Applications に入り、鍵の実体は同梱されている。
+#       ∴ 0600 は元から秘匿していない (root しか読めない = 誰も使えない、だけ)。
+#     ・鍵を守っているのは所有権 (root:wheel・読み取り専用の包みの中) であり、
+#       mode ではない。書き換えるには管理者権限が要る。
+#     ・現状のほうが危険である。鍵が読めないとサーバは**新しい鍵を作り**、
+#       同梱データが復号できなくなる (過去に実測した InvalidToken と同型)。
+say "  持ち主が root になることに mode を合わせる (go+rX)"
+_narrow_before="$(find "$PKGROOT" -type f ! -perm -004 2>/dev/null | wc -l | tr -d ' ')"
+chmod -R go+rX "$PKGROOT"
+_narrow_after="$(find "$PKGROOT" -type f ! -perm -004 2>/dev/null | wc -l | tr -d ' ')"
+say "    その他が読めない通常ファイル: $_narrow_before 件 → $_narrow_after 件"
+[ "$_narrow_after" = "0" ] || die "go+rX を当てても、その他が読めないファイルが $_narrow_after 件 残っています"
+# 書き権を足していないことを、その場で確かめる (go+rX は w を足さないはずである)
+_ww="$(find "$PKGROOT" \( -type f -o -type d \) -perm -022 2>/dev/null | wc -l | tr -d ' ')"
+[ "$_ww" = "0" ] || die "その他に書き権の付いた項が $_ww 件 在ります (go+rX が w を足しました)"
+say "    その他に書き権の付いた項: 0 件"
+
 # 木がまだ在るうちに、組み立ての宣言を作っておく (下で木ごと消すため)
 DIST_XML="$WORK/Distribution.xml"
 sed "s/__VERSION__/${VERSION}/g" "$SRC_DIR/Distribution.xml.in" > "$DIST_XML"
@@ -525,16 +605,22 @@ if [ "$_pycache" != "0" ] || [ "$_pyc" != "0" ]; then gate_fail=1; fi
 
 # (4) 入れる先の道が中に書かれているか (--dest-prefix が効いたか) と、
 #     作る場所の道が残っていないか。
+#     🔴 作る場所は「今回の $$」ではなく**幹で**当てる (2026-08-30 の走行)。
+#        環境を使い回すようにしたため、包みの中の環境は**別の走行の**作る場所で
+#        作られていることがある。今回の PID を含む道だけを当てていると、
+#        使い回した環境に前の走行の道が残っていても素通りしてしまう。
+#        ∴ PID を外した幹 (…/cynovela-macos-app-build-) で当てる。
+BUILD_PREFIX_STEM="${BUILD_PREFIX%%-[0-9]*}-"
 _dest_n="$( { grep -rl "$ENV_DEST" "$GATE" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
-_build_n="$( { grep -rl "$BUILD_PREFIX" "$GATE" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
-say "  入れる先の道を含むファイル: $_dest_n 件 / 作る場所の道を含むファイル: $_build_n 件"
+_build_n="$( { grep -rl "$BUILD_PREFIX_STEM" "$GATE" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
+say "  入れる先の道を含むファイル: $_dest_n 件 / 作る場所の道を含むファイル: $_build_n 件 (幹で照合: $BUILD_PREFIX_STEM)"
 if [ "$_dest_n" -eq 0 ]; then
   echo "[app] 入れる先の道が 1 件も書かれていません。--dest-prefix が効いていません。" >&2
   gate_fail=1
 fi
 if [ "$_build_n" -ne 0 ]; then
   echo "[app] 作る場所の道が残っています (先頭20件):" >&2
-  { grep -rl "$BUILD_PREFIX" "$GATE" --binary-files=text 2>/dev/null || true; } \
+  { grep -rl "$BUILD_PREFIX_STEM" "$GATE" --binary-files=text 2>/dev/null || true; } \
     | head -20 | sed "s|^$GATE/||;s|^|[app]     |" >&2
   gate_fail=1
 fi
@@ -576,6 +662,36 @@ else
   if [ "$_bom_bad_n" != "0" ]; then
     echo "[app] 目録に root/wheel でない項、または壊れた mode の項が在ります (先頭50件):" >&2
     head -50 "$_bom_bad" | sed 's|^|[app]     |' >&2
+    gate_fail=1
+  fi
+fi
+
+# (8) 🔴 目録の mode を「その他が読めるか」で見る (2026-08-30 の走行)
+#     (7) は持ち主が 0/0 か、mode が 3 桁の形をしているかしか見ていなかった。
+#     `^(100|40|120)[0-7][0-7][0-7]$` は **0 も 6 も 7 も通す**。∴ 0600 と 0700 が
+#     素通りし、root しか読めないファイルが 19 本入ったまま配られる寸前だった。
+#     受け取り手はサーバを root では走らせない。∴ 持ち主が root の包みの中では、
+#     「その他が読めない」は「誰も読めない」と同じである。
+#       ・通常ファイル (100) … その他に読み権 (4) が要る
+#       ・ディレクトリ (40)  … その他に読み権 (4) と入る権 (1) が要る
+#       ・記号リンク (120)   … 中身は見ないので数えない
+if [ -n "$_bom" ]; then
+  _bom_narrow="$WORK/bom-narrow.txt"
+  /usr/bin/lsbom -p mf "$_bom" | awk -F'\t' '
+    {
+      m = $1; p = $2
+      d = substr(m, length(m), 1) + 0            # その他の 1 桁
+      r = int(d / 4) % 2                          # 読み権
+      x = d % 2                                   # 入る権 (ディレクトリ)
+      t = substr(m, 1, length(m) - 3)             # 種類
+      if (t == "100" && r == 0)              print m "\t" p
+      else if (t == "40" && (r == 0 || x == 0)) print m "\t" p
+    }' > "$_bom_narrow" || true
+  _bom_narrow_n="$(grep -c . "$_bom_narrow" || true)"
+  say "  その他が読めない項 (通常ファイル・ディレクトリ): $_bom_narrow_n 件"
+  if [ "$_bom_narrow_n" != "0" ]; then
+    echo "[app] 目録に、その他が読めない項が在ります。受け取り手の Mac で読めません (先頭50件):" >&2
+    head -50 "$_bom_narrow" | sed 's|^|[app]     |' >&2
     gate_fail=1
   fi
 fi

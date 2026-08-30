@@ -191,18 +191,94 @@ enum DataRoot {
     /// 配布物のディレクトリツリーの store/models を先に見るため、写す必要が無い)。
     static let skip: Set<String> = ["models", "logs", "env-check.txt", ".DS_Store"]
 
+    /// 保存先が「使える形で揃っている」ことの必須の要素。
+    /// 🔴 この 2 つが揃って初めて、本体は同梱のデータを同梱の鍵で読める。
+    ///    片方でも欠けると、本体は黙って**新しい鍵を作り**、同梱のデータが
+    ///    二度と復号できなくなる (DD-CYN-0189 段R で実測)。
+    static let essentials: [String] = ["secret.key", "db"]
+
+    /// 作りかけと、揃っているものを分ける。
+    /// 🔴 「フォルダが在る」= 揃っている、ではない。ここを取り違えていたために、
+    ///    一度失敗した受け取り手は、画面から直す道を永久に失っていた。
+    static func isComplete(_ root: URL) -> Bool {
+        let fm = FileManager.default
+        var isDir: ObjCBool = false
+        guard fm.fileExists(atPath: root.path, isDirectory: &isDir), isDir.boolValue else { return false }
+        for name in essentials where !fm.fileExists(atPath: root.appendingPathComponent(name).path) {
+            return false
+        }
+        return true
+    }
+
+    /// 欠けている必須の要素の名前 (画面に出すため)
+    static func missing(in root: URL) -> [String] {
+        let fm = FileManager.default
+        return essentials.filter { !fm.fileExists(atPath: root.appendingPathComponent($0).path) }
+    }
+
+    enum SeedError: LocalizedError {
+        case cannotRead(name: String)
+        case incomplete(missing: [String])
+        case other(name: String)
+
+        var errorDescription: String? {
+            switch self {
+            case .cannotRead(let name):
+                return "配布物の中の「\(name)」を読めませんでした。"
+            case .incomplete(let missing):
+                return "保存先に「\(missing.joined(separator: "」「"))」を用意できませんでした。"
+            case .other(let name):
+                return "「\(name)」を用意できませんでした。"
+            }
+        }
+    }
+
+    /// 🔴 「全部できたら確定、途中で失敗したら作ったものを全部消して戻る」
+    ///    (DD-CYN-0189 段C1・D2)
+    ///    以前は途中で失敗すると作りかけをそのまま残していた。残った作りかけを
+    ///    次回の起動が「完成した保存先」と読み、3 択が二度と出なくなっていた。
     static func seed(from source: URL, to dest: URL) throws {
         let fm = FileManager.default
-        try fm.createDirectory(at: dest, withIntermediateDirectories: true)
-        let items = (try? fm.contentsOfDirectory(atPath: source.path)) ?? []
-        for name in items where !skip.contains(name) {
-            let src = source.appendingPathComponent(name)
-            let dst = dest.appendingPathComponent(name)
-            if fm.fileExists(atPath: dst.path) { continue }
-            try fm.copyItem(at: src, to: dst)   // 写すだけ。元は動かさない。
+        let destExisted = fm.fileExists(atPath: dest.path)
+        var created: [URL] = []
+
+        func rollback() {
+            for u in created.reversed() { try? fm.removeItem(at: u) }
+            if !destExisted { try? fm.removeItem(at: dest) }
         }
-        try fm.createDirectory(at: dest.appendingPathComponent("logs"),
-                               withIntermediateDirectories: true)
+
+        do {
+            try fm.createDirectory(at: dest, withIntermediateDirectories: true)
+            let items = (try? fm.contentsOfDirectory(atPath: source.path)) ?? []
+            for name in items where !skip.contains(name) {
+                let src = source.appendingPathComponent(name)
+                let dst = dest.appendingPathComponent(name)
+                if fm.fileExists(atPath: dst.path) { continue }
+                do {
+                    try fm.copyItem(at: src, to: dst)   // 写すだけ。元は動かさない。
+                } catch {
+                    // 内部の言い回しをそのまま出さない。何が起きたかだけを渡す。
+                    let ns = error as NSError
+                    if ns.domain == NSCocoaErrorDomain,
+                       ns.code == NSFileReadNoPermissionError || ns.code == NSFileWriteNoPermissionError {
+                        throw SeedError.cannotRead(name: name)
+                    }
+                    throw SeedError.other(name: name)
+                }
+                created.append(dst)
+            }
+            let logs = dest.appendingPathComponent("logs")
+            if !fm.fileExists(atPath: logs.path) {
+                try fm.createDirectory(at: logs, withIntermediateDirectories: true)
+                created.append(logs)
+            }
+            // ここまで来ても要素が欠けていれば、揃っていないものは残さない。
+            let lack = missing(in: dest)
+            if !lack.isEmpty { throw SeedError.incomplete(missing: lack) }
+        } catch {
+            rollback()
+            throw error
+        }
     }
 }
 
@@ -356,13 +432,77 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
+    /// 保存先が作りかけだったときに、脇へ退けて作り直せるようにする。
+    /// 🔴 消さずに退ける。中に受け取り手の資料が入っている見込みは低いが、
+    ///    こちらの都合で消してよいものではない。
+    func setAsideIncompleteDataRoot() -> Bool {
+        let fm = FileManager.default
+        let lack = DataRoot.missing(in: layout.dataRoot).joined(separator: "」「")
+        let a = NSAlert()
+        a.alertStyle = .warning
+        a.messageText = "保存先が途中までしか作られていません"
+        a.informativeText = """
+        次の場所に、\(appName) が使う形の揃っていないフォルダが在ります。
+
+            \(layout.dataRoot.path)
+
+        足りないもの: 「\(lack)」
+
+        前回、保存先を用意している途中で止まったときにできたものです。
+        このままでは \(appName) は正しく動きません。
+
+        「作り直す」を選ぶと、いまのフォルダは消さずに名前を変えて脇へ置き、
+        保存先の選び直しから始めます。
+        """
+        a.addButton(withTitle: "作り直す")
+        a.addButton(withTitle: "Finder で見る")
+        a.addButton(withTitle: "終了")
+
+        switch a.runModal() {
+        case .alertFirstButtonReturn:
+            let f = DateFormatter()
+            f.dateFormat = "yyyyMMdd-HHmmss"
+            let aside = layout.dataRoot.deletingLastPathComponent()
+                .appendingPathComponent("\(appName).incomplete-\(f.string(from: Date()))")
+            do {
+                try fm.moveItem(at: layout.dataRoot, to: aside)
+                append("[入口] 作りかけの保存先を脇へ置きました: \(aside.path)")
+                return true
+            } catch {
+                fail("""
+                作りかけの保存先を脇へ置けませんでした。
+
+                    \(layout.dataRoot.path)
+
+                どうすればよいか:
+                  Finder でこのフォルダの名前を変えるか、別の場所へ移してから、
+                  \(appName) をもう一度開いてください。
+                """)
+                return false
+            }
+        case .alertSecondButtonReturn:
+            NSWorkspace.shared.activateFileViewerSelecting([layout.dataRoot])
+            NSApp.terminate(nil)
+            return false
+        default:
+            NSApp.terminate(nil)
+            return false
+        }
+    }
+
     /// 初回だけ。黙って引き継がない・黙って捨てない (受け取り手に選ばせる)。
     func prepareDataRoot() -> Bool {
         let fm = FileManager.default
         if fm.fileExists(atPath: layout.dataRoot.path) {
-            try? fm.createDirectory(at: layout.logDir, withIntermediateDirectories: true)
-            isFirstRun = false          // 保存先が既に在る = 2 回目以降
-            return true
+            if DataRoot.isComplete(layout.dataRoot) {
+                try? fm.createDirectory(at: layout.logDir, withIntermediateDirectories: true)
+                isFirstRun = false      // 揃っている = 2 回目以降
+                return true
+            }
+            // 🔴 在るだけで揃っていない (作りかけ)。ここを「2 回目」と読んだために、
+            //    一度失敗した受け取り手は 3 択を二度と見られなくなっていた。
+            guard setAsideIncompleteDataRoot() else { return false }
+            // 退避できたので、この下の 3 択へ進む
         }
 
         let a = NSAlert()
@@ -388,7 +528,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 isFirstRun = true
                 append("[入口] 保存先を新しく作りました: \(layout.dataRoot.path)")
             } catch {
-                fail("保存先を作れませんでした:\n\(error.localizedDescription)")
+                fail("""
+                保存先を新しく作れませんでした。
+
+                \(error.localizedDescription)
+
+                途中まで作ったものは消したので、\(appName) は壊れた状態になっていません。
+
+                どうすればよいか:
+                  1. \(appName) をもう一度開いてみてください。
+                  2. それでも同じことが起きるときは、この \(appName).app を入れ直して
+                     ください (インストーラをもう一度実行します)。
+                """)
                 return false
             }
         case .alertSecondButtonReturn:
@@ -402,7 +553,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 append("[入口] 保存先を引き継ぎました: \(picked.path)")
                 append("[入口]   → \(layout.dataRoot.path) (写しただけで、元はそのまま残っています)")
             } catch {
-                fail("引き継ぎに失敗しました:\n\(error.localizedDescription)")
+                fail("""
+                引き継げませんでした。
+
+                \(error.localizedDescription)
+
+                選んだフォルダ (\(picked.path)) は 1 バイトも変えていません。
+                途中まで作ったものも消したので、\(appName) は壊れた状態になっていません。
+
+                どうすればよいか:
+                  1. \(appName) をもう一度開き、別のフォルダを選び直してください。
+                  2. 引き継がなくてよければ「新しく始める」を選んでください。
+                """)
                 return false
             }
         default:
@@ -424,18 +586,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard p.runModal() == .OK, let url = p.url else { return nil }
 
             // store/ そのものを選ばれても受ける
+            let fm = FileManager.default
             let candidates = [url.appendingPathComponent("store", isDirectory: true), url]
+            var found: URL? = nil          // store らしきものは在ったか
             for c in candidates {
                 var isDir: ObjCBool = false
-                if FileManager.default.fileExists(atPath: c.path, isDirectory: &isDir), isDir.boolValue,
-                   FileManager.default.fileExists(atPath: c.appendingPathComponent("db").path)
-                    || FileManager.default.fileExists(atPath: c.appendingPathComponent("secret.key").path) {
-                    return c
-                }
+                guard fm.fileExists(atPath: c.path, isDirectory: &isDir), isDir.boolValue else { continue }
+                if found == nil { found = c }
+                // 🔴 「どちらか在れば通す」をやめた (DD-CYN-0189 段C1)。
+                //    db だけ在って secret.key の無い保存先を通すと、写した先も
+                //    同じく欠けた形になり、本体が黙って新しい鍵を作ってしまう。
+                //    ∴ 必須の要素が全部揃っているものだけを受ける。
+                if DataRoot.isComplete(c) { return c }
             }
+
             let w = NSAlert()
             w.messageText = "そのフォルダは引き継げません"
-            w.informativeText = "選ばれた場所に store/ が見つかりませんでした:\n\(url.path)\n\nもう一度選び直すか、新しく始めてください。"
+            if let f = found {
+                // store らしきものは在ったが、中身が足りない
+                let lack = DataRoot.missing(in: f).joined(separator: "」「")
+                w.informativeText = """
+                選ばれた場所に、\(appName) の保存先として使える中身が揃っていませんでした。
+
+                    \(f.path)
+
+                足りないもの: 「\(lack)」
+
+                引き継げるのは、Portable 版を一度でも起動したフォルダです。
+                launch.sh と store/ が並んでいるフォルダを選んでください。
+                """
+            } else if !fm.isReadableFile(atPath: url.path) {
+                w.informativeText = """
+                選ばれたフォルダを読めませんでした。
+
+                    \(url.path)
+
+                アクセス権が無いか、macOS がこのフォルダへの許可をまだ与えていません。
+                別のフォルダを選び直すか、「新しく始める」を選んでください。
+                """
+            } else {
+                w.informativeText = """
+                選ばれた場所に store/ が見つかりませんでした。
+
+                    \(url.path)
+
+                launch.sh と store/ が並んでいるフォルダを選んでください。
+                引き継がなくてよければ「新しく始める」を選べます。
+                """
+            }
             w.addButton(withTitle: "選び直す")
             w.addButton(withTitle: "終了")
             if w.runModal() != .alertFirstButtonReturn { return nil }
