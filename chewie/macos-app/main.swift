@@ -227,6 +227,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var quitting = false
     var deferredTermination = false   // .terminateLater を返したときだけ真
     var demoMode = false
+    var suppressRemaining = 0         // 差し替えで畳んだ行の、まだ捨てる残り行数
 
     // ── 立ち上げ ─────────────────────────────────────────────
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -492,7 +493,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func handleLine(_ line: String) {
-        append(line)
+        // 🔴 番号の拾い出しは、差し替えより先に「来た行そのもの」に対して行う。
+        //    差し替えで消える行があっても、拾い損ねない。
         // 出力に番号が出たらそれを正とする (--port で変えられているかもしれない)
         for marker in ["http://localhost:", "http://127.0.0.1:"] {
             if let r = line.range(of: marker) {
@@ -501,10 +503,100 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 if let n = Int(digits), n > 0, n < 65536 { port = n }
             }
         }
-        let t = line.trimmingCharacters(in: .whitespaces)
+
+        guard let shown = rewriteForApp(line) else { return }   // nil = 画面に出さない
+        append(shown)
+
+        // 状況欄には、実際に画面へ出したものの 1 行目を出す (差し替え後の文言)。
+        let head = shown.split(separator: "\n", omittingEmptySubsequences: false).first.map(String.init) ?? shown
+        let t = head.trimmingCharacters(in: .whitespaces)
         if !t.isEmpty && !serverUp {
             setStatus(String(t.prefix(150)))
         }
+    }
+
+    // ── .app 経路だけの文言の差し替え ─────────────────────────
+    //   画面に出る文言の実体は tools/launch-body.sh に在り、それは Portable 版と
+    //   共通のものである。∴ .app にしか無い挙動と食い違う行がそのまま出る。
+    //     ・保存先は包みの中ではなく ~/Library/Application Support/Cynovela である
+    //     ・包みの中身は 1 バイトも書き換わらない (DD-CYN-0187 で差分 0 を実測)
+    //     ・止め方は bash stop.sh ではなく Cmd+Q である
+    //     ・置き場所は /Applications 固定で、クラウド同期の注意は当たらない
+    //     ・初回のパスワードの案内が、この .app では成り立たない (下の (2) に詳しい)
+    //
+    //   🔴 直せる場所はここしかない。tools/launch-body.sh を書き換えると Portable
+    //      版の文言まで変わる。この関数は .app 経路にしか無い (Portable は
+    //      main.swift を通らない) ので、Portable 版の出力は 1 文字も変わらない。
+    //
+    //   判定は行の内容に対する一致で行う。複数行にまたがるものは、開始行を見つけた
+    //   ときに残りの行数を suppressRemaining へ置き、その数だけ後続を捨てる。
+    //   nil を返した行は画面に出さない。
+    func rewriteForApp(_ line: String) -> String? {
+        if suppressRemaining > 0 {
+            suppressRemaining -= 1
+            return nil
+        }
+        let t = line.trimmingCharacters(in: .whitespaces)
+
+        // (1) 頭のバナー「保存先: $SCRIPT_DIR」
+        //     シェル側の DATA_DIR は CYNOVELA_DATA_ROOT を知らないので、包みの中を
+        //     指してしまう。実際に読み書きされるのは server.py が見る dataRoot である。
+        //     🔴 SCRIPT_DIR は記号リンクを解いた形になりうる。∴ 路の一致では判定せず、
+        //        この行の頭でだけ判定する。
+        if t.hasPrefix("保存先: ") {
+            return " 保存先: \(layout.dataRoot.path)"
+        }
+
+        // (2)「■ 入り方」の中の、初回パスワードの案内 (2行)
+        //     この 2 行は「初回だけ画面に出る・2回目からは出ない」と言うが、.app では
+        //     そのどちらも成り立たない。print_first_login (launch-body.sh:1478-1487) が
+        //     「2回目かどうか」を測るのは $DATA_DIR/db/{demo|cynovela}.db の在る無しで、
+        //       ・$DATA_DIR は paths.data_dir (= ./store) から決まり、包みの中を指す。
+        //         シェル側は CYNOVELA_DATA_ROOT を 1 度も読まない。
+        //       ・.app は --demo を付けないので、測る先は store/db/cynovela.db になる。
+        //         配布物に同梱されるのは store/db/demo.db だけであり、しかも包みは
+        //         読み取り専用なので cynovela.db がそこに現れることは無い。
+        //     🔴 ∴ 早期 return は一度も起きず、First login の枠は毎回出る。一方で本物の
+        //        データベースは dataRoot の側に作られ、初回のログインで変更を求められる。
+        //        ∴ 2 回目からは、枠に出ている値では入れない。
+        //     受け取り手が値を確かめられる場所は同梱の設定 1 つだけなので、そこを指す。
+        if t.hasPrefix("最初のパスワードは、はじめて起動したときにこの画面へ出ます。") {
+            suppressRemaining = 1   // 続く「(2回目からは出ません。… )」の 1 行を捨てる
+            return ["      最初のパスワードは、この .app の中の設定に書かれています。",
+                    "        \(layout.treeDir.appendingPathComponent("cynovela.yaml").path)",
+                    "        の auth.admin_initial_password",
+                    "      (別便で受け取るファイルはありません。下に出る First login の枠は",
+                    "       毎回出ますが、初回にパスワードを変えたあとはその値では入れません。)"]
+                .joined(separator: "\n")
+        }
+
+        // (3)「気をつけること」項目1 (2行) — 逆のことが書いてある
+        if t.hasPrefix("1. 起動すると、この配布物の中身が書き換わります。") {
+            suppressRemaining = 1   // 続く「(記録・鍵・記録のコンテナが … )」の 1 行を捨てる
+            return ["      1. この .app の中身は書き換わりません。",
+                    "         (記録・鍵・ベクトルは次の下に作られます)",
+                    "          \(layout.dataRoot.path)"].joined(separator: "\n")
+        }
+
+        // (4)「気をつけること」項目3 — 止め方
+        if t.hasPrefix("3. 止め方: bash stop.sh") {
+            return "      3. 止め方: Cmd+Q (メニュー \(appName) → 「\(appName) を終了」)"
+        }
+
+        // (5)「気をつけること」項目4 (3行) — 置き場所は選べないので当たらない
+        if t.hasPrefix("4. クラウド同期") {
+            suppressRemaining = 2
+            return ["      4. この .app は /Applications に置かれます。置き場所を選ぶ必要は",
+                    "         ありません。クラウド同期 (iCloud Drive・Dropbox・OneDrive・",
+                    "         Google Drive) の下に入ることはありません。"].joined(separator: "\n")
+        }
+
+        // (6) 起動バナーの中の「停止するには: bash stop.sh」
+        if t.hasPrefix("停止するには: bash stop.sh") {
+            return " 終了するには: Cmd+Q (メニュー \(appName) → 「\(appName) を終了」)"
+        }
+
+        return line
     }
 
     func handleExit(_ code: Int32) {
