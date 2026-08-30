@@ -228,6 +228,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var deferredTermination = false   // .terminateLater を返したときだけ真
     var demoMode = false
     var suppressRemaining = 0         // 差し替えで畳んだ行の、まだ捨てる残り行数
+    /// 保存先をこの起動で作ったか (＝この機械での初回の起動か)。
+    /// print_first_login は包みの中を見て「初回か」を決めるため、.app では毎回
+    /// 初回と判定される (DD-CYN-0188 追補1 の実測: 2 回目の窓にも枠が出る)。
+    /// ∴ 初回かどうかは、保存先を作った入口の側でしか正しく分からない。
+    var isFirstRun = false
 
     // ── 立ち上げ ─────────────────────────────────────────────
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -356,6 +361,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let fm = FileManager.default
         if fm.fileExists(atPath: layout.dataRoot.path) {
             try? fm.createDirectory(at: layout.logDir, withIntermediateDirectories: true)
+            isFirstRun = false          // 保存先が既に在る = 2 回目以降
             return true
         }
 
@@ -379,6 +385,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case .alertFirstButtonReturn:
             do {
                 try DataRoot.seed(from: layout.bundledStore, to: layout.dataRoot)
+                isFirstRun = true
                 append("[入口] 保存先を新しく作りました: \(layout.dataRoot.path)")
             } catch {
                 fail("保存先を作れませんでした:\n\(error.localizedDescription)")
@@ -391,6 +398,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             do {
                 try DataRoot.seed(from: picked, to: layout.dataRoot)
+                isFirstRun = true
                 append("[入口] 保存先を引き継ぎました: \(picked.path)")
                 append("[入口]   → \(layout.dataRoot.path) (写しただけで、元はそのまま残っています)")
             } catch {
@@ -537,6 +545,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return nil
         }
         let t = line.trimmingCharacters(in: .whitespaces)
+
+        // (0) 2 回目以降は First login の枠をまるごと畳む
+        //     print_first_login (launch-body.sh:1478-1500) は
+        //     $DATA_DIR/db/cynovela.db の在る無しで「初回か」を決める。.app では
+        //     その道が読み取り専用の包みの中を指すため、判定は永久に「初回」に
+        //     なる。実測 (DD-CYN-0188 追補1): 2 回目の窓にも枠と値が出た。
+        //     一方、本物のデータベースは保存先の側に作られ、初回のログインで
+        //     パスワードの変更を求められる。∴ 2 回目以降に出ている値では入れない。
+        //     枠は 区切り線 + 7 行 + 区切り線 の 9 行。この区切り線 (48 本の ─) は
+        //     この枠にしか使われていない (launch-body.sh:1492 と :1500 の 2 か所だけ)。
+        if !isFirstRun && t == String(repeating: "\u{2500}", count: 48) {
+            suppressRemaining = 8       // 続く 7 行と閉じの区切り線を捨てる
+            return nil
+        }
 
         // (1) 頭のバナー「保存先: $SCRIPT_DIR」
         //     シェル側の DATA_DIR は CYNOVELA_DATA_ROOT を知らないので、包みの中を
