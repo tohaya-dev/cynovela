@@ -58,9 +58,9 @@ fetch them); neither of those two packages contains them.
 ```
 
 Nothing is installed on this Mac; the bundled environment inside the folder is
-used as is. On the very first start, `launch.sh` runs the bundled `conda-unpack`
-once by itself to settle that environment into where you unpacked it — you do not
-run it yourself, and it does not run again.
+used as is. The very first time you run `./launch.sh` (whatever the flags), it
+runs the bundled `conda-unpack` once by itself to settle that environment into
+where you unpacked it — you do not run it yourself, and it does not run again.
 
 Three notes about **where you put the folder**:
 
@@ -162,8 +162,8 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 `launcher-core.sh` and `tools/launch-body.sh` are internal parts. You never need to touch them.
 
-**The `./launch.sh` flags** (the full text is `./launch.sh --help`, kept verbatim
-in `docs/USE-FROM-TERMINAL.txt`):
+**The `./launch.sh` flags** (the same list is printed by `./launch.sh --help` and
+kept in `docs/USE-FROM-TERMINAL.txt`):
 
 | Flag | What it does |
 |---|---|
@@ -260,7 +260,7 @@ that one. The same documents are repeated below.
 | `docs/reference/mcp.md` | Every MCP tool: what you hand each one, what comes back |
 | `docs/reference/api.md` | Every HTTP endpoint, read out of the code |
 | `docs/reference/changelog.md` | What changed in each version |
-| `docs/USE-FROM-TERMINAL.txt` | Running it from the terminal instead of the icons (same as `./launch.sh --help`) |
+| `docs/USE-FROM-TERMINAL.txt` | Running it from the terminal instead of the icons (every `./launch.sh` flag) |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | Read this before you pass the package on to anyone |
 | `docs/NOTICE.md` | Before you start: no warranty, masking limits, checking answers |
 | `docs/BUNDLED-DATA.md` | What the bundled sample material contains, counted when the package was built |
@@ -322,8 +322,9 @@ that one. The same documents are repeated below.
 ```
 
 この Mac には何も入れません。フォルダの中に同梱された環境をそのまま使います。
-いちばん最初の起動では、`launch.sh` が同梱の `conda-unpack` を1回だけ自分で走らせ、
-展開した場所に環境をなじませます。自分で叩く必要はなく、2回目からは走りません。
+いちばん最初に `./launch.sh` を叩いたとき（どの指定でも）、同梱の `conda-unpack` が
+1回だけ自動で走り、展開した場所に環境をなじませます。自分で叩く必要はなく、
+2回目からは走りません。
 
 **フォルダをどこに置くか**について、3つ:
 
@@ -422,8 +423,8 @@ that one. The same documents are repeated below.
 
 `launcher-core.sh` と `tools/launch-body.sh` は内側の部品です。触る必要はありません。
 
-**`./launch.sh` の指定の一覧**（全文は `./launch.sh --help`。同じものが
-`docs/USE-FROM-TERMINAL.txt` に置いてあります）:
+**`./launch.sh` の指定の一覧**（同じ一覧は `./launch.sh --help` でも見られ、
+`docs/USE-FROM-TERMINAL.txt` にも置いてあります）:
 
 | 指定 | すること |
 |---|---|
@@ -519,7 +520,7 @@ that one. The same documents are repeated below.
 | `docs/reference/mcp.md` | MCP の道具の全数。何を渡すと何が返るか |
 | `docs/reference/api.md` | HTTP の口の全数。コードから起こしたもの |
 | `docs/reference/changelog.md` | 版ごとの変更点 |
-| `docs/USE-FROM-TERMINAL.txt` | アイコンではなくターミナルから使う方法（`./launch.sh --help` と同一） |
+| `docs/USE-FROM-TERMINAL.txt` | アイコンではなくターミナルから使う方法（`./launch.sh` の指定の全数） |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | 誰かに配る前にお読みください |
 | `docs/NOTICE.md` | 使う前のご注意。無保証・マスキングの限界・答えの確かめ方 |
 | `docs/BUNDLED-DATA.md` | 同梱のサンプル資料に何が入っているか。配布物を組んだときに数えた値 |

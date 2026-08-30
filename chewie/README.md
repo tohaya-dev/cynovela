@@ -222,7 +222,7 @@ bash uninstall.sh
 
 ## ターミナルから使う
 
-コマンド一覧は同梱の [docs/USE-FROM-TERMINAL.txt](docs/USE-FROM-TERMINAL.txt) にあります（`./launch.sh --help` と同一の内容です）。
+コマンド一覧は同梱の [docs/USE-FROM-TERMINAL.txt](docs/USE-FROM-TERMINAL.txt) にあります（`./launch.sh` の指定の全数。`./launch.sh --help` でも同じ一覧が見られます）。
 `cynovela-cli.py` の命令と引数の全数は [docs/reference/cli.md](docs/reference/cli.md) にあります。
 
 ---

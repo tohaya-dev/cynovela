@@ -4,7 +4,7 @@ Cynovela entry point — this is the only one the recipient runs.
 
 ● With nothing attached
   ./launch.sh                     It starts by just answering the questions with a number.
-                                  (what to read / which configuration to run in)
+                                  (the folder to search)
 
 ● Deciding beforehand instead of answering with a number
   ./launch.sh --demo              Starts with the bundled dummy documents loaded.
@@ -12,7 +12,7 @@ Cynovela entry point — this is the only one the recipient runs.
   ./launch.sh --list              Lists the folders that are currently added.
   ./launch.sh --remove <name>     Removes an added folder (the name is the one shown by --list).
                                   * You can also add / see / remove them from the screen at
-                                    設定 (Settings) → 取り込み元 (ingest sources).
+                                    設定 (Settings) → 検索の対象フォルダ (folders to search).
 
 ● Install / inspect
   ./launch.sh --setup             Installs what is required to run (it stops after installing).
@@ -30,8 +30,11 @@ Cynovela entry point — this is the only one the recipient runs.
 ● Where to open and how to log in
   Where to open : http://localhost:8765   (the number you gave when you used --port)
   How to log in : administrator cynovela / viewer demo
-                  The initial passwords are in the "ログイン" (Login) section of the
-                  screen at the first start.
+                  The initial passwords are written inside this package, in
+                  cynovela.yaml next to launch.sh: read auth.admin_initial_password
+                  (the viewer's is auth.viewer_initial_password). The ordinary
+                  ./launch.sh first start also prints them once — the --demo start
+                  does not.
                   The administrator is asked to change the password on the first login.
                   Administrative operations do not go through until the change is finished.
 
@@ -47,14 +50,14 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 
 ● 何も付けないとき
   ./launch.sh                     聞かれたことに番号で答えるだけで起動します。
-                                  (検索の対象 / どの構成で動かすか)
+                                  (検索の対象にするフォルダ)
 
 ● 番号で答えずに、はじめから決めて起動する
   ./launch.sh --demo              同梱のダミー資料が載った状態で起動します。
   ./launch.sh --add               読み込むフォルダを選ぶ画面を出して足します。
   ./launch.sh --list              いま足してあるフォルダを一覧で出します。
   ./launch.sh --remove<名前>     足したフォルダを外します (名前は --list に出るもの)。
-                                  ※ 画面でも 設定 → 取り込み元 から足す・見る・外せます。
+                                  ※ 画面でも 設定 → 検索の対象フォルダ から足す・見る・外せます。
 
 ● 入れる / 点検する
   ./launch.sh --setup             動かすのに要るものを入れます (入れたら止まります)。
@@ -71,7 +74,10 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://localhost:8765   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初のパスワードは初回の起動時に画面へ出ます。
+             最初のパスワードは、この配布物の中の cynovela.yaml (launch.sh と
+             同じ場所) の auth.admin_initial_password に書いてあります
+             (閲覧者のぶんは auth.viewer_initial_password)。普通の ./launch.sh の
+             初回起動なら画面にも1回出ます。--demo の起動では出ません。
              管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 
