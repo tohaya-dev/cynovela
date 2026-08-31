@@ -90,10 +90,10 @@ Then:
    documents. `cynovela.yaml` sits in the folder you unpacked, next to
    `launch.sh`.
 
-   The start-up screen also prints it once on the ordinary `./launch.sh` start,
-   but **not** on the demo start (`./launch.sh --demo`): the sample database is
-   already inside the package, so that route is treated as "not the first
-   start". Reading `cynovela.yaml` works whichever route you took. You will be
+   The start-up screen also prints it once, at the first start. Neither
+   database is inside the package, so both routes — the demo start
+   (`./launch.sh --demo`) and the ordinary start — count as a first start.
+   Reading `cynovela.yaml` works whichever route you took. You will be
    asked to change the password straight after the first sign-in.
 2. **Add search targets.** Answer the question shown at startup; or use "Add a search folder" under "Settings" in the app screen; or run `./launch.sh --add` (list with `./launch.sh --list`; icon: `Cynovela-add-folder.command`).
 3. **Ask a question.** Open `http://localhost:8765` and type in plain language. Every answer carries the passage it came from — open it and check.
@@ -168,7 +168,7 @@ kept in `docs/USE-FROM-TERMINAL.txt`):
 | Flag | What it does |
 |---|---|
 | (none) | Starts by asking questions you answer with a number |
-| `--demo` | Starts with the bundled dummy documents loaded |
+| `--demo` | Starts the demo with the bundled dummy documents (they are ingested automatically at the first start) |
 | `--add` / `--list` / `--remove <name>` | Add / list / remove folders to be read |
 | `--setup` | Installs what is required to run, then stops |
 | `--check` | Does not start; only checks the conditions for running |
@@ -263,7 +263,7 @@ that one. The same documents are repeated below.
 | `docs/USE-FROM-TERMINAL.txt` | Running it from the terminal instead of the icons (every `./launch.sh` flag) |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | Read this before you pass the package on to anyone |
 | `docs/NOTICE.md` | Before you start: no warranty, masking limits, checking answers |
-| `docs/BUNDLED-DATA.md` | What the bundled sample material contains, counted when the package was built |
+| `docs/BUNDLED-DATA.md` | What sample material is bundled, and what is created on this machine at the first startup |
 
 ---
 
@@ -350,9 +350,9 @@ that one. The same documents are repeated below.
    この一連の文書にもパスワードは書いてありません。`cynovela.yaml` は展開した
    フォルダの中、`launch.sh` と同じ場所に在ります。
 
-   起動の画面にも、普通の `./launch.sh` の起動のときには1回だけ出ます。ただし
-   デモ起動（`./launch.sh --demo`）では出ません。同梱のデモ用データベースが
-   最初から入っているため、その経路は「初回ではない」と判定されるからです。
+   起動の画面にも、初回起動のときに1回だけ出ます。配布物にはどちらの
+   データベースも入っていないため、デモ起動（`./launch.sh --demo`）でも
+   普通の起動でも初回に出ます。
    `cynovela.yaml` を見る道は、どちらの経路でも同じように使えます。入るとすぐ
    パスワードの変更を求められます。
 2. **検索の対象を足す。** 起動したときに聞かれる画面で足す / アプリ画面の「設定」の「検索の対象フォルダを足す」から足す / ターミナルで `./launch.sh --add`（一覧は `./launch.sh --list`。アイコンなら `Cynovela-add-folder.command`）。
@@ -429,7 +429,7 @@ that one. The same documents are repeated below.
 | 指定 | すること |
 |---|---|
 | （何も付けない） | 聞かれたことに番号で答えるだけで起動します |
-| `--demo` | 同梱のダミー資料が載った状態で起動します |
+| `--demo` | 同梱のダミー資料を使うデモで起動します（初回起動時に自動で取り込まれます） |
 | `--add` / `--list` / `--remove <名前>` | 読み込むフォルダを足す / 一覧で出す / 外す |
 | `--setup` | 動かすのに要るものを入れます（入れたら止まります） |
 | `--check` | 起動せず、動く条件だけを調べます |
@@ -523,4 +523,4 @@ that one. The same documents are repeated below.
 | `docs/USE-FROM-TERMINAL.txt` | アイコンではなくターミナルから使う方法（`./launch.sh` の指定の全数） |
 | `docs/READ-BEFORE-DISTRIBUTING.md` | 誰かに配る前にお読みください |
 | `docs/NOTICE.md` | 使う前のご注意。無保証・マスキングの限界・答えの確かめ方 |
-| `docs/BUNDLED-DATA.md` | 同梱のサンプル資料に何が入っているか。配布物を組んだときに数えた値 |
+| `docs/BUNDLED-DATA.md` | 同梱のサンプル資料に何が入っているか。初回起動時にこの機材の上で作られるものの内訳 |

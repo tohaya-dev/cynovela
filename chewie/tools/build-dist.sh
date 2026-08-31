@@ -13,17 +13,17 @@
 #   tar は決定論的に作る (所有者・時刻・並び順を固定し gzip はタイムスタンプ無し)
 #   ため、同じ入力からは同じハッシュが出る。
 #
-# bundled-data-20260731 (B0):
-#   同梱するインデックス (store/vector) とデータベース (store/db/demo.db) は、**パッケージングの場で**
-#   配布物内の dummy-corpus/ から作る。従来は作業ツリーのものを名指しで複製していたが、
-#   作業ツリーは開発の過程で溜まったもの (旧世代の資料・撤去したはずの作業場所・
-#   開発機の利用者名) を含み、配布物の中身の入手元を言えなかった。
-#   実測ではパッケージング直前の検査が実際に終了コード 1 で止まっていた。
-#   作業ツリーから複製するのは store/models だけになった (提供元の公開配布物のコピーで、
-#   検査でも利用者名・資格情報とも 0 件)。
+# first-run-ingest-20260901:
+#   インデックス (store/vector)・データベース (store/db/demo.db)・金庫鍵 (store/secret.key) は
+#   配布物に入れない。同梱の鍵は、落とした全員が同じ鍵を持つことを意味する
+#   (CWE-1394 の既定鍵)。鍵は受け取り手の機材の初回起動時に config.py が生成し、
+#   デモのデータベースとインデックスは server.py が --demo の初回起動時に
+#   同梱の dummy-corpus/ をその場で取り込んで作る。
+#   作業ツリーから複製するのは all-in-one の store/models だけ (提供元の公開配布物の
+#   コピーで、検査でも利用者名・資格情報とも 0 件)。
 #
 # 使い方:
-#   tools/build-dist.sh <出力先ディレクトリ|出力先.tar.gz> <all-in-one|lightweight> [git-ref] [未使用] [金庫鍵]
+#   tools/build-dist.sh <出力先ディレクトリ|出力先.tar.gz> <all-in-one|lightweight|package> [git-ref] [未使用] [未使用]
 #
 # dist-date-20260729: 出力名の日付は手入力させず実行日から導出する
 #   (過去に未来日付の手入力が配布物名に混入した)。第1引数がディレクトリなら
@@ -31,18 +31,13 @@
 #   .tar.gz のフルネームを渡した場合、名前に含まれる 8 桁の数字列が実行日と
 #   一致しないときは止まる。
 #
-# 前提: リポジトリのルートで実行する。demo.db は tools/build_clean_demo_db.py で
-#       クリーン化したものを同梱する (会話履歴0行・監査残渣なし)。
+# 前提: リポジトリのルートで実行する。
 #
-# 第4引数は使わない (bundled-data-20260731 で「作り置きの demo.db を渡す」経路を廃止した。
-# 同梱データはインデックスと対で作らなければ噛み合わないため)。第5引数の位置を保つために残してある。
-# クリーン化はパスワードの塩を作り直すため、走らせるたびに DB のバイト列が変わる
-# (塩を固定するのは論外)。よって**同じ配布物を2回作ってもハッシュは一致しない。**
-# 同等性の判定は、塊の数・取り込み元・復号後の本文・埋め込みの一致で行うこと
-# (詳しくは tools/build_bundled_data.py の頭書きを参照)。
-#
-# 第5引数に金庫鍵 (store/secret.key) のパスを渡すと、それを同梱する。省略時の探索順は
-# 下の resolve_vault_key() を参照。**新しい環境変数は 1 つも増やさない**。
+# 第4引数は使わない (2026-07-31 に「作り置きの demo.db を渡す」経路を廃止した)。
+# 第5引数も使わない (first-run-ingest-20260901 で金庫鍵の同梱を廃止した)。
+# どちらも後ろの引数の位置を保つために残してある。
+# デモのデータベースの同梱をやめたため、パスワードの塩による「同じ入力から作っても
+# ハッシュが変わる」要因は無くなった。**新しい環境変数は 1 つも増やさない**。
 
 set -euo pipefail
 
@@ -420,84 +415,46 @@ add_if_untracked() {   # add_if_untracked <ツリー内の相対パス> <説明>
   add_named "$rel" "$desc"
 }
 
-resolve_vault_key() {   # 金庫鍵 (store/secret.key) の実体を探す。見つけたパスを標準出力へ。
-  # 探索順 (環境変数は使わない):
-  #   1. 第5引数で明示されたパス
-  #   2. リポジトリの隣の <名前>-keys/secret.key
-  #      (falcon はコンテナへ読み取り専用 bind するため鍵をツリー外に置いてある)
-  #   3. ツリー内 store/secret.key (chewie はこちらが実体)
-  local c
-  for c in "$VAULT_KEY_ARG" "$ROOT/../$NAME-keys/secret.key" "$ROOT/store/secret.key"; do
-    [ -n "$c" ] && [ -f "$c" ] && { echo "$c"; return 0; }
-  done
-  return 1
-}
+# first-run-ingest-20260901: 金庫鍵を探して同梱する resolve_vault_key() はここに
+# 在ったが、鍵の同梱の廃止と一緒に外した (使う場所が無くなった)。
 
 # 外の推論サーバ (Mac Accelerator Service) と、その立て方の 1 ページ。
 # 追跡下ならこの呼び出しは何もしない (git archive 側で入っている)。
 add_if_untracked "mas" "外の推論サーバ (Mac Accelerator Service)"
 add_if_untracked "docs/operations.md" "外の推論サーバの立て方 (受け取り手向け)"
 
-# ── 金庫の鍵を同梱する (dist-vault-key-20260729) ──────────────────────
-# 同梱する demo.db のチャンクは金庫鍵で暗号化されている。鍵が無いと受け取り手の
-# 起動時に config.py が**別の鍵を新規生成**してしまい、資料は並ぶのに中身が
-# 復号できない (画面に暗号文が素通しで出る) という状態になる。
-# 起動時の「既に在れば生成しない」判定は config.py の _load_or_create_secret_key()
-# に既にあるため、鍵を置いておくだけで足りる。コード側の変更は不要。
-#
-# bundled-data-20260731 (B0): 鍵は**同梱データを作る前**に置く。
-#   同梱データはこの鍵で暗号化されるので、鍵と中身が噛み合わないという事態が
-#   構造的に起こらなくなる (従来は作業ツリーで作られた中身と、別に選ばれた鍵を
-#   後から突き合わせていた)。
-VAULT_KEY_SRC="$(resolve_vault_key || true)"
-if [ -z "$VAULT_KEY_SRC" ]; then
-  echo "[dist] 金庫鍵が見つかりません。第5引数で明示するか store/secret.key を置いてください" >&2
-  exit 1
-fi
+# ── 金庫鍵は同梱しない (first-run-ingest-20260901) ──────────────────────
+# 以前はここで store/secret.key を配布物へ入れていた (同梱する demo.db が
+# その鍵で暗号化されていたため)。デモのデータベースの同梱をやめたので、鍵を
+# 配る理由も消えた。同梱の鍵は、落とした全員が同じ金庫鍵を持つことを意味する
+# (CWE-1394 の既定鍵)。鍵は受け取り手の機材の初回起動時に config.py の
+# _load_or_create_secret_key() が生成する (「既に在れば生成しない」判定が既にある)。
 mkdir -p "$STAGE/$NAME/store"
-cp "$VAULT_KEY_SRC" "$STAGE/$NAME/store/secret.key"
-chmod 600 "$STAGE/$NAME/store/secret.key"
-echo "[dist] 同梱: store/secret.key (金庫鍵) <- $VAULT_KEY_SRC"
-echo "[dist]        ハッシュ sha256=$(shasum -a 256 "$STAGE/$NAME/store/secret.key" | cut -c1-16)…"
+echo "[dist] 金庫鍵は同梱しない (初回起動時に各機材で生成される)"
 
 # ── 埋め込み・リランクのモデル ────────────────────────────────────
 # ga-close-v3 PartA (2026-07-27): store/uploads の同梱を廃止。
 #   アップロード受け口の撤去でアプリ内部に資料のコピーを作らなくなったため、
 #   配布物にも「アプリの中の原本」を同梱しない。資料は取り込みフォルダから読む。
 #
-# bundled-data-20260731: モデルだけは引き続き作業ツリーから複製する。これは
+# bundled-data-20260731: 全部入りのモデルは引き続き作業ツリーから複製する。これは
 #   提供元が公開している配布物のコピー (Hugging Face のキャッシュ形式) であって
 #   開発機で作られたものではなく、パッケージング直前の検査でも利用者名・資格情報とも 0 件で
-#   あることを確認している。軽量版は同梱しないが、インデックスを作るには要るので、
-#   パッケージングのあいだだけ読み取り専用で繋ぎ、作り終えたら外す。
-MODELS_LINKED=0
+#   あることを確認している。
+# first-run-ingest-20260901: パッケージングの場ではインデックスを作らなくなったため、
+#   軽量版・Portable でモデルを一時的に繋ぐ処理は外した (これらの形態のモデルは
+#   別ファイルとして配り、受け取り手が組み立てる)。
 if [ "$FLAVOR" = "all-in-one" ]; then
   add_named "store/models" "埋め込み・リランクのモデル (全部入りのみ)"
-else
-  if [ ! -d "$ROOT/store/models" ]; then
-    echo "[dist] 欠落: store/models (インデックスを作るのに要る)" >&2
-    exit 1
-  fi
-  ln -sfn "$ROOT/store/models" "$STAGE/$NAME/store/models"
-  MODELS_LINKED=1
-  echo "[dist] インデックスを作るあいだだけ store/models を読み取り専用で繋ぐ (軽量版・Portable には同梱しない)"
 fi
 
-# ── 同梱データをパッケージングの場で作る (bundled-data-20260731 / B0) ──
-# 従来はここで作業ツリーの store/db/demo.db と store/vector をそのまま複製していた。
-# 作業ツリーは開発の過程で溜まったもの (旧世代の資料・撤去したはずの作業場所・
-# 開発機の利用者名) を含むため、配布物の中身の入手元を言えなかった。実測では
-# パッケージング直前の検査が実際に停止していた (終了コード 1)。
-# これ以後、同梱されるインデックスとデータベースの入手元は、この配布物の中の
-# dummy-corpus/ だけである。作業ツリーの store/db・store/vector は読まない。
-echo "[dist] 同梱データをパッケージングの場で作る (入力は配布物内の dummy-corpus/ のみ)"
-BUNDLED_COUNTS="$(python tools/build_bundled_data.py "$STAGE/$NAME" | tee /dev/stderr \
-                  | sed -n 's/^\[bundled\] 作った中身: //p')"
-if [ -z "$BUNDLED_COUNTS" ]; then
-  echo "[dist] 同梱データの作成に失敗しました" >&2
-  exit 1
-fi
-echo "[dist] 同梱データの数え上げ: $BUNDLED_COUNTS"
+# ── デモのデータベースとインデックスは同梱しない (first-run-ingest-20260901) ──
+# 以前はここで tools/build_bundled_data.py を呼び、ステージの中で
+# store/db/demo.db と store/vector/demo を作って同梱していた。作り終えた
+# データベースを配ると金庫鍵も一緒に配ることになるため、この工程を外した。
+# 受け取り手の機材では、--demo の初回起動時に server.py が同梱の dummy-corpus/ を
+# その場で取り込み、同じ内容のデータベースとインデックスをその機材の鍵で作る。
+echo "[dist] デモのデータベースとインデックスは同梱しない (--demo の初回起動時に各機材で作られる)"
 
 # ── 既定の取り込み元を配布物の中へ向ける (portable-roots-20260808 / F-2) ──
 # 決定 9-3: 同梱デモの取り込み元は、配布物の中に置いたダミー資料の場所を指す。
@@ -576,13 +533,10 @@ if [ -z "$ADMIN_PW" ] || [ -z "$VIEWER_PW" ]; then
 fi
 echo "[dist] 初期のパスワード: 固定値を使う (値は画面に出さない。長さ 管理者=${#ADMIN_PW} 閲覧者=${#VIEWER_PW})"
 
-echo "[dist] demo.db をクリーン化 (会話履歴の全消去・利用者の初期化・参照先の相対化)"
-python tools/build_clean_demo_db.py \
-  "$STAGE/$NAME/store/db/demo.db" "$STAGE/$NAME/store/db/demo.db.clean" \
-  --admin-password "$ADMIN_PW" --viewer-password "$VIEWER_PW"
-mv "$STAGE/$NAME/store/db/demo.db.clean" "$STAGE/$NAME/store/db/demo.db"
-
-# 本番 (引数なし・空のデータベース) 側も同じパスワードで入れるようにする。
+# first-run-ingest-20260901: demo.db を同梱しなくなったため、ここに在った
+#   tools/build_clean_demo_db.py によるクリーン化の工程は外した。上で読んだ
+#   固定の初期パスワードは、引き続き下で同梱の設定 (cynovela.yaml) に書く。
+#   デモも本番も、データベースと利用者は初回起動時に db.py がこの設定の値から作る。
 #   ここを空のままにすると、db.py が起動のたびに乱数を作って画面へ出す形になり、
 #   ガイドに書いた値では入れない。設定の1行だけを staging に書き込む。
 python - "$STAGE/$NAME/cynovela.yaml" "$ADMIN_PW" <<'PYYAML'
@@ -624,31 +578,9 @@ PYYAML
 #   ことにしたため、その処理を外した。値は上の cynovela.yaml へ書くだけで足り、
 #   受け取り手には launch.sh が初回起動時に画面へ出す。
 
-if [ "$MODELS_LINKED" = "1" ]; then
-  rm -f "$STAGE/$NAME/store/models"
-  echo "[dist] インデックスを作り終えたので store/models の繋ぎを外した (軽量版)"
-fi
-
-# 鍵と中身が本当に噛み合うかをその場で確かめる。falcon のツリーには python を
-# 1 回動かしただけで出来た**別物の** store/secret.key が居たことがあるため、
-# 「鍵らしきものを入れた」で終わらせない。
-echo "[dist] 金庫鍵と demo.db の噛み合わせを確認"
-python - "$STAGE/$NAME/store/secret.key" "$STAGE/$NAME/store/db/demo.db" <<'PY'
-import sqlite3, sys
-from pathlib import Path
-from cryptography.fernet import Fernet
-key = Path(sys.argv[1]).read_text().strip().encode()
-con = sqlite3.connect(f"file:{sys.argv[2]}?mode=ro", uri=True)
-rows = con.execute("select content from chunks where content like 'enc:%' limit 5").fetchall()
-con.close()
-if not rows:
-    print("[dist] 注意: 暗号化されたチャンクが 1 件も無いため噛み合わせは確認できません")
-    sys.exit(0)
-f = Fernet(key)
-for (v,) in rows:
-    f.decrypt(v[4:].encode())      # 失敗すれば例外で止まる (set -e)
-print(f"[dist] 噛み合わせ OK ({len(rows)} 件を試験復号)")
-PY
+# first-run-ingest-20260901: ここに在った「金庫鍵と demo.db の試験復号」は、
+#   どちらも同梱しなくなったため外した。鍵と中身の噛み合わせは、初回起動時に
+#   同じ機材で両方が作られることで構造的に保たれる。
 
 # ── 入ってはいけないものを最後に落とす (二重の守り) ─────────────────
 # git archive で来る側には未追跡物は入らないので、この網が実際に効くのは
@@ -657,11 +589,11 @@ PY
 #   非WALのときは <db>-journal が出る (hansolo の .containerignore は同じ理由で
 #   *-journal を除いている)。インデックス (chroma.sqlite3) に付いてくるため同じ扱いにする。
 #   .ruff_cache は .pytest_cache と同族、*.bak は死蔵のコピーで、どちらも配る意味がない。
-# dist-vault-key-20260729: `-name 'secret.key'` の一律削除はやめた。金庫鍵
-#   (store/secret.key) は同梱するものになったため、名前で薙ぎ払うと上で入れた鍵まで
-#   消える。落とすのは**通行証 (JWT) の署名鍵だけ**で、これは受け取り手ごとに
-#   config.py の _load_or_create_jwt_signing_key() が自動生成するので配る必要がない
-#   (共有すると他所で発行された通行証が通ってしまう)。パスを名指しで消す。
+# first-run-ingest-20260901: 金庫鍵の同梱をやめたため、`secret.key` という名前の
+#   一律削除を戻した (2026-07-29 に同梱のためやめていたもの)。金庫鍵も通行証 (JWT) の
+#   署名鍵も、受け取り手の機材の初回起動時に config.py が生成するので配る必要がない。
+#   同じ理由で demo.db と store/vector も名指しで薙ぎ払う (二重の守り。作らない工程に
+#   したのが一重目、ここが二重目、下の release-gate (7) が三重目)。
 # ── ダブルクリックの入口は .command のファイルである ──
 #   F-8: 以前ここに在った「ダイアログの .app」の説明を落とした。同梱をやめた
 #   のは以前の走行であり、その原稿 (tools/launcher-app/launcher.applescript) は
@@ -681,16 +613,17 @@ done
 
 echo "[dist] 秘密・実行時の残りかすを除去"
 rm -f "$STAGE/$NAME/store/db/jwt/secret.key"
+rm -rf "$STAGE/$NAME/store/vector"
 find "$STAGE/$NAME" \( \
-      -path '*/db/jwt/secret.key' -o -name '*.log' -o -name '*.pid' \
+      -name 'secret.key' -o -name 'demo.db' -o -name '*.log' -o -name '*.pid' \
    -o -name '*.db-wal' -o -name '*.db-shm' -o -name '*-journal' \
    -o -name '.DS_Store' -o -name '._*' -o -name '__pycache__' \
    -o -name '.pytest_cache' -o -name '.ruff_cache' \
    -o -name '.hypothesis' -o -name '.deepeval' -o -name '*.bak' \
   \) -print -exec rm -rf {} + 2>/dev/null || true
 rm -rf "$STAGE/$NAME/store/logs" "$STAGE/$NAME/.git"
-# bundled-data-20260731: 同梱データを作るときに出来る空の受け皿は配らない。
-rmdir "$STAGE/$NAME/store/backups" 2>/dev/null || true
+# first-run-ingest-20260901: 同梱データを作らなくなったため、その工程が残していた
+#   空の受け皿 (store/backups) の後始末は不要になり、外した。
 
 # oldname-struct-20260729: 作る側の机の上の記録は配らない。
 #   baseline-report.md は 2026-05-15 の調査ログ (作る側の home パスと conda 環境名が
@@ -719,7 +652,7 @@ rm -f "$STAGE/$NAME/MANIFEST-anchor-candidate-20260713.md" \
 # bundled-data-20260731 (B11): 過去の実行の一覧文書は、当時の作業ツリーの
 #   数え上げ (資料30本 / 47,106 塊) をそのまま書いており、いま同梱するもの (dummy-corpus
 #   の資料と、そこから作った塊) とは別物である。過去の事実の記録なのでツリー側は
-#   書き換えず、ステージから落として、代わりに**この配布物の実際の数え上げ**を書き出す。
+#   書き換えず、ステージから落とす。
 rm -f "$STAGE/$NAME/MANIFEST-20260724-overnight.md" \
       "$STAGE/$NAME/MANIFEST-20260725-ga-mas.md"
 # app-materials-out (2026-08-31): .app の組み立て材料は受け取り手に使い道が
@@ -729,72 +662,10 @@ rm -f "$STAGE/$NAME/MANIFEST-20260724-overnight.md" \
 echo "[dist] .app の組み立て材料をステージから除去"
 rm -rf "$STAGE/$NAME/macos-app"
 rm -f "$STAGE/$NAME/tools/build-macos-app.sh" "$STAGE/$NAME/tools/split-pkg.sh"
-python - "$STAGE/$NAME/docs/BUNDLED-DATA.md" "$BUNDLED_COUNTS" "$NAME" "$FLAVOR" <<'PYMAN'
-import json, sys
-out, counts_json, name, flavor = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-c = json.loads(counts_json)
-def g(k):
-    return c.get(k, "(測っていません)")
-with open(out, "w", encoding="utf-8") as fh:
-    fh.write(f"""# 同梱データの内訳（{name} / {flavor}）
-
-**日本語版はこちら → [日本語](#日本語)**
-
-## English
-
-This file is written automatically when the package is built. The numbers are
-counted at packaging time from what is actually inside this package. They are
-not written by hand.
-
-The bundled data comes from **only `dummy-corpus/` inside this package**. None
-of the builder's working material or indexes is included.
-
-| Item | Count |
-|---|---|
-| Documents (files) | {g('files')} |
-| Chunks | {g('chunks')} |
-| Parent chunks | {g('parent_chunks')} |
-| Workspaces | {g('workspaces')} |
-| Ingest sources | {g('sources')} |
-| Collections | {g('collections')} |
-| Places masked at ingest | {g('pii_count')} |
-
-Chunks are stored in two layers, before masking and after masking, and both are
-encrypted with the vault key. The index used for search (the vectors) is built
-from **the masked layer only**.
-
-All bundled material is an explanatory sample about a fictional organization. Every
-person, organisation, address, phone number and email address in it is
-invented.
-
----
-
-# 日本語
-
-この文書は配布物を作るときに自動で書き出しています。数字は、この配布物に実際に入っている
-ものをパッケージングの場で数えた値です。手で書いた値ではありません。
-
-同梱データの入手元は、**この配布物の中の `dummy-corpus/` だけ**です。作る側の作業用の
-資料やインデックスは一切入っていません。
-
-| 項目 | 件数 |
-|---|---|
-| 資料（ファイル） | {g('files')} |
-| 塊（チャンク） | {g('chunks')} |
-| 親の塊 | {g('parent_chunks')} |
-| 作業場所（ワークスペース） | {g('workspaces')} |
-| 取り込み元 | {g('sources')} |
-| コレクション | {g('collections')} |
-| 取り込み時に伏せた箇所 | {g('pii_count')} |
-
-塊はマスキング前とマスキング済みの二層で保管し、どちらも金庫の鍵で暗号化しています。検索に使うインデックス
-（ベクター）は**マスキング済みの層だけ**から作っています。
-
-同梱の資料はすべて架空の企業「アオゾラ商事」を題材にした説明用のサンプルです。登場する
-人物・組織・住所・電話番号・メールアドレスなどはすべて実在しません。
-""")
-print(f"[dist] 同梱データの内訳を書き出した: docs/BUNDLED-DATA.md")
-PYMAN
+# first-run-ingest-20260901: ここに在った docs/BUNDLED-DATA.md の書き出し
+#   (パッケージングの場で数えた同梱データの内訳) は、同梱データを作らなくなった
+#   ため外した。docs/BUNDLED-DATA.md は追跡ファイルとして「初回起動時に各機材で
+#   作られる」ことを書いた内容になっており、git archive がそのまま同梱する。
 # oss-init-20260729: 旧同梱デモの原稿と取り込み試験の資材を配布物から外す。
 #   falcon ingest/ (実在ベンダー文書の PDF を含む取り込み試験の資材)、
 #   chewie sample_data/ と data/ (旧デモの原稿一式)。同梱資料は dummy-corpus/
@@ -1105,6 +976,24 @@ sys.exit(1 if bad else 0)
 PYSTYLE
 then
   gate_fail=1
+fi
+
+# (7) 鍵とデモのデータベース・インデックス (first-run-ingest-20260901 新設)。
+#     store/secret.key (金庫鍵)・store/db/jwt/secret.key (署名鍵)・store/db/demo.db・
+#     store/vector/ は、受け取り手の機材の初回起動時に作られるものであり、
+#     配布物に 1 件でも入っていたら失敗する。名前は同梱の実行環境の上流にも
+#     現れうる (sympy や chromadb が vector という名前のディレクトリを持つ) ため、
+#     見るのは配布物の store/ の下だけとする。
+gate_local_state="$(cd "$GATE_DIR" && find . \
+    \( -name 'secret.key' -o -name 'demo.db' \) -path '*/store/*' \
+    -o -type d -path '*/store/vector' 2>/dev/null | sed 's|^\./||')"
+if [ -n "$gate_local_state" ]; then
+  _n="$(printf '%s\n' "$gate_local_state" | wc -l | tr -d ' ')"
+  echo "[gate] 初回起動時に作られるべきものが配布物に入っている: $_n 件" >&2
+  printf '%s\n' "$gate_local_state" | head -20 | sed 's|^|[gate]     |' >&2
+  gate_fail=1
+else
+  echo "[gate] 鍵・デモのデータベース・インデックス (store/ の下): 0件"
 fi
 
 rm -rf "$GATE_DIR"

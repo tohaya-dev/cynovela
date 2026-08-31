@@ -363,7 +363,7 @@ a:hover { text-decoration: underline; }
       <ul>
       <li><a href="#slide-106">9-1. Roles</a></li>
       <li><a href="#slide-107">9-2. The Initial Administrator</a></li>
-      <li><a href="#slide-107">9-3. Login Information of the Shipped demo.db</a></li>
+      <li><a href="#slide-107">9-3. Login Information of the Demo Database</a></li>
       <li><a href="#slide-108">9-4. Adding and Deleting Users, and Changing Passwords</a></li>
       <li><a href="#slide-109">9-5. Vault Access and Masking by Role</a></li>
       <li><a href="#slide-110">9-6. Authentication</a></li>
@@ -2603,8 +2603,8 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>Password of the first administrator</td><td>(The shipped packages write a fixed value into their own <code>cynovela.yaml</code> at <code>auth.admin_initial_password</code> — read it there. If neither the env var nor that key is set — which is the state of the repository source, not of a shipped package — a password change is forced at first login. Set the env var only if you want to override it.)</td></tr>
     </tbody>
     </table>
-    <h3>9-3. Login Information of the Shipped demo.db</h3>
-    <p>The <code>demo.db</code> distributed with <code>--demo</code> already has the following accounts loaded.</p>
+    <h3>9-3. Login Information of the Demo Database</h3>
+    <p>The <code>demo.db</code> created at the first <code>--demo</code> startup has the following accounts.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2991,7 +2991,7 @@ python server.py --mode text --port 8900</code></pre>
       <ul>
       <li><a href="#slide-218">9-1. ロール</a></li>
       <li><a href="#slide-219">9-2. 初期 admin</a></li>
-      <li><a href="#slide-219">9-3. 出荷 demo.db のログイン情報</a></li>
+      <li><a href="#slide-219">9-3. デモのデータベースのログイン情報</a></li>
       <li><a href="#slide-220">9-4. ユーザー追加・削除・パスワード変更</a></li>
       <li><a href="#slide-221">9-5. ロール別の保管庫アクセスとマスキング</a></li>
       <li><a href="#slide-221">9-6. 認証</a></li>
@@ -5163,8 +5163,8 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>初回 admin パスワード</td><td>（配布物は固定値を配布物自身の <code>cynovela.yaml</code> の <code>auth.admin_initial_password</code> へ書き込んで出荷します。値はそこで読めます。env・当該キーのいずれも未設定＝リポジトリのソースそのままの状態なら、初回ログインでパスワード変更を強制します。上書きしたい場合のみ env に値を設定）</td></tr>
     </tbody>
     </table>
-    <h3>9-3. 出荷 demo.db のログイン情報</h3>
-    <p><code>--demo</code> で配布される <code>demo.db</code> には次のアカウントが投入済みです。</p>
+    <h3>9-3. デモのデータベースのログイン情報</h3>
+    <p><code>--demo</code> の初回起動時に作られる <code>demo.db</code> には次のアカウントがあります。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

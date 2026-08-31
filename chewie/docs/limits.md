@@ -389,31 +389,30 @@ If you want to run on Kubernetes, you need to write the Deployment definition yo
 
 ### Startup forms and where data lives
 
-- With `--demo`, it starts with a demo database loaded with the bundled dummy documents
-  (`store/db/demo.db` and `store/vector/demo/chroma`).
+- With `--demo`, it starts with the demo database (`store/db/demo.db` and
+  `store/vector/demo/chroma`). At the first `--demo` startup, the server ingests the
+  bundled `dummy-corpus/` on the spot and builds the database and the index on this
+  machine; later startups do not re-ingest.
 - With nothing added it is production, and starts with an **empty database**
   (`store/db/cynovela.db` and `store/vector/default/chroma`).
 - **Neither is erased by a restart.** They are not initialised on every startup.
   If you want to erase them, delete the files yourself.
-- The bundled index and database are built **only from the `dummy-corpus/` inside the package**
-  at the time the package is built. Not a single working document from the builder's side is
-  included.
-  What is actually included, and how many, is written out in `BUNDLED-DATA.md` in the package.
+- The package does not ship a database, an index, or key files. They are created on this
+  machine: the keys at the first startup, the demo database and index at the first `--demo`
+  startup, **only from the `dummy-corpus/` inside the package**. Not a single working
+  document from the builder's side is included. See `BUNDLED-DATA.md` in the package.
 - **Where `store/` itself sits depends on the edition.** In every edition that is a folder
   you unpack, it is `store/` inside that folder. In the app edition — in preparation, not
   part of this release — the installed bundle is read-only, so the launcher sets
   `CYNOVELA_DATA_ROOT` and the same paths are taken relative to
   `~/Library/Application Support/Cynovela/` instead.
-- **The first password is not printed on the screen when you start with the bundled sample
-  material.** The startup script prints the first sign-in name and password only when it
-  decides this is a first run, and it decides that by asking whether the database file
-  already exists. The packages ship a pre-built `store/db/demo.db`, and the default answer
-  at the first question starts with `--demo`, which is the database it looks for — so the
-  file is already there, the check reports "not a first run", and nothing is printed. Starting
-  without `--demo` looks for `store/db/cynovela.db`, which is not shipped, and does print.
-  Until this is repaired, read the password out of the `cynovela.yaml` next to the startup
-  script, on the `admin_initial_password:` line under `auth:` (`grep admin_initial_password
-  cynovela.yaml`). You are asked to change it at the first sign-in either way.
+- **The first sign-in name and password are printed at the first startup.** The startup
+  script decides "this is a first run" by asking whether the database file already exists,
+  and neither database ships in the package, so the first startup prints them in both
+  forms (`--demo` and production). They can also be read from the `cynovela.yaml` next to
+  the startup script, on the `admin_initial_password:` line under `auth:`
+  (`grep admin_initial_password cynovela.yaml`). You are asked to change the password at
+  the first sign-in either way.
 
 ### Cross-collection search
 
@@ -1045,28 +1044,27 @@ Kubernetes で動かしたい場合は、Deployment の定義を自分で書く�
 
 ### 起動の形態とデータの場所
 
-- `--demo` を付けると、同梱のダミー資料が載ったデモのデータベースで起動します
-  （`store/db/demo.db` と `store/vector/demo/chroma`）。
+- `--demo` を付けると、デモのデータベースで起動します（`store/db/demo.db` と
+  `store/vector/demo/chroma`）。`--demo` の初回起動時に、サーバが同梱の
+  `dummy-corpus/` をその場で取り込み、データベースとインデックスをこの機材の上で
+  作ります。2 回目以降の起動では取り込み直しません。
 - 何も付けなければ本番で、**空のデータベース**で起動します
   （`store/db/cynovela.db` と `store/vector/default/chroma`）。
 - **どちらも再起動で消えません。** 起動のたびに初期化されることはありません。
   消したい場合は自分でファイルを消してください。
-- 同梱のインデックスとデータベースは、配布物を作るときに**配布物の中の `dummy-corpus/` だけ**から
-  作っています。作った側の作業用の資料は 1 件も入っていません。
-  実際に何が何件入っているかは、配布物の `BUNDLED-DATA.md` に書き出してあります。
+- 配布物にはデータベース・インデックス・鍵ファイルは入っていません。この機材の上で
+  作られます: 鍵は初回起動時、デモのデータベースとインデックスは `--demo` の初回起動時に、
+  **配布物の中の `dummy-corpus/` だけ**から作られます。作った側の作業用の資料は
+  1 件も入っていません。詳しくは配布物の `BUNDLED-DATA.md` を見てください。
 - **`store/` 自体の場所は形態で違います。** 展開して使うフォルダの形では、そのフォルダの
   中の `store/` です。アプリ版（準備中。この版には入っていません）は入れたあとの包みが
   読み取り専用のため、入口が `CYNOVELA_DATA_ROOT` を与え、上の道筋は
   `~/Library/Application Support/Cynovela/` からの相対として扱われます。
-- **同梱のお試し資料で始めると、最初のパスワードは画面に出ません。** 起動用スクリプトは
-  「初回である」と判定したときだけ最初のユーザー名とパスワードを出し、その判定は
-  データベースのファイルがすでに在るかどうかで行っています。配布物には作り置きの
-  `store/db/demo.db` が入っており、最初の問いで Enter を押す道（既定）は `--demo` で
-  起動します。∴ 見に行く先のファイルはすでに在り、判定は「初回ではない」となって、
-  何も出ません。`--demo` を付けずに起動した場合は `store/db/cynovela.db` を見に行き、
-  こちらは同梱していないため、ちゃんと出ます。
-  直るまでは、起動用スクリプトと同じ場所にある `cynovela.yaml` の `auth:` の下、
-  `admin_initial_password:` の行から読んでください
+- **最初のユーザー名とパスワードは、初回起動時に画面へ出ます。** 起動用スクリプトは
+  データベースのファイルがすでに在るかどうかで「初回である」と判定します。配布物には
+  どちらのデータベースも入っていないため、`--demo` でも本番でも初回起動でちゃんと
+  出ます。起動用スクリプトと同じ場所にある `cynovela.yaml` の `auth:` の下、
+  `admin_initial_password:` の行から読むこともできます
   （`grep admin_initial_password cynovela.yaml`）。どちらの道でも、最初のログインで
   変更を求められる点は同じです。
 

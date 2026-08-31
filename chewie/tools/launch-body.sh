@@ -7,7 +7,7 @@
 #
 #  使い方:
 #    ./launch.sh                 本番 (空のデータベース) で起動する
-#    ./launch.sh --demo          同梱のダミー資料が載ったデモで起動する
+#    ./launch.sh --demo          同梱のダミー資料を使うデモで起動する (初回起動時に自動で取り込まれる)
 #    ./launch.sh --local-only    待ち受けを自マシン内だけに絞る
 #
 #    ./launch.sh --check         起動せずに動く条件だけを調べ、結果を1本のファイルへ書く
@@ -106,7 +106,7 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
                                   (検索の対象にするフォルダ)
 
 ● 番号で答えずに、はじめから決めて起動する
-  ./launch.sh --demo              同梱のダミー資料が載った状態で起動します。
+  ./launch.sh --demo              同梱のダミー資料を使うデモで起動します (初回起動時に自動で取り込まれます)。
   ./launch.sh --add               読み込むフォルダを選ぶ画面を出して足します。
   ./launch.sh --list              いま足してあるフォルダを一覧で出します。
   ./launch.sh --remove <名前>     足したフォルダを外します (名前は --list に出るもの)。
@@ -1087,8 +1087,9 @@ run_probe() {
     if [ -f "$SCRIPT_DIR/store/secret.key" ]; then
         add_report "store/secret.key: あり (中身は読みません)"
     else
-        add_report "store/secret.key: なし"
-        add_warning "金庫の鍵がありません。起動時に新しく作られますが、同梱のデモ本文はその鍵では読めません。"
+        # first-run-ingest-20260901: 鍵は配布物に入れなくなった。初回起動前に
+        # 無いのは正常な状態なので、警告ではなく報告だけにする。
+        add_report "store/secret.key: なし (初回起動時にこの機材で作られます)"
     fi
 
     # 11. ディスクの空き
@@ -1534,7 +1535,7 @@ print_next_steps() {
     if [ "$where" = "setup" ]; then
         echo "  ■ 次にすること"
         echo "      起動するには:  ./launch.sh --demo"
-        echo "      --demo は同梱のダミー資料が載った状態で起動します。"
+        echo "      --demo は同梱のダミー資料を使うデモで起動します (初回起動時に自動で取り込まれます)。"
         echo "      引数なしの ./launch.sh は、中身が空の本番の状態で起動します。"
         echo ""
     fi

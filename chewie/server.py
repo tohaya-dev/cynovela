@@ -296,8 +296,10 @@ async def lifespan(app_instance):
         logger.warning(f"residual scan job reset failed at lifespan: {_e}")
     # A-10(a) 起動のたびに登録済みの取り込み元を1回走査する
     # (変更の無いファイルは読み直さない)。起動を待たせないよう別スレッドで直列に回す。
+    # first-run-ingest-20260901: --demo の初回起動では、その前に同じスレッドで
+    # 同梱の dummy-corpus の取り込みを行う (_startup_background_ingest を参照)。
     try:
-        threading.Thread(target=_startup_scan_sources, daemon=True, name="startup-scan").start()
+        threading.Thread(target=_startup_background_ingest, daemon=True, name="startup-scan").start()
     except Exception as _e:
         logger.warning(f"startup scan spawn failed: {_e}")
     # §9-4 embedding-identity (ga-mas-20260725): 起動時にインデックスの埋め込み識別と現在の経路を
@@ -935,6 +937,139 @@ def _startup_scan_sources():
         except Exception as _e:
             logger.warning(f"startup scan 失敗 src={sid}: {_e}")
     logger.info("[Cynovela] startup scan finished")
+
+
+def _startup_demo_first_run():
+    """--demo の初回起動時に、同梱の dummy-corpus をその場で取り込む (first-run-ingest-20260901)。
+
+    配布物にはデモのデータベース・インデックス・金庫鍵を入れない (作り終えた
+    データベースを配ると金庫鍵も一緒に配ることになり、落とした全員が同じ鍵を
+    持つ)。初回起動時に、この機材で生成された鍵を使い、同じ内容をこの機材の上で作る。
+
+    - 資料が既に在れば何もしない (2回目以降の起動)。受け取り手が資料を足した後に
+      再起動しても消えない。
+    - 取り込みに失敗しても、理由を出すだけでサーバの起動は止めない。
+    - 取り込み元 (src-dummy) は db.py の初期化がデモ起動のたびに INSERT OR IGNORE で
+      入れる行をそのまま使う。作業場所とコレクションの id は、以前パッケージングの場で
+      同梱データを作っていた処理と同じ固定文字列にする (同じものが二重にできない)。
+    - 走査は _do_scan、公開は画面の「公開」と同じ _run_publish_background を使う
+      (取り込みの処理を新しく書かない)。
+    """
+    _SRC_ID = "src-dummy"
+    _WS_ID = "ws-dummy"
+    _WS_NAME = "アオゾラ資料"
+    _COL_ID = "col-dummy"
+    _COL_NAME = "デモ資料一式"
+    import time as _time
+
+    try:
+        conn = get_db()
+        try:
+            n_files = conn.execute("SELECT COUNT(*) FROM files").fetchone()[0]
+        finally:
+            conn.close()
+        if n_files:
+            logger.info(f"[Cynovela] 初回のデモ取り込み: 資料が既に {n_files} 件あるため何もしません")
+            return
+        t0 = _time.time()
+        logger.info("[Cynovela] 初回のデモ取り込み: 同梱の dummy-corpus を取り込みます (資料 0 件の初回起動のときだけ)")
+        conn = get_db()
+        try:
+            conn.execute("INSERT OR IGNORE INTO workspaces (id, name) VALUES (?, ?)", (_WS_ID, _WS_NAME))
+            conn.execute(
+                "INSERT OR IGNORE INTO workspace_sources (workspace_id, source_id) VALUES (?, ?)",
+                (_WS_ID, _SRC_ID),
+            )
+            for uid in [r["id"] for r in conn.execute("SELECT id FROM users").fetchall()]:
+                conn.execute(
+                    "INSERT OR IGNORE INTO workspace_users (workspace_id, user_id) VALUES (?, ?)",
+                    (_WS_ID, uid),
+                )
+            conn.commit()
+        finally:
+            conn.close()
+        _do_scan(_SRC_ID)
+        conn = get_db()
+        try:
+            rows = conn.execute(
+                "SELECT id FROM files WHERE source_id = ? ORDER BY name", (_SRC_ID,)
+            ).fetchall()
+            file_ids = [r["id"] for r in rows]
+            if not file_ids:
+                logger.warning(
+                    "[Cynovela] 初回のデモ取り込み: dummy-corpus から資料を 1 件も読み取れませんでした。"
+                    "サーバはこのまま起動します (画面の「取り込み元」から読み直せます)"
+                )
+                return
+            conn.execute(
+                "INSERT OR IGNORE INTO collections (id, name, workspace_id, access_level, allowed_roles_json) "
+                "VALUES (?, ?, ?, 'public', ?)",
+                (_COL_ID, _COL_NAME, _WS_ID, json.dumps(["admin", "viewer"])),
+            )
+            for fid in file_ids:
+                conn.execute(
+                    "INSERT OR IGNORE INTO collection_files (collection_id, file_id) VALUES (?, ?)",
+                    (_COL_ID, fid),
+                )
+            file_paths = [
+                r["path"]
+                for r in conn.execute(
+                    "SELECT f.path FROM files f JOIN collection_files cf ON f.id = cf.file_id "
+                    "WHERE cf.collection_id = ?",
+                    (_COL_ID,),
+                ).fetchall()
+            ]
+            excluded_paths = compute_exclude_paths_for_collection(conn, _COL_ID)
+            _cs, _co = _resolve_collection_chunking(_COL_ID)
+            job_id = new_id()
+            conn.execute(
+                "INSERT INTO publish_jobs (id, collection_id, status, total, message) "
+                "VALUES (?, ?, 'pending', ?, ?)",
+                (job_id, _COL_ID, len(file_paths), "Queued"),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+        logger.info(
+            f"[Cynovela] 初回のデモ取り込み: 資料 {len(file_ids)} 件を読み取りました。公開 (インデックス作成) を始めます"
+        )
+        _run_publish_background(job_id, _COL_ID, file_paths, excluded_paths, _cs, _co, "fast")
+        conn = get_db()
+        try:
+            row = conn.execute("SELECT status, error FROM publish_jobs WHERE id = ?", (job_id,)).fetchone()
+            n_chunks = conn.execute(
+                "SELECT COUNT(*) FROM chunks WHERE collection_id = ?", (_COL_ID,)
+            ).fetchone()[0]
+        finally:
+            conn.close()
+        elapsed = _time.time() - t0
+        if row is not None and row["status"] == "completed":
+            logger.info(
+                f"[Cynovela] 初回のデモ取り込み: 完了 (資料 {len(file_ids)} 件・チャンク {n_chunks} 件・{elapsed:.1f} 秒)"
+            )
+        else:
+            _why = row["error"] if row is not None and row["error"] else (row["status"] if row is not None else "記録なし")
+            logger.warning(
+                f"[Cynovela] 初回のデモ取り込み: 公開が完了しませんでした ({_why})。"
+                "サーバはこのまま起動しています。画面の「コレクション」から公開をやり直せます"
+            )
+    except Exception as _e:
+        logger.warning(f"[Cynovela] 初回のデモ取り込みに失敗しました ({_e})。サーバはこのまま起動しています")
+
+
+def _startup_background_ingest():
+    """起動時の背景処理を 1 本のスレッドで直列に回す (first-run-ingest-20260901)。
+
+    デモの初回取り込みと、毎起動の再走査 (_startup_scan_sources) は、どちらも
+    _do_scan の排他に掛かるため、同じスレッドで順に実行する。
+    --demo でない起動では初回取り込みは行わない (従来どおり再走査だけになる)。
+    """
+    try:
+        if _state.config is not None and getattr(_state.config, "demo", False):
+            _startup_demo_first_run()
+    except Exception as _e:
+        logger.warning(f"[Cynovela] 初回のデモ取り込みの前処理に失敗: {_e}")
+    _startup_scan_sources()
 
 
 async def _startup_rebuild_bm25():

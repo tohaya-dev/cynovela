@@ -55,7 +55,7 @@ For the person who puts it on a machine and keeps it going.
 | [operations.md](operations.md) | Keeping it running over time: starting and stopping, where to place it, connecting an LLM provider, driving it from external tools over MCP, sharing over a LAN, backup and restore, logs, exporting the audit log, user management, health checks, notifications, and changing the port. |
 | [security.md](security.md) | How access control and the guardrails are actually built: the three roles, how `access_level` and `allowed_roles` decide what a search returns, PII detection and masking, the layers against prompt injection, and the ways of use that are not recommended. |
 | [USE-FROM-TERMINAL.txt](USE-FROM-TERMINAL.txt) | Plain text, meant to be read in a terminal. Every `./launch.sh` flag — the same list `./launch.sh --help` prints. |
-| [BUNDLED-DATA.md](BUNDLED-DATA.md) | What the bundled sample material actually contains, counted when the package was built: how many files, chunks and parent chunks, and how many places were masked at ingest. |
+| [BUNDLED-DATA.md](BUNDLED-DATA.md) | What sample material is bundled (`dummy-corpus/` only), and what is created on this machine: the keys at the first startup, the demo database and index at the first `--demo` startup. |
 | [READ-BEFORE-DISTRIBUTING.md](READ-BEFORE-DISTRIBUTING.md) | Read before you hand the package to anyone: which form of package it is, what starting with and without the demo does, that the bundled material is fictional, and what the receiving machine generates for itself at first startup. |
 | [limits.md](limits.md) | The constraints that matter while installing: concurrent use, replacing models, and what is not wired up. |
 
@@ -119,7 +119,7 @@ For the person who needs an exact name, argument or return value.
 | [operations.md](operations.md) | 使い続けるための運用。起動と停止・置き方・LLM プロバイダの接続・MCP で外部の道具から使う・LAN 共有・backup と restore・ログ・監査ログの Export・利用者の管理・死活確認・通知・番号の変更。 |
 | [security.md](security.md) | アクセス制御とガードレールが実際にどう組まれているか。3 つの役割・`access_level` と `allowed_roles` が検索の返りをどう決めるか・PII の検出とマスキング・プロンプトインジェクションへの層・推奨しない使用方法。 |
 | [USE-FROM-TERMINAL.txt](USE-FROM-TERMINAL.txt) | 端末で読むためのプレーンテキスト。`./launch.sh` のフラグの全数です（同じ一覧は `./launch.sh --help` でも見られます）。 |
-| [BUNDLED-DATA.md](BUNDLED-DATA.md) | 同梱のサンプル資料に実際に何が入っているか。配布物を組んだときに数えた値で、file・chunk・parent chunk の数と、ingest のときに伏せた箇所の数。 |
+| [BUNDLED-DATA.md](BUNDLED-DATA.md) | 同梱のサンプル資料に何が入っているか（`dummy-corpus/` だけ）と、この機材の上で作られるものの内訳。鍵は初回起動時、デモのデータベースとインデックスは `--demo` の初回起動時に作られる。 |
 | [READ-BEFORE-DISTRIBUTING.md](READ-BEFORE-DISTRIBUTING.md) | 誰かに渡す前に読むもの。どの形の配布物か・デモ付きと無しで起動が何が変わるか・同梱資料が架空であること・受け取った機械が初回起動時に自分で作るもの。 |
 | [limits.md](limits.md) | 据えるときに効いてくる制約。同時に使うときの制約・モデルの差し替えの制約・配線されていないもの。 |
 

@@ -94,7 +94,7 @@ Sections:
 - [9. User Management](#9-user-management)
   - [9-1. Roles](#9-1-roles)
   - [9-2. The Initial Administrator](#9-2-the-initial-administrator)
-  - [9-3. Login Information of the Shipped demo.db](#9-3-login-information-of-the-shipped-demodb)
+  - [9-3. Login Information of the Demo Database](#9-3-login-information-of-the-demo-database)
   - [9-4. Adding and Deleting Users, and Changing Passwords](#9-4-adding-and-deleting-users-and-changing-passwords)
   - [9-5. Vault Access and Masking by Role](#9-5-vault-access-and-masking-by-role)
   - [9-6. Authentication](#9-6-authentication)
@@ -1384,9 +1384,9 @@ An administrator user is created at first startup. The user name and password ca
 | `CYNOVELA_ADMIN_USERNAME` | User name of the first administrator | `cynovela` |
 | `CYNOVELA_ADMIN_INITIAL_PASSWORD` | Password of the first administrator | (The shipped packages write a fixed value into their own `cynovela.yaml` at `auth.admin_initial_password` — read it there. If neither the env var nor that key is set — which is the state of the repository source, not of a shipped package — a password change is forced at first login. Set the env var only if you want to override it.) |
 
-### 9-3. Login Information of the Shipped demo.db
+### 9-3. Login Information of the Demo Database
 
-The `demo.db` distributed with `--demo` already has the following accounts loaded.
+The `demo.db` created at the first `--demo` startup has the following accounts.
 
 | User name | Role | Password |
 |-----------|--------|-----------|
@@ -1613,7 +1613,7 @@ Using a privileged port such as 80 or 443 requires administrator privileges, so 
 - [9. 利用者の管理](#9-利用者の管理)
   - [9-1. ロール](#9-1-ロール)
   - [9-2. 初期 admin](#9-2-初期-admin)
-  - [9-3. 出荷 demo.db のログイン情報](#9-3-出荷-demodb-のログイン情報)
+  - [9-3. デモのデータベースのログイン情報](#9-3-デモのデータベースのログイン情報)
   - [9-4. ユーザー追加・削除・パスワード変更](#9-4-ユーザー追加削除パスワード変更)
   - [9-5. ロール別の保管庫アクセスとマスキング](#9-5-ロール別の保管庫アクセスとマスキング)
   - [9-6. 認証](#9-6-認証)
@@ -2881,9 +2881,9 @@ Cynovela には 2 種類のロールがあります。
 | `CYNOVELA_ADMIN_USERNAME` | 初回 admin ユーザー名 | `cynovela` |
 | `CYNOVELA_ADMIN_INITIAL_PASSWORD` | 初回 admin パスワード | （配布物は固定値を配布物自身の `cynovela.yaml` の `auth.admin_initial_password` へ書き込んで出荷します。値はそこで読めます。env・当該キーのいずれも未設定＝リポジトリのソースそのままの状態なら、初回ログインでパスワード変更を強制します。上書きしたい場合のみ env に値を設定） |
 
-### 9-3. 出荷 demo.db のログイン情報
+### 9-3. デモのデータベースのログイン情報
 
-`--demo` で配布される `demo.db` には次のアカウントが投入済みです。
+`--demo` の初回起動時に作られる `demo.db` には次のアカウントがあります。
 
 | ユーザー名 | ロール | パスワード |
 |-----------|--------|-----------|

@@ -270,16 +270,16 @@ A sign-in screen appears.
   grep admin_initial_password cynovela.yaml
   ```
 
-  (On the ordinary `./launch.sh` start it is also printed on the terminal screen
-  once, the very first time — but **not** on this `--demo` start, because the
-  bundled sample database makes that route count as "not the first start".
-  Reading `cynovela.yaml` works either way.)
+  (It is also printed on the terminal screen once, the very first time —
+  on this `--demo` start as well as on the ordinary start, because neither
+  database ships in the package. Reading `cynovela.yaml` works either way.)
 
 It will ask you to choose a new password straight away. Do that.
 
 #### Step 12. Ask your first question
 
-Because you started with `--demo`, the sample documents are already loaded and searchable. Type a question in plain language into
+Because you started with `--demo`, the sample documents were ingested automatically at the first start and are searchable
+(if the startup log still shows the ingest running, wait for it to finish). Type a question in plain language into
 the box and press return, for example:
 
 ```
@@ -597,10 +597,10 @@ The default user names are **administrator `cynovela`** / **viewer `demo`** (not
 **The initial passwords are written into this package's own `cynovela.yaml`** —
 read them with `grep admin_initial_password cynovela.yaml` (the viewer's line is
 `viewer_initial_password:`). They are not written in this documentation, so that
-a copy of the documentation cannot be used to sign in. The ordinary
-`./launch.sh` start also prints them on the terminal once, the very first time —
-but the `--demo` start does not, because the bundled sample database makes that
-route count as "not the first start".
+a copy of the documentation cannot be used to sign in. `./launch.sh` also
+prints them on the terminal once, the very first time — on the `--demo` start
+as well as on the ordinary start, because neither database ships in the
+package.
 
 1. Enter **`cynovela`** as the user name.
 2. For the password, enter the administrator value read out of `cynovela.yaml`.
@@ -899,7 +899,7 @@ production database (you sign in as the administrator and ingest documents first
 
 | What starts | What happens | How to get it |
 |---|---|---|
-| Demo | Starts with the bundled dummy documents **already ingested** (you can ask questions right away) | `./launch.sh --demo` from the terminal |
+| Demo | Starts with the bundled dummy documents (they are **ingested automatically at the first start**; once that finishes you can ask questions) | `./launch.sh --demo` from the terminal |
 | Production | Starts with an empty database. When there are 0 ingest sources, the dummy documents inside this package become the ingest source | Double-click `Cynovela-start.command`, or `./launch.sh` (no arguments) |
 
 **Start it from the terminal**
@@ -911,7 +911,8 @@ point when you use the terminal.**
 ./launch.sh --demo
 ```
 
-This starts with the bundled dummy documents already ingested.
+This starts the demo. At the first start, the bundled dummy documents are
+ingested automatically (progress is printed to the startup log).
 To use it with your own documents, run `./launch.sh` with nothing attached.
 
 If something needed to run it is missing, you are told **before it starts**: "something
@@ -1011,7 +1012,7 @@ This is the same as what `./launch.sh --help` prints.
 | What you type | What happens |
 |---|---|
 | `./launch.sh` | Starts in production (an empty database). If there are 0 ingest sources, it uses the bundled dummy documents |
-| `./launch.sh --demo` | Starts with the bundled dummy documents already ingested |
+| `./launch.sh --demo` | Starts the demo with the bundled dummy documents (ingested automatically at the first start) |
 | `./launch.sh --setup` | Installs what is needed to run it (it stops once installed) |
 | `./launch.sh --check` | Does not start; only checks the conditions for running and writes them to a single file |
 | `./launch.sh --add` | Shows a folder chooser and adds an ingest source |
@@ -1428,9 +1429,10 @@ tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz
 ./launch.sh --demo
 ```
 
-`--demo` を付けると、配布物に入っているお試しの資料が載った状態で立ち上がります。
-初日から質問できる材料が入っている、ということです。付けないと中身が空の状態で
-立ち上がるので、先に自分のフォルダを足す必要があります。
+`--demo` を付けると、配布物に入っているお試しの資料を使うデモで立ち上がります
+（初回起動時に自動で取り込まれます）。初日から質問できる材料が付いている、
+ということです。付けないと中身が空の状態で立ち上がるので、先に自分のフォルダを
+足す必要があります。
 
 ここからは向こうがしゃべります。出てくる順に書きます。
 
@@ -1476,16 +1478,16 @@ Chrome のアドレス欄にそのまま打ち込みます。
   grep admin_initial_password cynovela.yaml
   ```
 
-  （普通の `./launch.sh` の起動なら、はじめての1回だけターミナルの画面にも
-  出ます。ただしこの `--demo` の起動では出ません。同梱のデモ用データベースが
-  最初から入っているため、この経路は「初回ではない」と判定されるからです。
-  `cynovela.yaml` を見る道は、どちらでも使えます。）
+  （はじめての1回だけターミナルの画面にも出ます。配布物にはどちらの
+  データベースも入っていないため、この `--demo` の起動でも普通の起動でも
+  初回に出ます。`cynovela.yaml` を見る道は、どちらでも使えます。）
 
 入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。
 
 #### 手順12. 最初の質問をする
 
-`--demo` で起こしたので、お試しの資料が最初から入っていて、探せる状態になっています。ふつうの言葉で枠に打ち込んで return を
+`--demo` で起こしたので、お試しの資料は初回起動時に自動で取り込まれ、探せる状態になっています
+（起動ログに取り込みの進捗がまだ出ている間は、終わるのを待ってください）。ふつうの言葉で枠に打ち込んで return を
 押します。たとえば次のようにです。
 
 ```
@@ -1717,7 +1719,7 @@ ls launch.sh                  # このファイルが見えれば展開できて
 
 ## 7. 動作環境を作って起動する
 
-はじめての方は、同梱のダミー資料が載った**デモ**で試すのがおすすめです。`--demo` を付けて起動してください（付けずに起動すると**本番**＝空のデータベースで始まります）。
+はじめての方は、同梱のダミー資料を使う**デモ**で試すのがおすすめです。`--demo` を付けて起動してください（ダミー資料は初回起動時に自動で取り込まれます。付けずに起動すると**本番**＝空のデータベースで始まります）。
 
 ```bash
 ./launch.sh --demo
@@ -1795,10 +1797,9 @@ http://localhost:8765
 **初期パスワードは、この配布物自身の `cynovela.yaml` に書き込まれています** —
 `grep admin_initial_password cynovela.yaml` で見られます（閲覧者のぶんは
 `viewer_initial_password:` の行です）。この文書には書いていません。文書のコピー
-だけでログインできてしまうのを避けるためです。普通の `./launch.sh` の起動なら、
-はじめての1回だけターミナルの画面にも出ます。ただし `--demo` の起動では出ません。
-同梱のデモ用データベースが最初から入っているため、その経路は「初回ではない」と
-判定されるからです。
+だけでログインできてしまうのを避けるためです。`./launch.sh` は、はじめての
+1回だけターミナルの画面にも出します。配布物にはどちらのデータベースも
+入っていないため、`--demo` の起動でも普通の起動でも初回に出ます。
 
 1. ユーザー名に **`cynovela`** を入力します。
 2. パスワードは、`cynovela.yaml` から読み取った管理者の値を入力します。
@@ -2054,7 +2055,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 
 ## 16. 日常の起動手順
 
-起動は 2 通りあります。**引数なしは本番**（空のデータベースから始まり、自分の資料を取り込んで使う）、**`--demo` を付けるとデモ**（ダミー資料が載ったデモDB）です。
+起動は 2 通りあります。**引数なしは本番**（空のデータベースから始まり、自分の資料を取り込んで使う）、**`--demo` を付けるとデモ**（同梱のダミー資料を使うデモDB。初回起動時に自動で取り込まれます）です。
 
 ```bash
 # 入口は launch.sh です（または Cynovela-start.command をダブルクリック）
@@ -2083,7 +2084,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 
 | 起動の中身 | どうなるか | 出し方 |
 |---|---|---|
-| デモ | 同梱のダミー資料が**取り込み済み**の状態で立ち上がる（すぐ質問できる） | ターミナルから `./launch.sh --demo` |
+| デモ | 同梱のダミー資料を使って立ち上がる（**初回起動時に自動で取り込まれ**、終わると質問できる） | ターミナルから `./launch.sh --demo` |
 | 本番 | 中身が空のデータベースで立ち上がる。取り込み元が 0 件のときは、この配布物の中のダミー資料が取り込み元になる | `Cynovela-start.command` をダブルクリック、または `./launch.sh`（引数なし） |
 
 **ターミナルから起動する**
@@ -2094,7 +2095,8 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 ./launch.sh --demo
 ```
 
-これは、同梱のダミー資料が取り込み済みの状態で立ち上がります。
+これはデモで立ち上がります。初回起動時に同梱のダミー資料が自動で取り込まれます
+（進捗は起動ログに出ます）。
 自分の資料で使うときは、何も付けずに `./launch.sh` を実行します。
 
 動かすのに足りないものがあると、**起動する前に**「足りないものがあるので起動しません」と出ます。
@@ -2159,7 +2161,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 | オプション | 説明 |
 |---|---|
 | `--mode text` | テキストモード（標準） |
-| `--demo` | ダミー資料が載ったデモDBで起動（付けなければ本番＝空のデータベース） |
+| `--demo` | 同梱のダミー資料を使うデモDBで起動（初回起動時に自動で取り込まれる。付けなければ本番＝空のデータベース） |
 | `--reset-admin` | 管理者パスワードをリセットし、新しい値を表示して終了する。**対象のデータベースは他の指定と同じ規則で選ばれるため、デモの管理者を直すときは `--demo` を併記する**（付けないと本番の `store/db/cynovela.db` が対象になり、無ければ新規作成される。デモ側は変わらないのでデモのログインは 401 のまま。2026-08-02 実測） |
 | `--local-only` | 自分のマシンの中だけに絞る（既定は全アドレス `0.0.0.0` で待ち受け） |
 | `--port N` | ポート番号（既定 8765） |
@@ -2190,7 +2192,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 | 打つもの | 何が起きるか |
 |---|---|
 | `./launch.sh` | 本番（空のデータベース）で起動。取り込み元が0件なら同梱のダミー資料を使う |
-| `./launch.sh --demo` | 同梱のダミー資料が取り込み済みの状態で起動 |
+| `./launch.sh --demo` | 同梱のダミー資料を使うデモで起動（初回起動時に自動で取り込まれる） |
 | `./launch.sh --setup` | 動かすのに要るものを入れる（入れたら止まる） |
 | `./launch.sh --check` | 起動せず、動く条件だけを調べて1本のファイルへ書く |
 | `./launch.sh --add` | フォルダを選ぶ画面を出して取り込み元を足す |
