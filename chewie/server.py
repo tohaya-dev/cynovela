@@ -1036,10 +1036,13 @@ def _startup_demo_first_run():
         _run_publish_background(job_id, _COL_ID, file_paths, excluded_paths, _cs, _co, "fast")
         conn = get_db()
         try:
-            row = conn.execute("SELECT status, error FROM publish_jobs WHERE id = ?", (job_id,)).fetchone()
-            n_chunks = conn.execute(
-                "SELECT COUNT(*) FROM chunks WHERE collection_id = ?", (_COL_ID,)
-            ).fetchone()[0]
+            # チャンク数は publish の確定値 (publish_jobs.progress) を使う。chunks 表の
+            # 行数はマスキング前後の二層で 2 倍になり、画面のコレクション一覧の値と
+            # 食い違う (実測: 表 128 行 / 画面 64)。画面と同じ値を出す。
+            row = conn.execute(
+                "SELECT status, error, progress FROM publish_jobs WHERE id = ?", (job_id,)
+            ).fetchone()
+            n_chunks = row["progress"] if row is not None else 0
         finally:
             conn.close()
         elapsed = _time.time() - t0
