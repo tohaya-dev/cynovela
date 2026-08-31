@@ -939,6 +939,13 @@ def _startup_scan_sources():
     logger.info("[Cynovela] startup scan finished")
 
 
+# first-run-ingest-20260901: 起動直後の背景スレッドの log は、遅延 import server が
+# dictConfig を再実行してハンドラを差し替える瞬間 (filter 追加前) に重なると
+# KeyError: 'request_id' で Logging error を吐く (初回起動で実測)。record 生成時に
+# request_id を持たせる LoggerAdapter で、filter に依らず書式を満たす。
+_bg_logger = logging.LoggerAdapter(logger, {"request_id": "-"})
+
+
 def _startup_demo_first_run():
     """--demo の初回起動時に、同梱の dummy-corpus をその場で取り込む (first-run-ingest-20260901)。
 
@@ -969,10 +976,10 @@ def _startup_demo_first_run():
         finally:
             conn.close()
         if n_files:
-            logger.info(f"[Cynovela] 初回のデモ取り込み: 資料が既に {n_files} 件あるため何もしません")
+            _bg_logger.info(f"[Cynovela] 初回のデモ取り込み: 資料が既に {n_files} 件あるため何もしません")
             return
         t0 = _time.time()
-        logger.info("[Cynovela] 初回のデモ取り込み: 同梱の dummy-corpus を取り込みます (資料 0 件の初回起動のときだけ)")
+        _bg_logger.info("[Cynovela] 初回のデモ取り込み: 同梱の dummy-corpus を取り込みます (資料 0 件の初回起動のときだけ)")
         conn = get_db()
         try:
             conn.execute("INSERT OR IGNORE INTO workspaces (id, name) VALUES (?, ?)", (_WS_ID, _WS_NAME))
@@ -996,7 +1003,7 @@ def _startup_demo_first_run():
             ).fetchall()
             file_ids = [r["id"] for r in rows]
             if not file_ids:
-                logger.warning(
+                _bg_logger.warning(
                     "[Cynovela] 初回のデモ取り込み: dummy-corpus から資料を 1 件も読み取れませんでした。"
                     "サーバはこのまま起動します (画面の「取り込み元」から読み直せます)"
                 )
@@ -1030,7 +1037,7 @@ def _startup_demo_first_run():
             conn.commit()
         finally:
             conn.close()
-        logger.info(
+        _bg_logger.info(
             f"[Cynovela] 初回のデモ取り込み: 資料 {len(file_ids)} 件を読み取りました。公開 (インデックス作成) を始めます"
         )
         _run_publish_background(job_id, _COL_ID, file_paths, excluded_paths, _cs, _co, "fast")
@@ -1047,17 +1054,17 @@ def _startup_demo_first_run():
             conn.close()
         elapsed = _time.time() - t0
         if row is not None and row["status"] == "completed":
-            logger.info(
+            _bg_logger.info(
                 f"[Cynovela] 初回のデモ取り込み: 完了 (資料 {len(file_ids)} 件・チャンク {n_chunks} 件・{elapsed:.1f} 秒)"
             )
         else:
             _why = row["error"] if row is not None and row["error"] else (row["status"] if row is not None else "記録なし")
-            logger.warning(
+            _bg_logger.warning(
                 f"[Cynovela] 初回のデモ取り込み: 公開が完了しませんでした ({_why})。"
                 "サーバはこのまま起動しています。画面の「コレクション」から公開をやり直せます"
             )
     except Exception as _e:
-        logger.warning(f"[Cynovela] 初回のデモ取り込みに失敗しました ({_e})。サーバはこのまま起動しています")
+        _bg_logger.warning(f"[Cynovela] 初回のデモ取り込みに失敗しました ({_e})。サーバはこのまま起動しています")
 
 
 def _startup_background_ingest():
@@ -1071,7 +1078,7 @@ def _startup_background_ingest():
         if _state.config is not None and getattr(_state.config, "demo", False):
             _startup_demo_first_run()
     except Exception as _e:
-        logger.warning(f"[Cynovela] 初回のデモ取り込みの前処理に失敗: {_e}")
+        _bg_logger.warning(f"[Cynovela] 初回のデモ取り込みの前処理に失敗: {_e}")
     _startup_scan_sources()
 
 
