@@ -127,7 +127,10 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://localhost:8765   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初のパスワードは、初回の起動時にこの画面へ出ます。
+             最初のパスワードは、この配布物の中の cynovela.yaml (launch.sh と
+             同じ場所) の auth.admin_initial_password に書いてあります
+             (閲覧者のぶんは auth.viewer_initial_password)。普通の ./launch.sh の
+             初回起動なら画面にも1回出ます。--demo の起動では出ません。
              管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 

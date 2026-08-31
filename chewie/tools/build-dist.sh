@@ -722,6 +722,13 @@ rm -f "$STAGE/$NAME/MANIFEST-anchor-candidate-20260713.md" \
 #   書き換えず、ステージから落として、代わりに**この配布物の実際の数え上げ**を書き出す。
 rm -f "$STAGE/$NAME/MANIFEST-20260724-overnight.md" \
       "$STAGE/$NAME/MANIFEST-20260725-ga-mas.md"
+# app-materials-out (DD-CYN-0191・§201): .app の組み立て材料は受け取り手に使い道が
+#   無く、注釈に内部の作業番号を含む。ツリー側は書き換えず、ステージから落とす。
+#   (.app の組み立ては tools/build-macos-app.sh がツリーから直接行うもので、
+#    この除去はそちらの工程には触れない)
+echo "[dist] .app の組み立て材料をステージから除去"
+rm -rf "$STAGE/$NAME/macos-app"
+rm -f "$STAGE/$NAME/tools/build-macos-app.sh" "$STAGE/$NAME/tools/split-pkg.sh"
 python - "$STAGE/$NAME/docs/BUNDLED-DATA.md" "$BUNDLED_COUNTS" "$NAME" "$FLAVOR" <<'PYMAN'
 import json, sys
 out, counts_json, name, flavor = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
@@ -1017,10 +1024,22 @@ if [ "$gate_pycache" != "0" ] || [ "$gate_pyc" != "0" ]; then
 fi
 
 # (3) 数えるだけのもの。止めはしないが、件数を記録に残す。
-for _g in "$DIST_DEV_USER" "$DIST_WORK_PAT" "DD-CYN-[0-9]{4}"; do
+for _g in "$DIST_DEV_USER" "$DIST_WORK_PAT"; do
   _n="$( { grep -rlE "$_g" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
   echo "[gate] 参考: 記号を含むファイル数 = $_n"
 done
+
+# (4) 内部の作業番号 (DD-CYN-0191・§201)。この関門は build-dist.sh が組む配布物
+#     (Portable を含む chewie/falcon の梱包物) だけを見る。.app の組み立て工程には
+#     当てない。パターンを正規表現で書くのは、この行自身がステージに同梱されても
+#     字面としては一致しないため (自己検出の回避・既知の型)。
+gate_work_ids="$( { grep -rlE "DD-CYN-[0-9]{4}" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
+echo "[gate] 内部の作業番号を含むファイル: $gate_work_ids 件"
+if [ "$gate_work_ids" != "0" ]; then
+  { grep -rlE "DD-CYN-[0-9]{4}" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } \
+    | head -20 | sed "s|^$GATE_DIR/||;s|^|[gate]     |" >&2
+  gate_fail=1
+fi
 
 rm -rf "$GATE_DIR"
 trap - EXIT

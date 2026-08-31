@@ -17,7 +17,7 @@ of what it can do are in [getting-started.md](getting-started.md) and
 [concept.md](concept.md). Only the things that will disappoint you if you expect them are
 written here.
 
-The version is `1.1.2` (`APP_VERSION` in `core/version.py` is the only source, and
+The version is `1.1.3` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -312,7 +312,7 @@ Detailed steps are in [operations.md](operations.md). Only the key points are wr
   search ranking breaks.**
   If the version differs, a warning appears at startup and at publish time. When a warning
   appears, either align the version or rebuild the whole index.
-- **The lightweight package (does not include AI models; about 2.4 MB) does not bundle models.**
+- **Neither the package edition nor the source edition bundles the AI models.**
   If you run the startup script without placing the models, the first startup asks whether to
   fetch them from the internet.
   If you decline, **it stops before starting**.
@@ -694,7 +694,7 @@ They are written here as the state of the current build, not as a schedule.
 できることの説明は [getting-started.md](getting-started.md) と
 [concept.md](concept.md) にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.1.2` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `1.1.3` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
@@ -973,7 +973,7 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
   **版が違うとベクトルの数値が変わり、同梱済みのインデックスと混ざって検索順位が壊れます。**
   版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるか
   インデックスを全部作り直してください。
-- **軽量版（AIモデルを含みません。約 2.4 MB）はモデルを同梱していません。** モデルを置かないまま起動用スクリプトを
+- **パッケージ版もソース版も、AIモデルを同梱していません。** モデルを置かないまま起動用スクリプトを
   実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。
   取得しない場合は、**起動する前に止まります**。
 - **`host.containers.internal` はコンテナの外では名前解決できません。**

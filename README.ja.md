@@ -20,7 +20,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
-| `chewie` | Mac の上で直に動く形 | GitHub Releases (v1.1.2) で公開しています |
+| `chewie` | Mac の上で直に動く形 | GitHub Releases (v1.1.3) で公開しています |
 | `falcon` | コンテナの中で動く形（Podman） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 | `falcon-docker-beta` | コンテナの中で動く形（Docker・開発中のベータ・モデル同梱なし） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 
@@ -43,7 +43,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 ## 落とすもの
 
-すべて GitHub Releases (v1.1.2) にあります。
+すべて GitHub Releases (v1.1.3) にあります。
 https://github.com/tohaya-dev/cynovela/releases
 
 「どれを落とすか」の1枚での答えは
@@ -52,9 +52,9 @@ https://github.com/tohaya-dev/cynovela/releases
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
 | **アプリ版**（`.pkg`） | — | — | **準備中です。** この版には入っていません | — |
-| **パッケージ版** `cynovela-chewie-package-1.1.2.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
+| **パッケージ版** `cynovela-chewie-package-1.1.3.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
 | **ソース版** | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | ダウンロードではありません。ソースはこのリポジトリです（clone するか、GitHub の「Download ZIP」で取れます） | Python 3.12 以降、または conda |
-| **AIモデル** `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
+| **AIモデル** `cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
 **アプリ版**（`.pkg`）＝ **準備中です。** この版には入っていません。
 
@@ -84,7 +84,7 @@ https://github.com/tohaya-dev/cynovela/releases
 | 文書 | 何が書いてあるか |
 |---|---|
 | [chewie/START-HERE.md](chewie/START-HERE.md) | 入口。初回の起動・起こし直し・入れ直し・消し方と、他の文書の在りか |
-| [chewie/docs/editions.md](chewie/docs/editions.md) | 4つの落とし物のどれを選ぶか。1枚 |
+| [chewie/docs/editions.md](chewie/docs/editions.md) | どの形を選ぶか。1枚 |
 | [chewie/docs/getting-started.md](chewie/docs/getting-started.md) | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし |
 | [chewie/docs/operations.md](chewie/docs/operations.md) | 動かし続けるために。止め方と起こし直し方、LLM のつなぎ方、控えと戻し方、利用者、記録 |
 | [chewie/docs/reference/cli.md](chewie/docs/reference/cli.md) | ターミナルの命令と引数の全数 |

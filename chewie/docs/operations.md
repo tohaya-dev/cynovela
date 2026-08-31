@@ -475,7 +475,7 @@ only what has already been masked.
 #### 2-8-4. The behavior when the endpoint is not there
 
 - Rerank: when the external inference server cannot be reached, **it falls back to processing with the model inside the application (store/models)**
-  (this package is all-in-one and bundles the rerank model). When you have not placed the rerank model,
+  (when the models download has been laid on top, the rerank model is among them). When you have not placed the rerank model,
   it does not rerank and returns the search results as they are. In either case the processing does not stop.
 - Embedding (only when you have set it to go outside): when it cannot be reached, **it explicitly falls back to the local processing inside the application**,
   and **"⚠️ 外部の推論サーバに届かないためローカルへ退避中"** (falling back to local because the external inference server cannot be reached) is displayed on the administration screen (Settings > Embedding).
@@ -1993,7 +1993,7 @@ embedding:
 #### 2-8-4. 口が居ないときの振る舞い
 
 - 再ランク: 外部の推論サーバに届かない場合、**アプリ内のモデル (store/models) での処理へ退避**します
-  (本配布物は全部入りで、再ランクのモデルを同梱しています)。再ランクのモデルを置いていない
+  (models の落とし物を重ねてあれば、再ランクのモデルもその中に入っています)。再ランクのモデルを置いていない
   場合は、再ランクを行わず検索結果をそのまま返します。どちらの場合も処理は止まりません。
 - 埋め込み (外へ出す設定にしたときのみ): 届かない場合は**アプリ内のローカル処理へ明示的に退避**し、
   管理画面 (設定 > Embedding) に **「⚠️ 外部の推論サーバに届かないためローカルへ退避中」** と表示されます。

@@ -40,7 +40,7 @@ fetch them); neither of those two packages contains them.
 | macOS | Apple silicon Mac (M1 or later). Intel Macs, Windows and Linux are not verified. **The package edition runs on Apple silicon only.** |
 | Python | **3.12 or later** (`pyproject.toml` declares `requires-python = ">=3.12"`; `environment.yml` pins 3.12.13). **3.10 and 3.11 cannot be used.** Not needed for the package edition, nor for source-edition choice 1 (conda fetches its own). |
 | conda | **Miniforge recommended** (its default channel is conda-forge). **Not required** — the package edition and source-edition choice 2 work without it. |
-| Free disk space | Package edition expanded: **about 3.1 GB** (measured). Source edition expanded: all-in-one **about 5.2 GB** / model-separate edition **about 8 MB** (measured). AI models: **4.84 GB** (separate download for the package and model-separate editions; already inside the all-in-one). |
+| Free disk space | Package edition expanded: **about 3.1 GB** (measured). Source edition: **about 8 MB** before the environment is built (measured). AI models: **4.84 GB** (a separate download for both editions). |
 | Memory | 8 GB or more recommended (existing record; not re-measured). |
 | Network | Package edition: not needed to run — only to fetch the AI models. Source edition setup fetches from: conda-forge / PyPI / github.com (2 wheels) / huggingface.co (models). |
 | LLM for answers | LM Studio or an OpenAI-compatible API (answers need a real LLM). |
@@ -248,7 +248,7 @@ that one. The same documents are repeated below.
 | [`docs/INDEX.md`](docs/INDEX.md) | **The index of every document. Open this when you do not know which file you want** |
 | `README.md` | What this tool is, what it can and cannot do, and the environment it runs in |
 | `docs/getting-started.md` | Never opened Terminal? From the downloaded file to the first answer, nothing skipped — and the day-to-day start and stop after that |
-| `docs/editions.md` | Which of the four downloads to take, on one page |
+| `docs/editions.md` | Which edition to take, on one page |
 | `docs/concept.md` | What this tool is for, and how it differs from the tools it refers to |
 | `docs/architecture.md` | How it works inside: ingest and classification, search, the scores, the shape of an answer |
 | `docs/security.md` | Roles and permissions, PII detection and masking, the guardrails, and the ways of use that are not recommended |
@@ -304,7 +304,7 @@ that one. The same documents are repeated below.
 | macOS | Apple シリコン搭載の Mac（M1 以降）。Intel の Mac・Windows・Linux では動作を確認していません。**パッケージ版は Apple シリコン専用です。** |
 | Python | **3.12 以上**（`pyproject.toml` が `requires-python = ">=3.12"` を宣言。`environment.yml` は 3.12.13 を固定）。**3.10・3.11 は使えません。** パッケージ版と、ソース版の選択肢1（conda）では、事前の Python は不要です。 |
 | conda | **Miniforge を推奨**（既定のチャネルが conda-forge のため）。**必須ではありません** — パッケージ版とソース版の選択肢2 は conda 無しで動きます。 |
-| ディスクの空き | パッケージ版の展開後: **約 3.1 GB**（実測）。ソース版の展開後: 全部入り **約 5.2 GB**／モデル別取得版 **約 8 MB**（実測）。AIモデル: **4.84 GB**（パッケージ版とモデル別取得版は別に落とします。全部入りには入っています）。 |
+| ディスクの空き | パッケージ版の展開後: **約 3.1 GB**（実測）。ソース版: 環境を作る前は**約 8 MB**（実測）。AIモデル: **4.84 GB**（どちらの形でも別に落とします）。 |
 | メモリ | 8 GB 以上を推奨（既存の記録による値。今回は測り直していません）。 |
 | ネットワーク | パッケージ版: 動かすのに不要。AIモデルの取得時のみ必要。ソース版のセットアップは次から取り寄せます: conda-forge / PyPI / github.com（wheel 2本）/ huggingface.co（モデル）。 |
 | 回答用の LLM | LM Studio もしくは OpenAI 互換 API（答えを作るには実 LLM が要ります）。 |
@@ -508,7 +508,7 @@ that one. The same documents are repeated below.
 | [`docs/INDEX.md`](docs/INDEX.md) | **文書の全数の索引。どのファイルが要るか分からないときはこれ** |
 | `README.md` | このツールが何か・できること できないこと・動作環境 |
 | `docs/getting-started.md` | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし。その後の毎日の起動と停止も |
-| `docs/editions.md` | 4つの落とし物のどれを選ぶか。1枚 |
+| `docs/editions.md` | どの形を選ぶか。1枚 |
 | `docs/concept.md` | このツールが何のためのものか。参照元のツールとの違い |
 | `docs/architecture.md` | 内側の作り: 取り込みと分類・検索のしくみ・スコアの読み方・回答のかたち |
 | `docs/security.md` | 役割と権限・PII の検出とマスキング・ガードレール・推奨しない使用方法 |

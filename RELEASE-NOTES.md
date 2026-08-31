@@ -2,6 +2,30 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
+## 1.1.3 (2026-08-31)
+
+A cleanup release. Nothing happens to ingested material, settings or keys; a
+1.1.2 installation can be replaced in place.
+
+- **`./launch.sh --help` now says where the first password actually lives** —
+  in this package's own `cynovela.yaml`, under `auth.admin_initial_password` —
+  and that the `--demo` start does not print it on the screen. The bundled
+  documents said this since 1.1.2; the terminal output still carried the old
+  line.
+- **Two developer-side flags no longer die with "unknown flag".** `--follow`
+  and `--pro` work only when a terminal is connected; called without one, the
+  entry point now refuses them itself and says why, instead of passing them to
+  a body that does not know them.
+- **The package no longer carries the `.app` build materials**
+  (`macos-app/`, `tools/build-macos-app.sh`, `tools/split-pkg.sh`) — they are
+  of no use to a recipient. The publishing gate now also stops the build if an
+  internal work number appears anywhere in the packaged product.
+- **The HTML renderings under `docs/html/` were regenerated** to match the
+  current documents. They had fallen behind the `.md` files they render.
+- **Older releases whose distributables carried a folder name identifying the
+  machine they were built on are no longer publicly listed.** Their source was
+  never affected and remains in this repository.
+
 ## 1.1.2 (2026-08-29)
 
 A release that rebuilds what is distributed.
@@ -308,6 +332,28 @@ from the old folder into the new one before starting.
 ---
 
 # 日本語
+
+## 1.1.3 (2026-08-31)
+
+積み残しを片づける版です。読み込んだ資料・設定・鍵には何も起きません。
+1.1.2 の入れ物はそのまま置き換えられます。
+
+- **`./launch.sh --help` が、最初のパスワードの本当の在りかを言うようになりました** —
+  この配布物自身の `cynovela.yaml` の `auth.admin_initial_password` に在ること、
+  デモ起動（`--demo`）では画面に出ないこと。同梱の文書は 1.1.2 からそう書いて
+  いましたが、端末の出力だけが古い行のままでした。
+- **作る側向けの2つの指定が「知らない指定です」で死ななくなりました。**
+  `--follow` と `--pro` は端末が繋がっているときにだけ使えます。繋がっていない
+  呼び出しでは、これらを知らない本体へ渡して落とすのではなく、入口が自分で断り、
+  理由を言います。
+- **配布物から `.app` の組み立て材料を外しました**（`macos-app/`・
+  `tools/build-macos-app.sh`・`tools/split-pkg.sh`）。受け取り手には使い道が
+  ありません。あわせて、内部の作業番号が配布物のどこかに現れたら組み立てを
+  止める関門を足しました。
+- **`docs/html/` の HTML 描画を、いまの文書に合わせて作り直しました。**
+  元の `.md` から遅れていました。
+- **作った機械のフォルダ名が配布物に残っていた古い版を、公開の一覧から
+  外しました。** ソースは影響を受けておらず、このリポジトリに在ります。
 
 ## 1.1.2 (2026-08-29)
 

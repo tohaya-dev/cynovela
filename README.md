@@ -21,7 +21,7 @@ constellation of the Sail).
 
 | Directory | What it is | Distribution package |
 |---|---|---|
-| `chewie` | Runs directly on macOS. | Published on GitHub Releases (v1.1.2). |
+| `chewie` | Runs directly on macOS. | Published on GitHub Releases (v1.1.3). |
 | `falcon` | Runs inside a container (Podman). | Built from the source in this repository. No distribution package is provided. |
 | `falcon-docker-beta` | Runs inside a container (Docker; in-development beta, no bundled models). | Built from the source in this repository. No distribution package is provided. |
 
@@ -48,7 +48,7 @@ You only need one of them. They are three ways of running the same thing.
 
 ## Downloads
 
-Everything is on GitHub Releases (v1.1.2):
+Everything is on GitHub Releases (v1.1.3):
 https://github.com/tohaya-dev/cynovela/releases
 
 The one-page answer to "which of these do I take" is in
@@ -57,9 +57,9 @@ The one-page answer to "which of these do I take" is in
 | Edition | Runs as | Models bundled | Download shape | What it needs |
 |---|---|---|---|---|
 | **App edition** (`.pkg`) | — | — | **In preparation.** Not part of this release | — |
-| **Package edition** `cynovela-chewie-package-1.1.2.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
+| **Package edition** `cynovela-chewie-package-1.1.3.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
 | **Source edition** | a folder you run in place | no — take the AI models as well | not a download — the source is this repository (clone it, or use GitHub's "Download ZIP") | Python 3.12 or later, or conda |
-| **AI models** `cynovela-chewie-models-1.1.2.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
+| **AI models** `cynovela-chewie-models-1.1.3.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
 
 The **App edition** (`.pkg`) is **in preparation** and is not part of this
 release.
@@ -94,7 +94,7 @@ the map of every other document.
 | Document | What it covers |
 |---|---|
 | [chewie/START-HERE.md](chewie/START-HERE.md) | The entrance. First start, restart, reinstall, uninstall, and where everything else is |
-| [chewie/docs/editions.md](chewie/docs/editions.md) | Which of the four downloads to take, on one page |
+| [chewie/docs/editions.md](chewie/docs/editions.md) | Which edition to take, on one page |
 | [chewie/docs/getting-started.md](chewie/docs/getting-started.md) | Never opened a terminal? From the downloaded file to the first answer, nothing skipped |
 | [chewie/docs/operations.md](chewie/docs/operations.md) | Keeping it running: stopping and starting, connecting an LLM, backup and restore, users, logs |
 | [chewie/docs/reference/cli.md](chewie/docs/reference/cli.md) | Every terminal command and every argument |
