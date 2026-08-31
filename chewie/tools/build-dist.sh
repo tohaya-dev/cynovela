@@ -722,7 +722,7 @@ rm -f "$STAGE/$NAME/MANIFEST-anchor-candidate-20260713.md" \
 #   書き換えず、ステージから落として、代わりに**この配布物の実際の数え上げ**を書き出す。
 rm -f "$STAGE/$NAME/MANIFEST-20260724-overnight.md" \
       "$STAGE/$NAME/MANIFEST-20260725-ga-mas.md"
-# app-materials-out (DD-CYN-0191・§201): .app の組み立て材料は受け取り手に使い道が
+# app-materials-out (2026-08-31): .app の組み立て材料は受け取り手に使い道が
 #   無く、注釈に内部の作業番号を含む。ツリー側は書き換えず、ステージから落とす。
 #   (.app の組み立ては tools/build-macos-app.sh がツリーから直接行うもので、
 #    この除去はそちらの工程には触れない)
@@ -1029,7 +1029,7 @@ for _g in "$DIST_DEV_USER" "$DIST_WORK_PAT"; do
   echo "[gate] 参考: 記号を含むファイル数 = $_n"
 done
 
-# (4) 内部の作業番号 (DD-CYN-0191・§201)。この関門は build-dist.sh が組む配布物
+# (4) 内部の作業番号 (2026-08-31 新設)。この関門は build-dist.sh が組む配布物
 #     (Portable を含む chewie/falcon の梱包物) だけを見る。.app の組み立て工程には
 #     当てない。パターンを正規表現で書くのは、この行自身がステージに同梱されても
 #     字面としては一致しないため (自己検出の回避・既知の型)。
