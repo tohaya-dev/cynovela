@@ -1068,7 +1068,7 @@ embedding:
 <div class="slide-body">
     <h4>2-8-4. The behavior when the endpoint is not there</h4>
     <ul>
-    <li>Rerank: when the external inference server cannot be reached, <strong>it falls back to processing with the model inside the application (store/models)</strong> (this package is all-in-one and bundles the rerank model). When you have not placed the rerank model, it does not rerank and returns the search results as they are. In either case the processing does not stop.</li>
+    <li>Rerank: when the external inference server cannot be reached, <strong>it falls back to processing with the model inside the application (store/models)</strong> (when the models download has been laid on top, the rerank model is among them). When you have not placed the rerank model, it does not rerank and returns the search results as they are. In either case the processing does not stop.</li>
     <li>Embedding (only when you have set it to go outside): when it cannot be reached, <strong>it explicitly falls back to the local processing inside the application</strong>, and <strong>"⚠️ 外部の推論サーバに届かないためローカルへ退避中"</strong> (falling back to local because the external inference server cannot be reached) is displayed on the administration screen (Settings &gt; Embedding). It never becomes slow silently. If you set the endpoint up again, it automatically returns from the next embedding.</li>
     </ul>
 </div>
@@ -2600,7 +2600,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <thead><tr><th>Environment variable</th><th>Use</th><th>Default</th></tr></thead>
     <tbody>
     <tr><td><code>CYNOVELA_ADMIN_USERNAME</code></td><td>User name of the first administrator</td><td><code>cynovela</code></td></tr>
-    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>Password of the first administrator</td><td>(If neither the env var nor <code>auth.admin_initial_password</code> in <code>cynovela.yaml</code> is set, a password change is forced at first login. No known fixed password is distributed. Set a value only if you want to fix it.)</td></tr>
+    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>Password of the first administrator</td><td>(The shipped packages write a fixed value into their own <code>cynovela.yaml</code> at <code>auth.admin_initial_password</code> — read it there. If neither the env var nor that key is set — which is the state of the repository source, not of a shipped package — a password change is forced at first login. Set the env var only if you want to override it.)</td></tr>
     </tbody>
     </table>
     <h3>9-3. Login Information of the Shipped demo.db</h3>
@@ -2621,8 +2621,8 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <table>
     <thead><tr><th>User name</th><th>Role</th><th>Password</th></tr></thead>
     <tbody>
-    <tr><td><code>cynovela</code></td><td>admin</td><td>A change is forced at first login (no fixed password is distributed)</td></tr>
-    <tr><td><code>demo</code></td><td>viewer</td><td>See <code>viewer_password</code> in the bundled credential file (<code>*.admin-password.txt</code>, received separately from the package tar). No fixed password is distributed</td></tr>
+    <tr><td><code>cynovela</code></td><td>admin</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>auth.admin_initial_password</code>). A change is forced at first login</td></tr>
+    <tr><td><code>demo</code></td><td>viewer</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>auth.viewer_initial_password</code>). Nothing is delivered separately</td></tr>
     </tbody>
     </table>
     <h3>9-4. Adding and Deleting Users, and Changing Passwords</h3>
@@ -3670,7 +3670,7 @@ embedding:
 <div class="slide-body">
     <h4>2-8-4. 口が居ないときの振る舞い</h4>
     <ul>
-    <li>再ランク: 外部の推論サーバに届かない場合、<strong>アプリ内のモデル (store/models) での処理へ退避</strong>します(本配布物は全部入りで、再ランクのモデルを同梱しています)。再ランクのモデルを置いていない場合は、再ランクを行わず検索結果をそのまま返します。どちらの場合も処理は止まりません。</li>
+    <li>再ランク: 外部の推論サーバに届かない場合、<strong>アプリ内のモデル (store/models) での処理へ退避</strong>します(models の落とし物を重ねてあれば、再ランクのモデルもその中に入っています)。再ランクのモデルを置いていない場合は、再ランクを行わず検索結果をそのまま返します。どちらの場合も処理は止まりません。</li>
     <li>埋め込み (外へ出す設定にしたときのみ): 届かない場合は<strong>アプリ内のローカル処理へ明示的に退避</strong>し、管理画面 (設定 &gt; Embedding) に <strong>「⚠️ 外部の推論サーバに届かないためローカルへ退避中」</strong> と表示されます。黙って遅くなることはありません。口を立て直せば次回の埋め込みから自動復帰します。</li>
     </ul>
 </div>
@@ -5160,7 +5160,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <thead><tr><th>環境変数</th><th>用途</th><th>既定値</th></tr></thead>
     <tbody>
     <tr><td><code>CYNOVELA_ADMIN_USERNAME</code></td><td>初回 admin ユーザー名</td><td><code>cynovela</code></td></tr>
-    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>初回 admin パスワード</td><td>（env・<code>cynovela.yaml</code> の <code>auth.admin_initial_password</code> いずれも未設定なら、初回ログインでパスワード変更を強制します。既知の固定 PW は配布しません。固定したい場合のみ値を設定）</td></tr>
+    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>初回 admin パスワード</td><td>（配布物は固定値を配布物自身の <code>cynovela.yaml</code> の <code>auth.admin_initial_password</code> へ書き込んで出荷します。値はそこで読めます。env・当該キーのいずれも未設定＝リポジトリのソースそのままの状態なら、初回ログインでパスワード変更を強制します。上書きしたい場合のみ env に値を設定）</td></tr>
     </tbody>
     </table>
     <h3>9-3. 出荷 demo.db のログイン情報</h3>
@@ -5181,8 +5181,8 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <table>
     <thead><tr><th>ユーザー名</th><th>ロール</th><th>パスワード</th></tr></thead>
     <tbody>
-    <tr><td><code>cynovela</code></td><td>admin</td><td>初回ログイン時に変更を強制（固定 PW は配布しません）</td></tr>
-    <tr><td><code>demo</code></td><td>viewer</td><td>同梱の資格情報ファイル（配布物の tar とは別便で受け取る <code>*.admin-password.txt</code>）の <code>viewer_password</code> を参照。固定 PW は配布しません</td></tr>
+    <tr><td><code>cynovela</code></td><td>admin</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>auth.admin_initial_password</code>）に在ります。初回ログイン時に変更を強制</td></tr>
+    <tr><td><code>demo</code></td><td>viewer</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>auth.viewer_initial_password</code>）に在ります。別便で渡すファイルはありません</td></tr>
     </tbody>
     </table>
     <h3>9-4. ユーザー追加・削除・パスワード変更</h3>

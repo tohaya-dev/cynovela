@@ -376,7 +376,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(1/6)</span>
 </div>
 <div class="slide-body">
-<p>There are 3 forms, plus the AI models as a separate download. <strong>The package edition comes first</strong> — if you have it, skip the environment setup in section 4 and section 7 entirely. Files named <code>.part00</code>–<code>.part02</code> are split files: join them in part order before extracting, and verify with <code>shasum -a 256 --ignore-missing -c SHA256SUMS</code>. The step-by-step guide is <strong>HOW-TO-ASSEMBLE.md</strong>, published on the releases page next to the files.</p>
+<p>There are 2 forms, plus the AI models as a separate download. <strong>The package edition comes first</strong> — if you have it, skip the environment setup in section 4 and section 7 entirely. Files named <code>.part00</code>–<code>.part02</code> are split files: join them in part order before extracting, and verify with <code>shasum -a 256 --ignore-missing -c SHA256SUMS</code>. The step-by-step guide is <strong>HOW-TO-ASSEMBLE.md</strong>, published on the releases page next to the files.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -390,7 +390,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(2/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>Package edition</strong> <code>cynovela-chewie-package-1.1.2.tar.gz</code> (1 file, about 800 MB)</td><td>Apple silicon Macs. <strong>No Python and no conda are needed. Nothing is installed on this Mac.</strong></td><td>Extract it, add the AI models (last row), then run <code>./launch.sh</code>. To remove it, delete the folder.</td></tr><tr><td><strong>Source edition, all-in-one</strong> <code>cynovela-chewie-all-in-one-1.1.2.tar.gz.part00</code>–<code>part02</code> (3 split files, models included)</td><td>Those who want everything in one go</td><td>Join, extract, then follow section 7 below.</td></tr></tbody></table>
+<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>Package edition</strong> <code>cynovela-chewie-package-1.1.3.tar.gz</code> (1 file, about 800 MB)</td><td>Apple silicon Macs. <strong>No Python and no conda are needed. Nothing is installed on this Mac.</strong></td><td>Extract it, add the AI models (last row), then run <code>./launch.sh</code>. To remove it, delete the folder.</td></tr><tr><td><strong>Source edition</strong> (not a download — the source is this repository)</td><td>Those who want to build the environment themselves</td><td>Clone the repository or use GitHub's "Download ZIP", take the <code>chewie/</code> tree, add the AI models (last row), then follow section 7 below.</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -404,7 +404,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(3/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>Source edition, lightweight</strong> <code>cynovela-chewie-lightweight-1.1.2.tar.gz</code> (1 file, a few MB)</td><td>Those who want to build the environment themselves, or want a small download</td><td>Extract it, add the AI models (last row), then follow section 7 below.</td></tr><tr><td><strong>AI models</strong> <code>cynovela-chewie-models-1.1.2.tar.gz.part00</code>–<code>part02</code> (3 split files)</td><td>Needed with the package edition and the lightweight edition. Despite the name, these are the AI models themselves, not conda packages.</td><td>Join the parts into one file, then run <code>tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz</code> <strong>inside the extracted chewie folder</strong> — <code>store/models/</code> is created.</td></tr></tbody></table>
+<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>AI models</strong> <code>cynovela-chewie-models-1.1.3.tar.gz.part00</code>–<code>part02</code> (3 split files)</td><td>Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages.</td><td>Join the parts into one file, then run <code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code> <strong>inside the extracted chewie folder</strong> — <code>store/models/</code> is created.</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -468,14 +468,14 @@ a:hover { text-decoration: underline; }
 <span class="continued">(1/10)</span>
 </div>
 <div class="slide-body">
-<p>This section is for the <strong>package edition</strong> (<code>cynovela-chewie-package-1.1.2.tar.gz</code>). It assumes you have never opened Terminal. Nothing is skipped.</p>
+<p>This section is for the <strong>package edition</strong> (<code>cynovela-chewie-package-1.1.3.tar.gz</code>). It assumes you have never opened Terminal. Nothing is skipped.</p>
 <p>Do these in order. Do not read ahead for reasons; the reasons are in section 3.</p>
 <h4>Step 1. Download five files</h4>
 <p>On the releases page, download these into your <strong>Downloads</strong> folder:</p>
-<pre><code>cynovela-chewie-package-1.1.2.tar.gz
-cynovela-chewie-models-1.1.2.tar.gz.part00
-cynovela-chewie-models-1.1.2.tar.gz.part01
-cynovela-chewie-models-1.1.2.tar.gz.part02
+<pre><code>cynovela-chewie-package-1.1.3.tar.gz
+cynovela-chewie-models-1.1.3.tar.gz.part00
+cynovela-chewie-models-1.1.3.tar.gz.part01
+cynovela-chewie-models-1.1.3.tar.gz.part02
 SHA256SUMS</code></pre>
 </div>
 <div class="slide-footer">
@@ -513,7 +513,7 @@ SHA256SUMS</code></pre>
 <div class="slide-body">
 <h4>Step 4. Join the three model parts into one file</h4>
 <p>Type this as <strong>one line</strong> and press return:</p>
-<pre><code>cat cynovela-chewie-models-1.1.2.tar.gz.part* &gt; cynovela-chewie-models-1.1.2.tar.gz</code></pre>
+<pre><code>cat cynovela-chewie-models-1.1.3.tar.gz.part* &gt; cynovela-chewie-models-1.1.3.tar.gz</code></pre>
 <p>This takes <strong>one to three minutes</strong> and prints nothing while it works. When the cursor comes back, it is done.</p>
 <h4>Step 5. Check that the files arrived intact</h4>
 <pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS</code></pre>
@@ -531,11 +531,11 @@ SHA256SUMS</code></pre>
 <span class="continued">(4/10)</span>
 </div>
 <div class="slide-body">
-<pre><code>cynovela-chewie-models-1.1.2.tar.gz: OK
-cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
+<pre><code>cynovela-chewie-models-1.1.3.tar.gz: OK
+cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 <p>If any line says <code>FAILED</code>, download that file again and repeat from step 4. Do not go on.</p>
 <h4>Step 6. Unpack the program</h4>
-<pre><code>tar -xzf cynovela-chewie-package-1.1.2.tar.gz</code></pre>
+<pre><code>tar -xzf cynovela-chewie-package-1.1.3.tar.gz</code></pre>
 <p>This takes <strong>three to ten minutes</strong> and prints nothing. A folder named <code>chewie</code> appears in Downloads.</p>
 <h4>Step 7. Go into that folder</h4>
 <pre><code>cd chewie</code></pre>
@@ -554,7 +554,7 @@ cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
 <div class="slide-body">
 <p>Nothing is printed.</p>
 <h4>Step 8. Unpack the AI models inside it</h4>
-<pre><code>tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz</code></pre>
+<pre><code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code></pre>
 <p>This takes <strong>two to five minutes</strong> and prints nothing.</p>
 <h4>Step 9. Start it</h4>
 <pre><code>./launch.sh --demo</code></pre>
@@ -617,7 +617,7 @@ cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
 <p>Hold <strong>⌘</strong> and click <code>http://127.0.0.1:8765/</code>, or type that address into Safari or Chrome yourself.</p>
 <p>A sign-in screen appears.</p>
 <h4>Step 11. Sign in</h4>
-<ul><li><strong>User name:</strong> <code>cynovela</code></li><li><strong>Password:</strong> it is printed on the terminal screen the very first time you start it, and only that once. The value itself is written in the file <code>cynovela.yaml</code> inside the folder you unpacked, on the line that begins <code>admin_initial_password:</code>. To see it, type this in Terminal:<pre><code>grep admin_initial_password cynovela.yaml</code></pre></li></ul>
+<ul><li><strong>User name:</strong> <code>cynovela</code></li><li><strong>Password:</strong> it is written in the file <code>cynovela.yaml</code> inside the folder you unpacked, on the line that begins <code>admin_initial_password:</code>. To see it, type this in Terminal:<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>(On the ordinary <code>./launch.sh</code> start it is also printed on the terminal screen once, the very first time — but <strong>not</strong> on this <code>--demo</code> start, because the bundled sample database makes that route count as "not the first start". Reading <code>cynovela.yaml</code> works either way.)</p></li></ul>
 <p>It will ask you to choose a new password straight away. Do that.</p>
 </div>
 <div class="slide-footer">
@@ -767,7 +767,7 @@ cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
 <span class="continued">(1/7)</span>
 </div>
 <div class="slide-body">
-<p>These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version <code>1.1.2</code> (working directory <code>&lt;the folder where you extracted the package&gt;</code>).</p>
+<p>These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version <code>1.1.3</code> (working directory <code>&lt;the folder where you extracted the package&gt;</code>).</p>
 <h3>4-1. Setting up the environment (source edition only)</h3>
 <p><strong>The recommended way is to let <code>./launch.sh</code> do it.</strong> On the first run it offers the 2 choices below, and either way <strong>the shared conda environment is never created and never modified</strong> (everything goes into a dedicated place):</p>
 </div>
@@ -1004,7 +1004,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(1/2)</span>
 </div>
 <div class="slide-body">
-<p>In the forms that do not bundle the model (the package edition, the model-separate (lightweight) package, or using this repository as it is), the AI model that reads documents (the embedding model bge-m3) is not yet present on the first run. Only when it is missing, the following three choices appear in the middle of startup.</p>
+<p>In the forms that do not bundle the model (the package edition, or the source taken from this repository), the AI model that reads documents (the embedding model bge-m3) is not yet present on the first run. Only when it is missing, the following three choices appear in the middle of startup.</p>
 <ol><li><strong>Download it now</strong> — receives about 2.2-2.3 GB from the internet (download source: Hugging Face). A network connection is required.</li><li><strong>Choose a folder you already have</strong> — connects a model folder you already hold.</li><li><strong>Start with the lightest settings without downloading</strong> — starts with no network access.</li></ol>
 </div>
 <div class="slide-footer">
@@ -1051,7 +1051,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>Administrator user name</td><td><code>cynovela</code></td></tr><tr><td>Viewer user name</td><td><code>demo</code></td></tr></tbody></table>
-<p>The default user names are <strong>administrator <code>cynovela</code></strong> / <strong>viewer <code>demo</code></strong> (not <code>admin</code>). <strong>The initial passwords are printed on the screen the first time you start it.</strong> They are not written in this file, so that a copy of the documentation cannot be used to sign in. Look at the terminal window that opens on the first start. (The value itself is the one written into <code>cynovela.yaml</code> when the package was built: <code>grep admin_initial_password cynovela.yaml</code>.)</p>
+<p>The default user names are <strong>administrator <code>cynovela</code></strong> / <strong>viewer <code>demo</code></strong> (not <code>admin</code>). <strong>The initial passwords are written into this package's own <code>cynovela.yaml</code></strong> — read them with <code>grep admin_initial_password cynovela.yaml</code> (the viewer's line is <code>viewer_initial_password:</code>). They are not written in this documentation, so that a copy of the documentation cannot be used to sign in. The ordinary <code>./launch.sh</code> start also prints them on the terminal once, the very first time — but the <code>--demo</code> start does not, because the bundled sample database makes that route count as "not the first start".</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1065,7 +1065,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(2/5)</span>
 </div>
 <div class="slide-body">
-<ol><li>Enter <strong><code>cynovela</code></strong> as the user name.</li><li>For the password, enter the administrator value that was printed on the first start.</li><li>When you log in, "<strong>初回パスワードの変更</strong>" (change your initial password) appears. Enter the value you received in "現在のパスワード" (current password), a value of your own choosing in "新しいパスワード（8文字以上）" (new password, 8 characters or more), enter the same value in the confirmation field as well, and press "<strong>パスワードを変更して続行</strong>" (change the password and continue).</li></ol>
+<ol><li>Enter <strong><code>cynovela</code></strong> as the user name.</li><li>For the password, enter the administrator value read out of <code>cynovela.yaml</code>.</li><li>When you log in, "<strong>初回パスワードの変更</strong>" (change your initial password) appears. Enter the value you received in "現在のパスワード" (current password), a value of your own choosing in "新しいパスワード（8文字以上）" (new password, 8 characters or more), enter the same value in the confirmation field as well, and press "<strong>パスワードを変更して続行</strong>" (change the password and continue).</li></ol>
 <p><strong>Until you finish this change, administrative operations such as settings will not go through</strong> (only the change operation goes through). Be sure to change it here.</p>
 </div>
 <div class="slide-footer">
@@ -1113,7 +1113,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(5/5)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>User name (default. It is not <code>admin</code>)</th><th>Role</th><th>Password</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>A change is forced at the first login (no fixed password is distributed)</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>Printed on the screen at the first start, together with the administrator's. No fixed password is distributed</td></tr></tbody></table>
+<table><thead><tr><th>User name (default. It is not <code>admin</code>)</th><th>Role</th><th>Password</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>admin_initial_password:</code>). A change is forced at the first login</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>viewer_initial_password:</code>)</td></tr></tbody></table>
 <h3>How to create a viewer when you started with nothing loaded</h3>
 <p>If you started with nothing loaded, at first only the administrator exists. You create the viewer yourself. Enter as the administrator, add a new user from user management, and choose viewer as the role. If you started with the trial documents, a viewer is prepared in advance.</p>
 </div>
@@ -2163,7 +2163,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="continued">(1/6)</span>
 </div>
 <div class="slide-body">
-<p>配布物は 3 つの形と、別便の AIモデルです。<strong>パッケージ版が先です</strong> — お持ちなら4節と7節の環境づくりは丸ごと飛ばせます。<code>.part00</code>〜<code>.part02</code> という名前のファイルは分割ファイルです: 展開の前に part の順に 1 本へつなぎ、<code>shasum -a 256 --ignore-missing -c SHA256SUMS</code> で確かめます。手引きは Releases のファイルの並びに置いてある <strong>HOW-TO-ASSEMBLE.md</strong> です。</p>
+<p>配布物は 2 つの形と、別便の AIモデルです。<strong>パッケージ版が先です</strong> — お持ちなら4節と7節の環境づくりは丸ごと飛ばせます。<code>.part00</code>〜<code>.part02</code> という名前のファイルは分割ファイルです: 展開の前に part の順に 1 本へつなぎ、<code>shasum -a 256 --ignore-missing -c SHA256SUMS</code> で確かめます。手引きは Releases のファイルの並びに置いてある <strong>HOW-TO-ASSEMBLE.md</strong> です。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2177,7 +2177,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="continued">(2/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>パッケージ版</strong> <code>cynovela-chewie-package-1.1.2.tar.gz</code>（1本・約800MB）</td><td>Apple silicon の Mac。<strong>Python も conda も要りません。この Mac には何も入れません。</strong></td><td>展開し、AIモデル（最終行）を重ねてから <code>./launch.sh</code> を叩きます。消すときはフォルダごと削除します。</td></tr><tr><td><strong>ソース版・全部入り</strong> <code>cynovela-chewie-all-in-one-1.1.2.tar.gz.part00</code>〜<code>part02</code>（分割3本・モデル込み）</td><td>とにかく1回で全部落としたい方</td><td>つないで展開し、下の7節へ。</td></tr></tbody></table>
+<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>パッケージ版</strong> <code>cynovela-chewie-package-1.1.3.tar.gz</code>（1本・約800MB）</td><td>Apple silicon の Mac。<strong>Python も conda も要りません。この Mac には何も入れません。</strong></td><td>展開し、AIモデル（最終行）を重ねてから <code>./launch.sh</code> を叩きます。消すときはフォルダごと削除します。</td></tr><tr><td><strong>ソース版</strong>（ダウンロードではありません。ソースはこのリポジトリです）</td><td>自分で環境を作りたい方</td><td>リポジトリを clone するか GitHub の「Download ZIP」で取り、<code>chewie/</code> の木に AIモデル（最終行）を重ねてから、下の7節へ。</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2191,7 +2191,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="continued">(3/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>ソース版・モデル別取得版（軽量）</strong> <code>cynovela-chewie-lightweight-1.1.2.tar.gz</code>（1本・数MB）</td><td>自分で環境を作りたい方、軽く落としたい方</td><td>展開し、AIモデル（最終行）を重ねてから、下の7節へ。</td></tr><tr><td><strong>AIモデル</strong> <code>cynovela-chewie-models-1.1.2.tar.gz.part00</code>〜<code>part02</code>（分割3本）</td><td>パッケージ版とモデル別取得版に必要です。名前は models ですが、conda のパッケージではなく <strong>AIモデル本体</strong>です。</td><td>part を 1 本につないでから、<strong>展開済みの chewie フォルダの中で</strong> <code>tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz</code> を実行します（<code>store/models/</code> が作られます）。</td></tr></tbody></table>
+<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>AIモデル</strong> <code>cynovela-chewie-models-1.1.3.tar.gz.part00</code>〜<code>part02</code>（分割3本）</td><td>パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく <strong>AIモデル本体</strong>です。</td><td>part を 1 本につないでから、<strong>展開済みの chewie フォルダの中で</strong> <code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code> を実行します（<code>store/models/</code> が作られます）。</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2255,14 +2255,14 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="continued">(1/10)</span>
 </div>
 <div class="slide-body">
-<p>この節は<strong>パッケージ版</strong>（<code>cynovela-chewie-package-1.1.2.tar.gz</code>）向けです。ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。</p>
+<p>この節は<strong>パッケージ版</strong>（<code>cynovela-chewie-package-1.1.3.tar.gz</code>）向けです。ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。</p>
 <p>上から順に行ってください。理由は3節にあります。先に読む必要はありません。</p>
 <h4>手順1. ファイルを5つ落とす</h4>
 <p>リリースのページから、次の5つを<strong>ダウンロード</strong>フォルダへ落とします。</p>
-<pre><code>cynovela-chewie-package-1.1.2.tar.gz
-cynovela-chewie-models-1.1.2.tar.gz.part00
-cynovela-chewie-models-1.1.2.tar.gz.part01
-cynovela-chewie-models-1.1.2.tar.gz.part02
+<pre><code>cynovela-chewie-package-1.1.3.tar.gz
+cynovela-chewie-models-1.1.3.tar.gz.part00
+cynovela-chewie-models-1.1.3.tar.gz.part01
+cynovela-chewie-models-1.1.3.tar.gz.part02
 SHA256SUMS</code></pre>
 </div>
 <div class="slide-footer">
@@ -2300,7 +2300,7 @@ SHA256SUMS</code></pre>
 <div class="slide-body">
 <h4>手順4. モデルの3つの片を1本につなぐ</h4>
 <p>次を<strong>1行で</strong>打って return を押します。</p>
-<pre><code>cat cynovela-chewie-models-1.1.2.tar.gz.part* &gt; cynovela-chewie-models-1.1.2.tar.gz</code></pre>
+<pre><code>cat cynovela-chewie-models-1.1.3.tar.gz.part* &gt; cynovela-chewie-models-1.1.3.tar.gz</code></pre>
 <p><strong>1〜3分</strong>かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。</p>
 <h4>手順5. ちゃんと落ちているかを確かめる</h4>
 <pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS</code></pre>
@@ -2318,11 +2318,11 @@ SHA256SUMS</code></pre>
 <span class="continued">(4/10)</span>
 </div>
 <div class="slide-body">
-<pre><code>cynovela-chewie-models-1.1.2.tar.gz: OK
-cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
+<pre><code>cynovela-chewie-models-1.1.3.tar.gz: OK
+cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 <p><code>FAILED</code> と出た行があれば、そのファイルを落とし直して手順4からやり直します。先へ進まないでください。</p>
 <h4>手順6. 本体を取り出す</h4>
-<pre><code>tar -xzf cynovela-chewie-package-1.1.2.tar.gz</code></pre>
+<pre><code>tar -xzf cynovela-chewie-package-1.1.3.tar.gz</code></pre>
 <p><strong>3〜10分</strong>かかります。何も出ません。ダウンロードの中に <code>chewie</code> という名前のフォルダができます。</p>
 <h4>手順7. そのフォルダの中へ移る</h4>
 <pre><code>cd chewie</code></pre>
@@ -2341,7 +2341,7 @@ cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
 <div class="slide-body">
 <p>何も出ません。</p>
 <h4>手順8. その中で AIモデルを取り出す</h4>
-<pre><code>tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz</code></pre>
+<pre><code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code></pre>
 <p><strong>2〜5分</strong>かかります。何も出ません。</p>
 <h4>手順9. 起こす</h4>
 <pre><code>./launch.sh --demo</code></pre>
@@ -2404,7 +2404,7 @@ cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
 </div>
 <div class="slide-body">
 <h4>手順11. ログインする</h4>
-<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>合言葉:</strong> はじめて起動したとき、その1回だけターミナルの画面に出ます。値そのものは、取り出したフォルダの中の <code>cynovela.yaml</code> というファイルの、<code>admin_initial_password:</code> で始まる行に書いてあります。見るには、ターミナルで次を打ちます。<pre><code>grep admin_initial_password cynovela.yaml</code></pre></li></ul>
+<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>合言葉:</strong> 取り出したフォルダの中の <code>cynovela.yaml</code> というファイルの、<code>admin_initial_password:</code> で始まる行に書いてあります。見るには、ターミナルで次を打ちます。<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>（普通の <code>./launch.sh</code> の起動なら、はじめての1回だけターミナルの画面にも出ます。ただしこの <code>--demo</code> の起動では出ません。同梱のデモ用データベースが最初から入っているため、この経路は「初回ではない」と判定されるからです。<code>cynovela.yaml</code> を見る道は、どちらでも使えます。）</p></li></ul>
 <p>入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。</p>
 <h4>手順12. 最初の質問をする</h4>
 <p><code>--demo</code> で起こしたので、お試しの資料が最初から入っていて、探せる状態になっています。ふつうの言葉で枠に打ち込んで return を押します。たとえば次のようにです。</p>
@@ -2554,7 +2554,7 @@ cynovela-chewie-package-1.1.2.tar.gz: OK</code></pre>
 <span class="continued">(1/6)</span>
 </div>
 <div class="slide-body">
-<p>Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 <code>1.1.2</code>（作業ディレクトリ <code>&lt;配布物を展開したフォルダ&gt;</code>）です。</p>
+<p>Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 <code>1.1.3</code>（作業ディレクトリ <code>&lt;配布物を展開したフォルダ&gt;</code>）です。</p>
 <h3>4-1. 環境のセットアップ（ソース版のみ）</h3>
 <p><strong>推奨は <code>./launch.sh</code> に作らせる形です。</strong> 初回に下の 2 択が出ます。どちらを選んでも<strong>共有の conda 環境は作りません・書き換えません</strong>（すべて専用の場所に作られます）:</p>
 <pre><code>cd &lt;配布物を展開したフォルダ&gt;
@@ -2777,7 +2777,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="slide-title">8. 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます</span>
 </div>
 <div class="slide-body">
-<p>モデルを同梱しない形（パッケージ版・モデル別取得版（軽量）や、このリポジトリをそのまま使う形）では、資料を読み取るための AI モデル（埋め込みモデル bge-m3）が初回はまだ入っていません。無いときだけ、起動の途中で次の三択が出ます。</p>
+<p>モデルを同梱しない形（パッケージ版や、このリポジトリのソースをそのまま使う形）では、資料を読み取るための AI モデル（埋め込みモデル bge-m3）が初回はまだ入っていません。無いときだけ、起動の途中で次の三択が出ます。</p>
 <ol><li><strong>いまダウンロードする</strong> — インターネットから約 2.2〜2.3 GB を受け取ります（ダウンロード元: Hugging Face）。通信が要ります。</li><li><strong>すでに持っているフォルダを選ぶ</strong> — 手元にあるモデルのフォルダをつなぎます。</li><li><strong>ダウンロードせずに、いちばん軽い設定で始める</strong> — 通信なしで始めます。</li></ol>
 <p>どれかを選ぶまで、通信は始まりません。（<code>Cynovela-start.command</code> のダブルクリックから始めた場合は、同じ内容が「ダウンロードする／キャンセル」の画面で出ます。）</p>
 </div>
@@ -2811,7 +2811,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>管理者の利用者名</td><td><code>cynovela</code></td></tr><tr><td>閲覧者の利用者名</td><td><code>demo</code></td></tr></tbody></table>
-<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>初期パスワードは、はじめて起動したときに画面に出ます。</strong>この文書には書いていません。文書のコピーだけでログインできてしまうのを避けるためです。初回の起動で開くターミナルの画面をご覧ください。（値そのものは、配布物を作るときに <code>cynovela.yaml</code> へ書き込まれたものです: <code>grep admin_initial_password cynovela.yaml</code>。）</p>
+<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>初期パスワードは、この配布物自身の <code>cynovela.yaml</code> に書き込まれています</strong> — <code>grep admin_initial_password cynovela.yaml</code> で見られます（閲覧者のぶんは <code>viewer_initial_password:</code> の行です）。この文書には書いていません。文書のコピーだけでログインできてしまうのを避けるためです。普通の <code>./launch.sh</code> の起動なら、はじめての1回だけターミナルの画面にも出ます。ただし <code>--demo</code> の起動では出ません。同梱のデモ用データベースが最初から入っているため、その経路は「初回ではない」と判定されるからです。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2825,7 +2825,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(2/5)</span>
 </div>
 <div class="slide-body">
-<ol><li>ユーザー名に <strong><code>cynovela</code></strong> を入力します。</li><li>パスワードは、初回起動の画面に出た管理者の値を入力します。</li><li>ログインすると「<strong>初回パスワードの変更</strong>」が出ます。「現在のパスワード」に受け取った値、「新しいパスワード（8文字以上）」に自分で決めた値を入れ、確認欄にも同じ値を入れて「<strong>パスワードを変更して続行</strong>」を押します。</li></ol>
+<ol><li>ユーザー名に <strong><code>cynovela</code></strong> を入力します。</li><li>パスワードは、<code>cynovela.yaml</code> から読み取った管理者の値を入力します。</li><li>ログインすると「<strong>初回パスワードの変更</strong>」が出ます。「現在のパスワード」に受け取った値、「新しいパスワード（8文字以上）」に自分で決めた値を入れ、確認欄にも同じ値を入れて「<strong>パスワードを変更して続行</strong>」を押します。</li></ol>
 <p><strong>この変更を済ませるまで、設定などの管理操作は通りません</strong>（変更操作だけが通ります）。必ずここで変更してください。</p>
 <p>管理者は初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。閲覧者はそのまま使えます。<strong>受け取ったあと、最初に管理者のパスワードを変えてください。</strong></p>
 <p>うまくいかないときに確認すること:</p>
@@ -2860,7 +2860,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <div class="slide-body">
 <table><thead><tr><th>ロール</th><th>権限</th><th>検索対象</th></tr></thead><tbody><tr><td><code>admin</code></td><td>全機能</td><td>raw 保管庫（出力マスクなし）</td></tr><tr><td><code>viewer</code></td><td>閲覧中心</td><td>masked 保管庫（出口マスクあり）</td></tr></tbody></table>
 <blockquote><code>curator</code> / <code>data-scientist</code> 等の名称は内部的に <code>viewer</code> へ正規化されます。</blockquote>
-<table><thead><tr><th>ユーザー名（既定。<code>admin</code> ではありません）</th><th>ロール</th><th>パスワード</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>初回ログイン時に変更を強制（固定 PW は配布しません）</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>管理者の値と一緒に、初回起動の画面に出ます。固定 PW は配布しません</td></tr></tbody></table>
+<table><thead><tr><th>ユーザー名（既定。<code>admin</code> ではありません）</th><th>ロール</th><th>パスワード</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>admin_initial_password:</code>）に在ります。初回ログイン時に変更を強制</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>viewer_initial_password:</code>）に在ります</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

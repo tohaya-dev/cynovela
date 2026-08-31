@@ -217,7 +217,7 @@ a:hover { text-decoration: underline; }
     <p><strong>日本語版はこちら → 日本語</strong></p>
     <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that one individual could understand the concepts behind AI infrastructure tools by working through them by hand. It is not a commercial product and not an official implementation. The implementation is entirely original, built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.</blockquote>
     <p>This document describes what Cynovela <strong>cannot</strong> do, and what to watch out for. Explanations of what it can do are in <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> and <a href="concept.html" target="_blank" rel="noopener">concept.md</a>. Only the things that will disappoint you if you expect them are written here.</p>
-    <p>The version is <code>1.1.2</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
+    <p>The version is <code>1.1.3</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
     <p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
@@ -717,9 +717,10 @@ a:hover { text-decoration: underline; }
 <div class="slide-body">
     <ul>
     <li><strong>The embedding model must match down to the version (snapshot).</strong> The snapshot version of <code>BAAI/bge-m3</code> must be aligned. <strong>If the version differs the vector values change, they mix with the bundled index, and the search ranking breaks.</strong> If the version differs, a warning appears at startup and at publish time. When a warning appears, either align the version or rebuild the whole index.</li>
-    <li><strong>The lightweight package (does not include AI models; about 2.4 MB) does not bundle models.</strong> If you run the startup script without placing the models, the first startup asks whether to fetch them from the internet. If you decline, <strong>it stops before starting</strong>.</li>
+    <li><strong>Neither the package edition nor the source edition bundles the AI models.</strong> If you run the startup script without placing the models, the first startup asks whether to fetch them from the internet. If you decline, <strong>it stops before starting</strong>.</li>
     <li><strong><code>host.containers.internal</code> cannot be resolved outside a container.</strong> If you start directly on the host, rewrite it to <code>127.0.0.1</code> (the container package rewrites this one word automatically. If you write a different host name or IP it is not rewritten and is used exactly as written).</li>
     <li><strong>The image endpoint of the external accelerator is unimplemented.</strong> Calling it returns 501.</li>
+    <li><strong>The reranker is set to an external accelerator that no distributable carries.</strong> In the <code>cynovela.yaml</code> that ships, <code>reranker.device</code> is <code>external</code> and <code>reranker.base_url</code> is <code>http://localhost:18850</code>, but nothing that answers on that address is included in any of the downloads. Every search therefore tries that address, fails, and falls back — to reranking inside the process when the reranker weights are in place (they are, in the <code>models</code> download), and to no reranking at all when they are not. One log line is written each time it falls back, and the settings screen shows the state. Answers are still produced. What selects the accelerator is <code>reranker.device</code>; the shipped <code>reranker.provider</code> is already <code>cross_encoder</code>, so on an edition whose <code>cynovela.yaml</code> you can edit, emptying <code>device</code> makes the in-process path the first choice instead of the fallback.</li>
     <li><strong>Some values of <code>--mode</code> at startup do not actually switch anything.</strong> This is written directly in the description text of <code>--mode</code>. <code>lite</code> and <code>lite-en</code> have no wiring to a lightweight model, and currently run on the same <code>bge-m3</code> as the default <code>text</code>. <code>minimal</code> has no TF-IDF integration, so it too requires <code>bge-m3</code> (in an environment without the models placed, ingest is not possible). <strong>Whichever mode you choose, the size of the required models does not change.</strong></li>
     </ul>
 </div>
@@ -839,6 +840,8 @@ a:hover { text-decoration: underline; }
     <li>With nothing added it is production, and starts with an <strong>empty database</strong> (<code>store/db/cynovela.db</code> and <code>store/vector/default/chroma</code>).</li>
     <li><strong>Neither is erased by a restart.</strong> They are not initialised on every startup. If you want to erase them, delete the files yourself.</li>
     <li>The bundled index and database are built <strong>only from the <code>dummy-corpus/</code> inside the package</strong> at the time the package is built. Not a single working document from the builder's side is included. What is actually included, and how many, is written out in <code>BUNDLED-DATA.md</code> in the package.</li>
+    <li><strong>Where <code>store/</code> itself sits depends on the edition.</strong> In every edition that is a folder you unpack, it is <code>store/</code> inside that folder. In the app edition — in preparation, not part of this release — the installed bundle is read-only, so the launcher sets <code>CYNOVELA_DATA_ROOT</code> and the same paths are taken relative to <code>~/Library/Application Support/Cynovela/</code> instead.</li>
+    <li><strong>The first password is not printed on the screen when you start with the bundled sample material.</strong> The startup script prints the first sign-in name and password only when it decides this is a first run, and it decides that by asking whether the database file already exists. The packages ship a pre-built <code>store/db/demo.db</code>, and the default answer at the first question starts with <code>--demo</code>, which is the database it looks for — so the file is already there, the check says "not a first run", and nothing is printed. Starting without <code>--demo</code> looks for <code>store/db/cynovela.db</code>, which is not shipped, and does print. Until this is repaired, read the password out of the <code>cynovela.yaml</code> next to the startup script, on the <code>admin_initial_password:</code> line under <code>auth:</code> (<code>grep admin_initial_password cynovela.yaml</code>). You are asked to change it at the first sign-in either way.</li>
     </ul>
 </div>
 <div class="slide-footer">
@@ -976,6 +979,7 @@ a:hover { text-decoration: underline; }
     <ul>
     <li>ChromaDB's <code>PersistentClient</code> does not error even when you pass it the wrong path. It silently creates an empty database. <strong>When a search returns 0 results, first suspect whether the index location is correct.</strong></li>
     <li>Do not pass <code>max_tokens</code> to the LM Studio API. With a reasoning-type model, it will use up the tokens it needs for thinking.</li>
+    <li><strong>The screen asks for <code>/api/settings/embedding</code> before anyone has signed in, and keeps asking after they have.</strong> The banner that reports the state of the embedding path polls that endpoint every 5 seconds for the first five minutes and every 60 seconds after that, and the polling starts when the page loads rather than when a sign-in succeeds. Before a sign-in, and for a viewer, the endpoint answers 401 or 403; the banner swallows that and shows nothing, but the request is made and logged all the same. It is noise in the log, not a leak — the endpoint refuses, it does not answer.</li>
     </ul>
 </div>
 <div class="slide-footer">
@@ -1099,7 +1103,7 @@ cd ../..
     <h3>11.6 Not measured: the package edition on a Mac without conda</h3>
     <p>The package edition is meant to need neither Python nor conda. That it starts from its bundled environment was measured on the build machine — but that machine has conda installed, so this run cannot tell you that a Mac with <strong>no</strong> conda at all behaves the same. Treat "no conda required" as designed-for and checked on a machine that happens to have conda, not as measured on a machine without it.</p>
     <h3>11.7 Fixed in chewie, not in falcon</h3>
-    <p>The following were repaired in the application build (chewie) and deliberately <strong>not</strong> carried into the container build (falcon), because falcon's code differs at those places and this release does not rewrite falcon to match:</p>
+    <p>The following were repaired in chewie and deliberately <strong>not</strong> carried into the container build (falcon) at 1.0.7, because falcon's code differs at those places and that release did not rewrite falcon to match:</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1116,12 +1120,12 @@ cd ../..
     <table>
     <thead><tr><th>What</th><th>Why not</th></tr></thead>
     <tbody>
-    <tr><td>The scan of one folder cannot start twice</td><td>falcon has no <code>scan_jobs</code> table and its <code>_do_scan</code> takes different arguments</td></tr>
     <tr><td>The generation-timeout wording</td><td>falcon has no <code>_timeout_answer</code>; the old sentence sits inline in two places</td></tr>
     <tr><td>Citation numbers carried through to MCP</td><td>falcon's MCP server is an older build (11 tools against 25)</td></tr>
-    <tr><td>The CLI, including <code>login</code> / <code>logout</code></td><td>falcon ships no <code>cynovela-cli.py</code></td></tr>
+    <tr><td>The CLI, including <code>login</code> / <code>logout</code></td><td>falcon ships no <code>cynovela-cli.py</code>. Its own, older <code>cynovela_cli.py</code> has neither <code>login</code> nor <code>logout</code></td></tr>
     </tbody>
     </table>
+    <p><strong>One of them has since been carried over.</strong> "Two scans of one folder cannot run at once" was ported into falcon on 2026-08-26. <code>_do_scan</code> in <code>falcon/server.py</code> is now a thin guarded entry point — a module-level lock plus a set of source ids, added before the work and discarded in a <code>finally</code> — wrapped around the previous body, which was renamed <code>_do_scan_body</code>. All eight call sites into the scan are covered by it. falcon still has no <code>scan_jobs</code> table, so the write-back to a job row that chewie does inside its own guard has no counterpart there; the guard itself is the same.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1216,7 +1220,7 @@ cd ../..
 <div class="slide-body">
     <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
     <p>この文書は、Cynovela に <strong>できないこと</strong>、および気をつけることを書いたものです。できることの説明は <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> と<a href="concept.html" target="_blank" rel="noopener">concept.md</a> にあります。ここには、期待すると外れることだけを書きます。</p>
-    <p>版は <code>1.1.2</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
+    <p>版は <code>1.1.3</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
     <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
@@ -1677,9 +1681,10 @@ cd ../..
 <div class="slide-body">
     <ul>
     <li><strong>埋め込みモデルは、版（snapshot）まで一致していなければなりません。</strong> <code>BAAI/bge-m3</code> の snapshot 版まで揃える必要があります。<strong>版が違うとベクトルの数値が変わり、同梱済みのインデックスと混ざって検索順位が壊れます。</strong>版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるかインデックスを全部作り直してください。</li>
-    <li><strong>軽量版（AIモデルを含みません。約 2.4 MB）はモデルを同梱していません。</strong> モデルを置かないまま起動用スクリプトを実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。取得しない場合は、<strong>起動する前に止まります</strong>。</li>
+    <li><strong>パッケージ版もソース版も、AIモデルを同梱していません。</strong> モデルを置かないまま起動用スクリプトを実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。取得しない場合は、<strong>起動する前に止まります</strong>。</li>
     <li><strong><code>host.containers.internal</code> はコンテナの外では名前解決できません。</strong>ホスト側で直接起動する場合は <code>127.0.0.1</code> に書き換えてください（コンテナ版の配布物は、この 1 語だけは自動で読み替えます。別のホスト名や IP を書いた場合は読み替えず、書いたとおりに使います）。</li>
     <li><strong>外部アクセラレータの画像の受け口は未実装です。</strong> 呼ぶと 501 を返します。</li>
+    <li><strong>再ランクの宛先は、どの配布物にも入っていない外部アクセラレータになっています。</strong> 同梱の <code>cynovela.yaml</code> は <code>reranker.device</code> が <code>external</code>、<code>reranker.base_url</code> が <code>http://localhost:18850</code> ですが、その番地で答えるものはどの落とし物にも入っていません。∴ 検索のたびにその番地へ当たりに行って失敗し、退避します。再ランクの重みが置かれていれば本体の中で再ランクし（<code>models</code> の落とし物に入っています）、置かれていなければ再ランクなしで素通しします。退避のたびにログが 1 行出て、設定の画面にも状態が出ます。答えそのものは返ります。外部を選んでいるのは <code>reranker.device</code> で、同梱の <code>reranker.provider</code> はすでに <code>cross_encoder</code> です。∴ <code>cynovela.yaml</code> を書き換えられる形態では、<code>device</code> を空にすれば本体の中で再ランクする道が退避ではなく最初の選択になります。</li>
     <li><strong>起動時の <code>--mode</code> は、実際には切り替わらないものがあります。</strong> <code>--mode</code> の説明文にそのまま書いてあります。<code>lite</code> と <code>lite-en</code> は軽量モデルへの切り替えが未配線で、現状は既定の <code>text</code> と同じ <code>bge-m3</code> で動きます。<code>minimal</code> は TF-IDF が未統合で、こちらも <code>bge-m3</code> が要ります（モデルを置いていない環境では取り込みができません）。<strong>どのモードを選んでも、必要なモデルの大きさは変わりません。</strong></li>
     </ul>
 </div>
@@ -1799,6 +1804,8 @@ cd ../..
     <li>何も付けなければ本番で、<strong>空のデータベース</strong>で起動します（<code>store/db/cynovela.db</code> と <code>store/vector/default/chroma</code>）。</li>
     <li><strong>どちらも再起動で消えません。</strong> 起動のたびに初期化されることはありません。消したい場合は自分でファイルを消してください。</li>
     <li>同梱のインデックスとデータベースは、配布物を作るときに<strong>配布物の中の <code>dummy-corpus/</code> だけ</strong>から作っています。作った側の作業用の資料は 1 件も入っていません。実際に何が何件入っているかは、配布物の <code>BUNDLED-DATA.md</code> に書き出してあります。</li>
+    <li><strong><code>store/</code> 自体の場所は形態で違います。</strong> 展開して使うフォルダの形では、そのフォルダの中の <code>store/</code> です。アプリ版（準備中。この版には入っていません）は入れたあとの包みが読み取り専用のため、入口が <code>CYNOVELA_DATA_ROOT</code> を与え、上の道筋は <code>~/Library/Application Support/Cynovela/</code> からの相対として扱われます。</li>
+    <li><strong>同梱のお試し資料で始めると、最初のパスワードは画面に出ません。</strong> 起動用スクリプトは「初回である」と判定したときだけ最初のユーザー名とパスワードを出し、その判定はデータベースのファイルがすでに在るかどうかで行っています。配布物には作り置きの <code>store/db/demo.db</code> が入っており、最初の問いで Enter を押す道（既定）は <code>--demo</code> で起動します。∴ 見に行く先のファイルはすでに在り、判定は「初回ではない」となって、何も出ません。<code>--demo</code> を付けずに起動した場合は <code>store/db/cynovela.db</code> を見に行き、こちらは同梱していないため、ちゃんと出ます。直るまでは、起動用スクリプトと同じ場所にある <code>cynovela.yaml</code> の <code>auth:</code> の下、<code>admin_initial_password:</code> の行から読んでください（<code>grep admin_initial_password cynovela.yaml</code>）。どちらの道でも、最初のログインで変更を求められる点は同じです。</li>
     </ul>
     <h3>横断検索</h3>
     <p>MCP のツールには <code>search_across_collections</code>（複数のコレクションをまたぐ検索）がありますが、<strong>画面（GUI）には横断検索の入口がありません。</strong>画面からはワークスペースを 1 つ選んで検索します。</p>
@@ -1923,6 +1930,7 @@ cd ../..
     <ul>
     <li>ChromaDB の <code>PersistentClient</code> は、間違ったパスを渡してもエラーになりません。空のデータベースを黙って作ります。<strong>検索が 0 件になったときは、まずインデックスの場所が合っているかを疑ってください。</strong></li>
     <li>LM Studio の API に <code>max_tokens</code> を渡さないでください。思考する型のモデルで、考えるためのトークンを使い切ってしまいます。</li>
+    <li><strong>画面は、誰もログインしていないうちから <code>/api/settings/embedding</code> を叩き、ログインした後も叩き続けます。</strong> 埋め込み経路の状態を出す帯が、最初の5分は5秒ごと、その後は60秒ごとにこの受け口を見に行きます。見に行き始めるのはページを開いたときであって、ログインが通ったときではありません。ログイン前と閲覧者では受け口は 401 か 403 を返し、帯はそれを飲み込んで何も出しませんが、要求そのものは飛び、記録にも残ります。漏れではありません（受け口は断っており、答えてはいません）。記録が賑やかになるだけです。</li>
     </ul>
 </div>
 <div class="slide-footer">
@@ -2033,16 +2041,16 @@ cd ../..
 </div>
 <div class="slide-body">
     <h3>11.7 chewie では直し、falcon では直していないもの</h3>
-    <p>次はアプリ版（chewie）で直し、コンテナ版（falcon）へは<strong>わざと</strong>当てていません。falcon はその箇所のコードが違っており、この版では falcon を書き換えて合わせることをしていないためです。</p>
+    <p>次は chewie で直し、コンテナ版（falcon）へは 1.0.7 の時点では<strong>わざと</strong>当てていません。falcon はその箇所のコードが違っており、その版では falcon を書き換えて合わせることをしていないためです。</p>
     <table>
     <thead><tr><th>何</th><th>当てなかった理由</th></tr></thead>
     <tbody>
-    <tr><td>同じフォルダの走査を2本同時に始められない件</td><td>falcon には <code>scan_jobs</code> の表が無く、<code>_do_scan</code> の引数も違う</td></tr>
     <tr><td>時間切れの文言</td><td>falcon に <code>_timeout_answer</code> が無く、古い文が本文中の2か所に置かれている</td></tr>
     <tr><td>出典の番号を MCP まで通すこと</td><td>falcon の MCP サーバは版が古い（道具 11件・chewie は 25件）</td></tr>
-    <tr><td><code>login</code> / <code>logout</code> を含む CLI</td><td>falcon に <code>cynovela-cli.py</code> が無い</td></tr>
+    <tr><td><code>login</code> / <code>logout</code> を含む CLI</td><td>falcon に <code>cynovela-cli.py</code> は無い。falcon 自身の古い <code>cynovela_cli.py</code> には <code>login</code> も <code>logout</code> も無い</td></tr>
     </tbody>
     </table>
+    <p><strong>このうち1件は、その後 falcon へも当てました。</strong>「同じフォルダの走査を2本同時に始められない件」は 2026-08-26 に falcon へ移してあります。<code>falcon/server.py</code> の <code>_do_scan</code> は、モジュール階層の錠と source の id の集合で守る薄い入口になり（始める前に足し、<code>finally</code> で外す）、元の本体は <code>_do_scan_body</code> へ改名されました。走査を呼ぶ 8 か所すべてがこの入口を通ります。falcon には今も <code>scan_jobs</code> の表が無いため、chewie が同じ錠の中で行っている job の行への書き戻しに当たるものは falcon にはありません。錠そのものは同じです。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

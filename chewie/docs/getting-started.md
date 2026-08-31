@@ -552,8 +552,8 @@ What to check when it does not work:
 
 ## 8. First run only: a screen asks you to choose about downloading the AI model
 
-In the forms that do not bundle the model (the package edition, the model-separate
-(lightweight) package, or using this repository as it is), the AI model that reads documents (the
+In the forms that do not bundle the model (the package edition, or the source
+taken from this repository), the AI model that reads documents (the
 embedding model bge-m3) is not yet present on the first run. Only when it is missing, the following three choices
 appear in the middle of startup.
 
@@ -1754,7 +1754,7 @@ Cynovela を起動します... (http://localhost:8765)
 
 ## 8. 初回だけ：AIモデルのダウンロードを選ぶ画面が出ます
 
-モデルを同梱しない形（パッケージ版・モデル別取得版（軽量）や、このリポジトリをそのまま使う形）では、
+モデルを同梱しない形（パッケージ版や、このリポジトリのソースをそのまま使う形）では、
 資料を読み取るための AI モデル（埋め込みモデル bge-m3）が初回はまだ入っていません。無いときだけ、
 起動の途中で次の三択が出ます。
 
