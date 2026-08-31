@@ -34,13 +34,13 @@ has `CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1`:
 * `manage_backups`
 * `manage_users`
 
-One more tool appears, but refuses to run unless the environment has
+One more tool appears, but rejects every call unless the environment has
 `CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`:
 
 * `settings_set`
 
 So a plain start offers 22 tools, and one of those
-will refuse to write until you open it.
+rejects writes until you open it.
 
 ### The tools
 
@@ -224,7 +224,7 @@ Try the connection to the inference server.
 
 **It hands back:** `connected`, `status`, `endpoint`, `models`, `error`
 
-#### `settings_set` — **refuses to write by default** (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`)
+#### `settings_set` — **rejects writes by default** (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`)
 
 Change settings. Closed by default.
 
@@ -405,12 +405,12 @@ Cynovela の MCP サーバが持つ道具は **25件** です。ここに全部�
 * `manage_users`
 
 次の1つは一覧には出ますが、環境に `CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1` が無いと、
-実行そのものを断ります。
+実行そのものが拒否されます。
 
 * `settings_set`
 
 ∴ そのまま立ち上げると使えるのは 22件 で、
-そのうち1件は開けるまで書き込みを断ります。
+そのうち1件は開けるまで書き込みが拒否されます。
 
 ### 道具の一覧
 
@@ -594,7 +594,7 @@ LLM への接続を確かめ、通ったか通らなかったかを言葉で返�
 
 **返るもの:** `connected`、`status`、`endpoint`、`models`、`error`
 
-#### `settings_set` — **既定では書き込みを断る**（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）
+#### `settings_set` — **既定では書き込みを拒否する**（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）
 
 サーバの設定を変えます (管理者のみ)。この道具は既定で閉じており、MCP サーバの環境変数 CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1 を設定したときだけ実行できます。name で対象を選び (既定: llm)、values に変える項目だけを入れます。
 

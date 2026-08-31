@@ -78,7 +78,7 @@ classifier:
 pii_mode: standard
 # 初期 admin 認証。admin_initial_password を指定すると初回シードでその値を使う。
 # 未指定 (空) なら起動時にランダム生成し、平文を標準出力へ 1 回表示する。
-# G-1: どちらの場合も管理者には初回変更を求める印が立つ (配布仕様書 §5-4)。
+# G-1: どちらの場合も管理者には初回変更を求めるフラグが設定される (配布仕様書 §5-4)。
 # G-2: 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
 auth:
   admin_initial_password: ''
@@ -151,7 +151,7 @@ paths:
     demo: vector/demo/chroma
   secret_key: secret.key
   # ga-close-v3 PartA (2026-07-27): uploads: を廃止。アップロード受け口の撤去に伴い
-  # アプリ内部の資料保管領域そのものを無くした (この鍵はどのコードからも読まれていなかった)。
+  # アプリ内部の資料保管領域そのものを無くした (この設定キーはどのコードからも読まれていなかった)。
   backups: backups
   logs: logs
   models: models

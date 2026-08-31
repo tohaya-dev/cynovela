@@ -2,7 +2,7 @@
 # ============================================================
 #  Cynovela — 入れる前の下調べ (macos-app-20260830)
 #
-#  会社から配られた Mac は、管理の仕組み (MDM) によって出来ることが
+#  管理された Mac (MDM 配下) は、管理の仕組みによって出来ることが
 #  絞られていることがあります。このファイルは「いま何が出来て、何が
 #  出来ないか」を測って並べるだけのものです。
 #
@@ -88,7 +88,7 @@ if [ -d "$HOME/Applications" ]; then
 else
   info "~/Applications は在りません (無くて構いません)"
 fi
-# 🔴 資料・索引・鍵が実際に書かれるのはここである。どちらの形態でも要る。
+# 🔴 資料・索引・鍵ファイルが実際に書かれるのはここである。どちらの形態でも要る。
 #    ここが書けないと、入れられても最初の起動で止まる。
 _sup="$HOME/Library/Application Support"
 if [ -d "$_sup" ] && ( : > "$_sup/$_probe" ) 2>/dev/null; then
@@ -96,7 +96,7 @@ if [ -d "$_sup" ] && ( : > "$_sup/$_probe" ) 2>/dev/null; then
   ok "~/Library/Application Support へ書けます (資料と索引の置き場)"
 else
   ng "~/Library/Application Support へ書けません"
-  info "→ Cynovela は資料・索引・鍵をここに置きます。書けないと起動できません。"
+  info "→ Cynovela は資料・索引・鍵ファイルをここに置きます。書けないと起動できません。"
   info "  .pkg でも Portable でも同じ場所を使うため、形態を変えても直りません。"
   info "  情報システム部門へ、この行をそのまま見せてください。"
   ANY_BLOCK=$((ANY_BLOCK+1))

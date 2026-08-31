@@ -214,7 +214,7 @@ a:hover { text-decoration: underline; }
 <span class="slide-title">About this document</span>
 </div>
 <div class="slide-body">
-<blockquote><strong>About this document</strong><br>Cynovela is a completely unofficial learning tool built by an individual to<br>understand the concepts of AI platform tools hands-on. It is not a commercial<br>product nor an official implementation.<br>The implementation is entirely original, built on an OSS stack of<br>FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.<br>It does not represent the official position of any company or product.</blockquote>
+<blockquote><strong>About this document</strong><br>Cynovela is a completely unofficial learning tool built by an individual to<br>understand the concepts of AI platform tools hands-on. It is not a commercial<br>product nor an official implementation.<br>The implementation is entirely original, built on an OSS stack of<br>FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.<br>It does not represent the official position of any organization or product.</blockquote>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1302,7 +1302,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 </div>
 <div class="slide-body">
 <h4>4.2.1 Vector Search</h4>
-<ul><li><strong>Model</strong>: BGE-M3 (the multilingual embedding model that Cynovela uses by default). Switching with <code>--mode lite</code> / <code>lite-en</code> / <code>minimal</code> is <strong>not wired up</strong>, and BAAI/bge-m3 is actually used for any of them (the nominal values are MiniLM-L12-v2 / MiniLM-L3-v2 / TF-IDF. Measured 2026-08-02: the startup log of server.py says "名目値 … は未配線").</li><li><strong>Store</strong>: ChromaDB. For each collection ID it is split into the 2 stores <code>{cid}__raw</code> and <code>{cid}__masked</code>, and which one is used is decided by the user role.</li><li><strong>Diversity</strong>: MMR (Maximal Marginal Relevance: a reselection algorithm that balances relevance and diversity) is enabled with <code>mmr_enabled=true</code>, and it reselects with a weight of <code>mmr_lambda=0.7</code> from the generous set of candidates taken with <code>mmr_fetch_k=20</code> (<code>rag.py:1654-1701</code>).</li></ul>
+<ul><li><strong>Model</strong>: BGE-M3 (the multilingual embedding model that Cynovela uses by default). Switching with <code>--mode lite</code> / <code>lite-en</code> / <code>minimal</code> is <strong>not wired up</strong>, and BAAI/bge-m3 is actually used for any of them (the nominal values are MiniLM-L12-v2 / MiniLM-L3-v2 / TF-IDF. Measured 2026-08-02: the startup log of server.py shows "名目値 … は未配線").</li><li><strong>Store</strong>: ChromaDB. For each collection ID it is split into the 2 stores <code>{cid}__raw</code> and <code>{cid}__masked</code>, and which one is used is decided by the user role.</li><li><strong>Diversity</strong>: MMR (Maximal Marginal Relevance: a reselection algorithm that balances relevance and diversity) is enabled with <code>mmr_enabled=true</code>, and it reselects with a weight of <code>mmr_lambda=0.7</code> from the generous set of candidates taken with <code>mmr_fetch_k=20</code> (<code>rag.py:1654-1701</code>).</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1789,7 +1789,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span class="continued">(7/11)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Chunking</th><th>RAG mode</th><th>Guardrail</th><th>Image processing</th></tr></thead><tbody><tr><td><code>tech_doc</code></td><td>📄 技術文書</td><td>For manuals</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr><tr><td><code>confidential</code></td><td>🔒 機密文書</td><td>In-house documents containing PII</td><td>general</td><td>standard</td><td>mask</td><td>—</td></tr><tr><td><code>personal_memo</code></td><td>📝 個人メモ</td><td>Meeting minutes and memos</td><td>email_minutes</td><td>lite</td><td>log_only</td><td>—</td></tr><tr><td><code>multimedia</code></td><td>🖼️ マルチメディア</td><td>Mixed images and Office files</td><td>tech_doc</td><td>standard</td><td>default</td><td>caption</td></tr><tr><td><code>quickstart</code></td><td>⚡ クイックスタート</td><td>Fully automatic, for beginners</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr></tbody></table>
+<table><thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Chunking</th><th>RAG mode</th><th>Guardrail</th><th>Image processing</th></tr></thead><tbody><tr><td><code>tech_doc</code></td><td>📄 技術文書</td><td>For manuals</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr><tr><td><code>confidential</code></td><td>🔒 機密文書</td><td>Internal documents containing PII</td><td>general</td><td>standard</td><td>mask</td><td>—</td></tr><tr><td><code>personal_memo</code></td><td>📝 個人メモ</td><td>Meeting minutes and memos</td><td>email_minutes</td><td>lite</td><td>log_only</td><td>—</td></tr><tr><td><code>multimedia</code></td><td>🖼️ マルチメディア</td><td>Mixed images and Office files</td><td>tech_doc</td><td>standard</td><td>default</td><td>caption</td></tr><tr><td><code>quickstart</code></td><td>⚡ クイックスタート</td><td>Fully automatic, for beginners</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1826,7 +1826,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span class="continued">(9/11)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>Mode</th><th>Behavior</th></tr></thead><tbody><tr><td><code>lite</code></td><td>Minimal RAG. Options such as Multi-Query / HyDE / CRAG are omitted, and one search is enough</td></tr><tr><td><code>standard</code> (default)</td><td>BM25 hybrid + Reranker (when set). Assumes general business use</td></tr><tr><td><code>hq</code></td><td>High quality mode. CRAG, Multi-Query and HyDE are turned on, spending time to gain accuracy</td></tr></tbody></table>
+<table><thead><tr><th>Mode</th><th>Behavior</th></tr></thead><tbody><tr><td><code>lite</code></td><td>Minimal RAG. Options such as Multi-Query / HyDE / CRAG are omitted, and one search is enough</td></tr><tr><td><code>standard</code> (default)</td><td>BM25 hybrid + Reranker (when set). Assumes general practical use</td></tr><tr><td><code>hq</code></td><td>High quality mode. CRAG, Multi-Query and HyDE are turned on, spending time to gain accuracy</td></tr></tbody></table>
 <h3>6.5 Answer Format</h3>
 <h4>6.5.1 Structured Answer Template: Unimplemented</h4>
 <p>The search <code>grep -rn "structured.*answer\|answer.*template\|template.*answer" --include="*.py"</code> returns <strong>0 hits</strong>, and none of the following implementations could be confirmed.</p>
@@ -1930,7 +1930,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <span class="slide-title">このドキュメントについて</span>
 </div>
 <div class="slide-body">
-<blockquote><strong>このドキュメントについて</strong><br>Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った<br>完全非公式の学習ツールです。商用製品・公式実装ではありません。<br>実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM<br>という OSS スタックで構成されています。<br>会社・製品の公式見解を一切代表しません。</blockquote>
+<blockquote><strong>このドキュメントについて</strong><br>Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った<br>完全非公式の学習ツールです。商用製品・公式実装ではありません。<br>実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM<br>という OSS スタックで構成されています。<br>企業・製品の公式見解を一切代表しません。</blockquote>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -3440,7 +3440,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span class="continued">(6/9)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>ID</th><th>名前</th><th>説明</th><th>チャンキング</th><th>RAG モード</th><th>ガードレール</th><th>画像処理</th></tr></thead><tbody><tr><td><code>tech_doc</code></td><td>📄 技術文書</td><td>マニュアル向け</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr><tr><td><code>confidential</code></td><td>🔒 機密文書</td><td>PII を含む社内文書</td><td>general</td><td>standard</td><td>mask</td><td>—</td></tr><tr><td><code>personal_memo</code></td><td>📝 個人メモ</td><td>議事録・メモ</td><td>email_minutes</td><td>lite</td><td>log_only</td><td>—</td></tr><tr><td><code>multimedia</code></td><td>🖼️ マルチメディア</td><td>画像・Office 混在</td><td>tech_doc</td><td>standard</td><td>default</td><td>caption</td></tr><tr><td><code>quickstart</code></td><td>⚡ クイックスタート</td><td>初心者向け全自動</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr></tbody></table>
+<table><thead><tr><th>ID</th><th>名前</th><th>説明</th><th>チャンキング</th><th>RAG モード</th><th>ガードレール</th><th>画像処理</th></tr></thead><tbody><tr><td><code>tech_doc</code></td><td>📄 技術文書</td><td>マニュアル向け</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr><tr><td><code>confidential</code></td><td>🔒 機密文書</td><td>PII を含む組織内文書</td><td>general</td><td>standard</td><td>mask</td><td>—</td></tr><tr><td><code>personal_memo</code></td><td>📝 個人メモ</td><td>議事録・メモ</td><td>email_minutes</td><td>lite</td><td>log_only</td><td>—</td></tr><tr><td><code>multimedia</code></td><td>🖼️ マルチメディア</td><td>画像・Office 混在</td><td>tech_doc</td><td>standard</td><td>default</td><td>caption</td></tr><tr><td><code>quickstart</code></td><td>⚡ クイックスタート</td><td>初心者向け全自動</td><td>tech_doc</td><td>standard</td><td>default</td><td>—</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -3477,7 +3477,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span class="continued">(8/9)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>モード</th><th>動作</th></tr></thead><tbody><tr><td><code>lite</code></td><td>最小限の RAG。Multi-Query / HyDE / CRAG といったオプションを省略し、1 回の検索で済ませる</td></tr><tr><td><code>standard</code>（既定）</td><td>BM25 ハイブリッド + Reranker（設定時）。一般的な業務利用想定</td></tr><tr><td><code>hq</code></td><td>高品質モード。CRAG・Multi-Query・HyDE をオンにして時間を掛けて精度を取りに行く</td></tr></tbody></table>
+<table><thead><tr><th>モード</th><th>動作</th></tr></thead><tbody><tr><td><code>lite</code></td><td>最小限の RAG。Multi-Query / HyDE / CRAG といったオプションを省略し、1 回の検索で済ませる</td></tr><tr><td><code>standard</code>（既定）</td><td>BM25 ハイブリッド + Reranker（設定時）。一般的な実務利用想定</td></tr><tr><td><code>hq</code></td><td>高品質モード。CRAG・Multi-Query・HyDE をオンにして時間を掛けて精度を取りに行く</td></tr></tbody></table>
 <h3>6.5 回答の形式</h3>
 <h4>6.5.1 構造化回答テンプレート: 未実装</h4>
 <p><code>grep -rn "structured.*answer\|answer.*template\|template.*answer" --include="*.py"</code> の検索結果は <strong>0 件</strong> で、次のいずれの実装も確認できませんでした。</p>

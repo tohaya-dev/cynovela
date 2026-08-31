@@ -828,7 +828,7 @@
 <p class="step-desc">Before ingesting the contents of a file, Cynovela automatically detects personal information (PII) and replaces it with masks. The left side is the original text, the right side is the text after masking.<br>ファイルの中身を取り込む前に、Cynovela は個人情報（PII）を自動検出してマスキングに置き換えます。左が原文、右がマスキング後です。</p>
 <div class="explain-panel">
 <strong>Why it matters:</strong> Business documents often contain personal information such as phone numbers, email addresses and My Number IDs. Exposing them as they are to LLM training material or to search results creates a risk of information leakage. Cynovela masks in two stages:<strong>at ingest time</strong> and<strong>at answer time</strong>.<br>
-<strong>なぜ必要か:</strong> 業務文書には電話番号やメール、マイナンバーなどの個人情報がしばしば混ざります。これらを LLM の学習材料や検索結果にそのまま出すと、情報漏洩のリスクがあります。Cynovela は<strong>取り込み時</strong>と<strong>回答時</strong>の二段階でマスキングします。
+<strong>なぜ必要か:</strong> 実務の文書には電話番号やメール、マイナンバーなどの個人情報がしばしば混ざります。これらを LLM の学習材料や検索結果にそのまま出すと、情報漏洩のリスクがあります。Cynovela は<strong>取り込み時</strong>と<strong>回答時</strong>の二段階でマスキングします。
 </div>
 <div class="content-block">
 <div class="compare-grid">
@@ -936,7 +936,7 @@
 </div>
 <div class="explain-panel">
 <strong>Why it matters:</strong> RAG (retrieval-augmented generation) first searches in-house documents when a question arrives, and passes the documents it finds to the LLM as reference material, so that the answer is grounded in the material. An LLM on its own carries the risk of generating plausible text unrelated to the facts (hallucination).<br>
-<strong>なぜ必要か:</strong> RAG（検索拡張生成）は、質問を受けたときにまず社内文書を検索し、見つかった文書を LLM の参考材料として渡すことで「資料に基づいた回答」を実現します。LLM 単体だと事実と関係のないもっともらしい文章を生成する（ハルシネーション）リスクがあります。
+<strong>なぜ必要か:</strong> RAG（検索拡張生成）は、質問を受けたときにまず組織内の文書を検索し、見つかった文書を LLM の参考材料として渡すことで「資料に基づいた回答」を実現します。LLM 単体だと事実と関係のないもっともらしい文章を生成する（ハルシネーション）リスクがあります。
 </div>
 <div class="content-block">
 <div class="chat-window" id="chat-window">
@@ -1080,7 +1080,7 @@
 <footer>
 <p class="disclaimer-title">Disclaimer／免責</p>
 <p>Cynovela is a completely unofficial learning tool, built by an individual in order to understand the concepts of an AI platform tool hands-on. It is not a commercial product, and it contains none of the reference product's source code or official implementation.<br>Cynovela は AI 基盤ツールのコンセプトを個人が手を動かして理解するために作った、完全非公式の学習用ツールです。商用製品ではなく、参照元のソースコード・公式実装は一切含みません。</p>
-<p>All data in this demo is fictitious, and represents no real person, organization or product whatsoever. It does not represent any official view of any company or product.<br>本デモのデータはすべて架空であり、いかなる実在の人物・組織・製品を表すものではありません。会社・製品の公式見解を一切代表しません。</p>
+<p>All data in this demo is fictitious, and represents no real person, organization or product whatsoever. It does not represent any official view of any organization or product.<br>本デモのデータはすべて架空であり、いかなる実在の人物・組織・製品を表すものではありません。企業・製品の公式見解を一切代表しません。</p>
 </footer>
 
 <script>

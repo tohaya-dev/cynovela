@@ -10,7 +10,7 @@
 > It is not a commercial product and not an official implementation.
 > The implementation is entirely original, and is built on an OSS stack of
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company or product.
+> It does not represent the official position of any organization or product.
 
 If you are starting from nothing, read [getting-started.md](getting-started.md) first.
 What Cynovela is and what it is for is in [concept.md](concept.md); what it cannot do is in
@@ -28,7 +28,7 @@ What Cynovela is and what it is for is in [concept.md](concept.md); what it cann
 
 ## Q1. What is the difference from the referenced AI platform tool
 
-Cynovela is a learning project that re-implements, using only OSS and so that an individual could understand it by working with their own hands, the concept that the referenced AI platform tool tries to solve (a RAG platform that safely connects in-house documents to a local LLM). The implementation is entirely original, and there is no compatibility with the referenced tool in the source code, the API specification, or the data model. Commercial features, support, and an SLA are not provided.
+Cynovela is a learning project that re-implements, using only OSS and so that an individual could understand it by working with their own hands, the concept that the referenced AI platform tool tries to solve (a RAG platform that safely connects internal documents to a local LLM). The implementation is entirely original, and there is no compatibility with the referenced tool in the source code, the API specification, or the data model. Commercial features, support, and an SLA are not provided.
 
 See [concept.md](concept.md) for the comparison in detail.
 
@@ -137,7 +137,7 @@ The full list, including the limits of masking, the formats that cannot be read,
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
-> 会社・製品の公式見解を一切代表しません。
+> 企業・製品の公式見解を一切代表しません。
 
 まだ何も始めていない場合は、まず [getting-started.md](getting-started.md) を読んでください。
 Cynovela が何であり何のためのものかは [concept.md](concept.md) に、
@@ -155,7 +155,7 @@ Cynovela が何であり何のためのものかは [concept.md](concept.md) に
 
 ## Q1. 参照元の AI 基盤ツールとの違いは何ですか
 
-Cynovela は、参照元の AI 基盤ツールが解こうとしているコンセプト（社内ドキュメントを安全にローカル LLM へつなぐ RAG 基盤）を、個人が手を動かして理解するために OSS だけで再実装した学習用プロジェクトです。実装はすべてオリジナルで、ソースコード・API 仕様・データモデルに参照元との互換性はありません。商用機能・サポート・SLA は提供しません。
+Cynovela は、参照元の AI 基盤ツールが解こうとしているコンセプト（組織内ドキュメントを安全にローカル LLM へつなぐ RAG 基盤）を、個人が手を動かして理解するために OSS だけで再実装した学習用プロジェクトです。実装はすべてオリジナルで、ソースコード・API 仕様・データモデルに参照元との互換性はありません。商用機能・サポート・SLA は提供しません。
 
 詳しい対比は [concept.md](concept.md) にあります。
 

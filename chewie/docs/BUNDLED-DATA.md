@@ -27,7 +27,7 @@ Chunks are stored in two layers, before masking and after masking, and both are
 encrypted with the vault key. The index used for search (the vectors) is built **only
 from the masked layer**.
 
-All the bundled documents are explanatory samples based on a fictional company,
+All the bundled documents are explanatory samples based on a fictional organization,
 "アオゾラ商事" (Aozora Shoji). None of the people, organisations, addresses, phone
 numbers or email addresses that appear in them are real.
 

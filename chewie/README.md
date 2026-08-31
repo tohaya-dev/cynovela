@@ -64,7 +64,7 @@ Everything is on GitHub Releases (v1.1.3): https://github.com/tohaya-dev/cynovel
 
 **読み込むときに、氏名・電話番号・住所などを伏せる処理を挟みます。** 閲覧者に返るのはマスキング処理を通したあとの文だけです。API連携で外部へ送るのも、マスキング処理を通したあとの文です。**ただしマスキング処理は完全ではなく、伏せきれずに残るものがあります。**
 
-**学習と試用のためのツールです。** 業務の本番システムとして使うことを想定していません。**先に「使う前のご注意」(同梱の [docs/NOTICE.md](docs/NOTICE.md)) をお読みください。**
+**学習と試用のためのツールです。** 本番システムとして使うことを想定していません。**先に「使う前のご注意」(同梱の [docs/NOTICE.md](docs/NOTICE.md)) をお読みください。**
 <!-- cynovela:welcome:end -->
 
 ---
@@ -99,7 +99,7 @@ Everything is on GitHub Releases (v1.1.3): https://github.com/tohaya-dev/cynovel
 
 **できないこと**
 
-- **業務の本番システムとして使うことは想定していません。** 可用性・性能・長期の保守は考慮していません
+- **本番システムとして使うことは想定していません。** 可用性・性能・長期の保守は考慮していません
 - **マスキング処理は完全ではありません。** ふりがなの氏名や住所の番地から先など、伏せきれずに残るものがあります
 - **答えは間違うことがあります。** 必ず出典を開いて原文で確かめてください
 <!-- cynovela:about:end -->
@@ -136,7 +136,7 @@ Everything is on GitHub Releases (v1.1.3): https://github.com/tohaya-dev/cynovel
 
 **つなぐ・確かめる・展開する。** 分割ファイルは part の順に 1 本へつなぎます: `cat cynovela-chewie-models-1.1.3.tar.gz.part00 cynovela-chewie-models-1.1.3.tar.gz.part01 cynovela-chewie-models-1.1.3.tar.gz.part02 > cynovela-chewie-models-1.1.3.tar.gz`（`cat ...part* > ...` でも同じです）。`shasum -a 256 --ignore-missing -c SHA256SUMS` で確かめ、全行 OK であること。展開は `tar -xzf` です。models は、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz` を実行します（`store/models/` が作られます）。落とし方とつなぎ方の手引き **HOW-TO-ASSEMBLE.md** が、Releases のファイルの並びに一緒に置いてあります。
 
-**迷ったら:** (1) 会社支給などで外への取り寄せ（conda-forge / PyPI / huggingface.co）が許可されていない・確信が無い → **パッケージ版 + models**。 (2) 自分の Python/conda で動かしたい → **このリポジトリのソース + models**。
+**迷ったら:** (1) 管理された Mac（MDM 配下）などで外部への取り寄せ（conda-forge / PyPI / huggingface.co）が許可されていない・確信が無い → **パッケージ版 + models**。 (2) 自分の Python/conda で動かしたい → **このリポジトリのソース + models**。
 
 ### 短い注意 2 点
 

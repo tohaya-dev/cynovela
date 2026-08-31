@@ -10,7 +10,7 @@
 > product and not an official implementation.
 > The implementation is entirely original, and is made of an OSS stack:
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company or product.
+> It does not represent the official position of any organization or product.
 
 Cynovela is a completely unofficial learning tool, created so that an individual can understand the concepts of AI infrastructure tools by working on them hands-on.
 
@@ -145,7 +145,7 @@ It contains none of the source code, trademarks, logos or official documentation
 
 - This tool was created for an individual's learning and verification purposes.
 - Business use and production operation are not assumed.
-- It does not represent the official position of the referenced company or product.
+- It does not represent the official position of the referenced organization or product.
 - The behavior of features, the API and the data structures may change without notice.
 
 ---
@@ -160,7 +160,7 @@ It contains none of the source code, trademarks, logos or official documentation
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
-> 会社・製品の公式見解を一切代表しません。
+> 企業・製品の公式見解を一切代表しません。
 
 Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かして理解するために作成した、完全非公式の学習用ツールです。
 
@@ -293,8 +293,8 @@ python server.py --demo --lmstudio-url http://localhost:1234
 ## 7. 免責
 
 - 本ツールは個人の学習・検証目的で作成されたものです。
-- 業務利用・本番運用は想定していません。
-- 参照元の会社・製品の公式見解を一切代表しません。
+- 実務利用・本番運用は想定していません。
+- 参照元の企業・製品の公式見解を一切代表しません。
 - 機能の挙動・API・データ構造は予告なく変更されることがあります。
 
 ---

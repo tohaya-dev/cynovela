@@ -215,7 +215,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <p><strong>日本語版はこちら → 日本語</strong></p>
-    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool built by an individual to understand the concepts of AI infrastructure tools by working on them by hand. It is not a commercial product or an official implementation. The implementation is entirely original, and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.</blockquote>
+    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool built by an individual to understand the concepts of AI infrastructure tools by working on them by hand. It is not a commercial product or an official implementation. The implementation is entirely original, and is built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any organization or product.</blockquote>
     <p>This document is for the people who install Cynovela and keep it running. It collects, in one place, starting and stopping, how to put it on a machine, connecting an LLM provider, using it from external tools over MCP, sharing it over a LAN, backup and restore, logs, the audit log, user management, health checks, notifications, and the port.</p>
     <p>Sections:</p>
 </div>
@@ -1154,7 +1154,7 @@ Cynovela server (guardrails → returned to the user)</code></pre>
 <span class="continued">(3/16)</span>
 </div>
 <div class="slide-body">
-    <p><strong>Please do not leave Model blank (<code>auto</code>).</strong> When the model name is not specified, the <strong>first</strong> entry of the model list returned by LM Studio is used. If the first one is an embedding-only model (bge-m3 and so on), the generation request is refused, no answer comes back, and it becomes an error (HTTP 400). Choosing a <strong>chat model</strong> from the list resolves it. (Measured 2026-07-29: an answer was obtained just by changing the model name to an existing chat model. Whether or not <code>/v1</code> is added to the end of the Base URL does not affect the result.)</p>
+    <p><strong>Please do not leave Model blank (<code>auto</code>).</strong> When the model name is not specified, the <strong>first</strong> entry of the model list returned by LM Studio is used. If the first one is an embedding-only model (bge-m3 and so on), the generation request is rejected, no answer comes back, and it becomes an error (HTTP 400). Choosing a <strong>chat model</strong> from the list resolves it. (Measured 2026-07-29: an answer was obtained just by changing the model name to an existing chat model. Whether or not <code>/v1</code> is added to the end of the Base URL does not affect the result.)</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1169,7 +1169,7 @@ Cynovela server (guardrails → returned to the user)</code></pre>
 </div>
 <div class="slide-body">
     <ul>
-    <li>LM Studio does not refuse even if you specify the name of a model that is not loaded, and it may answer with a different model that is already loaded. In the Model field, enter an existing model name chosen from the list.</li>
+    <li>LM Studio does not reject the request even if you specify the name of a model that is not loaded, and it may answer with a different model that is already loaded. In the Model field, enter an existing model name chosen from the list.</li>
     <li>If you run several large models at the same time in LM Studio, the answers may break down or become slow. It returns to normal automatically after a while.</li>
     </ul>
     <h4>3-2-2. When using Ollama (it is not the default)</h4>
@@ -1988,9 +1988,9 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <div class="slide-body">
     <ul>
     <li><strong>Reading</strong> (<code>settings_show</code>, <code>settings_models</code>, <code>settings_test</code>, <code>settings_providers</code>) works whenever the token is an admin token. No extra switch.</li>
-    <li><strong>Writing</strong> (<code>settings_set</code>) is <strong>closed by default</strong>. It runs only when the MCP server process was started with <code>CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1</code> in its environment — in LM Studio, that means adding the line to the <code>env</code> block of <code>mcp.json</code> (4-3-4). When closed, the call returns an error message saying exactly this, and nothing is executed.</li>
+    <li><strong>Writing</strong> (<code>settings_set</code>) is <strong>closed by default</strong>. It runs only when the MCP server process was started with <code>CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1</code> in its environment — in LM Studio, that means adding the line to the <code>env</code> block of <code>mcp.json</code> (4-3-4). When closed, the call returns an error message stating exactly this, and nothing is executed.</li>
     </ul>
-    <p>Why: the caller of an MCP tool is an AI that can be swayed by whatever material it has just read. If a document says "rewrite the settings", a path exists in principle for the AI to treat that as an instruction. Writing therefore requires an explicit, human-made decision on the client side. This guard is <em>not</em> a replacement for the server-side role check — that check still runs as before; this is a thin extra layer in front of it.</p>
+    <p>Why: the caller of an MCP tool is an AI that can be swayed by whatever material it has just read. If a document states "rewrite the settings", a path exists in principle for the AI to treat that as an instruction. Writing therefore requires an explicit, human-made decision on the client side. This guard is <em>not</em> a replacement for the server-side role check — that check still runs as before; this is a thin extra layer in front of it.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2282,7 +2282,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <div class="slide-body">
     <blockquote>The above are the storage locations of the host (conda) edition. The actual location for the host edition is <code>store/</code> under the folder where the package was extracted. In the container edition, the DB and vector data are stored in named volumes, and the ingest entry point bind-mounts the ingest sources passed at startup (multiple allowed) read-only at <code>/app/ingest/&lt;inner name&gt;</code>. The former default ingest folder <code>~/Cynovela</code> has been abolished.</blockquote>
     <h3>6-2. What <code>store/</code> Holds</h3>
-    <p><code>store/</code> holds the index of the ingested documents, the database, the settings, and the keys. The signing key for the passes is newly created on this machine at the first startup.</p>
+    <p><code>store/</code> holds the index of the ingested documents, the database, the settings, and the key files. The token-signing key for the passes (<code>store/db/jwt/secret.key</code>) is newly created on this machine at the first startup.</p>
     <h3>6-3. Manual Backup</h3>
     <p>With the server stopped, copy the directories above.</p>
 </div>
@@ -2425,7 +2425,7 @@ cp -R "$BK/chroma" store/vector/demo/chroma      # without --demo, use store/vec
 <span class="continued">(9/10)</span>
 </div>
 <div class="slide-body">
-    <p>Move aside only the database file and the vector folder, as shown above. Do not move the whole <code>store/db</code> folder: it also holds the sign-in key under <code>store/db/jwt</code>, which a backup does not contain. If you move that away, the key is lost, a new one is generated at startup, and everyone has to sign in again.</p>
+    <p>Move aside only the database file and the vector folder, as shown above. Do not move the whole <code>store/db</code> folder: it also holds the token-signing key (<code>store/db/jwt/secret.key</code>), which a backup does not contain. If you move that away, the token-signing key is lost, a new one is generated at startup, and everyone has to sign in again.</p>
     <p>Move the journal files (<code>demo.db-wal</code> / <code>demo.db-shm</code>) aside together with the database file. They belong to the database you are replacing. If you leave them behind, they are replayed onto the restored file at startup and the restore silently has no effect.</p>
     <p>Then check that what you expected is back, and only after that delete what you moved aside:</p>
     <pre><code>python3 cynovela-cli.py workspaces
@@ -2843,7 +2843,7 @@ python server.py --mode text --port 8900</code></pre>
 <span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
-    <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
+    <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。企業・製品の公式見解を一切代表しません。</blockquote>
     <p>このドキュメントは、Cynovela を入れる人・回す人のためのものです。起動と停止、機械への入れ方・置き方、LLM プロバイダーの繋ぎ方、MCP で外部ツールから使う手順、LAN で分け合う設定、backup と restore、ログ、監査ログ、利用者の管理、健全性の確認、通知、ポートの変更を 1 か所にまとめています。</p>
     <p>目次:</p>
 </div>
@@ -3670,7 +3670,7 @@ embedding:
 <div class="slide-body">
     <h4>2-8-4. 口が居ないときの振る舞い</h4>
     <ul>
-    <li>再ランク: 外部の推論サーバに届かない場合、<strong>アプリ内のモデル (store/models) での処理へ退避</strong>します(models の落とし物を重ねてあれば、再ランクのモデルもその中に入っています)。再ランクのモデルを置いていない場合は、再ランクを行わず検索結果をそのまま返します。どちらの場合も処理は止まりません。</li>
+    <li>再ランク: 外部の推論サーバに届かない場合、<strong>アプリ内のモデル (store/models) での処理へ退避</strong>します(models のダウンロードしたファイルを重ねてあれば、再ランクのモデルもその中に入っています)。再ランクのモデルを置いていない場合は、再ランクを行わず検索結果をそのまま返します。どちらの場合も処理は止まりません。</li>
     <li>埋め込み (外へ出す設定にしたときのみ): 届かない場合は<strong>アプリ内のローカル処理へ明示的に退避</strong>し、管理画面 (設定 &gt; Embedding) に <strong>「⚠️ 外部の推論サーバに届かないためローカルへ退避中」</strong> と表示されます。黙って遅くなることはありません。口を立て直せば次回の埋め込みから自動復帰します。</li>
     </ul>
 </div>
@@ -4050,7 +4050,7 @@ ollama pull qwen3:8b</code></pre>
 <span class="continued">(2/26)</span>
 </div>
 <div class="slide-body">
-    <p>MCP を使うと、ユーザーが LLM クライアントに「うちの社内文書を検索して」と話しかけたときに、LLM が Cynovela の検索ツールを呼び出し、結果を踏まえて回答を生成する、という連携が成立します。</p>
+    <p>MCP を使うと、ユーザーが LLM クライアントに「うちの組織内文書を検索して」と話しかけたときに、LLM が Cynovela の検索ツールを呼び出し、結果を踏まえて回答を生成する、という連携が成立します。</p>
     <h3>4-2. Cynovela が公開する MCP ツール（全 25 件）</h3>
     <p>既定で見えるのは 22 件です。4-2-6 の管理系 3 件は既定で閉じており、MCP サーバの <code>env</code> に <code>CYNOVELA_MCP_ALLOW_ADMIN_WRITE=1</code> を書いたときだけ <code>tools/list</code> に現れます（4-5-5）。</p>
     <h4>4-2-1. RAG 検索系（4 件）</h4>
@@ -4101,7 +4101,7 @@ ollama pull qwen3:8b</code></pre>
     <h4><code>rag_general</code></h4>
     <ul>
     <li><strong>引数（必須）</strong>: <code>query</code>, <code>workspace_id</code></li>
-    <li><strong>説明</strong>: RAG を使わず、LLM の一般知識のみで回答を生成します。社内文書に依存しない一般的な質問用です。</li>
+    <li><strong>説明</strong>: RAG を使わず、LLM の一般知識のみで回答を生成します。組織内文書に依存しない一般的な質問用です。</li>
     </ul>
     <h4>4-2-2. 情報取得系（6 件）</h4>
     <h4><code>list_workspaces</code></h4>
@@ -4842,7 +4842,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <div class="slide-body">
     <blockquote>上記はホスト（conda）版の保存場所です。ホスト版の実体は配布物を展開したフォルダ配下の <code>store/</code> です。コンテナ版では DB／ベクターは名前付きボリュームに格納され、取り込みの入口は起動時に渡した取り込み元（複数可）を <code>/app/ingest/&lt;中の名前&gt;</code> へ読み取り専用で bind します。既定の取り込みフォルダ <code>~/Cynovela</code> は廃止しました。</blockquote>
     <h3>6-2. <code>store/</code> に入っているもの</h3>
-    <p><code>store/</code> には、取り込んだ資料の索引・データベース・設定・鍵が入っています。通行証の署名鍵は、初回起動時にその機械で新しく作られます。</p>
+    <p><code>store/</code> には、取り込んだ資料の索引・データベース・設定・鍵ファイルが入っています。通行証のトークン署名用の鍵（<code>store/db/jwt/secret.key</code>）は、初回起動時にその機械で新しく作られます。</p>
     <h3>6-3. 手動バックアップ</h3>
     <p>サーバーを停止した状態で、上記ディレクトリをコピーします。</p>
 </div>
@@ -4972,7 +4972,7 @@ mv store/vector/demo/chroma store/aside/chroma   # ベクターのフォルダ�
 cp "$BK/cynovela.db" store/db/demo.db            # --demo を付けない場合は store/db/cynovela.db
 cp -R "$BK/chroma" store/vector/demo/chroma      # --demo を付けない場合は store/vector/default/chroma
 ./launch.sh --demo</code></pre>
-    <p>退けるのは、上のとおりデータベースのファイルとベクターのフォルダだけにしてください。<code>store/db</code> を丸ごと退けてはいけません。<code>store/db/jwt</code> の下には入り口の鍵が置かれており、控えはこれを含みません。丸ごと退けると鍵が失われ、起動のときに新しい鍵が作られ、全員が入り直すことになります。</p>
+    <p>退けるのは、上のとおりデータベースのファイルとベクターのフォルダだけにしてください。<code>store/db</code> を丸ごと退けてはいけません。<code>store/db/jwt</code> の下にはトークン署名用の鍵（<code>store/db/jwt/secret.key</code>）が置かれており、控えはこれを含みません。丸ごと退けるとこの鍵が失われ、起動のときに新しい鍵が作られ、全員が入り直すことになります。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

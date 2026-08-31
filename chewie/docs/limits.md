@@ -10,7 +10,7 @@
 > It is not a commercial product and not an official implementation.
 > The implementation is entirely original, built on an OSS stack of
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company or product.
+> It does not represent the official position of any organization or product.
 
 This document describes what Cynovela **cannot** do, and what to watch out for. Explanations
 of what it can do are in [getting-started.md](getting-started.md) and
@@ -31,7 +31,7 @@ The version is `1.1.3` (`APP_VERSION` in `core/version.py` is the only source, a
   - [1.4 Without a language model, even `standard` degrades to rules only](#14-without-a-language-model-even-standard-degrades-to-rules-only)
   - [1.5 Passwords and API keys are cut off by whitespace, Japanese text, or newlines](#15-passwords-and-api-keys-are-cut-off-by-whitespace-japanese-text-or-newlines)
   - [1.6 Whitespace can enter text extracted from a PDF, letting an email escape masking](#16-whitespace-can-enter-text-extracted-from-a-pdf-letting-an-email-escape-masking)
-  - [1.7 Whether an administrator can see the original text depends on the key and the destination](#17-whether-an-administrator-can-see-the-original-text-depends-on-the-key-and-the-destination)
+  - [1.7 Whether an administrator can see the original text depends on the encryption key and the destination](#17-whether-an-administrator-can-see-the-original-text-depends-on-the-encryption-key-and-the-destination)
 - [2. Document formats that cannot be read](#2-document-formats-that-cannot-be-read)
 - [3. Speaking to it by voice](#3-speaking-to-it-by-voice)
 - [4. There is no endpoint for uploading documents](#4-there-is-no-endpoint-for-uploading-documents)
@@ -176,7 +176,7 @@ The same thing can happen with other types such as phone numbers and card number
 **When you ingest a PDF, check with your own eyes whether masking matched.**
 You can see the actual text from the chunk list after ingest.
 
-### 1.7 Whether an administrator can see the original text depends on the key and the destination
+### 1.7 Whether an administrator can see the original text depends on the encryption key and the destination
 
 When the role is `admin`, the design lets them see the original text before masking
 (`tier_for_role` in `rag.py`). However, in the following 3 cases even an administrator only
@@ -187,11 +187,11 @@ gets masked content.
    destination is neither inside the local machine, nor the container's host side, nor a
    private address range. When the destination cannot be determined it also falls back to
    masked.
-2. **When the vault (encrypted storage) key does not match.**
+2. **When the vault (encrypted storage) encryption key (`store/secret.key`) does not match.**
    Original text is stored encrypted, and `_vault_substitute_raw` in `rag.py` decrypts it.
    Lines that cannot be decrypted use the masked text as-is
    (this is deliberate, so that ciphertext is never shown on screen).
-   If you replace the key after receiving a package, even an administrator can no longer read
+   If you replace the encryption key after receiving a package, even an administrator can no longer read
    the original text of documents ingested before that.
 3. **The question text itself.**
    Masking of the question text is not divided by role. Even if an administrator writes an IP
@@ -279,7 +279,7 @@ features can look like they are not working.
 - **Sending original text based on role.** If the destination is external, only masked content
   is sent, even for an administrator (the `_effective_send_tier` described above).
 - **If masking fails, processing stops.** For both the question text and the answer, if the
-  masking step dies with an exception, a 503 is returned and processing is aborted.
+  masking step fails with an exception, a 503 is returned and processing is aborted.
   Pre-masking content is never returned instead (`routers/chat.py`).
 - **The combination of unmasked ingest and external embedding is rejected.**
   Collections created by an older version as "unmasked" cannot be published while external
@@ -409,7 +409,7 @@ If you want to run on Kubernetes, you need to write the Deployment definition yo
   decides this is a first run, and it decides that by asking whether the database file
   already exists. The packages ship a pre-built `store/db/demo.db`, and the default answer
   at the first question starts with `--demo`, which is the database it looks for — so the
-  file is already there, the check says "not a first run", and nothing is printed. Starting
+  file is already there, the check reports "not a first run", and nothing is printed. Starting
   without `--demo` looks for `store/db/cynovela.db`, which is not shipped, and does print.
   Until this is repaired, read the password out of the `cynovela.yaml` next to the startup
   script, on the `admin_initial_password:` line under `auth:` (`grep admin_initial_password
@@ -506,7 +506,7 @@ issues a pass with no expiry unless you pass `expires_in_hours` or
   and the polling starts when the page loads rather than when a sign-in succeeds. Before a
   sign-in, and for a viewer, the endpoint answers 401 or 403; the banner swallows that and
   shows nothing, but the request is made and logged all the same. It is noise in the log,
-  not a leak — the endpoint refuses, it does not answer.
+  not a leak — the endpoint rejects the request, it does not answer.
 
 
 ## 11. Things recorded in 1.0.7
@@ -656,7 +656,7 @@ itself is the same.
 ## 14. Areas skipped in the tests
 
 - **Demo mode related.** 4 authentication boundary tests remain `@pytest.mark.skip`
-  (lines 11 / 51 / 56 / 157 of `tests/test_auth_boundary.py`). The reason text says
+  (lines 11 / 51 / 56 / 157 of `tests/test_auth_boundary.py`). The reason text states
   "`--demo` モードでは認証バイパスが仕様", but because it was changed on 2026-07-29 into a
   form that enforces authentication even with a `--demo` startup, this reason no longer
   matches the implementation.
@@ -688,7 +688,7 @@ They are written here as the state of the current build, not as a schedule.
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
-> 会社・製品の公式見解を一切代表しません。
+> 企業・製品の公式見解を一切代表しません。
 
 この文書は、Cynovela に **できないこと**、および気をつけることを書いたものです。
 できることの説明は [getting-started.md](getting-started.md) と
@@ -708,7 +708,7 @@ They are written here as the state of the current build, not as a schedule.
   - [1.4 言語モデルが入っていないと、`standard` でも規則だけに退行する](#14-言語モデルが入っていないとstandard-でも規則だけに退行する)
   - [1.5 パスワードと API キーは、空白・日本語・改行で切れる](#15-パスワードと-api-キーは空白日本語改行で切れる)
   - [1.6 PDF から取り出した文字に空白が入り、電子メールがマスキングを逃れることがある](#16-pdf-から取り出した文字に空白が入り電子メールがマスキングを逃れることがある)
-  - [1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい](#17-管理者が原文を見られるかどうかは鍵と宛先しだい)
+  - [1.7 管理者が原文を見られるかどうかは、暗号鍵と宛先しだい](#17-管理者が原文を見られるかどうかは暗号鍵と宛先しだい)
 - [2. 読み込めない資料の形式](#2-読み込めない資料の形式)
 - [3. 音声で話しかけること](#3-音声で話しかけること)
 - [4. 資料をアップロードする受け口はない](#4-資料をアップロードする受け口はない)
@@ -844,7 +844,7 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
 **PDF を取り込んだときは、マスキングが当たっているかどうかを目で確かめてください。**
 取り込み後のチャンク一覧から実際の本文を見られます。
 
-### 1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい
+### 1.7 管理者が原文を見られるかどうかは、暗号鍵と宛先しだい
 
 役割が `admin` のときは、マスキング前の原文を見られる設計です（`rag.py` の `tier_for_role`）。
 ただし、次の 3 つの場合は管理者でもマスキング済みのものしか出ません。
@@ -853,11 +853,11 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
    `routers/chat.py` の `_effective_send_tier` は、送り先が自マシン内・
    コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらずマスキング済みへ
    落とします。宛先を判定できないときもマスキング済みに倒します。
-2. **金庫（暗号化された保管）の鍵が合わないとき。**
+2. **金庫（暗号化された保管）の暗号鍵（`store/secret.key`）が合わないとき。**
    原文は暗号化して保管してあり、`rag.py` の `_vault_substitute_raw` が復号します。
    復号できない行はマスキング済みの本文をそのまま使います
    （画面に暗号文を出さないため、あえてそうしてあります）。
-   配布物を受け取ったあとで鍵を入れ替えると、それ以前に取り込んだ資料は
+   配布物を受け取ったあとで暗号鍵を入れ替えると、それ以前に取り込んだ資料は
    管理者でも原文を読めなくなります。
 3. **質問文そのもの。**
    質問文へのマスキングは役割で分けていません。管理者が質問文に IP アドレスを書いても、
@@ -983,9 +983,9 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
 - **外部アクセラレータの画像の受け口は未実装です。** 呼ぶと 501 を返します。
 - **再ランクの宛先は、どの配布物にも入っていない外部アクセラレータになっています。**
   同梱の `cynovela.yaml` は `reranker.device` が `external`、`reranker.base_url` が
-  `http://localhost:18850` ですが、その番地で答えるものはどの落とし物にも入って
-  いません。∴ 検索のたびにその番地へ当たりに行って失敗し、退避します。再ランクの
-  重みが置かれていれば本体の中で再ランクし（`models` の落とし物に入っています）、
+  `http://localhost:18850` ですが、その番地で答えるものは、どのダウンロードしたファイルにも
+  入っていません。∴ 検索のたびにその番地へ当たりに行って失敗し、退避します。再ランクの
+  重みが置かれていれば本体の中で再ランクし（`models` のダウンロードしたファイルに入っています）、
   置かれていなければ再ランクなしで素通しします。退避のたびにログが 1 行出て、
   設定の画面にも状態が出ます。答えそのものは返ります。外部を選んでいるのは
   `reranker.device` で、同梱の `reranker.provider` はすでに `cross_encoder` です。

@@ -1151,7 +1151,7 @@ print_run_failure() {
         if grep -qE 'CERTIFICATE_VERIFY_FAILED|unable to get local issuer certificate|SSLError|SSLCertVerificationError' "$RUN_RAW_LOG"; then
             echo ""
             echo "   The certificate check failed."
-            echo "   On a company or school network, traffic is sometimes inspected and the"
+            echo "   On an organization's or a school's network, traffic is sometimes inspected and the"
             echo "   certificate is replaced. Try this:"
             echo "     security find-certificate -a -p /Library/Keychains/System.keychain > ~/corp-ca.pem"
             echo "     conda config --set ssl_verify ~/corp-ca.pem"
@@ -1159,7 +1159,7 @@ print_run_failure() {
             echo "   Then run this launcher again."
             echo ""
             echo "   証明書の確認で失敗しています。"
-            echo "   会社や学校のネットワークでは、通信の中身を検査するために"
+            echo "   組織や学校のネットワークでは、通信の中身を検査するために"
             echo "   証明書が差し替わることがあります。"
             echo "   対処:"
             echo "     security find-certificate -a -p /Library/Keychains/System.keychain > ~/corp-ca.pem"
@@ -1523,8 +1523,8 @@ print_next_steps() {
     print_first_login
     echo "  ■ 気をつけること"
     echo "      1. 起動すると、この配布物の中身が書き換わります。"
-    echo "         (記録・鍵・記録のコンテナが $SCRIPT_DIR/store の下に作られます)"
-    echo "      2. 鍵はこの機材で新しく作られます。他の機材で作られた鍵とは別のものです。"
+    echo "         (データベース・鍵ファイル・ベクター索引が $SCRIPT_DIR/store の下に作られます)"
+    echo "      2. 鍵ファイル (暗号化用の store/secret.key とトークン署名用の鍵) は、この機材で新しく作られます。他の機材で作られた鍵ファイルとは別のものです。"
     echo "         ∴ 他の機材で取り込んだ中身は、この機材では読めません。"
     echo "      3. 止め方: bash stop.sh"
     echo "      4. クラウド同期 (iCloud Drive・Dropbox・OneDrive・Google Drive) の下に"
@@ -1611,7 +1611,7 @@ start_app() {
 #   falcon 側はダウンロードの直前で同じことをしており、順序はもともと正しい。
 _drop_stale_ssl_cert_file() {
     #   指し先が実在しないものだけを外す。実在するものは外さない。
-    #   会社の証明書を指している場合、外すと逆に通信ができなくなる。
+    #   組織の証明書を指している場合、外すと逆に通信ができなくなる。
     local v p
     for v in SSL_CERT_FILE REQUESTS_CA_BUNDLE CURL_CA_BUNDLE; do
         eval "p=\${$v:-}"

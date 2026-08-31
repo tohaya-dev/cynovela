@@ -10,7 +10,7 @@
 > commercial product or an official implementation.
 > The implementation is entirely original, and consists of an OSS stack of
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company or product.
+> It does not represent the official position of any organization or product.
 
 Cynovela implements the **guardrails (protection rules)** and **access control** that are required when handling internal documents with RAG (Retrieval-Augmented Generation), split across several layers. This document describes how the current construction works, so that the person who sets Cynovela up can judge what is covered by it and what is not.
 
@@ -86,11 +86,11 @@ Cynovela is a learning tool for an individual to understand the concepts of AI i
 
 ### 1-2. Absence of any official position
 
-The behavior, implementation and documentation of Cynovela do not represent the official position of any company or product it refers to. Interpretations of specifications and design decisions are based on personal understanding, and may contain errors.
+The behavior, implementation and documentation of Cynovela do not represent the official position of any organization or product it refers to. Interpretations of specifications and design decisions are based on personal understanding, and may contain errors.
 
 ### 1-3. Production operation is out of scope
 
-Business use and production operation are not assumed. No guarantee whatsoever is provided even if events such as data loss, information leakage or service outage occur.
+Practical production use is not assumed. No guarantee whatsoever is provided even if events such as data loss, information leakage or service outage occur.
 
 ### 1-4. Possibility of specification changes
 
@@ -540,7 +540,7 @@ all_docs_masked.append(_masked_chunk or "")
 
 #### 5.2.4 Behavior on failure
 
-Even if an exception occurs in the mask processing, Publish is not stopped: it is written to the log with `_log.warning`, and then the raw text is saved on the masked side as well. This is a design choice to avoid the risk that "if ingest stops, the business stops."
+Even if an exception occurs in the mask processing, Publish is not stopped: it is written to the log with `_log.warning`, and then the raw text is saved on the masked side as well. This is a design choice to avoid the risk that "if ingest stops, everyday work stops."
 
 ### 5.3 Tier2: masking at answer time
 
@@ -619,11 +619,11 @@ Immediately before saving the raw tier text into SQLite and ChromaDB, it is encr
 - **Target**: the original body text (raw tier only). The masked tier passes through as-is (double defense is unnecessary, and this keeps search performance)
 - **Interface**: goes through `enc_raw()` / `dec_raw()` of `vault_enc.py`
 - **Idempotency**: the `enc:` prefix is used as a marker to prevent double encryption
-- **Key**: uses the Fernet key in the environment variable `CYNOVELA_SECRET_KEY`
+- **Encryption key**: uses the Fernet key in the environment variable `CYNOVELA_SECRET_KEY`
 
 #### 5.6.2 Implementation
 
-- **Key management**: `Fernet(_KEY)` is initialized at `config.py:62`. The key is passed with the `CYNOVELA_SECRET_KEY` environment variable. Setting this environment variable explicitly is recommended.
+- **Encryption-key management**: `Fernet(_KEY)` is initialized at `config.py:62`. The encryption key is passed with the `CYNOVELA_SECRET_KEY` environment variable. Setting this environment variable explicitly is recommended.
 
 ```python
 _fernet = Fernet(_KEY.encode() if isinstance(_KEY, str) else _KEY)
@@ -765,7 +765,7 @@ Opening the port directly to the internet side while bound to `0.0.0.0` with `--
 
 Feeding in real confidential documents as they are is not recommended.
 
-- Fernet encryption of the raw body text is in operation, but key management (`CYNOVELA_SECRET_KEY`) assumes personal operation
+- Fernet encryption of the raw body text is in operation, but encryption-key management (`CYNOVELA_SECRET_KEY`) assumes personal operation
 - Tamper prevention of audit_logs is only via the API, and direct DB access is out of scope of the protection
 - Backup and restore are provided (`/api/admin/backup` and `/api/admin/backups/{name}/restore`, plus the manual procedure in `docs/operations.md`), but running them and managing where the copies are kept is left to the operator
 
@@ -842,9 +842,9 @@ Cynovela is a personal project, and has no formal vulnerability report contact. 
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
-> 会社・製品の公式見解を一切代表しません。
+> 企業・製品の公式見解を一切代表しません。
 
-Cynovela は、社内ドキュメントを RAG（検索拡張生成）で扱う際に必要となる **ガードレール（保護ルール）** と **アクセス制御** を、複数層に分けて実装しています。本ドキュメントでは、導入する人が「いまの作りで何が扱われていて、何が扱われていないか」を判断できるように、現在の作りを記述します。
+Cynovela は、組織内ドキュメントを RAG（検索拡張生成）で扱う際に必要となる **ガードレール（保護ルール）** と **アクセス制御** を、複数層に分けて実装しています。本ドキュメントでは、導入する人が「いまの作りで何が扱われていて、何が扱われていないか」を判断できるように、現在の作りを記述します。
 
 Cynovela は学習用ツールであり、本番運用のセキュリティ要件を満たすものではありません。Cynovela 全体の既知の制限は `docs/limits.md` にまとめています。
 
@@ -918,11 +918,11 @@ Cynovela は個人が手を動かして AI 基盤ツールのコンセプトを�
 
 ### 1-2. 公式見解の不在
 
-Cynovela の挙動・実装・ドキュメントは、参照元のいかなる会社・製品の公式見解も代表しません。仕様の解釈や設計判断は個人の理解に基づくものであり、誤りを含む可能性があります。
+Cynovela の挙動・実装・ドキュメントは、参照元のいかなる企業・製品の公式見解も代表しません。仕様の解釈や設計判断は個人の理解に基づくものであり、誤りを含む可能性があります。
 
 ### 1-3. 本番運用は想定外
 
-業務利用・本番運用は想定していません。データ損失・情報漏洩・サービス停止などの事象が発生してもいかなる保証も提供しません。
+実務利用・本番運用は想定していません。データ損失・情報漏洩・サービス停止などの事象が発生してもいかなる保証も提供しません。
 
 ### 1-4. 仕様変更の可能性
 
@@ -1372,7 +1372,7 @@ all_docs_masked.append(_masked_chunk or "")
 
 #### 5.2.4 失敗時の挙動
 
-マスク処理に例外が出ても Publish は止めず、`_log.warning` でログに出してから raw 本文のまま masked 側にも保存します。これは「取込が止まると業務が止まる」リスクを避けるための設計です。
+マスク処理に例外が出ても Publish は止めず、`_log.warning` でログに出してから raw 本文のまま masked 側にも保存します。これは「取込が止まると実務が止まる」リスクを避けるための設計です。
 
 ### 5.3 Tier2：回答時マスキング
 
@@ -1451,11 +1451,11 @@ raw tier の本文を SQLite と ChromaDB に保存する直前に Fernet（対�
 - **対象**: 原本本文（raw tier のみ）。masked tier は素通し（二重防御不要、検索パフォーマンス確保のため）
 - **インターフェース**: `vault_enc.py` の `enc_raw()` / `dec_raw()` を介す
 - **冪等性**: `enc:` プレフィックスをマーカーにして二重暗号化を防ぐ
-- **鍵**: 環境変数 `CYNOVELA_SECRET_KEY` の Fernet 鍵を使用
+- **暗号鍵**: 環境変数 `CYNOVELA_SECRET_KEY` の Fernet 鍵を使用
 
 #### 5.6.2 実装
 
-- **鍵管理**: `config.py:62` で `Fernet(_KEY)` を初期化。`CYNOVELA_SECRET_KEY` 環境変数で鍵を渡します。明示的にこの環境変数を設定することが推奨されています。
+- **暗号鍵の管理**: `config.py:62` で `Fernet(_KEY)` を初期化。`CYNOVELA_SECRET_KEY` 環境変数で暗号鍵を渡します。明示的にこの環境変数を設定することが推奨されています。
 
 ```python
 _fernet = Fernet(_KEY.encode() if isinstance(_KEY, str) else _KEY)
@@ -1597,7 +1597,7 @@ PII 検出は次の 2 系統で集計されます。
 
 本番の機密文書をそのまま投入することは推奨しません。
 
-- raw 本文の Fernet 暗号化は稼働中だが、鍵管理（`CYNOVELA_SECRET_KEY`）は個人運用前提
+- raw 本文の Fernet 暗号化は稼働中だが、暗号鍵の管理（`CYNOVELA_SECRET_KEY`）は個人運用前提
 - audit_logs の改ざん防止は API 経由のみで、DB 直接アクセスは保護対象外
 - バックアップと復元は用意されている（`/api/admin/backup` と `/api/admin/backups/{name}/restore`、および `docs/operations.md` の手動手順）が、実行と控えの置き場の管理は運用側に委ねられている
 

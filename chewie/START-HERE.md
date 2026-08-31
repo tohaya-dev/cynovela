@@ -107,7 +107,7 @@ Setup is needed only once. From then on:
 
 - **Start:** double-click `Cynovela-start.command` (or `./launch.sh`). The environment is reused; nothing is rebuilt.
 - **Stop:** double-click `Cynovela-stop.command` (or `bash stop.sh`). Your documents and settings remain.
-- If it says something is missing and refuses to start, run `./launch.sh --setup` once, then start again.
+- If a message reports that something is missing and the start does not complete, run `./launch.sh --setup` once, then start again.
 
 ---
 
@@ -155,7 +155,7 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 | `Cynovela-start.command` | **Starts it. Double-click.** |
 | `Cynovela-stop.command` | **Stops it. Double-click.** |
 | `Cynovela-add-folder.command` | **Adds a folder to be ingested. Double-click.** |
-| `check-managed-mac.command` | **Checks whether this Mac will let you run it. Double-click.** It only measures — it changes no setting, needs no administrator password, and works around no management policy. Useful on a Mac handed to you by an employer: it prints a judgement for each item it checks and ends with an overall verdict, and when something is blocked it says which edition that blocks. The same file is also downloadable from the release page, so you can run it *before* downloading anything big. |
+| `check-managed-mac.command` | **Checks whether this Mac will let you run it. Double-click.** It only measures — it changes no setting, needs no administrator password, and works around no management policy. Useful on a managed Mac (under MDM): it prints a judgement for each item it checks and ends with an overall verdict, and when something is blocked it states which edition that blocks. The same file is also downloadable from the release page, so you can run it *before* downloading anything big. |
 | `launch.sh` | **What the three above call internally. Use this one from the terminal.** |
 | `uninstall.sh` | **Removes what this package created.** |
 | `cynovela-cli.py` | **Use it from the terminal. Run `doctor` first — it tells you what is missing.** |
@@ -224,7 +224,7 @@ Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes
 }}}
 ```
 
-What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two things people trip over: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token does not expire unless the caller asked for an expiry when signing in (see `docs/reference/api.md`). Every tool, with what you hand it and what comes back, is in `docs/reference/mcp.md`; the walkthrough of connecting a client, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/operations.md`.
+What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two common problems: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token does not expire unless the caller asked for an expiry when signing in (see `docs/reference/api.md`). Every tool, with what you hand it and what comes back, is in `docs/reference/mcp.md`; the walkthrough of connecting a client, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/operations.md`.
 
 ---
 
@@ -416,7 +416,7 @@ that one. The same documents are repeated below.
 | `Cynovela-start.command` | **起動する。ダブルクリック** |
 | `Cynovela-stop.command` | **止める。ダブルクリック** |
 | `Cynovela-add-folder.command` | **読み込むフォルダを足す。ダブルクリック** |
-| `check-managed-mac.command` | **この Mac で動かせるかを下調べする。ダブルクリック**。測るだけで、設定は変えず、管理者のパスワードも要らず、管理の仕組みも迂回しない。会社から配られた Mac で役に立つ: 調べる項目ごとに判定を出し、最後に全体の判定を出す。何かが止められているときは、それがどの形を止めるのかまで言う。同じファイルはリリースのページにも置いてあり、大きなものを落とす**前**に試せる |
+| `check-managed-mac.command` | **この Mac で動かせるかを下調べする。ダブルクリック**。測るだけで、設定は変えず、管理者のパスワードも要らず、管理の仕組みも迂回しない。管理された Mac（MDM 配下）で役に立つ: 調べる項目ごとに判定を出し、最後に全体の判定を出す。何かが止められているときは、それがどの形を止めるのかまで言う。同じファイルはリリースのページにも置いてあり、大きなものを落とす**前**に試せる |
 | `launch.sh` | **上の3つが内側で呼んでいるもの。ターミナルから使うときはこれ** |
 | `uninstall.sh` | **この配布物が作ったものを消す** |
 | `cynovela-cli.py` | **端末から使う。まず `doctor` を叩けば、足りないものが分かる** |
@@ -491,7 +491,7 @@ that one. The same documents are repeated below.
 
 ### 9. 使う前に、次の3つをお読みください
 
-- **これは学習と試用のためのものです。** 業務の本番システムとして使うことを想定して作られていません。無保証です。
+- **これは学習と試用のためのものです。** 本番システムとして使うことを想定して作られていません。無保証です。
 - **マスキングは完全ではありません。** 氏名・電話番号などを自動で伏せますが、取りこぼしは起こります。伏せられることを前提に機密資料を入れないでください。
 - **答えは間違うことがあります。** 必ず出典を開き、原文で確かめてからお使いください。
 

@@ -18,10 +18,11 @@ download the models parts too, join them in part order with `cat`, and run
 folder — that alone places them in the correct shape under `store/models/`
 (`models--BAAI--bge-m3/snapshots/<rev>/`; nowhere else). The joining and
 verification guide is `HOW-TO-ASSEMBLE.md`, published next to the files.
-All forms are version `1.1.3`. Where the forms differ, this document says so.
+All forms are version `1.1.3`. Where the forms differ, this document states so.
 The `store/` folder holds the ingested material's index, the database, the
-settings and the keys — back it up as a whole. The token-signing key is newly
-generated on the receiving machine at first startup; it is not in the package.
+settings and the key files — back it up as a whole. The token-signing key
+(`store/db/jwt/secret.key`) is newly generated on the receiving machine at
+first startup; it is not in the package.
 
 1. **What this package is for.** It is for verification and demonstration —
    checking that it works, evaluating it, showing it. It is not meant to be run
@@ -33,7 +34,7 @@ generated on the receiving machine at first startup; it is not in the package.
    their databases and indexes in separate locations, so nothing from the demo
    mixes into production.
 3. **All bundled material is fictional.** The seven files under `dummy-corpus/`
-   describe a fictional company. Every person, organisation, address, phone
+   describe a fictional organization. Every person, organisation, address, phone
    number and email address in them is invented and bears no relation to anyone
    real.
 4. **The initial passwords are fixed values, written into this package's own
@@ -58,7 +59,7 @@ generated on the receiving machine at first startup; it is not in the package.
 
 この文書は、本配布物を受け取った方・配布する方に最初に読んでいただくガイドです。
 
-配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`chewie/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど断ります。版はいずれも `1.1.3` です。
+配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`chewie/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど明記します。版はいずれも `1.1.3` です。
 
 ## 1. この配布物の位置づけ
 
@@ -80,7 +81,7 @@ generated on the receiving machine at first startup; it is not in the package.
 > **起動の前にモデルを置いてください。**
 > どちらの形にも、検索に使う埋め込みモデルは入っていません。models の分割ファイル（`cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02`）を part の順に `cat` で 1 本につないだうえで、**展開済みの chewie フォルダの中で `tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz` を実行**してください。それだけで `store/models/` の正しい形（`models--BAAI--bge-m3/snapshots/<版>/`）に置かれます。宛先は `store/models/` 配下だけです。つなぎ方と検証の手引きは、Releases に一緒に置いてある `HOW-TO-ASSEMBLE.md` にあります。置かないまま起動すると、検索や取り込みをしようとしたところで失敗します。
 >
-> なお `store/` フォルダには、取り込んだ資料の索引・データベース・設定・鍵が入っています。控えを取るなら `store/` ごと取ってください。通行証の署名鍵は初回起動時にその機械で新しく作られます（配布物には入っていません）。
+> なお `store/` フォルダには、取り込んだ資料の索引・データベース・設定・鍵ファイルが入っています。控えを取るなら `store/` ごと取ってください。通行証のトークン署名用の鍵（`store/db/jwt/secret.key`）は初回起動時にその機械で新しく作られます（配布物には入っていません）。
 
 ## 3. 同梱資料はすべて架空のサンプルです
 

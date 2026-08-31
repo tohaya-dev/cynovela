@@ -346,7 +346,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(1/2)</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>The first time you sign in as the administrator, you will always be told to change your password.</strong></li><li><strong>Until you have finished changing it, every administrative operation (adding an ingest source, ingesting documents, changing settings) is refused.</strong> Change it first.</li><li>The viewer (<code>demo</code>) is not asked to change anything. However, a viewer cannot ingest documents.</li></ul>
+<ul><li><strong>The first time you sign in as the administrator, you will always be told to change your password.</strong></li><li><strong>Until you have finished changing it, every administrative operation (adding an ingest source, ingesting documents, changing settings) is rejected.</strong> Change it first.</li><li>The viewer (<code>demo</code>) is not asked to change anything. However, a viewer cannot ingest documents.</li></ul>
 <p>This package runs directly on your own machine.</p>
 <p>Two things that will look wrong, and are not:</p>
 </div>
@@ -362,7 +362,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(2/2)</span>
 </div>
 <div class="slide-body">
-<ol><li><strong>Most of the terminal steps print nothing when they work.</strong> A command that succeeds usually says nothing at all and just gives you a new line to type on. Silence is success here. Only failures talk.</li><li><strong>Some steps take minutes with no sign of life.</strong> Joining the model files and the first start are the slow ones. Nothing is frozen. Leave it alone.</li></ol>
+<ol><li><strong>Most of the terminal steps print nothing when they work.</strong> A command that succeeds usually prints nothing at all and just gives you a new line to type on. Silence is success here. Only failures produce output.</li><li><strong>Some steps take minutes with no sign of life.</strong> Joining the model files and the first start are the slow ones. Nothing is frozen. Leave it alone.</li></ol>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -533,7 +533,7 @@ SHA256SUMS</code></pre>
 <div class="slide-body">
 <pre><code>cynovela-chewie-models-1.1.3.tar.gz: OK
 cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
-<p>If any line says <code>FAILED</code>, download that file again and repeat from step 4. Do not go on.</p>
+<p>If any line shows <code>FAILED</code>, download that file again and repeat from step 4. Do not go on.</p>
 <h4>Step 6. Unpack the program</h4>
 <pre><code>tar -xzf cynovela-chewie-package-1.1.3.tar.gz</code></pre>
 <p>This takes <strong>three to ten minutes</strong> and prints nothing. A folder named <code>chewie</code> appears in Downloads.</p>
@@ -671,7 +671,7 @@ cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 </div>
 <div class="slide-body">
 <h4>Why five files instead of one</h4>
-<p>GitHub refuses to host a single file larger than a few gigabytes, so the AI models are cut into three pieces of 1.5 GB. Step 4 glues them back together. <code>SHA256SUMS</code> is a list of fingerprints; step 5 recomputes the fingerprint of what landed on your disk and compares it. A download that stopped halfway looks like a normal file until you try to use it, which is why the check is worth the three minutes.</p>
+<p>GitHub does not accept a single file larger than a few gigabytes, so the AI models are cut into three pieces of 1.5 GB. Step 4 glues them back together. <code>SHA256SUMS</code> is a list of fingerprints; step 5 recomputes the fingerprint of what landed on your disk and compares it. A download that stopped halfway looks like a normal file until you try to use it, which is why the check is worth the three minutes.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -736,7 +736,7 @@ cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 </div>
 <div class="slide-body">
 <h4>Why the password is in a file</h4>
-<p>Each package is built with a different first password, written into <code>cynovela.yaml</code> at packaging time. If it were the same for everyone, anyone who had downloaded the tool would know yours. Changing it on first sign-in is required for the same reason: administrator actions are refused until you do.</p>
+<p>Each package is built with a different first password, written into <code>cynovela.yaml</code> at packaging time. If it were the same for everyone, anyone who had downloaded the tool would know yours. Changing it on first sign-in is required for the same reason: administrator actions are rejected until you do.</p>
 <h4>Why you should not put the folder in iCloud Drive, Dropbox or OneDrive</h4>
 <p>Those services copy every file to a server and can replace local files with placeholders. Several gigabytes of libraries would be uploaded, and a placeholder cannot be executed, so the tool stops working in ways that are hard to diagnose. <code>./launch.sh</code> warns you if it detects one of those folders, but it lets you go on. Put the folder somewhere plain instead — <code>~/Downloads</code> or directly in your home folder is fine.</p>
 </div>
@@ -914,7 +914,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span class="continued">(2/2)</span>
 </div>
 <div class="slide-body">
-<p>On a company-issued machine, the download sources themselves (conda-forge, PyPI, github.com, huggingface.co) may not be allowed. In that case, choose the package edition, which needs no downloading.</p>
+<p>On a managed Mac (under MDM), the download sources themselves (conda-forge, PyPI, github.com, huggingface.co) may not be allowed. In that case, choose the package edition, which needs no downloading.</p>
 <p>(The package edition needs neither Python nor conda; see section 3, "Why the package edition needs no Python and no conda".)</p>
 <p>What to check when it does not work:</p>
 <ul><li><code>conda: command not found</code> → In most cases the terminal has not been reopened after the installation. Open a new terminal and check again.</li></ul>
@@ -1082,7 +1082,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <div class="slide-body">
 <p>The administrator is asked to change the password at the first login. After changing it, enter with the new value. The viewer can be used as it is. <strong>After you receive it, change the administrator password first.</strong></p>
 <p>What to check when it does not work:</p>
-<ul><li>"ユーザー名またはパスワードが正しくありません" (the user name or password is incorrect) → Copy and paste the value and enter it again (leading/trailing spaces and newlines easily get mixed in here).</li><li>After the change, the admin screen says "初回パスワードの変更が必要です" (the initial password must be changed) → Log out once and log in again with the new password.</li><li>You forgot the admin password → It can be reissued with <code>conda run -n cynovela-dist python server.py --reset-admin</code>.</li></ul>
+<ul><li>"ユーザー名またはパスワードが正しくありません" (the user name or password is incorrect) → Copy and paste the value and enter it again (leading/trailing spaces and newlines easily get mixed in here).</li><li>After the change, the admin screen shows "初回パスワードの変更が必要です" (the initial password must be changed) → Log out once and log in again with the new password.</li><li>You forgot the admin password → It can be reissued with <code>conda run -n cynovela-dist python server.py --reset-admin</code>.</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1177,7 +1177,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(4/5)</span>
 </div>
 <div class="slide-body">
-<ul><li>The connection test fails → Check in the LM Studio Developer tab whether the server is in the Start state.</li><li>Nothing appears with "モデル一覧を取得" → No model is loaded in LM Studio. Load a model on the LM Studio side and press it again.</li><li>Even if you specify the name of a model that is not loaded, LM Studio may not refuse and may answer with a different model that is loaded. In the Model field, enter a model name that actually exists, chosen from the list.</li><li>If you run several large models at the same time in LM Studio, the answers may break down or become slow. It returns to normal automatically after some time.</li><li>The quality is not stable → Please check the model and settings on the LM Studio side.</li></ul>
+<ul><li>The connection test fails → Check in the LM Studio Developer tab whether the server is in the Start state.</li><li>Nothing appears with "モデル一覧を取得" → No model is loaded in LM Studio. Load a model on the LM Studio side and press it again.</li><li>Even if you specify the name of a model that is not loaded, LM Studio may not reject the request and may answer with a different model that is loaded. In the Model field, enter a model name that actually exists, chosen from the list.</li><li>If you run several large models at the same time in LM Studio, the answers may break down or become slow. It returns to normal automatically after some time.</li><li>The quality is not stable → Please check the model and settings on the LM Studio side.</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1366,7 +1366,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(8/8)</span>
 </div>
 <div class="slide-body">
-<ul><li>In this form, <strong>adding and removing from the screen take effect as they are. A restart is not required</strong> (the backup is re-read every time it is referenced).</li><li>Registered roots are kept in the backup file <code>store/ingest-roots.json</code>.</li><li>If you pass no root at all, it starts with the dummy documents inside this package (<code>dummy-corpus</code>) as the ingest source. When there is no root at all in the folder browsing of the screen, "there is not even one ingest source yet" appears, and you can add one from "add an ingest source" right there.</li><li>Paths outside the roots are refused with 403 (please add them with "add an ingest source" on the screen, then use them).</li></ul>
+<ul><li>In this form, <strong>adding and removing from the screen take effect as they are. A restart is not required</strong> (the backup is re-read every time it is referenced).</li><li>Registered roots are kept in the backup file <code>store/ingest-roots.json</code>.</li><li>If you pass no root at all, it starts with the dummy documents inside this package (<code>dummy-corpus</code>) as the ingest source. When there is no root at all in the folder browsing of the screen, "there is not even one ingest source yet" appears, and you can add one from "add an ingest source" right there.</li><li>Paths outside the roots are rejected with 403 (please add them with "add an ingest source" on the screen, then use them).</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1891,7 +1891,7 @@ bash stop.sh</code></pre>
 <p>The two never mix, which is the point: the sample documents cannot end up in your real answers.</p>
 <h4>Why <code>stop.sh</code> is safe</h4>
 <p>It reads the process number out of <code>store/server.pid</code>, checks that the process with that number really is <code>server.py</code>, and only then stops it. It never searches for something listening on a port and never uses <code>pkill</code>, so it cannot stop a different program that happens to be using port 8765.</p>
-<p>If it says the PID file is missing, the tool had already stopped and cleaned up after itself.</p>
+<p>If it reports that the PID file is missing, the tool had already stopped and cleaned up after itself.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1924,7 +1924,7 @@ bash stop.sh</code></pre>
 </div>
 <div class="slide-body">
 <h4>When the environment itself is broken</h4>
-<p>If it refuses to start and complains that something is missing:</p>
+<p>If it fails to start and reports that something is missing:</p>
 <pre><code>./launch.sh --setup</code></pre>
 <p>That rebuilds the Python environment and does not start the tool. Then start normally. Your documents and settings are untouched.</p>
 </div>
@@ -2146,7 +2146,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="slide-title">0. 先に知っておくこと（ここでつまずく人が一番多いところ）</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>管理者で最初に入ると、必ず「パスワードを変えてください」と出ます。</strong></li><li><strong>変え終わるまで、管理の操作（取り込み元を足す・資料を取り込む・設定を変える）はすべて断られます。</strong> 先に変えてください。</li><li>閲覧者（demo）は変更を求められません。ただし閲覧者は取り込みができません。</li></ul>
+<ul><li><strong>管理者で最初に入ると、必ず「パスワードを変えてください」と出ます。</strong></li><li><strong>変え終わるまで、管理の操作（取り込み元を足す・資料を取り込む・設定を変える）はすべて拒否されます。</strong> 先に変えてください。</li><li>閲覧者（demo）は変更を求められません。ただし閲覧者は取り込みができません。</li></ul>
 <p>この配布物は、お使いの機械の上で直接動きます。</p>
 <p>壊れて見えるが壊れていない2つのこと:</p>
 <ol><li><strong>ここに出てくる命令は、うまくいったときほど何も出しません。</strong> 成功すると、何も言わずに次の行を打てる状態に戻るだけです。ここでは沈黙が成功です。しゃべるのは失敗したときだけです。</li><li><strong>数分のあいだ、まったく反応が無い場面があります。</strong> モデルのファイルをつなぐところと、最初の起動がそれです。固まっていません。触らずに待ってください。</li></ol>
@@ -2298,7 +2298,7 @@ SHA256SUMS</code></pre>
 <span class="continued">(3/10)</span>
 </div>
 <div class="slide-body">
-<h4>手順4. モデルの3つの片を1本につなぐ</h4>
+<h4>手順4. モデルの3つの分割ファイルを1本につなぐ</h4>
 <p>次を<strong>1行で</strong>打って return を押します。</p>
 <pre><code>cat cynovela-chewie-models-1.1.3.tar.gz.part* &gt; cynovela-chewie-models-1.1.3.tar.gz</code></pre>
 <p><strong>1〜3分</strong>かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。</p>
@@ -2523,9 +2523,9 @@ cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 </div>
 <div class="slide-body">
 <h4>なぜ合言葉がファイルに書いてあるのか</h4>
-<p>配布物は1本ごとに違う最初の合言葉を持って作られ、梱包のときに <code>cynovela.yaml</code>へ書き込まれます。全員同じだったら、この道具を落とした人は誰でもあなたの合言葉を知っていることになります。最初のログインで変えるよう求めるのも同じ理由です。変えるまで、管理の操作は通しません。</p>
+<p>配布物は1本ごとに違う最初の合言葉を持って作られ、パッケージングのときに <code>cynovela.yaml</code>へ書き込まれます。全員同じだったら、この道具をダウンロードした人は誰でもあなたの合言葉を知っていることになります。最初のログインで変えるよう求めるのも同じ理由です。変えるまで、管理の操作は通しません。</p>
 <h4>なぜ iCloud Drive・Dropbox・OneDrive の中に置いてはいけないのか</h4>
-<p>これらは全てのファイルを向こうのサーバへ写し、手元のファイルを「印」だけに置き換えることがあります。数ギガバイトの部品がまるごと送られますし、「印」は実行できないので、原因の分かりにくい形で動かなくなります。<code>./launch.sh</code> はそういう場所を見つけると知らせますが、止めはしません。<code>~/Downloads</code> かホームフォルダの直下のような、素直な場所へ置いてください。</p>
+<p>これらは全てのファイルを向こうのサーバへ写し、手元のファイルを実体のない代わりのファイルだけに置き換えることがあります。数ギガバイトの部品がまるごと送られますし、その代わりのファイルは実行できないので、原因の分かりにくい形で動かなくなります。<code>./launch.sh</code> はそういう場所を見つけると知らせますが、止めはしません。<code>~/Downloads</code> かホームフォルダの直下のような、素直な場所へ置いてください。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2688,7 +2688,7 @@ conda run -n cynovela-dist python server.py --demo</code></pre>
 <span class="continued">(2/2)</span>
 </div>
 <div class="slide-body">
-<p>会社支給の機械では、取り寄せ先そのもの（conda-forge・PyPI・github.com・huggingface.co）が許可されていないことがあります。その場合は、取り寄せの要らないパッケージ版を選んでください。</p>
+<p>管理された Mac（MDM 配下）では、取り寄せ先そのもの（conda-forge・PyPI・github.com・huggingface.co）が許可されていないことがあります。その場合は、取り寄せの要らないパッケージ版を選んでください。</p>
 <p>（パッケージ版は Python も conda も要りません。3節「なぜパッケージ版は Python も conda も要らないのか」を参照。）</p>
 <p>うまくいかないときに確認すること:</p>
 <ul><li><code>conda: command not found</code> → インストール後にターミナルを開き直していないことが多いです。新しいターミナルを開いてもう一度確認してください。</li></ul>
@@ -3252,7 +3252,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <h3>はじめて起動する前の注意</h3>
-<ul><li>ダウンロードした配布物には macOS が印（<code>com.apple.quarantine</code>）を付け、部品ごとに何度も確認が出ることがあります。<code>./launch.sh</code> は起動の最初に、配布物の中の印を全部自分で落とします。手動で行うなら <code>xattr -rc &lt;フォルダ&gt;</code> です。</li><li>クラウド同期（iCloud Drive・Dropbox・OneDrive・Google Drive）の下に配布物を置かないでください。<code>./launch.sh</code> が起動前に検知して注意を出します（止めずに進みます）。</li><li>同梱の環境（<code>.condapack-cynovela</code>）が既に在って動くときは、<code>./launch.sh</code> は土台の選択画面を出さずにそのまま起動します（壊れているときだけ選択画面が出ます）。</li></ul>
+<ul><li>ダウンロードした配布物には macOS が拡張属性（<code>com.apple.quarantine</code>）を付け、部品ごとに何度も確認が出ることがあります。<code>./launch.sh</code> は起動の最初に、配布物の中の拡張属性を全部自分で取り除きます。手動で行うなら <code>xattr -rc &lt;フォルダ&gt;</code> です。</li><li>クラウド同期（iCloud Drive・Dropbox・OneDrive・Google Drive）の下に配布物を置かないでください。<code>./launch.sh</code> が起動前に検知して注意を出します（止めずに進みます）。</li><li>同梱の環境（<code>.condapack-cynovela</code>）が既に在って動くときは、<code>./launch.sh</code> は土台の選択画面を出さずにそのまま起動します（壊れているときだけ選択画面が出ます）。</li></ul>
 <p><code>launch.sh</code> を通さず手でサーバーを起動する場合（環境が既に在ることが前提です。専用の名前は <code>cynovela-dist</code>。共有の環境は作らない・書き換えないでください）:</p>
 </div>
 <div class="slide-footer">

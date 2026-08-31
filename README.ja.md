@@ -67,9 +67,9 @@ https://github.com/tohaya-dev/cynovela/releases
 作ります。リリースのページにソースの書庫は置いていません。
 
 リリースには `HOW-TO-ASSEMBLE.md` と、突き合わせ用の一覧 `SHA256SUMS`（パッケージ版
-と AIモデルのぶん）、そして `check-managed-mac.command`（会社から渡された Mac で
+と AIモデルのぶん）、そして `check-managed-mac.command`（管理された Mac〔MDM 配下〕で
 動かせるかを、設定を変えずに測るだけの診断）を置いてあります。リリースの1ファイルは
-2 GiB までのため、AIモデルは片に分けてあります。
+2 GiB までのため、AIモデルは分割ファイルに分けてあります。
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) のとおりにつなぎ、`SHA256SUMS` と
 突き合わせてから起動してください。
 

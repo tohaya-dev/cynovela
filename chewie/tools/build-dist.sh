@@ -763,7 +763,7 @@ Chunks are stored in two layers, before masking and after masking, and both are
 encrypted with the vault key. The index used for search (the vectors) is built
 from **the masked layer only**.
 
-All bundled material is an explanatory sample about a fictional company. Every
+All bundled material is an explanatory sample about a fictional organization. Every
 person, organisation, address, phone number and email address in it is
 invented.
 
@@ -1038,6 +1038,68 @@ echo "[gate] 内部の作業番号を含むファイル: $gate_work_ids 件"
 if [ "$gate_work_ids" != "0" ]; then
   { grep -rlE "DD-CYN-[0-9]{4}" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } \
     | head -20 | sed "s|^$GATE_DIR/||;s|^|[gate]     |" >&2
+  gate_fail=1
+fi
+
+# (5)(6) 文書・UI 面の語り口 (2026-08-31 新設)。
+#     作者の立場が出る語と、独自の言い換え語を検出したら失敗する。
+#     適用範囲は build-dist.sh が組む配布物の文書・UI ファイルだけ
+#     (.md / .txt / .html / .command / launch.sh / tools/launch-body.sh / cynovela.yaml)。
+#     dummy-corpus (サンプル資料そのもの)・LICENSE 類・THIRD_PARTY は内容であって
+#     語り口ではないため見ない。.app の組み立て工程には当てない。
+#     managed / MDM は許容語。このスクリプト自身は .sh であり適用面に入らないため、
+#     下の語の一覧が同梱されても自己検出は起きない (適用面の定義が回避を兼ねる)。
+if ! python3 - "$GATE_DIR" <<'PYSTYLE'
+import os, re, sys
+root = sys.argv[1]
+ja_stance = ["会社", "勤務先", "職場", "社内", "業務", "支給"]
+en_stance = [r"\bcompany\b", r"\bcorporate\b", r"\bworkplace\b", r"\bemployer\b", r"\bwork-issued\b"]
+alias = ["関門", "梱包", "素性",
+         "積み荷命令", "落とし物", "証拠束"]
+# 内容参照の許容トークン: 文書の語り口ではなく、サンプル資料の実物や製品のラベルを
+# 指しているもの。照合の前に取り除く。
+#   company-overview  = dummy-corpus の実在ファイル名 (01-company-overview.md ほか)
+#   会社案内 / 会社概要 / 株式会社 = サンプル資料の実物の表題・架空の法人名の引用
+#   月次業務改善会議  = サンプル資料 05-meeting-notes.md に実在する会議名
+#   社内資料          = rag.py の既定システムプロンプトの逐語引用 (architecture.md)
+#   社内限定          = 製品のアクセスレベル表示ラベル (frontend と demo ページが表示)
+allowed_tokens = ["company-overview", "会社案内", "会社概要", "株式会社",
+                  "月次業務改善会議", "社内資料", "社内限定"]
+# 片 (分割ファイルの意) と 港: 複合語を除いて数える (港区 は地名)
+kata = re.compile("(?<!断)(?<!破)片(?![づ付方側寄隅手])")
+minato = re.compile("(?<!空)(?<!出)(?<!入)港(?!区)")
+def in_scope(rel):
+    if rel.startswith(("dummy-corpus/",)) or "/dummy-corpus/" in rel: return False
+    if rel.startswith("store/") or "/store/" in rel: return False
+    base = os.path.basename(rel)
+    if base in ("LICENSE", "LICENSES-MODELS.md", "THIRD_PARTY_NOTICES.md"): return False
+    if base in ("launch.sh", "launch-body.sh", "cynovela.yaml") or base.endswith((".md", ".txt", ".html", ".command")):
+        return True
+    return False
+bad = []
+for dp, dn, fn in os.walk(root):
+    for f in fn:
+        p = os.path.join(dp, f)
+        rel = os.path.relpath(p, root)
+        if not in_scope(rel): continue
+        try: t = open(p, encoding="utf-8", errors="ignore").read()
+        except Exception: continue
+        for tok in allowed_tokens:
+            t = t.replace(tok, "")
+        hits = []
+        for w in ja_stance + alias:
+            if w in t: hits.append(w)
+        for w in en_stance:
+            if re.search(w, t, re.I): hits.append(w)
+        if kata.search(t): hits.append("片")
+        if minato.search(t): hits.append("港")
+        if hits: bad.append((rel, hits))
+print("[gate] 語り口 (立場・言い換え語) を含む文書・UI ファイル: %d 件" % len(bad))
+for rel, hits in bad[:20]:
+    print("[gate]     %s: %s" % (rel, " ".join(hits)), file=sys.stderr)
+sys.exit(1 if bad else 0)
+PYSTYLE
+then
   gate_fail=1
 fi
 

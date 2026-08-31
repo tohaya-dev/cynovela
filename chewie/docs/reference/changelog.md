@@ -10,7 +10,7 @@
 > product nor an official implementation.
 > The implementation is entirely original, built on an OSS stack of
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company or product.
+> It does not represent the official position of any organization or product.
 
 This records the main changes to Cynovela in chronological order.
 
@@ -18,19 +18,21 @@ This records the main changes to Cynovela in chronological order.
 
 ## v1.1.3 (2026-08-31)
 
-- **`./launch.sh --help` now names the real place of the first password**: this
-  package's own `cynovela.yaml`, key `auth.admin_initial_password` (the
-  viewer's is `auth.viewer_initial_password`), printed on the screen once on
-  the ordinary first start and never on `--demo`. The wording is the one the
-  documents have carried since 1.1.2; only the terminal output was behind.
-- **`--follow` / `--pro` are refused at the entry point, with a reason, when no
-  terminal is connected.** They are wrapper-only flags; on a call without a
-  terminal the wrapper used to hand them to the body, which rejected them as
-  unknown. With a terminal connected they behave as before.
-- **The distributables no longer carry the `.app` build materials**
+- **`./launch.sh --help` now states the actual location of the first
+  password**: this package's own `cynovela.yaml`, key
+  `auth.admin_initial_password` (the viewer's is
+  `auth.viewer_initial_password`), printed on the screen once on the ordinary
+  first start and never on `--demo`. The wording is the one the documents have
+  carried since 1.1.2; only the terminal output was behind.
+- **When no terminal is connected, `launch.sh` rejects `--follow` and `--pro`
+  with an explanation.** These flags are handled by `launch.sh` itself; on a
+  call without a terminal, `launch.sh` used to forward them to `tools/launch-body.sh`,
+  which does not recognize them and exited with an "unknown flag" error. With
+  a terminal connected the behaviour is unchanged.
+- **The distributed files no longer include the `.app` build materials**
   (`macos-app/`, `tools/build-macos-app.sh`, `tools/split-pkg.sh`), and the
-  publishing gate now fails the build if an internal work number appears in
-  the packaged product (previously it only counted them).
+  pre-release check now fails the build if an internal work number is found in
+  the packaged files (previously it only counted them).
 - **`docs/html/` regenerated from the current `.md` files.**
 
 ## v1.1.2 (2026-08-30)
@@ -284,7 +286,7 @@ The following are recorded as unfinished. They describe the state of the current
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
-> 会社・製品の公式見解を一切代表しません。
+> 企業・製品の公式見解を一切代表しません。
 
 Cynovela の主要な変更内容を時系列で記録します。
 
@@ -292,18 +294,20 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ## v1.1.3（2026-08-31）
 
-- **`./launch.sh --help` が、最初のパスワードの本当の在りかを言う**: この配布物
-  自身の `cynovela.yaml` の `auth.admin_initial_password`（閲覧者のぶんは
-  `auth.viewer_initial_password`）に在り、普通の初回起動では画面にも1回出て、
-  `--demo` では出ない。文言は 1.1.2 から文書が載せているものと同じで、端末の
-  出力だけが遅れていた。
-- **端末が繋がっていない呼び出しでは、`--follow` / `--pro` を入口が理由つきで
-  断る。** これらは包みだけが読む指定で、端末なしの呼び出しでは従来、これらを
-  知らない本体へ渡って「知らない指定です」で落ちていた。端末が繋がっていれば
-  従来どおり動く。
-- **配布物から `.app` の組み立て材料を外した**（`macos-app/`・
+- **`./launch.sh --help` が、最初のパスワードの実際の保存場所を表示する**: この
+  配布物自身の `cynovela.yaml` の `auth.admin_initial_password`（閲覧者のぶんは
+  `auth.viewer_initial_password`）にあり、普通の初回起動では画面にも1回表示され、
+  `--demo` では表示されない。文言は 1.1.2 から文書が載せているものと同じで、
+  端末の出力だけが遅れていた。
+- **端末が接続されていない呼び出しでは、`launch.sh` が `--follow` / `--pro` を
+  受け付けず、説明を表示して終了する。** これらは `launch.sh` 自身が処理する
+  指定で、端末なしの呼び出しでは従来、この指定を認識しない `tools/launch-body.sh` へ
+  転送されて「知らない指定です」のエラーで終了していた。端末が接続されて
+  いれば動作は変わらない。
+- **配布ファイルから `.app` のビルド用ファイルを除いた**（`macos-app/`・
   `tools/build-macos-app.sh`・`tools/split-pkg.sh`）。あわせて、内部の作業番号が
-  配布物に現れたら組み立てを止める関門を足した（従来は数えるだけだった）。
+  配布ファイルに見つかったらビルドを失敗させる項目をリリース前チェックに
+  追加した（従来は数えるだけだった）。
 - **`docs/html/` を、いまの `.md` から作り直した。**
 
 ## v1.1.2（2026-08-30）

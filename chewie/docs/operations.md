@@ -10,7 +10,7 @@
 > It is not a commercial product or an official implementation.
 > The implementation is entirely original, and is built on an OSS stack of
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company or product.
+> It does not represent the official position of any organization or product.
 
 This document is for the people who install Cynovela and keep it running. It collects, in one place, starting and stopping, how to put it on a machine, connecting an LLM provider, using it from external tools over MCP, sharing it over a LAN, backup and restore, logs, the audit log, user management, health checks, notifications, and the port.
 
@@ -529,12 +529,12 @@ The bundled default is **LM Studio** (`llm.provider: lmstudio` /
 
 **Please do not leave Model blank (`auto`).**
 When the model name is not specified, the **first** entry of the model list returned by LM Studio is used.
-If the first one is an embedding-only model (bge-m3 and so on), the generation request is refused, no answer comes back,
+If the first one is an embedding-only model (bge-m3 and so on), the generation request is rejected, no answer comes back,
 and it becomes an error (HTTP 400). Choosing a **chat model** from the list resolves it.
 (Measured 2026-07-29: an answer was obtained just by changing the model name to an existing chat model.
 Whether or not `/v1` is added to the end of the Base URL does not affect the result.)
 
-- LM Studio does not refuse even if you specify the name of a model that is not loaded,
+- LM Studio does not reject the request even if you specify the name of a model that is not loaded,
   and it may answer with a different model that is already loaded. In the Model field, enter
   an existing model name chosen from the list.
 - If you run several large models at the same time in LM Studio, the answers may break down or
@@ -984,9 +984,9 @@ Operations made through MCP are also recorded in the same audit log (the `audit_
 The settings tools are split into reading and writing:
 
 - **Reading** (`settings_show`, `settings_models`, `settings_test`, `settings_providers`) works whenever the token is an admin token. No extra switch.
-- **Writing** (`settings_set`) is **closed by default**. It runs only when the MCP server process was started with `CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1` in its environment — in LM Studio, that means adding the line to the `env` block of `mcp.json` (4-3-4). When closed, the call returns an error message saying exactly this, and nothing is executed.
+- **Writing** (`settings_set`) is **closed by default**. It runs only when the MCP server process was started with `CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1` in its environment — in LM Studio, that means adding the line to the `env` block of `mcp.json` (4-3-4). When closed, the call returns an error message stating exactly this, and nothing is executed.
 
-Why: the caller of an MCP tool is an AI that can be swayed by whatever material it has just read. If a document says "rewrite the settings", a path exists in principle for the AI to treat that as an instruction. Writing therefore requires an explicit, human-made decision on the client side. This guard is *not* a replacement for the server-side role check — that check still runs as before; this is a thin extra layer in front of it.
+Why: the caller of an MCP tool is an AI that can be swayed by whatever material it has just read. If a document states "rewrite the settings", a path exists in principle for the AI to treat that as an instruction. Writing therefore requires an explicit, human-made decision on the client side. This guard is *not* a replacement for the server-side role check — that check still runs as before; this is a thin extra layer in front of it.
 
 #### 4-5-5. Guard for the administration tools (default: hidden)
 
@@ -1168,8 +1168,8 @@ Cynovela's data is stored under `~/.cynovela/`.
 
 ### 6-2. What `store/` Holds
 
-`store/` holds the index of the ingested documents, the database, the settings, and the keys.
-The signing key for the passes is newly created on this machine at the first startup.
+`store/` holds the index of the ingested documents, the database, the settings, and the key files.
+The token-signing key for the passes (`store/db/jwt/secret.key`) is newly created on this machine at the first startup.
 
 ### 6-3. Manual Backup
 
@@ -1259,7 +1259,7 @@ cp -R "$BK/chroma" store/vector/demo/chroma      # without --demo, use store/vec
 ./launch.sh --demo
 ```
 
-Move aside only the database file and the vector folder, as shown above. Do not move the whole `store/db` folder: it also holds the sign-in key under `store/db/jwt`, which a backup does not contain. If you move that away, the key is lost, a new one is generated at startup, and everyone has to sign in again.
+Move aside only the database file and the vector folder, as shown above. Do not move the whole `store/db` folder: it also holds the token-signing key (`store/db/jwt/secret.key`), which a backup does not contain. If you move that away, the token-signing key is lost, a new one is generated at startup, and everyone has to sign in again.
 
 Move the journal files (`demo.db-wal` / `demo.db-shm`) aside together with the database file. They belong to the database you are replacing. If you leave them behind, they are replayed onto the restored file at startup and the restore silently has no effect.
 
@@ -1529,7 +1529,7 @@ Using a privileged port such as 80 or 443 requires administrator privileges, so 
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
-> 会社・製品の公式見解を一切代表しません。
+> 企業・製品の公式見解を一切代表しません。
 
 このドキュメントは、Cynovela を入れる人・回す人のためのものです。起動と停止、機械への入れ方・置き方、LLM プロバイダーの繋ぎ方、MCP で外部ツールから使う手順、LAN で分け合う設定、backup と restore、ログ、監査ログ、利用者の管理、健全性の確認、通知、ポートの変更を 1 か所にまとめています。
 
@@ -1993,7 +1993,7 @@ embedding:
 #### 2-8-4. 口が居ないときの振る舞い
 
 - 再ランク: 外部の推論サーバに届かない場合、**アプリ内のモデル (store/models) での処理へ退避**します
-  (models の落とし物を重ねてあれば、再ランクのモデルもその中に入っています)。再ランクのモデルを置いていない
+  (models のダウンロードしたファイルを重ねてあれば、再ランクのモデルもその中に入っています)。再ランクのモデルを置いていない
   場合は、再ランクを行わず検索結果をそのまま返します。どちらの場合も処理は止まりません。
 - 埋め込み (外へ出す設定にしたときのみ): 届かない場合は**アプリ内のローカル処理へ明示的に退避**し、
   管理画面 (設定 > Embedding) に **「⚠️ 外部の推論サーバに届かないためローカルへ退避中」** と表示されます。
@@ -2229,7 +2229,7 @@ MCP は、AI アシスタント（クライアント）が外部システムの�
 - **サーバー**: 機能を提供する側（Cynovela がここに該当）
 - **ツール**: サーバーが公開する操作（検索、登録、参照など）
 
-MCP を使うと、ユーザーが LLM クライアントに「うちの社内文書を検索して」と話しかけたときに、LLM が Cynovela の検索ツールを呼び出し、結果を踏まえて回答を生成する、という連携が成立します。
+MCP を使うと、ユーザーが LLM クライアントに「うちの組織内文書を検索して」と話しかけたときに、LLM が Cynovela の検索ツールを呼び出し、結果を踏まえて回答を生成する、という連携が成立します。
 
 ### 4-2. Cynovela が公開する MCP ツール（全 25 件）
 
@@ -2258,7 +2258,7 @@ MCP を使うと、ユーザーが LLM クライアントに「うちの社内�
 ##### `rag_general`
 
 - **引数（必須）**: `query`, `workspace_id`
-- **説明**: RAG を使わず、LLM の一般知識のみで回答を生成します。社内文書に依存しない一般的な質問用です。
+- **説明**: RAG を使わず、LLM の一般知識のみで回答を生成します。組織内文書に依存しない一般的な質問用です。
 
 #### 4-2-2. 情報取得系（6 件）
 
@@ -2665,8 +2665,8 @@ Cynovela のデータは `~/.cynovela/` 配下に格納されます。
 
 ### 6-2. `store/` に入っているもの
 
-`store/` には、取り込んだ資料の索引・データベース・設定・鍵が入っています。
-通行証の署名鍵は、初回起動時にその機械で新しく作られます。
+`store/` には、取り込んだ資料の索引・データベース・設定・鍵ファイルが入っています。
+通行証のトークン署名用の鍵（`store/db/jwt/secret.key`）は、初回起動時にその機械で新しく作られます。
 
 ### 6-3. 手動バックアップ
 
@@ -2756,7 +2756,7 @@ cp -R "$BK/chroma" store/vector/demo/chroma      # --demo を付けない場合�
 ./launch.sh --demo
 ```
 
-退けるのは、上のとおりデータベースのファイルとベクターのフォルダだけにしてください。`store/db` を丸ごと退けてはいけません。`store/db/jwt` の下には入り口の鍵が置かれており、控えはこれを含みません。丸ごと退けると鍵が失われ、起動のときに新しい鍵が作られ、全員が入り直すことになります。
+退けるのは、上のとおりデータベースのファイルとベクターのフォルダだけにしてください。`store/db` を丸ごと退けてはいけません。`store/db/jwt` の下にはトークン署名用の鍵（`store/db/jwt/secret.key`）が置かれており、控えはこれを含みません。丸ごと退けるとこの鍵が失われ、起動のときに新しい鍵が作られ、全員が入り直すことになります。
 
 日誌のファイル（`demo.db-wal` / `demo.db-shm`）は、データベースのファイルと一緒に退けてください。これらは差し替える前のデータベースのものです。残したままにすると、起動のときに復元したファイルへ書き戻され、戻したことが黙って打ち消されます。
 

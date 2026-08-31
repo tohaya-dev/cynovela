@@ -10,7 +10,7 @@
 > product nor an official implementation.
 > The implementation is entirely original, built on an OSS stack of
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company or product.
+> It does not represent the official position of any organization or product.
 
 This document is for the reader who wants to know how Cynovela works inside. It
 covers the overall shape, the features that are confirmed as implemented, how
@@ -609,7 +609,7 @@ Cynovela's search runs both vector search (based on semantic similarity) and BM2
 
 #### 4.2.1 Vector Search
 
-- **Model**: BGE-M3 (the multilingual embedding model that Cynovela uses by default). Switching with `--mode lite` / `lite-en` / `minimal` is **not wired up**, and BAAI/bge-m3 is actually used for any of them (the nominal values are MiniLM-L12-v2 / MiniLM-L3-v2 / TF-IDF. Measured 2026-08-02: the startup log of server.py says "名目値 … は未配線").
+- **Model**: BGE-M3 (the multilingual embedding model that Cynovela uses by default). Switching with `--mode lite` / `lite-en` / `minimal` is **not wired up**, and BAAI/bge-m3 is actually used for any of them (the nominal values are MiniLM-L12-v2 / MiniLM-L3-v2 / TF-IDF. Measured 2026-08-02: the startup log of server.py shows "名目値 … は未配線").
 - **Store**: ChromaDB. For each collection ID it is split into the 2 stores `{cid}__raw` and `{cid}__masked`, and which one is used is decided by the user role.
 - **Diversity**: MMR (Maximal Marginal Relevance: a reselection algorithm that balances relevance and diversity) is enabled with `mmr_enabled=true`, and it reselects with a weight of `mmr_lambda=0.7` from the generous set of candidates taken with `mmr_fetch_k=20` (`rag.py:1654-1701`).
 
@@ -863,7 +863,7 @@ For details, see [security.md](security.md) §3 "Roles and permissions (RBAC)".
 | ID | Name | Description | Chunking | RAG mode | Guardrail | Image processing |
 |---|---|---|---|---|---|---|
 | `tech_doc` | 📄 技術文書 | For manuals | tech_doc | standard | default | — |
-| `confidential` | 🔒 機密文書 | In-house documents containing PII | general | standard | mask | — |
+| `confidential` | 🔒 機密文書 | Internal documents containing PII | general | standard | mask | — |
 | `personal_memo` | 📝 個人メモ | Meeting minutes and memos | email_minutes | lite | log_only | — |
 | `multimedia` | 🖼️ マルチメディア | Mixed images and Office files | tech_doc | standard | default | caption |
 | `quickstart` | ⚡ クイックスタート | Fully automatic, for beginners | tech_doc | standard | default | — |
@@ -887,7 +887,7 @@ The `rag_mode` key switches the behavior of the whole search pipeline.
 | Mode | Behavior |
 |--------|------|
 | `lite` | Minimal RAG. Options such as Multi-Query / HyDE / CRAG are omitted, and one search is enough |
-| `standard` (default) | BM25 hybrid + Reranker (when set). Assumes general business use |
+| `standard` (default) | BM25 hybrid + Reranker (when set). Assumes general practical use |
 | `hq` | High quality mode. CRAG, Multi-Query and HyDE are turned on, spending time to gain accuracy |
 
 ### 6.5 Answer Format
@@ -940,7 +940,7 @@ For the individual endpoints, see [reference/api.md](reference/api.md).
 > 完全非公式の学習ツールです。商用製品・公式実装ではありません。
 > 実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLM
 > という OSS スタックで構成されています。
-> 会社・製品の公式見解を一切代表しません。
+> 企業・製品の公式見解を一切代表しません。
 
 このドキュメントは、中がどう動いているかを知りたい人のためのものです。全体像、確認済みの実装機能、取り込みと分類のしくみ、検索のしくみ、スコアの読み方、回答のかたち、API の主要カテゴリを扱います。
 
@@ -1790,7 +1790,7 @@ MCP（外部ツール）からは `rag_general` ツールを呼ぶことで、RA
 | ID | 名前 | 説明 | チャンキング | RAG モード | ガードレール | 画像処理 |
 |---|---|---|---|---|---|---|
 | `tech_doc` | 📄 技術文書 | マニュアル向け | tech_doc | standard | default | — |
-| `confidential` | 🔒 機密文書 | PII を含む社内文書 | general | standard | mask | — |
+| `confidential` | 🔒 機密文書 | PII を含む組織内文書 | general | standard | mask | — |
 | `personal_memo` | 📝 個人メモ | 議事録・メモ | email_minutes | lite | log_only | — |
 | `multimedia` | 🖼️ マルチメディア | 画像・Office 混在 | tech_doc | standard | default | caption |
 | `quickstart` | ⚡ クイックスタート | 初心者向け全自動 | tech_doc | standard | default | — |
@@ -1814,7 +1814,7 @@ MCP（外部ツール）からは `rag_general` ツールを呼ぶことで、RA
 | モード | 動作 |
 |--------|------|
 | `lite` | 最小限の RAG。Multi-Query / HyDE / CRAG といったオプションを省略し、1 回の検索で済ませる |
-| `standard`（既定） | BM25 ハイブリッド + Reranker（設定時）。一般的な業務利用想定 |
+| `standard`（既定） | BM25 ハイブリッド + Reranker（設定時）。一般的な実務利用想定 |
 | `hq` | 高品質モード。CRAG・Multi-Query・HyDE をオンにして時間を掛けて精度を取りに行く |
 
 ### 6.5 回答の形式

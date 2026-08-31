@@ -48,7 +48,7 @@ The body of a failure is `{"detail": "..."}`.
 
 `expires_in_hours` (or `expires_in_seconds`) is optional. **Leave it out and the
 token never expires.** Pass it and the token stops working after that long.
-A number that is zero or below is refused with 400.
+A number that is zero or below is rejected with 400.
 
 The answer carries `access_token`, `refresh_token`, `role`,
 `must_change_password`, and `expires_in` (the number of seconds, or `null` when
@@ -101,7 +101,7 @@ assignments, refresh tokens and sessions. Audit log entries are kept either way.
 
 #### `POST /api/sources`
 
-Refuses with 409 when the folder is already registered, comparing resolved real
+Rejects with 409 when the folder is already registered, comparing resolved real
 paths — so the same folder cannot be registered twice under two names.
 
 #### `POST /api/sources/{id}/scan` and `/scan/async`
@@ -347,7 +347,7 @@ Blocked topics and what personal data was detected.
 
 ### Policies — `routers/policies.py` (8)
 
-The rules, and the matrix that says who may see what.
+The rules, and the matrix that states who may see what.
 
 | Method | Path | Who may call it |
 |---|---|---|
@@ -586,7 +586,7 @@ Content-Type: application/json
 ```
 
 `expires_in_hours`（または `expires_in_seconds`）は省けます。**省くとトークンに期限はつきません。**
-渡すと、その長さで使えなくなります。0 以下の数は 400 で断ります。
+渡すと、その長さで使えなくなります。0 以下の数は 400 で拒否されます。
 
 返るものは `access_token`・`refresh_token`・`role`・`must_change_password`、そして
 `expires_in`（秒数。期限が無いときは `null`）です。
@@ -638,7 +638,7 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 
 #### `POST /api/sources`
 
-同じフォルダが既に登録されているときは 409 で断ります。見分けは実体のパスで行うので、
+同じフォルダが既に登録されているときは 409 で拒否されます。見分けは実体のパスで行うので、
 名前を変えて同じフォルダを二重に登録することはできません。
 
 #### `POST /api/sources/{id}/scan` と `/scan/async`
@@ -769,7 +769,7 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 
 ### やりとり — `routers/messages.py`（2件）
 
-会話の1件と、その良し悪しの印。
+会話の1件と、その良し悪しの評価。
 
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|
@@ -788,9 +788,9 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 | `GET` | `/api/sessions/{session_id}` | 利用者（管理者・閲覧者のいずれか） | セッションのメッセージ一覧を返す。 |
 | `GET` | `/api/sessions/{session_id}/messages` | 利用者（管理者・閲覧者のいずれか） | セッション内のメッセージ一覧 (created_at 昇順)。 |
 
-### 良し悪しの印 — `routers/feedback.py`（3件）
+### 良し悪しの評価 — `routers/feedback.py`（3件）
 
-誤りとして印が付いたものと、その集計。
+誤りとして評価が付いたものと、その集計。
 
 | 動作 | 口 | 誰が叩けるか | 何をするか |
 |---|---|---|---|

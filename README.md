@@ -77,7 +77,7 @@ source archive is distributed on the releases page.
 The release also carries `HOW-TO-ASSEMBLE.md`, the checksum list `SHA256SUMS`
 for the package edition and the AI models, and `check-managed-mac.command`, a
 diagnostic that tells you — without changing any setting — whether a
-company-managed Mac will let you run this. A single release file cannot exceed
+managed Mac (under MDM) will let you run this. A single release file cannot exceed
 2 GiB, so the AI models are split into parts; join them as
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) describes and check the result against
 `SHA256SUMS` before starting.

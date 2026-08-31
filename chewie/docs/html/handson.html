@@ -215,9 +215,9 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <p><strong>日本語版はこちら → 日本語</strong></p>
-    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built by an individual to understand the concepts of AI infrastructure tools by actually running them. It is not a commercial offering and not an official implementation. The implementation is entirely original, and consists of an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company.</blockquote>
+    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built by an individual to understand the concepts of AI infrastructure tools by actually running them. It is not a commercial offering and not an official implementation. The implementation is entirely original, and consists of an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any organization.</blockquote>
     <p>This document is a set of exercises you run against the sample material that ships inside this package. You ask real questions, look at the answers, and check them against the file the answer actually came from.</p>
-    <p>Every exercise below uses only the seven files under <code>dummy-corpus/</code>. They describe a fictional company; the people, organizations, addresses, phone numbers, and mail addresses in them do not exist.</p>
+    <p>Every exercise below uses only the seven files under <code>dummy-corpus/</code>. They describe a fictional firm; the people, organizations, addresses, phone numbers, and mail addresses in them do not exist.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -342,10 +342,10 @@ a:hover { text-decoration: underline; }
     <thead><tr><th>File</th><th>What it is</th><th>Used in</th></tr></thead>
     <tbody>
     <tr><td><code>00-はじめに.md</code></td><td>A short guide to the other six files</td><td>Exercise A (as an orientation, not as an answer source)</td></tr>
-    <tr><td><code>01-company-overview.md</code></td><td>Company profile: outline, product categories, locations, history, management</td><td>Exercises A, B, C</td></tr>
+    <tr><td><code>01-company-overview.md</code></td><td>Profile of the firm: outline, product categories, locations, history, management</td><td>Exercises A, B, C</td></tr>
     <tr><td><code>02-work-rules.md</code></td><td>Work rules (excerpt): working hours, holidays, leave, pay, expenses</td><td>Exercises A, B, C</td></tr>
-    <tr><td><code>03-system-guide.md</code></td><td>Operating guide for the in-house inventory system: login, goods receipt, stocktaking, monthly closing</td><td>Exercises A, B, D</td></tr>
-    <tr><td><code>04-faq.md</code></td><td>20 in-house questions and answers, summarizing the three files above</td><td>Exercises A, B</td></tr>
+    <tr><td><code>03-system-guide.md</code></td><td>Operating guide for the internal inventory system: login, goods receipt, stocktaking, monthly closing</td><td>Exercises A, B, D</td></tr>
+    <tr><td><code>04-faq.md</code></td><td>20 internal questions and answers, summarizing the three files above</td><td>Exercises A, B</td></tr>
     <tr><td><code>05-meeting-notes.md</code></td><td>Minutes of three monthly meetings (May, June, July 2026)</td><td>Exercises B, C</td></tr>
     </tbody>
     </table>
@@ -365,7 +365,7 @@ a:hover { text-decoration: underline; }
     <table>
     <thead><tr><th>File</th><th>What it is</th><th>Used in</th></tr></thead>
     <tbody>
-    <tr><td><code>06-company-overview-en.md</code></td><td>The company profile in English</td><td>Exercises A, B, C</td></tr>
+    <tr><td><code>06-company-overview-en.md</code></td><td>The firm's profile in English</td><td>Exercises A, B, C</td></tr>
     </tbody>
     </table>
 </div>
@@ -424,7 +424,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <ol start="9">
-    <li>How many employees does the company have, and when was it founded?</li>
+    <li>How many employees does the firm have, and when was it founded?</li>
     <li>What are the four product categories?</li>
     <li>When was the Fukuoka branch opened?</li>
     </ol>
@@ -454,7 +454,7 @@ a:hover { text-decoration: underline; }
     </ol>
     <p>And one in English, deliberately asked against material that is mostly Japanese:</p>
     <ol start="7">
-    <li>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</li>
+    <li>Which branch offices does the firm have, and which branch had the most errors in the pre-closing check?</li>
     </ol>
 </div>
 <div class="slide-footer">
@@ -590,7 +590,7 @@ a:hover { text-decoration: underline; }
     <li>Log in as <code>admin</code> and ask 情報システム担当の連絡先を教えてください. The phone number, the mail address, and the IP address appear as written.</li>
     <li>Log out, log in as <code>viewer</code>, and ask exactly the same question. The same fields come back as <code>[MASKED:PHONE]</code>, <code>[MASKED:EMAIL]</code>, <code>[MASKED:IP]</code>.</li>
     <li>Ask 会社案内の問い合わせ先を教えてください under both roles and compare in the same way.</li>
-    <li>Still as <code>viewer</code>, try to open the audit log screen. It is refused with 403 Forbidden — the admin-only endpoints are closed to <code>viewer</code> outright, not merely hidden in the GUI.</li>
+    <li>Still as <code>viewer</code>, try to open the audit log screen. It is rejected with 403 Forbidden — the admin-only endpoints are closed to <code>viewer</code> outright, not merely hidden in the GUI.</li>
     <li>Go back to <code>admin</code>, open the audit log, and find the <code>pii_detected</code> entries left by the questions you just asked.</li>
     </ol>
     <p>For what is detected and how the two tiers of masking work, see <a href="security.html" target="_blank" rel="noopener">security.md</a> §5 "PII detection and masking". For the permissions of each role, see <a href="security.html" target="_blank" rel="noopener">security.md</a> §3 "Roles and permissions".</p>
@@ -716,7 +716,7 @@ a:hover { text-decoration: underline; }
     <tr><td>給与の支払日はいつですか</td><td>毎月末日締め、翌月 25 日に指定口座へ支払う</td><td><code>02-work-rules.md</code>, 第5章 第14条（給与の支払）</td></tr>
     <tr><td>在庫台帳のログインに何回失敗するとロックされますか</td><td>5 回連続で失敗するとロック。解除は情報システム担当に依頼する</td><td><code>03-system-guide.md</code>, 「2. ログイン手順」の 5</td></tr>
     <tr><td>入庫登録はいつまでに行いますか</td><td>商品が到着した当日中が原則。できない事情があれば所属長に報告のうえ翌営業日の午前中</td><td><code>03-system-guide.md</code>, 「3. 入庫登録の手順」冒頭と「入庫登録の注意事項」</td></tr>
-    <tr><td>How many employees does the company have, and when was it founded?</td><td>142 employees as of April 1, 2026; founded in April 1998</td><td><code>06-company-overview-en.md</code>, "1. About Us"</td></tr>
+    <tr><td>How many employees does the firm have, and when was it founded?</td><td>142 employees as of April 1, 2026; founded in April 1998</td><td><code>06-company-overview-en.md</code>, "1. About Us"</td></tr>
     <tr><td>What are the four product categories?</td><td>Kitchenware / Bath and Toiletries / Storage and Organization / Seasonal Goods</td><td><code>06-company-overview-en.md</code>, "2. Product Categories"</td></tr>
     </tbody>
     </table>
@@ -798,7 +798,7 @@ a:hover { text-decoration: underline; }
     <thead><tr><th>Question</th><th>Expected answer</th><th>Where the answer is</th></tr></thead>
     <tbody>
     <tr><td>経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください</td><td>規則は月末締め・翌月 15 日払いで、締め日を過ぎた申請は翌月分として処理。課題は締め日直前に申請が集中して経理の確認作業が逼迫していることで、営業部門へ都度申請を依頼することにした</td><td><code>02-work-rules.md</code> 第15条 ＋ <code>05-meeting-notes.md</code> 「議事録2」討議内容・決定事項 2</td></tr>
-    <tr><td>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</td><td>Osaka and Fukuoka. The Fukuoka branch had 12 errors at the April closing; of the 5 errors in May, 4 were at the Osaka branch</td><td><code>06-company-overview-en.md</code> "3. Locations" (English) + <code>05-meeting-notes.md</code> 「議事録1」「議事録2」(Japanese) — the answer has to cross the language boundary</td></tr>
+    <tr><td>Which branch offices does the firm have, and which branch had the most errors in the pre-closing check?</td><td>Osaka and Fukuoka. The Fukuoka branch had 12 errors at the April closing; of the 5 errors in May, 4 were at the Osaka branch</td><td><code>06-company-overview-en.md</code> "3. Locations" (English) + <code>05-meeting-notes.md</code> 「議事録1」「議事録2」(Japanese) — the answer has to cross the language boundary</td></tr>
     </tbody>
     </table>
 </div>
@@ -855,7 +855,7 @@ a:hover { text-decoration: underline; }
     <tbody>
     <tr><td>2026年8月の月次業務改善会議の決定事項を教えてください</td><td>Cannot be answered from the material</td><td><code>05-meeting-notes.md</code> holds exactly three sets of minutes — May, June, and July 2026. There is no August record</td></tr>
     <tr><td>What is the retail price of the cooling goods?</td><td>Cannot be answered from the material</td><td>Cooling goods appear in <code>01-company-overview.md</code>, <code>06-company-overview-en.md</code>, and <code>05-meeting-notes.md</code>, but no price is given anywhere</td></tr>
-    <tr><td>Who is the president of Aozora Trading's largest supplier?</td><td>Cannot be answered from the material</td><td><code>06-company-overview-en.md</code> says the company sources from approximately 320 suppliers, but no supplier is named and no supplier's management is described</td></tr>
+    <tr><td>Who is the president of Aozora Trading's largest supplier?</td><td>Cannot be answered from the material</td><td><code>06-company-overview-en.md</code> states that the firm sources from approximately 320 suppliers, but no supplier is named and no supplier's management is described</td></tr>
     </tbody>
     </table>
 </div>
@@ -873,7 +873,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-body">
     <blockquote><strong>この文書について</strong> Cynovela は、AI 基盤ツールの考え方を実際に動かして理解するために個人が作った、完全に非公式の学習用ツールです。商用のものでも公式の実装でもありません。実装はすべて独自で、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカル LLM というOSS のスタックで構成されています。いかなる企業の公式見解も表しません。</blockquote>
     <p>この文書は、この配布物に同梱されているサンプル資料を相手に、実際に手を動かして確かめるための演習集です。実際に質問し、返ってきた答えを見て、その答えがどのファイルから来たのかを自分で突き合わせます。</p>
-    <p>以下の演習は、すべて <code>dummy-corpus/</code> の 7 本のファイルだけを使います。7 本は架空の会社を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスはすべて実在しません。</p>
+    <p>以下の演習は、すべて <code>dummy-corpus/</code> の 7 本のファイルだけを使います。7 本は架空の企業を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスはすべて実在しません。</p>
     <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
@@ -973,8 +973,8 @@ a:hover { text-decoration: underline; }
     <tr><td><code>00-はじめに.md</code></td><td>残り 6 本の案内</td><td>演習 A（案内としてのみ。答えの出どころには使わない）</td></tr>
     <tr><td><code>01-company-overview.md</code></td><td>会社案内。概要・取扱品目・拠点・沿革・経営体制</td><td>演習 A・B・C</td></tr>
     <tr><td><code>02-work-rules.md</code></td><td>就業規則（抜粋）。勤務時間・休日・休暇・給与・経費</td><td>演習 A・B・C</td></tr>
-    <tr><td><code>03-system-guide.md</code></td><td>社内在庫システムの利用手順。ログイン・入庫・棚卸し・月次締め</td><td>演習 A・B・D</td></tr>
-    <tr><td><code>04-faq.md</code></td><td>社内からの 20 問。上の 3 本の内容を要約したもの</td><td>演習 A・B</td></tr>
+    <tr><td><code>03-system-guide.md</code></td><td>組織内の在庫システムの利用手順。ログイン・入庫・棚卸し・月次締め</td><td>演習 A・B・D</td></tr>
+    <tr><td><code>04-faq.md</code></td><td>組織内からの 20 問。上の 3 本の内容を要約したもの</td><td>演習 A・B</td></tr>
     <tr><td><code>05-meeting-notes.md</code></td><td>2026 年 5 月・6 月・7 月の定例会議 3 本の議事録</td><td>演習 B・C</td></tr>
     <tr><td><code>06-company-overview-en.md</code></td><td>会社案内の英語版</td><td>演習 A・B・C</td></tr>
     </tbody>
@@ -1022,7 +1022,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <ol start="9">
-    <li>How many employees does the company have, and when was it founded?</li>
+    <li>How many employees does the firm have, and when was it founded?</li>
     <li>What are the four product categories?</li>
     <li>When was the Fukuoka branch opened?</li>
     </ol>
@@ -1052,7 +1052,7 @@ a:hover { text-decoration: underline; }
     </ol>
     <p>もう 1 問は英語です。相手にする資料はほとんど日本語であるのに、あえて英語で聞きます。</p>
     <ol start="7">
-    <li>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</li>
+    <li>Which branch offices does the firm have, and which branch had the most errors in the pre-closing check?</li>
     </ol>
 </div>
 <div class="slide-footer">
@@ -1108,7 +1108,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <p><strong>現在の作り</strong>: これらの質問でも検索は chunk を返します。いちばん近いものは必ず存在するからです。この作りがやっていることは、その中で最も高い<strong>ベクター</strong>スコアを見て、<code>confidence_threshold</code>（実効の既定値は <strong>0.40</strong>）と比べることです。最も高いスコアがしきい値を下回ると、LLM はそもそも呼ばれません。代わりに低信頼の返しが返り、確かな答えが見つからなかったこと、そのスコアとしきい値、そして見つかったchunk の見出しから作った言い換えの候補がいくつか示されます。サーバは監査ログに<code>LOW_CONFIDENCE_FALLBACK</code> の記録も残します。</p>
-    <p>つまり返ってくるのは、LLM が当てずっぽうを言った結果ではありません。当てずっぽうを言わずに降りた結果です。</p>
+    <p>つまり返ってくるのは、LLM が当てずっぽうで答えた結果ではありません。パイプラインが当てずっぽうの回答を避けた結果です。</p>
     <p><strong>確かめかた</strong>:</p>
     <ol>
     <li>上の 6 問のどれかを <code>developer</code> モードで聞き、最上位のスコアを読む。</li>
@@ -1175,7 +1175,7 @@ a:hover { text-decoration: underline; }
     <li><code>admin</code> でログインし、情報システム担当の連絡先を教えてください と聞く。電話番号・メールアドレス・IP アドレスが書かれたとおりに出ます。</li>
     <li>ログアウトして <code>viewer</code> でログインし、まったく同じ質問をする。同じ箇所が<code>[MASKED:PHONE]</code> <code>[MASKED:EMAIL]</code> <code>[MASKED:IP]</code> になって返ります。</li>
     <li>会社案内の問い合わせ先を教えてください を両方の役割で聞き、同じように比べる。</li>
-    <li><code>viewer</code> のまま、監査ログの画面を開こうとする。403 Forbidden で拒まれます。<code>admin</code> 専用の口は <code>viewer</code> に対して端から閉じており、画面上で隠しているだけではありません。</li>
+    <li><code>viewer</code> のまま、監査ログの画面を開こうとする。403 Forbidden で拒否されます。<code>admin</code> 専用の口は <code>viewer</code> に対して端から閉じており、画面上で隠しているだけではありません。</li>
     <li><code>admin</code> に戻って監査ログを開き、いま聞いた質問が残した <code>pii_detected</code> の記録を見つける。</li>
     </ol>
 </div>
@@ -1301,7 +1301,7 @@ a:hover { text-decoration: underline; }
     <tr><td>給与の支払日はいつですか</td><td>毎月末日締め、翌月 25 日に指定口座へ支払う</td><td><code>02-work-rules.md</code> 第5章 第14条（給与の支払）</td></tr>
     <tr><td>在庫台帳のログインに何回失敗するとロックされますか</td><td>5 回連続で失敗するとロック。解除は情報システム担当に依頼する</td><td><code>03-system-guide.md</code>「2. ログイン手順」の 5</td></tr>
     <tr><td>入庫登録はいつまでに行いますか</td><td>商品が到着した当日中が原則。できない事情があれば所属長に報告のうえ翌営業日の午前中</td><td><code>03-system-guide.md</code>「3. 入庫登録の手順」冒頭と「入庫登録の注意事項」</td></tr>
-    <tr><td>How many employees does the company have, and when was it founded?</td><td>142 employees as of April 1, 2026; founded in April 1998</td><td><code>06-company-overview-en.md</code> "1. About Us"</td></tr>
+    <tr><td>How many employees does the firm have, and when was it founded?</td><td>142 employees as of April 1, 2026; founded in April 1998</td><td><code>06-company-overview-en.md</code> "1. About Us"</td></tr>
     <tr><td>What are the four product categories?</td><td>Kitchenware / Bath and Toiletries / Storage and Organization / Seasonal Goods</td><td><code>06-company-overview-en.md</code> "2. Product Categories"</td></tr>
     </tbody>
     </table>
@@ -1383,7 +1383,7 @@ a:hover { text-decoration: underline; }
     <thead><tr><th>設問</th><th>期待される答え</th><th>答えの所在</th></tr></thead>
     <tbody>
     <tr><td>経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください</td><td>規則は月末締め・翌月 15 日払いで、締め日を過ぎた申請は翌月分として処理。課題は締め日直前に申請が集中して経理の確認作業が逼迫していることで、営業部門へ都度申請を依頼することにした</td><td><code>02-work-rules.md</code> 第15条 ＋ <code>05-meeting-notes.md</code>「議事録2」討議内容・決定事項 2</td></tr>
-    <tr><td>Which branch offices does the company have, and which branch had the most errors in the pre-closing check?</td><td>大阪と福岡。福岡支社は 4 月度の締めで 12 件、5 月度の 5 件のうち 4 件は大阪支社</td><td><code>06-company-overview-en.md</code> "3. Locations"（英語）＋ <code>05-meeting-notes.md</code>「議事録1」「議事録2」（日本語）。答えは言語の境をまたぐ</td></tr>
+    <tr><td>Which branch offices does the firm have, and which branch had the most errors in the pre-closing check?</td><td>大阪と福岡。福岡支社は 4 月度の締めで 12 件、5 月度の 5 件のうち 4 件は大阪支社</td><td><code>06-company-overview-en.md</code> "3. Locations"（英語）＋ <code>05-meeting-notes.md</code>「議事録1」「議事録2」（日本語）。答えは言語の境をまたぐ</td></tr>
     </tbody>
     </table>
 </div>

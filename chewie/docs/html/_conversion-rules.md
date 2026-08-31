@@ -11,7 +11,7 @@
 - Output: `docs/html/[name].html`
 - CSS: embed the full contents of `docs/html/_slide-base.css` inline in `<style>`
 - Light mode fixed. Dark mode prohibited. Do not write `@media prefers-color-scheme`
-- Company names and specific product names prohibited. Refer to the reference AI tool as 「参照元のAIツール」
+- Organization names and specific product names prohibited. Refer to the reference AI tool as 「参照元のAIツール」
 - Fully standalone (no external URL / CDN / font references)
 
 ## HTML skeleton (must follow this structure)
@@ -179,7 +179,7 @@ After generating all slides, write the actual number of slides into the N of
 
 ## Prohibitions
 - Do not write dark mode CSS (`prefers-color-scheme` prohibited)
-- Do not write company names or specific product names (write the name of the reference AI tool as 「参照元のAIツール」 too)
+- Do not write organization names or specific product names (write the name of the reference AI tool as 「参照元のAIツール」 too)
 - Do not reference external CDNs / URLs (including fonts, JS and CSS)
 - Do not rewrite existing `docs/*.md` or `docs/*.html` (write only into `docs/html/`)
 - `BACKLOG.md` is out of scope for conversion
@@ -203,7 +203,7 @@ After generating all slides, write the actual number of slides into the N of
 - 出力: `docs/html/[name].html`
 - CSS: `docs/html/_slide-base.css` の内容を全文インラインで `<style>` に埋め込む
 - ライトモード固定。ダークモード禁止。`@media prefers-color-scheme` は書かない
-- 会社名・固有製品名禁止。参照元AIツールは「参照元のAIツール」と表記
+- 企業名・固有製品名禁止。参照元AIツールは「参照元のAIツール」と表記
 - 完全スタンドアロン（外部URL/CDN/フォント参照なし）
 
 ## HTMLの骨格（必ずこの構造にする）
@@ -368,7 +368,7 @@ Markdownの先頭にある `> **このドキュメントについて**` など�
 
 ## 禁止事項
 - ダークモード CSS を書くな（`prefers-color-scheme` 禁止）
-- 会社名・固有製品名を書くな（参照元AIツール名も「参照元のAIツール」と表記）
+- 企業名・固有製品名を書くな（参照元AIツール名も「参照元のAIツール」と表記）
 - 外部CDN/URLを参照するな（フォント・JS・CSS含む）
 - 既存の `docs/*.md` や `docs/*.html` を書き換えるな（`docs/html/` への書き込みのみ）
 - `BACKLOG.md` は変換対象外

@@ -104,7 +104,7 @@ file name, those parts are not conda packages.
   `Package edition` に同梱されている環境は、`conda-pack` で固めた `conda` 環境です。
   `Python` の `venv` 機能とは別のものであり、`.condapack-cynovela` という名前で
   区別しています。
-* **AIモデルはどちらの形にも入っていません。** `models` の片も落として、
+* **AIモデルはどちらの形にも入っていません。** `models` の分割ファイルもダウンロードして、
   フォルダの中で展開する必要があります。置かないまま
   起動すると、探すところ・取り込むところで失敗します。
 * **どれも、この Mac には何も入れません。** どちらも、好きな場所に置くフォルダです。

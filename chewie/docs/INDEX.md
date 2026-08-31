@@ -70,7 +70,7 @@ For the person who needs an exact name, argument or return value.
 | [reference/mcp.md](reference/mcp.md) | All the MCP tools: what you hand each one and what comes back, plus which of them stay hidden until the corresponding environment switch is set. |
 | [reference/changelog.md](reference/changelog.md) | What changed in each version, newest first. |
 | [architecture.md](architecture.md) | How it works inside: the components, how ingest and classification work, how search works, how to read the scores a search returns, the shape of an answer, and the main categories of endpoint. The overview diagram is [assets/architecture-overview.svg](assets/architecture-overview.svg). |
-| [faq.md](faq.md) | When you are not sure which of the four references above holds the answer, the last question of the FAQ says where to look next. |
+| [faq.md](faq.md) | When you are not sure which of the four references above holds the answer, the last question of the FAQ states where to look next. |
 
 ---
 

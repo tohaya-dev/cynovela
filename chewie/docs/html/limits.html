@@ -215,7 +215,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <p><strong>日本語版はこちら → 日本語</strong></p>
-    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that one individual could understand the concepts behind AI infrastructure tools by working through them by hand. It is not a commercial product and not an official implementation. The implementation is entirely original, built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any company or product.</blockquote>
+    <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that one individual could understand the concepts behind AI infrastructure tools by working through them by hand. It is not a commercial product and not an official implementation. The implementation is entirely original, built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any organization or product.</blockquote>
     <p>This document describes what Cynovela <strong>cannot</strong> do, and what to watch out for. Explanations of what it can do are in <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> and <a href="concept.html" target="_blank" rel="noopener">concept.md</a>. Only the things that will disappoint you if you expect them are written here.</p>
     <p>The version is <code>1.1.3</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
     <p><strong>Contents</strong></p>
@@ -241,7 +241,7 @@ a:hover { text-decoration: underline; }
       <li>1.4 Without a language model, even <code>standard</code> degrades to rules only</li>
       <li><a href="#slide-12">1.5 Passwords and API keys are cut off by whitespace, Japanese text, or newlines</a></li>
       <li><a href="#slide-13">1.6 Whitespace can enter text extracted from a PDF, letting an email escape masking</a></li>
-      <li><a href="#slide-15">1.7 Whether an administrator can see the original text depends on the key and the destination</a></li>
+      <li><a href="#slide-15">1.7 Whether an administrator can see the original text depends on the encryption key and the destination</a></li>
       </ul>
     </li>
     <li><a href="#slide-18">2. Document formats that cannot be read</a></li>
@@ -502,7 +502,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(10/12)</span>
 </div>
 <div class="slide-body">
-    <h3>1.7 Whether an administrator can see the original text depends on the key and the destination</h3>
+    <h3>1.7 Whether an administrator can see the original text depends on the encryption key and the destination</h3>
     <p>When the role is <code>admin</code>, the design lets them see the original text before masking (<code>tier_for_role</code> in <code>rag.py</code>). However, in the following 3 cases even an administrator only gets masked content.</p>
 </div>
 <div class="slide-footer">
@@ -519,7 +519,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-body">
     <ol>
     <li><strong>When the destination of the answering LLM points outside.</strong> <code>_effective_send_tier</code> in <code>routers/chat.py</code> drops to masked regardless of role when the destination is neither inside the local machine, nor the container's host side, nor a private address range. When the destination cannot be determined it also falls back to masked.</li>
-    <li><strong>When the vault (encrypted storage) key does not match.</strong> Original text is stored encrypted, and <code>_vault_substitute_raw</code> in <code>rag.py</code> decrypts it. Lines that cannot be decrypted use the masked text as-is (this is deliberate, so that ciphertext is never shown on screen). If you replace the key after receiving a package, even an administrator can no longer read the original text of documents ingested before that.</li>
+    <li><strong>When the vault (encrypted storage) encryption key (<code>store/secret.key</code>) does not match.</strong> Original text is stored encrypted, and <code>_vault_substitute_raw</code> in <code>rag.py</code> decrypts it. Lines that cannot be decrypted use the masked text as-is (this is deliberate, so that ciphertext is never shown on screen). If you replace the encryption key after receiving a package, even an administrator can no longer read the original text of documents ingested before that.</li>
     <li><strong>The question text itself.</strong> Masking of the question text is not divided by role. Even if an administrator writes an IP address in the question, that IP is masked before it is passed to search and to the LLM.</li>
     </ol>
 </div>
@@ -667,7 +667,7 @@ a:hover { text-decoration: underline; }
     <li><strong>CRAG pre-reading.</strong> The step that has the LLM pre-read whether the search results are sufficient for the question is not executed when the destination is not inside the local machine, and <strong>when the destination cannot be determined</strong> (<code>rag.py</code>). When it is not executed, it falls back to "adopt the search results as they are". The screen shows <code>[CRAG] 非ローカル宛のため下読みをスキップします</code>.</li>
     <li><strong>Conversation summarisation and extraction of hints from an answer.</strong> Both use the same determination, and for external destinations (including undeterminable ones) they send nothing and return empty (<code>routers/chat.py</code>).</li>
     <li><strong>Sending original text based on role.</strong> If the destination is external, only masked content is sent, even for an administrator (the <code>_effective_send_tier</code> described above).</li>
-    <li><strong>If masking fails, processing stops.</strong> For both the question text and the answer, if the masking step dies with an exception, a 503 is returned and processing is aborted. Pre-masking content is never returned instead (<code>routers/chat.py</code>).</li>
+    <li><strong>If masking fails, processing stops.</strong> For both the question text and the answer, if the masking step fails with an exception, a 503 is returned and processing is aborted. Pre-masking content is never returned instead (<code>routers/chat.py</code>).</li>
     <li><strong>The combination of unmasked ingest and external embedding is rejected.</strong> Collections created by an older version as "unmasked" cannot be published while external embedding is enabled (<code>rag.py</code>).</li>
     </ul>
 </div>
@@ -841,7 +841,7 @@ a:hover { text-decoration: underline; }
     <li><strong>Neither is erased by a restart.</strong> They are not initialised on every startup. If you want to erase them, delete the files yourself.</li>
     <li>The bundled index and database are built <strong>only from the <code>dummy-corpus/</code> inside the package</strong> at the time the package is built. Not a single working document from the builder's side is included. What is actually included, and how many, is written out in <code>BUNDLED-DATA.md</code> in the package.</li>
     <li><strong>Where <code>store/</code> itself sits depends on the edition.</strong> In every edition that is a folder you unpack, it is <code>store/</code> inside that folder. In the app edition — in preparation, not part of this release — the installed bundle is read-only, so the launcher sets <code>CYNOVELA_DATA_ROOT</code> and the same paths are taken relative to <code>~/Library/Application Support/Cynovela/</code> instead.</li>
-    <li><strong>The first password is not printed on the screen when you start with the bundled sample material.</strong> The startup script prints the first sign-in name and password only when it decides this is a first run, and it decides that by asking whether the database file already exists. The packages ship a pre-built <code>store/db/demo.db</code>, and the default answer at the first question starts with <code>--demo</code>, which is the database it looks for — so the file is already there, the check says "not a first run", and nothing is printed. Starting without <code>--demo</code> looks for <code>store/db/cynovela.db</code>, which is not shipped, and does print. Until this is repaired, read the password out of the <code>cynovela.yaml</code> next to the startup script, on the <code>admin_initial_password:</code> line under <code>auth:</code> (<code>grep admin_initial_password cynovela.yaml</code>). You are asked to change it at the first sign-in either way.</li>
+    <li><strong>The first password is not printed on the screen when you start with the bundled sample material.</strong> The startup script prints the first sign-in name and password only when it decides this is a first run, and it decides that by asking whether the database file already exists. The packages ship a pre-built <code>store/db/demo.db</code>, and the default answer at the first question starts with <code>--demo</code>, which is the database it looks for — so the file is already there, the check reports "not a first run", and nothing is printed. Starting without <code>--demo</code> looks for <code>store/db/cynovela.db</code>, which is not shipped, and does print. Until this is repaired, read the password out of the <code>cynovela.yaml</code> next to the startup script, on the <code>admin_initial_password:</code> line under <code>auth:</code> (<code>grep admin_initial_password cynovela.yaml</code>). You are asked to change it at the first sign-in either way.</li>
     </ul>
 </div>
 <div class="slide-footer">
@@ -979,7 +979,7 @@ a:hover { text-decoration: underline; }
     <ul>
     <li>ChromaDB's <code>PersistentClient</code> does not error even when you pass it the wrong path. It silently creates an empty database. <strong>When a search returns 0 results, first suspect whether the index location is correct.</strong></li>
     <li>Do not pass <code>max_tokens</code> to the LM Studio API. With a reasoning-type model, it will use up the tokens it needs for thinking.</li>
-    <li><strong>The screen asks for <code>/api/settings/embedding</code> before anyone has signed in, and keeps asking after they have.</strong> The banner that reports the state of the embedding path polls that endpoint every 5 seconds for the first five minutes and every 60 seconds after that, and the polling starts when the page loads rather than when a sign-in succeeds. Before a sign-in, and for a viewer, the endpoint answers 401 or 403; the banner swallows that and shows nothing, but the request is made and logged all the same. It is noise in the log, not a leak — the endpoint refuses, it does not answer.</li>
+    <li><strong>The screen asks for <code>/api/settings/embedding</code> before anyone has signed in, and keeps asking after they have.</strong> The banner that reports the state of the embedding path polls that endpoint every 5 seconds for the first five minutes and every 60 seconds after that, and the polling starts when the page loads rather than when a sign-in succeeds. Before a sign-in, and for a viewer, the endpoint answers 401 or 403; the banner swallows that and shows nothing, but the request is made and logged all the same. It is noise in the log, not a leak — the endpoint rejects the request, it does not answer.</li>
     </ul>
 </div>
 <div class="slide-footer">
@@ -1179,7 +1179,7 @@ cd ../..
 </div>
 <div class="slide-body">
     <ul>
-    <li><strong>Demo mode related.</strong> 4 authentication boundary tests remain <code>@pytest.mark.skip</code> (lines 11 / 51 / 56 / 157 of <code>tests/test_auth_boundary.py</code>). The reason text says "<code>--demo</code> モードでは認証バイパスが仕様", but because it was changed on 2026-07-29 into a form that enforces authentication even with a <code>--demo</code> startup, this reason no longer matches the implementation.</li>
+    <li><strong>Demo mode related.</strong> 4 authentication boundary tests remain <code>@pytest.mark.skip</code> (lines 11 / 51 / 56 / 157 of <code>tests/test_auth_boundary.py</code>). The reason text states "<code>--demo</code> モードでは認証バイパスが仕様", but because it was changed on 2026-07-29 into a form that enforces authentication even with a <code>--demo</code> startup, this reason no longer matches the implementation.</li>
     <li><strong>Sources API.</strong> Because of the path registration form, 2 tests are skipped.</li>
     <li><strong>Publish Semaphore.</strong> Because mock injection at module scope is difficult, 1 xfail.</li>
     </ul>
@@ -1218,7 +1218,7 @@ cd ../..
 <span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
-    <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。会社・製品の公式見解を一切代表しません。</blockquote>
+    <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。企業・製品の公式見解を一切代表しません。</blockquote>
     <p>この文書は、Cynovela に <strong>できないこと</strong>、および気をつけることを書いたものです。できることの説明は <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> と<a href="concept.html" target="_blank" rel="noopener">concept.md</a> にあります。ここには、期待すると外れることだけを書きます。</p>
     <p>版は <code>1.1.3</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
     <p><strong>目次</strong></p>
@@ -1244,7 +1244,7 @@ cd ../..
       <li>1.4 言語モデルが入っていないと、<code>standard</code> でも規則だけに退行する</li>
       <li><a href="#slide-63">1.5 パスワードと API キーは、空白・日本語・改行で切れる</a></li>
       <li><a href="#slide-64">1.6 PDF から取り出した文字に空白が入り、電子メールがマスキングを逃れることがある</a></li>
-      <li><a href="#slide-65">1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい</a></li>
+      <li><a href="#slide-65">1.7 管理者が原文を見られるかどうかは、暗号鍵と宛先しだい</a></li>
       </ul>
     </li>
     <li><a href="#slide-67">2. 読み込めない資料の形式</a></li>
@@ -1492,11 +1492,11 @@ cd ../..
 <span class="continued">(9/10)</span>
 </div>
 <div class="slide-body">
-    <h3>1.7 管理者が原文を見られるかどうかは、鍵と宛先しだい</h3>
+    <h3>1.7 管理者が原文を見られるかどうかは、暗号鍵と宛先しだい</h3>
     <p>役割が <code>admin</code> のときは、マスキング前の原文を見られる設計です（<code>rag.py</code> の <code>tier_for_role</code>）。ただし、次の 3 つの場合は管理者でもマスキング済みのものしか出ません。</p>
     <ol>
     <li><strong>回答用 LLM の宛先が外部を向いているとき。</strong> <code>routers/chat.py</code> の <code>_effective_send_tier</code> は、送り先が自マシン内・コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらずマスキング済みへ落とします。宛先を判定できないときもマスキング済みに倒します。</li>
-    <li><strong>金庫（暗号化された保管）の鍵が合わないとき。</strong>原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行はマスキング済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
+    <li><strong>金庫（暗号化された保管）の暗号鍵（<code>store/secret.key</code>）が合わないとき。</strong>原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行はマスキング済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで暗号鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
     <li><strong>質問文そのもの。</strong>質問文へのマスキングは役割で分けていません。管理者が質問文に IP アドレスを書いても、その IP はマスキングされてから検索と LLM へ渡ります。</li>
     </ol>
 </div>
@@ -1684,7 +1684,7 @@ cd ../..
     <li><strong>パッケージ版もソース版も、AIモデルを同梱していません。</strong> モデルを置かないまま起動用スクリプトを実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。取得しない場合は、<strong>起動する前に止まります</strong>。</li>
     <li><strong><code>host.containers.internal</code> はコンテナの外では名前解決できません。</strong>ホスト側で直接起動する場合は <code>127.0.0.1</code> に書き換えてください（コンテナ版の配布物は、この 1 語だけは自動で読み替えます。別のホスト名や IP を書いた場合は読み替えず、書いたとおりに使います）。</li>
     <li><strong>外部アクセラレータの画像の受け口は未実装です。</strong> 呼ぶと 501 を返します。</li>
-    <li><strong>再ランクの宛先は、どの配布物にも入っていない外部アクセラレータになっています。</strong> 同梱の <code>cynovela.yaml</code> は <code>reranker.device</code> が <code>external</code>、<code>reranker.base_url</code> が <code>http://localhost:18850</code> ですが、その番地で答えるものはどの落とし物にも入っていません。∴ 検索のたびにその番地へ当たりに行って失敗し、退避します。再ランクの重みが置かれていれば本体の中で再ランクし（<code>models</code> の落とし物に入っています）、置かれていなければ再ランクなしで素通しします。退避のたびにログが 1 行出て、設定の画面にも状態が出ます。答えそのものは返ります。外部を選んでいるのは <code>reranker.device</code> で、同梱の <code>reranker.provider</code> はすでに <code>cross_encoder</code> です。∴ <code>cynovela.yaml</code> を書き換えられる形態では、<code>device</code> を空にすれば本体の中で再ランクする道が退避ではなく最初の選択になります。</li>
+    <li><strong>再ランクの宛先は、どの配布物にも入っていない外部アクセラレータになっています。</strong> 同梱の <code>cynovela.yaml</code> は <code>reranker.device</code> が <code>external</code>、<code>reranker.base_url</code> が <code>http://localhost:18850</code> ですが、その番地で答えるものは、どのダウンロードしたファイルにも入っていません。∴ 検索のたびにその番地へ当たりに行って失敗し、退避します。再ランクの重みが置かれていれば本体の中で再ランクし（<code>models</code> のダウンロードしたファイルに入っています）、置かれていなければ再ランクなしで素通しします。退避のたびにログが 1 行出て、設定の画面にも状態が出ます。答えそのものは返ります。外部を選んでいるのは <code>reranker.device</code> で、同梱の <code>reranker.provider</code> はすでに <code>cross_encoder</code> です。∴ <code>cynovela.yaml</code> を書き換えられる形態では、<code>device</code> を空にすれば本体の中で再ランクする道が退避ではなく最初の選択になります。</li>
     <li><strong>起動時の <code>--mode</code> は、実際には切り替わらないものがあります。</strong> <code>--mode</code> の説明文にそのまま書いてあります。<code>lite</code> と <code>lite-en</code> は軽量モデルへの切り替えが未配線で、現状は既定の <code>text</code> と同じ <code>bge-m3</code> で動きます。<code>minimal</code> は TF-IDF が未統合で、こちらも <code>bge-m3</code> が要ります（モデルを置いていない環境では取り込みができません）。<strong>どのモードを選んでも、必要なモデルの大きさは変わりません。</strong></li>
     </ul>
 </div>

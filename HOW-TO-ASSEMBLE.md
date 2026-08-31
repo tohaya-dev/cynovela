@@ -27,7 +27,7 @@ The AI models: `cynovela-chewie-models-1.1.3.tar.gz.part00`–`part02` (split; b
 Always download the checksum list `SHA256SUMS` into the same folder as well; it
 covers the package edition and the AI models.
 
-On a company-managed Mac, the release also carries
+On a managed Mac (under MDM), the release also carries
 `check-managed-mac.command` — download it and double-click it first. It only
 measures whether this Mac will let you run the tool; it changes no setting.
 
@@ -85,8 +85,8 @@ If you have never used Terminal before, open **`docs/getting-started.md`** inste
 | 形 | 落とすファイル | AIモデル |
 |---|---|---|
 | **アプリ版**（`.pkg`） | **準備中です。** この版には入っていません | — |
-| **パッケージ版**（M系 Mac・置いた場所でそのまま動くフォルダ。Python も conda も不要） | `cynovela-chewie-package-1.1.3.tar.gz`（1本） | **下の models の片も落とします** |
-| **ソース版** | ダウンロードではありません。ソースはこのリポジトリです | **下の models の片も落とします** |
+| **パッケージ版**（M系 Mac・置いた場所でそのまま動くフォルダ。Python も conda も不要） | `cynovela-chewie-package-1.1.3.tar.gz`（1本） | **下の models の分割ファイルもダウンロードします** |
+| **ソース版** | ダウンロードではありません。ソースはこのリポジトリです | **下の models の分割ファイルもダウンロードします** |
 
 パッケージ版・AIモデルは
 [v1.1.3 の release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.3) に
@@ -97,7 +97,7 @@ AIモデル: `cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02`（分割。
 突き合わせ用の一覧 `SHA256SUMS`（パッケージ版と AIモデルのぶん）も、必ず同じ
 フォルダへ落としてください。
 
-会社から渡された Mac で使う場合は、リリースに置いてある
+管理された Mac（MDM 配下）で使う場合は、リリースに置いてある
 `check-managed-mac.command` を先に落としてダブルクリックしてください。この Mac で
 動かせるかを測るだけの診断で、設定は何も変えません。
 
@@ -105,13 +105,13 @@ AIモデル: `cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02`（分割。
 
     cat cynovela-chewie-models-1.1.3.tar.gz.part00 cynovela-chewie-models-1.1.3.tar.gz.part01 cynovela-chewie-models-1.1.3.tar.gz.part02 > cynovela-chewie-models-1.1.3.tar.gz
 
-（`cat ...part* > ...` でも同じです。片の名前の順につながります。）
+（`cat ...part* > ...` でも同じです。分割ファイルの名前の順につながります。）
 
 ### 2. つないだ結果を確かめる
 
     shasum -a 256 --ignore-missing -c SHA256SUMS                 # パッケージ版と AIモデル
 
-出てきた行が全部 `OK` なら成功です。`OK` と出ない場合、どれかの片が最後まで落ちていません。その片を落とし直し、1 からやり直してください。確かめに通らなかったものを使い始めないでください。
+出てきた行が全部 `OK` なら成功です。`OK` と出ない場合、どれかの分割ファイルが最後までダウンロードできていません。そのファイルをダウンロードし直し、1 からやり直してください。確かめに通らなかったものを使い始めないでください。
 
 ### 3. 取り出す
 

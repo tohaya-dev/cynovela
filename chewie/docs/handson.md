@@ -10,14 +10,14 @@
 > It is not a commercial offering and not an official implementation.
 > The implementation is entirely original, and consists of an OSS stack of
 > FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM.
-> It does not represent the official position of any company.
+> It does not represent the official position of any organization.
 
 This document is a set of exercises you run against the sample material that ships
 inside this package. You ask real questions, look at the answers, and check them
 against the file the answer actually came from.
 
 Every exercise below uses only the seven files under `dummy-corpus/`. They describe a
-fictional company; the people, organizations, addresses, phone numbers, and mail
+fictional firm; the people, organizations, addresses, phone numbers, and mail
 addresses in them do not exist.
 
 ---
@@ -81,12 +81,12 @@ of the exercises: you can check every answer against the source yourself.
 | File | What it is | Used in |
 |---|---|---|
 | `00-はじめに.md` | A short guide to the other six files | Exercise A (as an orientation, not as an answer source) |
-| `01-company-overview.md` | Company profile: outline, product categories, locations, history, management | Exercises A, B, C |
+| `01-company-overview.md` | Profile of the firm: outline, product categories, locations, history, management | Exercises A, B, C |
 | `02-work-rules.md` | Work rules (excerpt): working hours, holidays, leave, pay, expenses | Exercises A, B, C |
-| `03-system-guide.md` | Operating guide for the in-house inventory system: login, goods receipt, stocktaking, monthly closing | Exercises A, B, D |
-| `04-faq.md` | 20 in-house questions and answers, summarizing the three files above | Exercises A, B |
+| `03-system-guide.md` | Operating guide for the internal inventory system: login, goods receipt, stocktaking, monthly closing | Exercises A, B, D |
+| `04-faq.md` | 20 internal questions and answers, summarizing the three files above | Exercises A, B |
 | `05-meeting-notes.md` | Minutes of three monthly meetings (May, June, July 2026) | Exercises B, C |
-| `06-company-overview-en.md` | The company profile in English | Exercises A, B, C |
+| `06-company-overview-en.md` | The firm's profile in English | Exercises A, B, C |
 
 Note that `04-faq.md` restates content that also lives in `01`, `02`, and `03`. That
 overlap is deliberate: it is what makes the citation list in the answer interesting
@@ -112,7 +112,7 @@ Ask these in RAG Chat, one at a time.
 
 And in English, against `06-company-overview-en.md`:
 
-9. How many employees does the company have, and when was it founded?
+9. How many employees does the firm have, and when was it founded?
 10. What are the four product categories?
 11. When was the Fukuoka branch opened?
 
@@ -140,7 +140,7 @@ by pulling chunks out of several files at once.
 
 And one in English, deliberately asked against material that is mostly Japanese:
 
-7. Which branch offices does the company have, and which branch had the most errors in the pre-closing check?
+7. Which branch offices does the firm have, and which branch had the most errors in the pre-closing check?
 
 **How to check**: for each of these, the table in section 8 names **two or more**
 files. Confirm that the citation list contains more than one file. Question 7 is the
@@ -225,7 +225,7 @@ exercise possible without preparing anything:
 2. Log out, log in as `viewer`, and ask exactly the same question. The same fields
    come back as `[MASKED:PHONE]`, `[MASKED:EMAIL]`, `[MASKED:IP]`.
 3. Ask 会社案内の問い合わせ先を教えてください under both roles and compare in the same way.
-4. Still as `viewer`, try to open the audit log screen. It is refused with
+4. Still as `viewer`, try to open the audit log screen. It is rejected with
    403 Forbidden — the admin-only endpoints are closed to `viewer` outright, not
    merely hidden in the GUI.
 5. Go back to `admin`, open the audit log, and find the `pii_detected` entries left by
@@ -294,7 +294,7 @@ Each entry was checked by reading the file.
 | 給与の支払日はいつですか | 毎月末日締め、翌月 25 日に指定口座へ支払う | `02-work-rules.md`, 第5章 第14条（給与の支払） |
 | 在庫台帳のログインに何回失敗するとロックされますか | 5 回連続で失敗するとロック。解除は情報システム担当に依頼する | `03-system-guide.md`, 「2. ログイン手順」の 5 |
 | 入庫登録はいつまでに行いますか | 商品が到着した当日中が原則。できない事情があれば所属長に報告のうえ翌営業日の午前中 | `03-system-guide.md`, 「3. 入庫登録の手順」冒頭と「入庫登録の注意事項」 |
-| How many employees does the company have, and when was it founded? | 142 employees as of April 1, 2026; founded in April 1998 | `06-company-overview-en.md`, "1. About Us" |
+| How many employees does the firm have, and when was it founded? | 142 employees as of April 1, 2026; founded in April 1998 | `06-company-overview-en.md`, "1. About Us" |
 | What are the four product categories? | Kitchenware / Bath and Toiletries / Storage and Organization / Seasonal Goods | `06-company-overview-en.md`, "2. Product Categories" |
 | When was the Fukuoka branch opened? | 2012, as the sales base for the Kyushu region | `06-company-overview-en.md`, "3. Locations" and "4. History" |
 
@@ -308,7 +308,7 @@ Each entry was checked by reading the file.
 | 「アオゾラ在庫台帳」はいつ導入され、その月次締めは毎月何日ですか | 2020 年に導入。月次締めは毎月 25 日 | `01-company-overview.md` 「4. 沿革」（英語なら `06-company-overview-en.md` "4. History"）＋ `03-system-guide.md` 「5. 月次締めの手順」 |
 | 季節雑貨はどの棚に保管しますか。2026年7月の会議では季節雑貨について何が報告されましたか | 保管は S で始まる専用棚で、通常棚と混在させない。7 月の会議では夏物の出荷が好調で冷感グッズの一部に欠品、追加発注済みで 7 月下旬に入庫予定と報告 | `03-system-guide.md` 「入庫登録の注意事項」＋ `05-meeting-notes.md` 「議事録3」討議内容 |
 | 経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください | 規則は月末締め・翌月 15 日払いで、締め日を過ぎた申請は翌月分として処理。課題は締め日直前に申請が集中して経理の確認作業が逼迫していることで、営業部門へ都度申請を依頼することにした | `02-work-rules.md` 第15条 ＋ `05-meeting-notes.md` 「議事録2」討議内容・決定事項 2 |
-| Which branch offices does the company have, and which branch had the most errors in the pre-closing check? | Osaka and Fukuoka. The Fukuoka branch had 12 errors at the April closing; of the 5 errors in May, 4 were at the Osaka branch | `06-company-overview-en.md` "3. Locations" (English) + `05-meeting-notes.md` 「議事録1」「議事録2」(Japanese) — the answer has to cross the language boundary |
+| Which branch offices does the firm have, and which branch had the most errors in the pre-closing check? | Osaka and Fukuoka. The Fukuoka branch had 12 errors at the April closing; of the 5 errors in May, 4 were at the Osaka branch | `06-company-overview-en.md` "3. Locations" (English) + `05-meeting-notes.md` 「議事録1」「議事録2」(Japanese) — the answer has to cross the language boundary |
 
 ### (c) Not written anywhere
 
@@ -323,7 +323,7 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 | アオゾラ商事の株価はいくらですか | Cannot be answered from the material | Nothing about listing or share price exists; `01-company-overview.md` gives revenue and headcount but no capital-market information |
 | 2026年8月の月次業務改善会議の決定事項を教えてください | Cannot be answered from the material | `05-meeting-notes.md` holds exactly three sets of minutes — May, June, and July 2026. There is no August record |
 | What is the retail price of the cooling goods? | Cannot be answered from the material | Cooling goods appear in `01-company-overview.md`, `06-company-overview-en.md`, and `05-meeting-notes.md`, but no price is given anywhere |
-| Who is the president of Aozora Trading's largest supplier? | Cannot be answered from the material | `06-company-overview-en.md` says the company sources from approximately 320 suppliers, but no supplier is named and no supplier's management is described |
+| Who is the president of Aozora Trading's largest supplier? | Cannot be answered from the material | `06-company-overview-en.md` states that the firm sources from approximately 320 suppliers, but no supplier is named and no supplier's management is described |
 
 ---
 
@@ -342,7 +342,7 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 から来たのかを自分で突き合わせます。
 
 以下の演習は、すべて `dummy-corpus/` の 7 本のファイルだけを使います。7 本は架空の
-会社を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスは
+企業を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスは
 すべて実在しません。
 
 ---
@@ -406,8 +406,8 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 | `00-はじめに.md` | 残り 6 本の案内 | 演習 A（案内としてのみ。答えの出どころには使わない） |
 | `01-company-overview.md` | 会社案内。概要・取扱品目・拠点・沿革・経営体制 | 演習 A・B・C |
 | `02-work-rules.md` | 就業規則（抜粋）。勤務時間・休日・休暇・給与・経費 | 演習 A・B・C |
-| `03-system-guide.md` | 社内在庫システムの利用手順。ログイン・入庫・棚卸し・月次締め | 演習 A・B・D |
-| `04-faq.md` | 社内からの 20 問。上の 3 本の内容を要約したもの | 演習 A・B |
+| `03-system-guide.md` | 組織内の在庫システムの利用手順。ログイン・入庫・棚卸し・月次締め | 演習 A・B・D |
+| `04-faq.md` | 組織内からの 20 問。上の 3 本の内容を要約したもの | 演習 A・B |
 | `05-meeting-notes.md` | 2026 年 5 月・6 月・7 月の定例会議 3 本の議事録 | 演習 B・C |
 | `06-company-overview-en.md` | 会社案内の英語版 | 演習 A・B・C |
 
@@ -434,7 +434,7 @@ RAG Chat で 1 問ずつ聞いてみてください。
 
 英語では、`06-company-overview-en.md` を相手にこう聞きます。
 
-9. How many employees does the company have, and when was it founded?
+9. How many employees does the firm have, and when was it founded?
 10. What are the four product categories?
 11. When was the Fukuoka branch opened?
 
@@ -462,7 +462,7 @@ chunk を引いてきて答えられること。
 
 もう 1 問は英語です。相手にする資料はほとんど日本語であるのに、あえて英語で聞きます。
 
-7. Which branch offices does the company have, and which branch had the most errors in the pre-closing check?
+7. Which branch offices does the firm have, and which branch had the most errors in the pre-closing check?
 
 **確かめかた**: どの質問についても、8 節の表は**2 本以上**のファイルを挙げています。
 出典の一覧に 2 本以上並ぶことを確認してください。7 番目が面白いところです。支社の
@@ -499,8 +499,8 @@ chunk を引いてきて答えられること。
 chunk の見出しから作った言い換えの候補がいくつか示されます。サーバは監査ログに
 `LOW_CONFIDENCE_FALLBACK` の記録も残します。
 
-つまり返ってくるのは、LLM が当てずっぽうを言った結果ではありません。当てずっぽうを
-言わずに降りた結果です。
+つまり返ってくるのは、LLM が当てずっぽうで答えた結果ではありません。パイプラインが
+当てずっぽうの回答を避けた結果です。
 
 **確かめかた**:
 
@@ -546,7 +546,7 @@ chunk の見出しから作った言い換えの候補がいくつか示され�
 2. ログアウトして `viewer` でログインし、まったく同じ質問をする。同じ箇所が
    `[MASKED:PHONE]` `[MASKED:EMAIL]` `[MASKED:IP]` になって返ります。
 3. 会社案内の問い合わせ先を教えてください を両方の役割で聞き、同じように比べる。
-4. `viewer` のまま、監査ログの画面を開こうとする。403 Forbidden で拒まれます。
+4. `viewer` のまま、監査ログの画面を開こうとする。403 Forbidden で拒否されます。
    `admin` 専用の口は `viewer` に対して端から閉じており、画面上で隠しているだけでは
    ありません。
 5. `admin` に戻って監査ログを開き、いま聞いた質問が残した `pii_detected` の記録を
@@ -611,7 +611,7 @@ ingest root → source → scan → file → collection → publish → chunk �
 | 給与の支払日はいつですか | 毎月末日締め、翌月 25 日に指定口座へ支払う | `02-work-rules.md` 第5章 第14条（給与の支払） |
 | 在庫台帳のログインに何回失敗するとロックされますか | 5 回連続で失敗するとロック。解除は情報システム担当に依頼する | `03-system-guide.md`「2. ログイン手順」の 5 |
 | 入庫登録はいつまでに行いますか | 商品が到着した当日中が原則。できない事情があれば所属長に報告のうえ翌営業日の午前中 | `03-system-guide.md`「3. 入庫登録の手順」冒頭と「入庫登録の注意事項」 |
-| How many employees does the company have, and when was it founded? | 142 employees as of April 1, 2026; founded in April 1998 | `06-company-overview-en.md` "1. About Us" |
+| How many employees does the firm have, and when was it founded? | 142 employees as of April 1, 2026; founded in April 1998 | `06-company-overview-en.md` "1. About Us" |
 | What are the four product categories? | Kitchenware / Bath and Toiletries / Storage and Organization / Seasonal Goods | `06-company-overview-en.md` "2. Product Categories" |
 | When was the Fukuoka branch opened? | 2012 年、九州エリアの営業拠点として開設 | `06-company-overview-en.md` "3. Locations" および "4. History" |
 
@@ -625,7 +625,7 @@ ingest root → source → scan → file → collection → publish → chunk �
 | 「アオゾラ在庫台帳」はいつ導入され、その月次締めは毎月何日ですか | 2020 年に導入。月次締めは毎月 25 日 | `01-company-overview.md`「4. 沿革」（英語なら `06-company-overview-en.md` "4. History"）＋ `03-system-guide.md`「5. 月次締めの手順」 |
 | 季節雑貨はどの棚に保管しますか。2026年7月の会議では季節雑貨について何が報告されましたか | 保管は S で始まる専用棚で、通常棚と混在させない。7 月の会議では夏物の出荷が好調で冷感グッズの一部に欠品、追加発注済みで 7 月下旬に入庫予定と報告 | `03-system-guide.md`「入庫登録の注意事項」＋ `05-meeting-notes.md`「議事録3」討議内容 |
 | 経費精算の締めについて、規則の定めと、会議で出た運用上の課題を教えてください | 規則は月末締め・翌月 15 日払いで、締め日を過ぎた申請は翌月分として処理。課題は締め日直前に申請が集中して経理の確認作業が逼迫していることで、営業部門へ都度申請を依頼することにした | `02-work-rules.md` 第15条 ＋ `05-meeting-notes.md`「議事録2」討議内容・決定事項 2 |
-| Which branch offices does the company have, and which branch had the most errors in the pre-closing check? | 大阪と福岡。福岡支社は 4 月度の締めで 12 件、5 月度の 5 件のうち 4 件は大阪支社 | `06-company-overview-en.md` "3. Locations"（英語）＋ `05-meeting-notes.md`「議事録1」「議事録2」（日本語）。答えは言語の境をまたぐ |
+| Which branch offices does the firm have, and which branch had the most errors in the pre-closing check? | 大阪と福岡。福岡支社は 4 月度の締めで 12 件、5 月度の 5 件のうち 4 件は大阪支社 | `06-company-overview-en.md` "3. Locations"（英語）＋ `05-meeting-notes.md`「議事録1」「議事録2」（日本語）。答えは言語の境をまたぐ |
 
 ### (c) どこにも書いていないもの
 

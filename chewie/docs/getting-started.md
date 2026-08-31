@@ -79,7 +79,7 @@ restore, changing the port, and reading the logs — are in [operations.md](oper
 - **The first time you sign in as the administrator, you will always be told to change
   your password.**
 - **Until you have finished changing it, every administrative operation (adding an
-  ingest source, ingesting documents, changing settings) is refused.** Change it first.
+  ingest source, ingesting documents, changing settings) is rejected.** Change it first.
 - The viewer (`demo`) is not asked to change anything. However, a viewer cannot ingest
   documents.
 
@@ -88,8 +88,8 @@ This package runs directly on your own machine.
 Two things that will look wrong, and are not:
 
 1. **Most of the terminal steps print nothing when they work.** A command that succeeds
-   usually says nothing at all and just gives you a new line to type on. Silence
-   is success here. Only failures talk.
+   usually prints nothing at all and just gives you a new line to type on. Silence
+   is success here. Only failures produce output.
 2. **Some steps take minutes with no sign of life.** Joining the model files and
    the first start are the slow ones. Nothing is frozen. Leave it alone.
 
@@ -187,7 +187,7 @@ cynovela-chewie-models-1.1.3.tar.gz: OK
 cynovela-chewie-package-1.1.3.tar.gz: OK
 ```
 
-If any line says `FAILED`, download that file again and repeat from step 4. Do
+If any line shows `FAILED`, download that file again and repeat from step 4. Do
 not go on.
 
 #### Step 6. Unpack the program
@@ -315,7 +315,7 @@ Your documents and settings stay where they are.
 
 #### Why five files instead of one
 
-GitHub refuses to host a single file larger than a few gigabytes, so the AI
+GitHub does not accept a single file larger than a few gigabytes, so the AI
 models are cut into three pieces of 1.5 GB. Step 4 glues them back together.
 `SHA256SUMS` is a list of fingerprints; step 5 recomputes the fingerprint of
 what landed on your disk and compares it. A download that stopped halfway looks
@@ -370,7 +370,7 @@ timeout, load the model in LM Studio first and ask again.
 Each package is built with a different first password, written into
 `cynovela.yaml` at packaging time. If it were the same for everyone, anyone who
 had downloaded the tool would know yours. Changing it on first sign-in is
-required for the same reason: administrator actions are refused until you do.
+required for the same reason: administrator actions are rejected until you do.
 
 #### Why you should not put the folder in iCloud Drive, Dropbox or OneDrive
 
@@ -483,7 +483,7 @@ From here, go on to signing in (section 10), the first question (section 12), an
 If conda is not installed, install miniforge.
 (From https://github.com/conda-forge/miniforge/releases/latest, get `Miniforge3-MacOSX-arm64.sh` for Apple silicon and run it.)
 
-On a company-issued machine, the download sources themselves (conda-forge, PyPI,
+On a managed Mac (under MDM), the download sources themselves (conda-forge, PyPI,
 github.com, huggingface.co) may not be allowed. In that case, choose the package edition,
 which needs no downloading.
 
@@ -619,7 +619,7 @@ What to check when it does not work:
 
 - "ユーザー名またはパスワードが正しくありません" (the user name or password is incorrect) → Copy and paste the value
   and enter it again (leading/trailing spaces and newlines easily get mixed in here).
-- After the change, the admin screen says "初回パスワードの変更が必要です" (the initial password must be changed) → Log out once
+- After the change, the admin screen shows "初回パスワードの変更が必要です" (the initial password must be changed) → Log out once
   and log in again with the new password.
 - You forgot the admin password → It can be reissued with `conda run -n cynovela-dist python server.py --reset-admin`.
 
@@ -684,8 +684,8 @@ What to check when it does not work:
 - Nothing appears with "モデル一覧を取得" → No model is loaded in LM Studio.
   Load a model on the LM Studio side and press it again.
 
-- Even if you specify the name of a model that is not loaded, LM Studio may not refuse and may
-  answer with a different model that is loaded. In the Model field, enter a model name that
+- Even if you specify the name of a model that is not loaded, LM Studio may not reject the
+  request and may answer with a different model that is loaded. In the Model field, enter a model name that
   actually exists, chosen from the list.
 - If you run several large models at the same time in LM Studio, the answers may break down or
   become slow. It returns to normal automatically after some time.
@@ -798,7 +798,7 @@ You can also pass them all at once at startup in production.
 - In this form, **adding and removing from the screen take effect as they are. A restart is not required** (the backup is re-read every time it is referenced).
 - Registered roots are kept in the backup file `store/ingest-roots.json`.
 - If you pass no root at all, it starts with the dummy documents inside this package (`dummy-corpus`) as the ingest source. When there is no root at all in the folder browsing of the screen, "there is not even one ingest source yet" appears, and you can add one from "add an ingest source" right there.
-- Paths outside the roots are refused with 403 (please add them with "add an ingest source" on the screen, then use them).
+- Paths outside the roots are rejected with 403 (please add them with "add an ingest source" on the screen, then use them).
 
 ---
 
@@ -1133,7 +1133,7 @@ with that number really is `server.py`, and only then stops it. It never
 searches for something listening on a port and never uses `pkill`, so it cannot
 stop a different program that happens to be using port 8765.
 
-If it says the PID file is missing, the tool had already stopped and cleaned up
+If it reports that the PID file is missing, the tool had already stopped and cleaned up
 after itself.
 
 #### Why closing the Terminal window does not stop it
@@ -1154,7 +1154,7 @@ or with `cynovela-cli scan start` / `cynovela-cli publish start`.
 
 #### When the environment itself is broken
 
-If it refuses to start and complains that something is missing:
+If it fails to start and reports that something is missing:
 
 ```
 ./launch.sh --setup
@@ -1288,7 +1288,7 @@ More detail is in the bundled `README.md`.
 
 - **管理者で最初に入ると、必ず「パスワードを変えてください」と出ます。**
 - **変え終わるまで、管理の操作（取り込み元を足す・資料を取り込む・設定を変える）は
-  すべて断られます。** 先に変えてください。
+  すべて拒否されます。** 先に変えてください。
 - 閲覧者（demo）は変更を求められません。ただし閲覧者は取り込みができません。
 
 この配布物は、お使いの機械の上で直接動きます。
@@ -1370,7 +1370,7 @@ cd ~/Downloads
 
 何も出ません。それで合っています。
 
-#### 手順4. モデルの3つの片を1本につなぐ
+#### 手順4. モデルの3つの分割ファイルを1本につなぐ
 
 次を**1行で**打って return を押します。
 
@@ -1571,16 +1571,16 @@ Finder は隠します。これは「触らなくてよいもの」という mac
 
 #### なぜ合言葉がファイルに書いてあるのか
 
-配布物は1本ごとに違う最初の合言葉を持って作られ、梱包のときに `cynovela.yaml`
-へ書き込まれます。全員同じだったら、この道具を落とした人は誰でもあなたの
+配布物は1本ごとに違う最初の合言葉を持って作られ、パッケージングのときに `cynovela.yaml`
+へ書き込まれます。全員同じだったら、この道具をダウンロードした人は誰でもあなたの
 合言葉を知っていることになります。最初のログインで変えるよう求めるのも同じ
 理由です。変えるまで、管理の操作は通しません。
 
 #### なぜ iCloud Drive・Dropbox・OneDrive の中に置いてはいけないのか
 
-これらは全てのファイルを向こうのサーバへ写し、手元のファイルを「印」だけに
-置き換えることがあります。数ギガバイトの部品がまるごと送られますし、
-「印」は実行できないので、原因の分かりにくい形で動かなくなります。
+これらは全てのファイルを向こうのサーバへ写し、手元のファイルを実体のない
+代わりのファイルだけに置き換えることがあります。数ギガバイトの部品がまるごと送られますし、
+その代わりのファイルは実行できないので、原因の分かりにくい形で動かなくなります。
 `./launch.sh` はそういう場所を見つけると知らせますが、止めはしません。
 `~/Downloads` かホームフォルダの直下のような、素直な場所へ置いてください。
 
@@ -1686,7 +1686,7 @@ conda が入っていない場合は miniforge を入れてください。
 （https://github.com/conda-forge/miniforge/releases/latest から、Apple シリコンなら
 `Miniforge3-MacOSX-arm64.sh` を取得して実行します。）
 
-会社支給の機械では、取り寄せ先そのもの（conda-forge・PyPI・github.com・huggingface.co）が
+管理された Mac（MDM 配下）では、取り寄せ先そのもの（conda-forge・PyPI・github.com・huggingface.co）が
 許可されていないことがあります。その場合は、取り寄せの要らないパッケージ版を選んでください。
 
 （パッケージ版は Python も conda も要りません。3節「なぜパッケージ版は Python も conda も要らないのか」を参照。）
@@ -2112,9 +2112,9 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 
 ### はじめて起動する前の注意
 
-- ダウンロードした配布物には macOS が印（`com.apple.quarantine`）を付け、部品ごとに
-  何度も確認が出ることがあります。`./launch.sh` は起動の最初に、配布物の中の印を全部
-  自分で落とします。手動で行うなら `xattr -rc <フォルダ>` です。
+- ダウンロードした配布物には macOS が拡張属性（`com.apple.quarantine`）を付け、部品ごとに
+  何度も確認が出ることがあります。`./launch.sh` は起動の最初に、配布物の中の拡張属性を全部
+  自分で取り除きます。手動で行うなら `xattr -rc <フォルダ>` です。
 - クラウド同期（iCloud Drive・Dropbox・OneDrive・Google Drive）の下に配布物を置かないで
   ください。`./launch.sh` が起動前に検知して注意を出します（止めずに進みます）。
 - 同梱の環境（`.condapack-cynovela`）が既に在って動くときは、`./launch.sh` は土台の選択画面を
@@ -2330,7 +2330,7 @@ cd ~/Downloads/chewie
 
 #### 環境そのものが壊れたとき
 
-足りないものが在ると言って起き上がらないときは、次を1回叩きます。
+足りないものが在るというエラーが出て起動しないときは、次を1回叩きます。
 
 ```
 ./launch.sh --setup
