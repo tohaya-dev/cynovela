@@ -1071,6 +1071,10 @@ minato = re.compile("(?<!空)(?<!出)(?<!入)港(?!区)")
 def in_scope(rel):
     if rel.startswith(("dummy-corpus/",)) or "/dummy-corpus/" in rel: return False
     if rel.startswith("store/") or "/store/" in rel: return False
+    # 同梱の実行環境は上流ソフトウェアそのもの (README や LICENSE を含む)。
+    # 当方の文書・UI の語り口ではないため見ない (実測: ja_ginza / numpy / pyarrow /
+    # opencv の同梱文書が company / employer を含む)。
+    if ".condapack-cynovela/" in rel: return False
     base = os.path.basename(rel)
     if base in ("LICENSE", "LICENSES-MODELS.md", "THIRD_PARTY_NOTICES.md"): return False
     if base in ("launch.sh", "launch-body.sh", "cynovela.yaml") or base.endswith((".md", ".txt", ".html", ".command")):
