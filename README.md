@@ -58,8 +58,7 @@ The one-page answer to "which of these do I take" is in
 |---|---|---|---|---|
 | **App edition** (`.pkg`) | — | — | **In preparation.** Not part of this release | — |
 | **Package edition** `cynovela-chewie-package-1.1.2.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
-| **Source edition, all-in-one** `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`–`part02` | a folder you run in place | yes | split into parts — needs assembling | Python 3.12 or later |
-| **Source edition, lightweight** `cynovela-chewie-lightweight-1.1.1.tar.gz` | a folder you run in place | no — take the AI models as well | single file | Python 3.12 or later |
+| **Source edition** | a folder you run in place | no — take the AI models as well | not a download — the source is this repository (clone it, or use GitHub's "Download ZIP") | Python 3.12 or later, or conda |
 | **AI models** `cynovela-chewie-models-1.1.2.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
 
 The **App edition** (`.pkg`) is **in preparation** and is not part of this
@@ -70,16 +69,16 @@ add the AI models, and run `./launch.sh`. It writes inside its own folder, and t
 extracted folder can be moved to another location later — start it again from the
 new place with the same `./launch.sh`.
 
-Take **all-in-one** if you want the models in the same download and nothing
-fetched afterwards. Take **lightweight** if you want a small download and are
-happy to build the environment on first start. The two source editions were not
-rebuilt for 1.1.2; they are on the 1.1.1 release.
+Take the **source edition** if you want to see and control what is installed:
+the source is this repository — take the `chewie/` tree, add the AI models, and
+run `./launch.sh`; on the first start it builds the environment for you. No
+source archive is distributed on the releases page.
 
 The release also carries `HOW-TO-ASSEMBLE.md`, the checksum list `SHA256SUMS`
-for the tar.gz editions and the AI models, and `check-managed-mac.command`, a
+for the package edition and the AI models, and `check-managed-mac.command`, a
 diagnostic that tells you — without changing any setting — whether a
 company-managed Mac will let you run this. A single release file cannot exceed
-2 GiB, so the all-in-one and the AI models are split into parts; join them as
+2 GiB, so the AI models are split into parts; join them as
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) describes and check the result against
 `SHA256SUMS` before starting.
 

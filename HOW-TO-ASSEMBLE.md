@@ -5,10 +5,11 @@
 ## English
 
 **This release (1.1.2) carries the package edition and the AI models.** The app
-edition (`.pkg`) is **in preparation** and is not part of this release. The two
-source editions were not rebuilt for it; if you want one of those, take it from
-the 1.1.1 release. The table below lists all four forms so that the names are in
-one place.
+edition (`.pkg`) is **in preparation** and is not part of this release. No
+source archive is distributed on the releases page: the source is this
+repository — clone it, or use GitHub's "Download ZIP", and start from the
+`chewie/` tree with `./launch.sh`. The table below lists the forms so that the
+names are in one place.
 
 Pick ONE:
 
@@ -16,18 +17,15 @@ Pick ONE:
 |---|---|---|
 | **App edition** (`.pkg`) | **In preparation.** Not part of this release | — |
 | **Package edition** (Apple silicon Macs — a folder you run in place, no Python, no conda) | `cynovela-chewie-package-1.1.2.tar.gz` (single file) | **also download the models parts** (below) |
-| **Source edition, all-in-one** (on the **1.1.1** release) | `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`–`part02` (split) | already inside |
-| **Source edition, model-separate** (on the **1.1.1** release) | `cynovela-chewie-lightweight-1.1.1.tar.gz` (single file) | **also download the models parts** (below) |
+| **Source edition** | not a download — the source is this repository | **also download the models parts** (below) |
 
 The package edition and the AI models are on the
-[v1.1.2 release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.2). The two
-source editions are on the [v1.1.1 release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.1),
-because they were not rebuilt for 1.1.2.
+[v1.1.2 release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.2).
 
 The AI models: `cynovela-chewie-models-1.1.2.tar.gz.part00`–`part02` (split; byte-identical to the 1.0.7 models).
 
 Always download the checksum list `SHA256SUMS` into the same folder as well; it
-covers the tar.gz editions and the AI models.
+covers the package edition and the AI models.
 
 On a company-managed Mac, the release also carries
 `check-managed-mac.command` — download it and double-click it first. It only
@@ -35,15 +33,13 @@ measures whether this Mac will let you run the tool; it changes no setting.
 
 ### 1. Join the split files (only the ones you downloaded)
 
-    cat cynovela-chewie-all-in-one-1.1.1.tar.gz.part00 cynovela-chewie-all-in-one-1.1.1.tar.gz.part01 cynovela-chewie-all-in-one-1.1.1.tar.gz.part02 > cynovela-chewie-all-in-one-1.1.1.tar.gz
-
     cat cynovela-chewie-models-1.1.2.tar.gz.part00 cynovela-chewie-models-1.1.2.tar.gz.part01 cynovela-chewie-models-1.1.2.tar.gz.part02 > cynovela-chewie-models-1.1.2.tar.gz
 
 (`cat ...part* > ...` does the same, because the shell sorts the part names.)
 
 ### 2. Check the result
 
-    shasum -a 256 --ignore-missing -c SHA256SUMS                 # tar.gz editions and the AI models
+    shasum -a 256 --ignore-missing -c SHA256SUMS                 # the package edition and the AI models
 
 Every line it prints should say `OK`. If not, one part did not download completely — download that part again and repeat from step 1. Do not start the tool with a package that failed the check.
 
@@ -51,9 +47,10 @@ Every line it prints should say `OK`. If not, one part did not download complete
 
 Unpack:
 
-    tar -xzf cynovela-chewie-package-1.1.2.tar.gz        # or the form you picked
+    tar -xzf cynovela-chewie-package-1.1.2.tar.gz
 
-If you use the **package edition** or the **model-separate edition**, unpack the models **inside the unpacked `chewie` folder**:
+Unpack the models **inside the unpacked `chewie` folder** (the source edition
+needs this step too):
 
     cd chewie
     tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz      # creates store/models/
@@ -78,9 +75,10 @@ If you have never used Terminal before, open **`docs/getting-started.md`** inste
 # 日本語
 
 **この版（1.1.2）に入っているのは、パッケージ版と AIモデルです。** アプリ版（`.pkg`）は
-**準備中**で、この版には入っていません。ソース版の 2 つはこの版では作り直していません。
-そちらが要る場合は 1.1.1 のリリースから取ってください。下の表は、名前を 1 か所で
-見られるように 4 つとも並べています。
+**準備中**で、この版には入っていません。ソースの書庫はリリースのページに置いて
+いません。ソースはこのリポジトリです。clone するか GitHub の「Download ZIP」で取り、
+`chewie/` の木から `./launch.sh` で始めてください。下の表は、名前を 1 か所で
+見られるように並べています。
 
 **どれか1つ**を選んでください。
 
@@ -88,18 +86,15 @@ If you have never used Terminal before, open **`docs/getting-started.md`** inste
 |---|---|---|
 | **アプリ版**（`.pkg`） | **準備中です。** この版には入っていません | — |
 | **パッケージ版**（M系 Mac・置いた場所でそのまま動くフォルダ。Python も conda も不要） | `cynovela-chewie-package-1.1.2.tar.gz`（1本） | **下の models の片も落とします** |
-| **ソース版・全部入り**（**1.1.1** のリリースに在ります） | `cynovela-chewie-all-in-one-1.1.1.tar.gz.part00`〜`part02`（分割） | 入っています |
-| **ソース版・モデル別取得版**（**1.1.1** のリリースに在ります） | `cynovela-chewie-lightweight-1.1.1.tar.gz`（1本） | **下の models の片も落とします** |
+| **ソース版** | ダウンロードではありません。ソースはこのリポジトリです | **下の models の片も落とします** |
 
 パッケージ版・AIモデルは
 [v1.1.2 の release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.2) に
-あります。ソース版の 2 つは 1.1.2 では作り直していないため、
-[v1.1.1 の release](https://github.com/tohaya-dev/cynovela/releases/tag/v1.1.1) に
 あります。
 
 AIモデル: `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02`（分割。1.0.7 のモデルとバイト同一です）。
 
-突き合わせ用の一覧 `SHA256SUMS`（tar.gz の各版と AIモデルのぶん）も、必ず同じ
+突き合わせ用の一覧 `SHA256SUMS`（パッケージ版と AIモデルのぶん）も、必ず同じ
 フォルダへ落としてください。
 
 会社から渡された Mac で使う場合は、リリースに置いてある
@@ -108,15 +103,13 @@ AIモデル: `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02`（分割。
 
 ### 1. 分割ファイルをつなぐ（落とした形のぶんだけ）
 
-    cat cynovela-chewie-all-in-one-1.1.1.tar.gz.part00 cynovela-chewie-all-in-one-1.1.1.tar.gz.part01 cynovela-chewie-all-in-one-1.1.1.tar.gz.part02 > cynovela-chewie-all-in-one-1.1.1.tar.gz
-
     cat cynovela-chewie-models-1.1.2.tar.gz.part00 cynovela-chewie-models-1.1.2.tar.gz.part01 cynovela-chewie-models-1.1.2.tar.gz.part02 > cynovela-chewie-models-1.1.2.tar.gz
 
 （`cat ...part* > ...` でも同じです。片の名前の順につながります。）
 
 ### 2. つないだ結果を確かめる
 
-    shasum -a 256 --ignore-missing -c SHA256SUMS                 # tar.gz の各版と AIモデル
+    shasum -a 256 --ignore-missing -c SHA256SUMS                 # パッケージ版と AIモデル
 
 出てきた行が全部 `OK` なら成功です。`OK` と出ない場合、どれかの片が最後まで落ちていません。その片を落とし直し、1 からやり直してください。確かめに通らなかったものを使い始めないでください。
 
@@ -124,9 +117,9 @@ AIモデル: `cynovela-chewie-models-1.1.2.tar.gz.part00`〜`part02`（分割。
 
 取り出します。
 
-    tar -xzf cynovela-chewie-package-1.1.2.tar.gz        # 選んだ形のファイルで
+    tar -xzf cynovela-chewie-package-1.1.2.tar.gz
 
-**パッケージ版**と**モデル別取得版**の方は、models を**取り出した `chewie` フォルダの中で**展開します。
+models は**取り出した `chewie` フォルダの中で**展開します（ソース版の方も、この段は同じです）。
 
     cd chewie
     tar -xzf ../cynovela-chewie-models-1.1.2.tar.gz      # store/models/ ができます
