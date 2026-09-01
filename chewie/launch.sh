@@ -679,6 +679,12 @@ while [ "$i" -lt 600 ]; do
         echo "立ち上がりました。"
         echo "  開くところ : http://127.0.0.1:$PORT/"
         echo "  記録       : $LOG"
+        # demo-access-20260901: 本番 (引数に --demo が無い) の起動では、同梱の
+        # サンプル資料で試す入り方を1行案内する (本体側の起動記録にも同じ案内が出るが、
+        # ダブルクリックで開いたターミナルに見えるのはこちらの画面のため)。
+        if ! printf '%s' " ${PASS[*]:-} " | grep -q -- ' --demo '; then
+            echo "同梱のサンプル資料で試すには: ./launch.sh --demo (または Cynovela-demo.command)"
+        fi
         echo "止めるときは、次のように叩いてください。"
         echo "  bash stop.sh"
         echo "  止めるだけです。資料と設定は消えません。"
