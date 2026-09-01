@@ -949,24 +949,32 @@ _bg_logger = logging.LoggerAdapter(logger, {"request_id": "-"})
 def _startup_demo_first_run():
     """--demo の初回起動時に、同梱の dummy-corpus をその場で取り込む (first-run-ingest-20260901)。
 
-    配布物にはデモのデータベース・インデックス・金庫鍵を入れない (作り終えた
-    データベースを配ると金庫鍵も一緒に配ることになり、落とした全員が同じ鍵を
-    持つ)。初回起動時に、この機材で生成された鍵を使い、同じ内容をこの機材の上で作る。
+    demo-3ws-20260901: 同梱デモは3つの作業場所に分かれる。
+      - ws-general (全社) ← dummy-corpus/general … 管理者と閲覧者の両方が所属
+      - ws-sales   (営業) ← dummy-corpus/sales   … 管理者のみ
+      - ws-hr      (人事) ← dummy-corpus/hr      … 管理者のみ
+    閲覧者に見える範囲が違うこと (アクセス権の分離) と、見える資料でも個人情報が
+    伏せられることの両方を、同梱デモで見せるための構成。
 
     - 資料が既に在れば何もしない (2回目以降の起動)。受け取り手が資料を足した後に
       再起動しても消えない。
     - 取り込みに失敗しても、理由を出すだけでサーバの起動は止めない。
-    - 取り込み元 (src-dummy) は db.py の初期化がデモ起動のたびに INSERT OR IGNORE で
-      入れる行をそのまま使う。作業場所とコレクションの id は、以前パッケージングの場で
-      同梱データを作っていた処理と同じ固定文字列にする (同じものが二重にできない)。
+    - id は固定文字列で INSERT OR IGNORE (同じものが二重にできない)。
+    - db.py の初期化がデモ起動のたびに入れる旧来の取り込み元 (src-dummy →
+      ./dummy-corpus) は、資料がサブフォルダへ移って直下に資料が無くなったため、
+      ここで archived_at を立てて一覧から外す (db.py は変更しない。行が残るので
+      db.py の INSERT OR IGNORE は次回以降も何もしない)。
     - 走査は _do_scan、公開は画面の「公開」と同じ _run_publish_background を使う
       (取り込みの処理を新しく書かない)。
     """
-    _SRC_ID = "src-dummy"
-    _WS_ID = "ws-dummy"
-    _WS_NAME = "アオゾラ資料"
-    _COL_ID = "col-dummy"
-    _COL_NAME = "デモ資料一式"
+    _SETS = [
+        ("src-general", "全社の資料 (アオゾラ商事)", "./dummy-corpus/general",
+         "ws-general", "全社", "col-general", "全社の資料一式", ("admin", "viewer")),
+        ("src-sales", "営業の資料 (アオゾラ商事)", "./dummy-corpus/sales",
+         "ws-sales", "営業", "col-sales", "営業の資料一式", ("admin",)),
+        ("src-hr", "人事の資料 (アオゾラ商事)", "./dummy-corpus/hr",
+         "ws-hr", "人事", "col-hr", "人事の資料一式", ("admin",)),
+    ]
     import time as _time
 
     try:
@@ -982,86 +990,105 @@ def _startup_demo_first_run():
         _bg_logger.info("[Cynovela] 初回のデモ取り込み: 同梱の dummy-corpus を取り込みます (資料 0 件の初回起動のときだけ)")
         conn = get_db()
         try:
-            conn.execute("INSERT OR IGNORE INTO workspaces (id, name) VALUES (?, ?)", (_WS_ID, _WS_NAME))
             conn.execute(
-                "INSERT OR IGNORE INTO workspace_sources (workspace_id, source_id) VALUES (?, ?)",
-                (_WS_ID, _SRC_ID),
+                "UPDATE sources SET archived_at = datetime('now') WHERE id = 'src-dummy' AND archived_at IS NULL"
             )
-            for uid in [r["id"] for r in conn.execute("SELECT id FROM users").fetchall()]:
+            users = conn.execute("SELECT id, role FROM users").fetchall()
+            for src_id, src_name, src_path, ws_id, ws_name, _cid, _cname, roles in _SETS:
                 conn.execute(
-                    "INSERT OR IGNORE INTO workspace_users (workspace_id, user_id) VALUES (?, ?)",
-                    (_WS_ID, uid),
+                    "INSERT OR IGNORE INTO sources (id, name, path, status, file_count) VALUES (?, ?, ?, 'idle', 0)",
+                    (src_id, src_name, src_path),
                 )
+                conn.execute("INSERT OR IGNORE INTO workspaces (id, name) VALUES (?, ?)", (ws_id, ws_name))
+                conn.execute(
+                    "INSERT OR IGNORE INTO workspace_sources (workspace_id, source_id) VALUES (?, ?)",
+                    (ws_id, src_id),
+                )
+                for u in users:
+                    if u["role"] in roles:
+                        conn.execute(
+                            "INSERT OR IGNORE INTO workspace_users (workspace_id, user_id) VALUES (?, ?)",
+                            (ws_id, u["id"]),
+                        )
             conn.commit()
         finally:
             conn.close()
-        _do_scan(_SRC_ID)
-        conn = get_db()
-        try:
-            rows = conn.execute(
-                "SELECT id FROM files WHERE source_id = ? ORDER BY name", (_SRC_ID,)
-            ).fetchall()
-            file_ids = [r["id"] for r in rows]
-            if not file_ids:
-                _bg_logger.warning(
-                    "[Cynovela] 初回のデモ取り込み: dummy-corpus から資料を 1 件も読み取れませんでした。"
-                    "サーバはこのまま起動します (画面の「取り込み元」から読み直せます)"
-                )
-                return
-            conn.execute(
-                "INSERT OR IGNORE INTO collections (id, name, workspace_id, access_level, allowed_roles_json) "
-                "VALUES (?, ?, ?, 'public', ?)",
-                (_COL_ID, _COL_NAME, _WS_ID, json.dumps(["admin", "viewer"])),
-            )
-            for fid in file_ids:
-                conn.execute(
-                    "INSERT OR IGNORE INTO collection_files (collection_id, file_id) VALUES (?, ?)",
-                    (_COL_ID, fid),
-                )
-            file_paths = [
-                r["path"]
-                for r in conn.execute(
-                    "SELECT f.path FROM files f JOIN collection_files cf ON f.id = cf.file_id "
-                    "WHERE cf.collection_id = ?",
-                    (_COL_ID,),
+        total_files = 0
+        total_chunks = 0
+        ok_all = True
+        for src_id, _sname, _spath, ws_id, ws_name, col_id, col_name, _roles in _SETS:
+            _do_scan(src_id)
+            conn = get_db()
+            try:
+                rows = conn.execute(
+                    "SELECT id FROM files WHERE source_id = ? ORDER BY name", (src_id,)
                 ).fetchall()
-            ]
-            excluded_paths = compute_exclude_paths_for_collection(conn, _COL_ID)
-            _cs, _co = _resolve_collection_chunking(_COL_ID)
-            job_id = new_id()
-            conn.execute(
-                "INSERT INTO publish_jobs (id, collection_id, status, total, message) "
-                "VALUES (?, ?, 'pending', ?, ?)",
-                (job_id, _COL_ID, len(file_paths), "Queued"),
-            )
-            conn.commit()
-        finally:
-            conn.close()
-        _bg_logger.info(
-            f"[Cynovela] 初回のデモ取り込み: 資料 {len(file_ids)} 件を読み取りました。公開 (インデックス作成) を始めます"
-        )
-        _run_publish_background(job_id, _COL_ID, file_paths, excluded_paths, _cs, _co, "fast")
-        conn = get_db()
-        try:
-            # チャンク数は publish の確定値 (publish_jobs.progress) を使う。chunks 表の
-            # 行数はマスキング前後の二層で 2 倍になり、画面のコレクション一覧の値と
-            # 食い違う (実測: 表 128 行 / 画面 64)。画面と同じ値を出す。
-            row = conn.execute(
-                "SELECT status, error, progress FROM publish_jobs WHERE id = ?", (job_id,)
-            ).fetchone()
-            n_chunks = row["progress"] if row is not None else 0
-        finally:
-            conn.close()
-        elapsed = _time.time() - t0
-        if row is not None and row["status"] == "completed":
+                file_ids = [r["id"] for r in rows]
+                if not file_ids:
+                    _bg_logger.warning(
+                        f"[Cynovela] 初回のデモ取り込み: 「{ws_name}」の資料を 1 件も読み取れませんでした。"
+                        "この作業場所は飛ばして続けます (画面の「取り込み元」から読み直せます)"
+                    )
+                    ok_all = False
+                    continue
+                conn.execute(
+                    "INSERT OR IGNORE INTO collections (id, name, workspace_id, access_level, allowed_roles_json) "
+                    "VALUES (?, ?, ?, 'public', ?)",
+                    (col_id, col_name, ws_id, json.dumps(["admin", "viewer"])),
+                )
+                for fid in file_ids:
+                    conn.execute(
+                        "INSERT OR IGNORE INTO collection_files (collection_id, file_id) VALUES (?, ?)",
+                        (col_id, fid),
+                    )
+                file_paths = [
+                    r["path"]
+                    for r in conn.execute(
+                        "SELECT f.path FROM files f JOIN collection_files cf ON f.id = cf.file_id "
+                        "WHERE cf.collection_id = ?",
+                        (col_id,),
+                    ).fetchall()
+                ]
+                excluded_paths = compute_exclude_paths_for_collection(conn, col_id)
+                _cs, _co = _resolve_collection_chunking(col_id)
+                job_id = new_id()
+                conn.execute(
+                    "INSERT INTO publish_jobs (id, collection_id, status, total, message) "
+                    "VALUES (?, ?, 'pending', ?, ?)",
+                    (job_id, col_id, len(file_paths), "Queued"),
+                )
+                conn.commit()
+            finally:
+                conn.close()
             _bg_logger.info(
-                f"[Cynovela] 初回のデモ取り込み: 完了 (資料 {len(file_ids)} 件・チャンク {n_chunks} 件・{elapsed:.1f} 秒)"
+                f"[Cynovela] 初回のデモ取り込み: 「{ws_name}」の資料 {len(file_ids)} 件を読み取りました。公開 (インデックス作成) を始めます"
+            )
+            _run_publish_background(job_id, col_id, file_paths, excluded_paths, _cs, _co, "fast")
+            conn = get_db()
+            try:
+                row = conn.execute(
+                    "SELECT status, error, progress FROM publish_jobs WHERE id = ?", (job_id,)
+                ).fetchone()
+            finally:
+                conn.close()
+            if row is not None and row["status"] == "completed":
+                total_files += len(file_ids)
+                total_chunks += int(row["progress"] or 0)
+            else:
+                ok_all = False
+                _why = row["error"] if row is not None and row["error"] else (row["status"] if row is not None else "記録なし")
+                _bg_logger.warning(
+                    f"[Cynovela] 初回のデモ取り込み: 「{ws_name}」の公開が完了しませんでした ({_why})。"
+                    "サーバはこのまま起動しています。画面の「コレクション」から公開をやり直せます"
+                )
+        elapsed = _time.time() - t0
+        if ok_all:
+            _bg_logger.info(
+                f"[Cynovela] 初回のデモ取り込み: 完了 (作業場所 {len(_SETS)} つ・資料 {total_files} 件・チャンク {total_chunks} 件・{elapsed:.1f} 秒)"
             )
         else:
-            _why = row["error"] if row is not None and row["error"] else (row["status"] if row is not None else "記録なし")
             _bg_logger.warning(
-                f"[Cynovela] 初回のデモ取り込み: 公開が完了しませんでした ({_why})。"
-                "サーバはこのまま起動しています。画面の「コレクション」から公開をやり直せます"
+                f"[Cynovela] 初回のデモ取り込み: 一部が完了しませんでした (完了分: 資料 {total_files} 件・チャンク {total_chunks} 件・{elapsed:.1f} 秒)"
             )
     except Exception as _e:
         _bg_logger.warning(f"[Cynovela] 初回のデモ取り込みに失敗しました ({_e})。サーバはこのまま起動しています")

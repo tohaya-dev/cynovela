@@ -38,10 +38,12 @@ and builds them on this machine.
    this is your first time, try `--demo` first. The two keep
    their databases and indexes in separate locations, so nothing from the demo
    mixes into production.
-3. **All bundled material is fictional.** The seven files under `dummy-corpus/`
-   describe a fictional organization. Every person, organisation, address, phone
-   number and email address in them is invented and bears no relation to anyone
-   real.
+3. **All bundled material is fictional.** The 21 files under `dummy-corpus/`
+   describe a fictional organization, split into three workspaces (全社 / 営業 /
+   人事; the viewer account belongs to 全社 only, so the demo shows that
+   different accounts see different material). Every person, organisation,
+   address, phone number, email address and number in them is invented and
+   bears no relation to anyone real. See `BUNDLED-DATA.md` for the breakdown.
 4. **The initial passwords are fixed values, written into this package's own
    `cynovela.yaml`** (`auth.admin_initial_password` /
    `auth.viewer_initial_password`, next to `launch.sh`). Nothing is delivered
@@ -91,7 +93,7 @@ and builds them on this machine.
 
 ## 3. 同梱資料はすべて架空のサンプルです
 
-同梱の `dummy-corpus/` にある 7 ファイル（ガイド 1 本+資料 6 本）は、すべて架空の企業**「アオゾラ商事」**を題材にした説明用サンプルです。文中に登場する人物・組織・住所・電話番号・メールアドレスなどの連絡先は**すべて実在しません**。実在の人物・団体とは一切関係ありません。
+同梱の `dummy-corpus/` にある 21 ファイルは、すべて架空の企業**「アオゾラ商事」**を題材にした説明用サンプルです。3つの作業場所（全社／営業／人事）に分かれており、閲覧者アカウントは「全社」にだけ所属します（アカウントによって見える範囲が違うことをデモで見せられます）。文中に登場する人物・組織・住所・電話番号・メールアドレス・番号は**すべて実在しません**。実在の人物・団体とは一切関係ありません。内訳は同梱の `BUNDLED-DATA.md` を見てください。
 
 デモのデータベースとインデックスは配布物に入っていません。**`--demo` の初回起動時に、この配布物の中の `dummy-corpus/` だけから、受け取った機械の上で作られます**。作る側の作業用の資料やインデックスは入っていません。内訳は同梱の `BUNDLED-DATA.md` に書いてあります。
 

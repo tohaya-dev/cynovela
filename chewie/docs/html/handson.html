@@ -217,7 +217,7 @@ a:hover { text-decoration: underline; }
     <p><strong>日本語版はこちら → 日本語</strong></p>
     <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built by an individual to understand the concepts of AI infrastructure tools by actually running them. It is not a commercial offering and not an official implementation. The implementation is entirely original, and consists of an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any organization.</blockquote>
     <p>This document is a set of exercises you run against the sample material that ships inside this package. You ask real questions, look at the answers, and check them against the file the answer actually came from.</p>
-    <p>Every exercise below uses only the seven files under <code>dummy-corpus/</code>. They describe a fictional firm; the people, organizations, addresses, phone numbers, and mail addresses in them do not exist.</p>
+    <p>Every exercise below uses only the seven files under <code>dummy-corpus/general/</code> (the 全社 workspace; the package also bundles sales and HR sample sets, which these exercises do not use). They describe a fictional firm; the people, organizations, addresses, phone numbers, and mail addresses in them do not exist.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -324,7 +324,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(1/4)</span>
 </div>
 <div class="slide-body">
-    <p><code>dummy-corpus/</code> holds seven files. Knowing what is in which file is the whole point of the exercises: you can check every answer against the source yourself.</p>
+    <p><code>dummy-corpus/general/</code> holds seven files. Knowing what is in which file is the whole point of the exercises: you can check every answer against the source yourself.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -528,7 +528,7 @@ a:hover { text-decoration: underline; }
     <ol>
     <li>Ask one of the six questions above in <code>developer</code> mode and read the top score.</li>
     <li>Open the audit log screen as <code>admin</code> and look for the <code>LOW_CONFIDENCE_FALLBACK</code> entry for that question. The detail line carries the score and the threshold.</li>
-    <li>Verify the claim yourself: <code>grep -i 退職 dummy-corpus/*.md</code> and the equivalent for the other five return nothing. The words are genuinely absent from all seven files.</li>
+    <li>Verify the claim yourself: <code>grep -i 退職 dummy-corpus/general/*.md</code> and the equivalent for the other five return nothing. The words are genuinely absent from all seven files of the 全社 set.</li>
     </ol>
     <p>Do not expect this to fire every single time. Whether a given question lands above or below 0.40 depends on the wording, and a question that is <em>near</em> the material (for example asking about parental leave, when the work rules do mention leave for a spouse giving birth) can score high enough to be answered from the closest thing present. The six above were chosen because the subject matter is absent outright.</p>
 </div>
@@ -832,8 +832,8 @@ a:hover { text-decoration: underline; }
     <table>
     <thead><tr><th>Question</th><th>Expected answer</th><th>Why nothing answers it</th></tr></thead>
     <tbody>
-    <tr><td>退職金はいくら支払われますか</td><td>Cannot be answered from the material</td><td><code>02-work-rules.md</code> is an excerpt running from 第1条 to 第18条 plus 附則, and none of them covers 退職金. The word does not appear in any of the seven files</td></tr>
-    <tr><td>名古屋支社の住所を教えてください</td><td>Cannot be answered from the material</td><td>The branch offices are Osaka and Fukuoka only (<code>01-company-overview.md</code> 「3. 拠点」). 名古屋 appears nowhere in the seven files</td></tr>
+    <tr><td>退職金はいくら支払われますか</td><td>Cannot be answered from the material</td><td><code>02-work-rules.md</code> is an excerpt running from 第1条 to 第18条 plus 附則, and none of them covers 退職金. The word does not appear in any of the seven files of the 全社 set</td></tr>
+    <tr><td>名古屋支社の住所を教えてください</td><td>Cannot be answered from the material</td><td>The branch offices are Osaka and Fukuoka only (<code>01-company-overview.md</code> 「3. 拠点」). 名古屋 appears nowhere in the seven files of the 全社 set</td></tr>
     <tr><td>アオゾラ商事の株価はいくらですか</td><td>Cannot be answered from the material</td><td>Nothing about listing or share price exists; <code>01-company-overview.md</code> gives revenue and headcount but no capital-market information</td></tr>
     </tbody>
     </table>
@@ -873,7 +873,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-body">
     <blockquote><strong>この文書について</strong> Cynovela は、AI 基盤ツールの考え方を実際に動かして理解するために個人が作った、完全に非公式の学習用ツールです。商用のものでも公式の実装でもありません。実装はすべて独自で、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカル LLM というOSS のスタックで構成されています。いかなる企業の公式見解も表しません。</blockquote>
     <p>この文書は、この配布物に同梱されているサンプル資料を相手に、実際に手を動かして確かめるための演習集です。実際に質問し、返ってきた答えを見て、その答えがどのファイルから来たのかを自分で突き合わせます。</p>
-    <p>以下の演習は、すべて <code>dummy-corpus/</code> の 7 本のファイルだけを使います。7 本は架空の企業を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスはすべて実在しません。</p>
+    <p>以下の演習は、すべて <code>dummy-corpus/general/</code>（作業場所「全社」）の 7 本のファイルだけを使います。配布物には営業・人事のサンプルも同梱されていますが、この演習では使いません。7 本は架空の企業を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスはすべて実在しません。</p>
     <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
@@ -966,7 +966,7 @@ a:hover { text-decoration: underline; }
 <span class="slide-title">2. サンプル資料には何が入っているか</span>
 </div>
 <div class="slide-body">
-    <p><code>dummy-corpus/</code> には 7 本のファイルが入っています。どのファイルに何が書いてあるかを把握しておくことが演習の要です。そうすれば、返ってきた答えを自分で突き合わせられます。</p>
+    <p><code>dummy-corpus/general/</code> には 7 本のファイルが入っています。どのファイルに何が書いてあるかを把握しておくことが演習の要です。そうすれば、返ってきた答えを自分で突き合わせられます。</p>
     <table>
     <thead><tr><th>ファイル</th><th>内容</th><th>使う演習</th></tr></thead>
     <tbody>
@@ -1113,7 +1113,7 @@ a:hover { text-decoration: underline; }
     <ol>
     <li>上の 6 問のどれかを <code>developer</code> モードで聞き、最上位のスコアを読む。</li>
     <li><code>admin</code> で監査ログの画面を開き、その質問の <code>LOW_CONFIDENCE_FALLBACK</code> の記録を探す。詳細の行にスコアとしきい値が入っています。</li>
-    <li>主張そのものを自分で検証する。<code>grep -i 退職 dummy-corpus/*.md</code> は何も返しません。残る 5 問も同様で、これらの語は 7 本のどこにも本当に存在しません。</li>
+    <li>主張そのものを自分で検証する。<code>grep -i 退職 dummy-corpus/general/*.md</code> は何も返しません。残る 5 問も同様で、これらの語は「全社」の 7 本のどこにも本当に存在しません。</li>
     </ol>
 </div>
 <div class="slide-footer">
@@ -1417,8 +1417,8 @@ a:hover { text-decoration: underline; }
     <table>
     <thead><tr><th>設問</th><th>期待される答え</th><th>なぜどこにも無いのか</th></tr></thead>
     <tbody>
-    <tr><td>退職金はいくら支払われますか</td><td>資料からは答えられない</td><td><code>02-work-rules.md</code> は第1条から第18条と附則までの抜粋で、退職金を扱う条文が無い。この語は 7 本のどこにも現れない</td></tr>
-    <tr><td>名古屋支社の住所を教えてください</td><td>資料からは答えられない</td><td>支社は大阪と福岡の 2 か所だけ（<code>01-company-overview.md</code>「3. 拠点」）。名古屋は 7 本のどこにも現れない</td></tr>
+    <tr><td>退職金はいくら支払われますか</td><td>資料からは答えられない</td><td><code>02-work-rules.md</code> は第1条から第18条と附則までの抜粋で、退職金を扱う条文が無い。この語は「全社」の 7 本のどこにも現れない</td></tr>
+    <tr><td>名古屋支社の住所を教えてください</td><td>資料からは答えられない</td><td>支社は大阪と福岡の 2 か所だけ（<code>01-company-overview.md</code>「3. 拠点」）。名古屋は「全社」の 7 本のどこにも現れない</td></tr>
     <tr><td>アオゾラ商事の株価はいくらですか</td><td>資料からは答えられない</td><td>上場や株価に関する記述が無い。<code>01-company-overview.md</code> に年商と従業員数はあるが資本市場の情報は無い</td></tr>
     <tr><td>2026年8月の月次業務改善会議の決定事項を教えてください</td><td>資料からは答えられない</td><td><code>05-meeting-notes.md</code> に入っている議事録は 2026 年 5 月・6 月・7 月のちょうど 3 本。8 月の記録は無い</td></tr>
     </tbody>

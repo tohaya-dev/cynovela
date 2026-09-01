@@ -16,7 +16,7 @@ This document is a set of exercises you run against the sample material that shi
 inside this package. You ask real questions, look at the answers, and check them
 against the file the answer actually came from.
 
-Every exercise below uses only the seven files under `dummy-corpus/`. They describe a
+Every exercise below uses only the seven files under `dummy-corpus/general/` (the 全社 workspace; the package also bundles sales and HR sample sets, which these exercises do not use). They describe a
 fictional firm; the people, organizations, addresses, phone numbers, and mail
 addresses in them do not exist.
 
@@ -75,7 +75,7 @@ For the search itself (hybrid of vector and BM25, RRF, MMR, and the rest), see
 
 ## 2. What is inside the sample material
 
-`dummy-corpus/` holds seven files. Knowing what is in which file is the whole point
+`dummy-corpus/general/` holds seven files. Knowing what is in which file is the whole point
 of the exercises: you can check every answer against the source yourself.
 
 | File | What it is | Used in |
@@ -186,8 +186,8 @@ So the reply you get is not the LLM guessing. It is the pipeline declining to gu
 1. Ask one of the six questions above in `developer` mode and read the top score.
 2. Open the audit log screen as `admin` and look for the `LOW_CONFIDENCE_FALLBACK`
    entry for that question. The detail line carries the score and the threshold.
-3. Verify the claim yourself: `grep -i 退職 dummy-corpus/*.md` and the equivalent for
-   the other five return nothing. The words are genuinely absent from all seven files.
+3. Verify the claim yourself: `grep -i 退職 dummy-corpus/general/*.md` and the equivalent for
+   the other five return nothing. The words are genuinely absent from all seven files of the 全社 set.
 
 Do not expect this to fire every single time. Whether a given question lands above or
 below 0.40 depends on the wording, and a question that is *near* the material (for
@@ -318,8 +318,8 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 
 | Question | Expected answer | Why nothing answers it |
 |---|---|---|
-| 退職金はいくら支払われますか | Cannot be answered from the material | `02-work-rules.md` is an excerpt running from 第1条 to 第18条 plus 附則, and none of them covers 退職金. The word does not appear in any of the seven files |
-| 名古屋支社の住所を教えてください | Cannot be answered from the material | The branch offices are Osaka and Fukuoka only (`01-company-overview.md` 「3. 拠点」). 名古屋 appears nowhere in the seven files |
+| 退職金はいくら支払われますか | Cannot be answered from the material | `02-work-rules.md` is an excerpt running from 第1条 to 第18条 plus 附則, and none of them covers 退職金. The word does not appear in any of the seven files of the 全社 set |
+| 名古屋支社の住所を教えてください | Cannot be answered from the material | The branch offices are Osaka and Fukuoka only (`01-company-overview.md` 「3. 拠点」). 名古屋 appears nowhere in the seven files of the 全社 set |
 | アオゾラ商事の株価はいくらですか | Cannot be answered from the material | Nothing about listing or share price exists; `01-company-overview.md` gives revenue and headcount but no capital-market information |
 | 2026年8月の月次業務改善会議の決定事項を教えてください | Cannot be answered from the material | `05-meeting-notes.md` holds exactly three sets of minutes — May, June, and July 2026. There is no August record |
 | What is the retail price of the cooling goods? | Cannot be answered from the material | Cooling goods appear in `01-company-overview.md`, `06-company-overview-en.md`, and `05-meeting-notes.md`, but no price is given anywhere |
@@ -341,7 +341,7 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 確かめるための演習集です。実際に質問し、返ってきた答えを見て、その答えがどのファイル
 から来たのかを自分で突き合わせます。
 
-以下の演習は、すべて `dummy-corpus/` の 7 本のファイルだけを使います。7 本は架空の
+以下の演習は、すべて `dummy-corpus/general/`（作業場所「全社」）の 7 本のファイルだけを使います。配布物には営業・人事のサンプルも同梱されていますが、この演習では使いません。7 本は架空の
 企業を題材にしたもので、登場する人物・組織・住所・電話番号・メールアドレスは
 すべて実在しません。
 
@@ -398,7 +398,7 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 
 ## 2. サンプル資料には何が入っているか
 
-`dummy-corpus/` には 7 本のファイルが入っています。どのファイルに何が書いてあるかを
+`dummy-corpus/general/` には 7 本のファイルが入っています。どのファイルに何が書いてあるかを
 把握しておくことが演習の要です。そうすれば、返ってきた答えを自分で突き合わせられます。
 
 | ファイル | 内容 | 使う演習 |
@@ -507,8 +507,8 @@ chunk の見出しから作った言い換えの候補がいくつか示され�
 1. 上の 6 問のどれかを `developer` モードで聞き、最上位のスコアを読む。
 2. `admin` で監査ログの画面を開き、その質問の `LOW_CONFIDENCE_FALLBACK` の記録を
    探す。詳細の行にスコアとしきい値が入っています。
-3. 主張そのものを自分で検証する。`grep -i 退職 dummy-corpus/*.md` は何も返しません。
-   残る 5 問も同様で、これらの語は 7 本のどこにも本当に存在しません。
+3. 主張そのものを自分で検証する。`grep -i 退職 dummy-corpus/general/*.md` は何も返しません。
+   残る 5 問も同様で、これらの語は「全社」の 7 本のどこにも本当に存在しません。
 
 毎回必ずこうなると考えないでください。ある質問が 0.40 の上に出るか下に出るかは
 言い回しに左右されますし、資料の*近く*にある質問（たとえば育児休業について聞くと、
@@ -634,8 +634,8 @@ LLM は呼ばれず、答えるのではなく低信頼の返しが返ること�
 
 | 設問 | 期待される答え | なぜどこにも無いのか |
 |---|---|---|
-| 退職金はいくら支払われますか | 資料からは答えられない | `02-work-rules.md` は第1条から第18条と附則までの抜粋で、退職金を扱う条文が無い。この語は 7 本のどこにも現れない |
-| 名古屋支社の住所を教えてください | 資料からは答えられない | 支社は大阪と福岡の 2 か所だけ（`01-company-overview.md`「3. 拠点」）。名古屋は 7 本のどこにも現れない |
+| 退職金はいくら支払われますか | 資料からは答えられない | `02-work-rules.md` は第1条から第18条と附則までの抜粋で、退職金を扱う条文が無い。この語は「全社」の 7 本のどこにも現れない |
+| 名古屋支社の住所を教えてください | 資料からは答えられない | 支社は大阪と福岡の 2 か所だけ（`01-company-overview.md`「3. 拠点」）。名古屋は「全社」の 7 本のどこにも現れない |
 | アオゾラ商事の株価はいくらですか | 資料からは答えられない | 上場や株価に関する記述が無い。`01-company-overview.md` に年商と従業員数はあるが資本市場の情報は無い |
 | 2026年8月の月次業務改善会議の決定事項を教えてください | 資料からは答えられない | `05-meeting-notes.md` に入っている議事録は 2026 年 5 月・6 月・7 月のちょうど 3 本。8 月の記録は無い |
 | What is the retail price of the cooling goods? | 資料からは答えられない | 冷感グッズは `01-company-overview.md`・`06-company-overview-en.md`・`05-meeting-notes.md` に出てくるが、価格はどこにも書かれていない |
