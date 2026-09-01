@@ -17,7 +17,7 @@ of what it can do are in [getting-started.md](getting-started.md) and
 [concept.md](concept.md). Only the things that will disappoint you if you expect them are
 written here.
 
-The version is `1.1.3` (`APP_VERSION` in `core/version.py` is the only source, and
+The version is `1.2.0` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -308,7 +308,7 @@ Detailed steps are in [operations.md](operations.md). Only the key points are wr
 
 - **The embedding model must match down to the version (snapshot).**
   The snapshot version of `BAAI/bge-m3` must be aligned.
-  **If the version differs the vector values change, they mix with the bundled index, and the
+  **If the version differs the vector values change, they mix with the index built on this machine, and the
   search ranking breaks.**
   If the version differs, a warning appears at startup and at publish time. When a warning
   appears, either align the version or rebuild the whole index.
@@ -693,7 +693,7 @@ They are written here as the state of the current build, not as a schedule.
 できることの説明は [getting-started.md](getting-started.md) と
 [concept.md](concept.md) にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.1.3` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `1.2.0` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
@@ -852,7 +852,7 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
    `routers/chat.py` の `_effective_send_tier` は、送り先が自マシン内・
    コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらずマスキング済みへ
    落とします。宛先を判定できないときもマスキング済みに倒します。
-2. **金庫（暗号化された保管）の暗号鍵（`store/secret.key`）が合わないとき。**
+2. **暗号化された保管の暗号鍵（`store/secret.key`）が合わないとき。**
    原文は暗号化して保管してあり、`rag.py` の `_vault_substitute_raw` が復号します。
    復号できない行はマスキング済みの本文をそのまま使います
    （画面に暗号文を出さないため、あえてそうしてあります）。
@@ -969,7 +969,7 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
 
 - **埋め込みモデルは、版（snapshot）まで一致していなければなりません。**
   `BAAI/bge-m3` の snapshot 版まで揃える必要があります。
-  **版が違うとベクトルの数値が変わり、同梱済みのインデックスと混ざって検索順位が壊れます。**
+  **版が違うとベクトルの数値が変わり、この機材で作られたインデックスと混ざって検索順位が壊れます。**
   版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるか
   インデックスを全部作り直してください。
 - **パッケージ版もソース版も、AIモデルを同梱していません。** モデルを置かないまま起動用スクリプトを

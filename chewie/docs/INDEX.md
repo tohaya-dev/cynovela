@@ -35,7 +35,7 @@ For the person who asks it questions.
 | Document | What is in it |
 |---|---|
 | [getting-started.md](getting-started.md) | From the downloaded file to your first answer. The route that needs nothing but the screen is written first; the terminal route is collected after it. Also covers signing in, changing the first password, adding an ingest root, and everyday start and stop. |
-| [handson.md](handson.md) | Exercises run against the seven sample files in `dummy-corpus/`: questions one file answers, questions that span several files, questions the material cannot answer, and how the same material looks to an admin and to a viewer. |
+| [handson.md](handson.md) | Exercises run against the seven sample files in `dummy-corpus/general/` (the 全社 workspace): questions one file answers, questions that span several files, questions the material cannot answer, and how the same material looks to an admin and to a viewer. |
 | [concept.md](concept.md) | What Cynovela is for, the problems it was built around, what "local first" means here, and how it differs from the AI infrastructure tools it refers to. |
 | [readme.md](readme.md) | A one-page summary of the main features and of the OSS stack they are built from. |
 | [faq.md](faq.md) | Short answers to the questions asked most often: which file types can be read, how much machine you need, what happens to documents that contain personal information, and which features do not work. |
@@ -99,7 +99,7 @@ For the person who needs an exact name, argument or return value.
 | 文書 | 何が書いてあるか |
 |---|---|
 | [getting-started.md](getting-started.md) | 落としたファイルから最初の答えまで。画面だけで済む道を先に、ターミナルを使う道をその後ろにまとめてあります。ログイン・最初の合言葉の変更・ingest root の追加・毎日の起動と停止も含みます。 |
-| [handson.md](handson.md) | `dummy-corpus/` の 7 本の資料を相手にする演習。1 本で答えられる問い・複数の資料をまたぐ問い・答えが無い問い、そして同じ資料が管理者と閲覧者にどう違って見えるか。 |
+| [handson.md](handson.md) | `dummy-corpus/general/`（全社）の 7 本の資料を相手にする演習。1 本で答えられる問い・複数の資料をまたぐ問い・答えが無い問い、そして同じ資料が管理者と閲覧者にどう違って見えるか。 |
 | [concept.md](concept.md) | Cynovela が何のためのものか、どんな問題を前提に作られたか、ここでいうローカルファーストとは何か、参照元の AI 基盤ツールと何が違うか。 |
 | [readme.md](readme.md) | 主な機能と、それを組んでいる OSS スタックの 1 枚まとめ。 |
 | [faq.md](faq.md) | よく聞かれることへの短い答え。読める形式・必要なマシンの大きさ・個人情報を含む資料の扱い・動かない機能。 |

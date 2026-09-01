@@ -20,6 +20,6 @@
   このモジュールは何も import しないので、どこから読んでも循環しない。
 """
 
-APP_VERSION = "1.1.3"
+APP_VERSION = "1.2.0"
 
 __all__ = ["APP_VERSION"]

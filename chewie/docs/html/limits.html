@@ -217,7 +217,7 @@ a:hover { text-decoration: underline; }
     <p><strong>日本語版はこちら → 日本語</strong></p>
     <blockquote><strong>About this document</strong> Cynovela is a completely unofficial learning tool, built so that one individual could understand the concepts behind AI infrastructure tools by working through them by hand. It is not a commercial product and not an official implementation. The implementation is entirely original, built on an OSS stack of FastAPI / SQLite / ChromaDB / BGE-M3 / a local LLM. It does not represent the official position of any organization or product.</blockquote>
     <p>This document describes what Cynovela <strong>cannot</strong> do, and what to watch out for. Explanations of what it can do are in <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> and <a href="concept.html" target="_blank" rel="noopener">concept.md</a>. Only the things that will disappoint you if you expect them are written here.</p>
-    <p>The version is <code>1.1.3</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
+    <p>The version is <code>1.2.0</code> (<code>APP_VERSION</code> in <code>core/version.py</code> is the only source, and <code>GET /api/health</code> and <code>/docs</code> read it from there).</p>
     <p><strong>Contents</strong></p>
 </div>
 <div class="slide-footer">
@@ -716,7 +716,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <ul>
-    <li><strong>The embedding model must match down to the version (snapshot).</strong> The snapshot version of <code>BAAI/bge-m3</code> must be aligned. <strong>If the version differs the vector values change, they mix with the bundled index, and the search ranking breaks.</strong> If the version differs, a warning appears at startup and at publish time. When a warning appears, either align the version or rebuild the whole index.</li>
+    <li><strong>The embedding model must match down to the version (snapshot).</strong> The snapshot version of <code>BAAI/bge-m3</code> must be aligned. <strong>If the version differs the vector values change, they mix with the index built on this machine, and the search ranking breaks.</strong> If the version differs, a warning appears at startup and at publish time. When a warning appears, either align the version or rebuild the whole index.</li>
     <li><strong>Neither the package edition nor the source edition bundles the AI models.</strong> If you run the startup script without placing the models, the first startup asks whether to fetch them from the internet. If you decline, <strong>it stops before starting</strong>.</li>
     <li><strong><code>host.containers.internal</code> cannot be resolved outside a container.</strong> If you start directly on the host, rewrite it to <code>127.0.0.1</code> (the container package rewrites this one word automatically. If you write a different host name or IP it is not rewritten and is used exactly as written).</li>
     <li><strong>The image endpoint of the external accelerator is unimplemented.</strong> Calling it returns 501.</li>
@@ -1220,7 +1220,7 @@ cd ../..
 <div class="slide-body">
     <blockquote><strong>このドキュメントについて</strong> Cynovelaは、AI基盤ツールのコンセプトを個人が手を動かして理解するために作った完全非公式の学習ツールです。商用製品・公式実装ではありません。実装はすべてオリジナルで、FastAPI / SQLite / ChromaDB / BGE-M3 / ローカルLLMという OSS スタックで構成されています。企業・製品の公式見解を一切代表しません。</blockquote>
     <p>この文書は、Cynovela に <strong>できないこと</strong>、および気をつけることを書いたものです。できることの説明は <a href="getting-started.html" target="_blank" rel="noopener">getting-started.md</a> と<a href="concept.html" target="_blank" rel="noopener">concept.md</a> にあります。ここには、期待すると外れることだけを書きます。</p>
-    <p>版は <code>1.1.3</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
+    <p>版は <code>1.2.0</code> です（<code>core/version.py</code> の <code>APP_VERSION</code> が唯一の入手元で、<code>GET /api/health</code> と <code>/docs</code> はここを読みます）。</p>
     <p><strong>目次</strong></p>
 </div>
 <div class="slide-footer">
@@ -1496,7 +1496,7 @@ cd ../..
     <p>役割が <code>admin</code> のときは、マスキング前の原文を見られる設計です（<code>rag.py</code> の <code>tier_for_role</code>）。ただし、次の 3 つの場合は管理者でもマスキング済みのものしか出ません。</p>
     <ol>
     <li><strong>回答用 LLM の宛先が外部を向いているとき。</strong> <code>routers/chat.py</code> の <code>_effective_send_tier</code> は、送り先が自マシン内・コンテナのホスト側・私設アドレス帯のいずれでもない場合、役割によらずマスキング済みへ落とします。宛先を判定できないときもマスキング済みに倒します。</li>
-    <li><strong>金庫（暗号化された保管）の暗号鍵（<code>store/secret.key</code>）が合わないとき。</strong>原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行はマスキング済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで暗号鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
+    <li><strong>暗号化された保管の暗号鍵（<code>store/secret.key</code>）が合わないとき。</strong>原文は暗号化して保管してあり、<code>rag.py</code> の <code>_vault_substitute_raw</code> が復号します。復号できない行はマスキング済みの本文をそのまま使います（画面に暗号文を出さないため、あえてそうしてあります）。配布物を受け取ったあとで暗号鍵を入れ替えると、それ以前に取り込んだ資料は管理者でも原文を読めなくなります。</li>
     <li><strong>質問文そのもの。</strong>質問文へのマスキングは役割で分けていません。管理者が質問文に IP アドレスを書いても、その IP はマスキングされてから検索と LLM へ渡ります。</li>
     </ol>
 </div>
@@ -1680,7 +1680,7 @@ cd ../..
 </div>
 <div class="slide-body">
     <ul>
-    <li><strong>埋め込みモデルは、版（snapshot）まで一致していなければなりません。</strong> <code>BAAI/bge-m3</code> の snapshot 版まで揃える必要があります。<strong>版が違うとベクトルの数値が変わり、同梱済みのインデックスと混ざって検索順位が壊れます。</strong>版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるかインデックスを全部作り直してください。</li>
+    <li><strong>埋め込みモデルは、版（snapshot）まで一致していなければなりません。</strong> <code>BAAI/bge-m3</code> の snapshot 版まで揃える必要があります。<strong>版が違うとベクトルの数値が変わり、この機材で作られたインデックスと混ざって検索順位が壊れます。</strong>版が違う場合は起動時と公開時に警告が出ます。警告が出たら、版を揃えるかインデックスを全部作り直してください。</li>
     <li><strong>パッケージ版もソース版も、AIモデルを同梱していません。</strong> モデルを置かないまま起動用スクリプトを実行すると、初回の起動でインターネットから取得するかどうかの確認が出ます。取得しない場合は、<strong>起動する前に止まります</strong>。</li>
     <li><strong><code>host.containers.internal</code> はコンテナの外では名前解決できません。</strong>ホスト側で直接起動する場合は <code>127.0.0.1</code> に書き換えてください（コンテナ版の配布物は、この 1 語だけは自動で読み替えます。別のホスト名や IP を書いた場合は読み替えず、書いたとおりに使います）。</li>
     <li><strong>外部アクセラレータの画像の受け口は未実装です。</strong> 呼ぶと 501 を返します。</li>

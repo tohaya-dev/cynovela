@@ -21,7 +21,7 @@ constellation of the Sail).
 
 | Directory | What it is | Distribution package |
 |---|---|---|
-| `chewie` | Runs directly on macOS. | Published on GitHub Releases (v1.1.3). |
+| `chewie` | Runs directly on macOS. | Published on GitHub Releases (v1.2.0). |
 | `falcon` | Runs inside a container (Podman). | Built from the source in this repository. No distribution package is provided. |
 | `falcon-docker-beta` | Runs inside a container (Docker; in-development beta, no bundled models). | Built from the source in this repository. No distribution package is provided. |
 
@@ -48,7 +48,7 @@ You only need one of them. They are three ways of running the same thing.
 
 ## Downloads
 
-Everything is on GitHub Releases (v1.1.3):
+Everything is on GitHub Releases (v1.2.0):
 https://github.com/tohaya-dev/cynovela/releases
 
 The one-page answer to "which of these do I take" is in
@@ -57,9 +57,9 @@ The one-page answer to "which of these do I take" is in
 | Edition | Runs as | Models bundled | Download shape | What it needs |
 |---|---|---|---|---|
 | **App edition** (`.pkg`) | — | — | **In preparation.** Not part of this release | — |
-| **Package edition** `cynovela-chewie-package-1.1.3.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
+| **Package edition** `cynovela-chewie-package-1.2.0.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
 | **Source edition** | a folder you run in place | no — take the AI models as well | not a download — the source is this repository (clone it, or use GitHub's "Download ZIP") | Python 3.12 or later, or conda |
-| **AI models** `cynovela-chewie-models-1.1.3.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
+| **AI models** `cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
 
 The **App edition** (`.pkg`) is **in preparation** and is not part of this
 release.
@@ -119,9 +119,9 @@ separately, and no password is written in any of these documents.
 - **Package edition and source editions:** `cynovela.yaml` is in the folder you
   unpacked, next to `launch.sh`.
 
-The start-up screen also prints it once on the ordinary `./launch.sh` start, but
-**not** on the demo start (`./launch.sh --demo`) — the sample database ships
-inside the package, so that route is treated as "not the first start". Whichever
+The start-up screen also prints it once, at the first start. Neither database
+ships inside the package, so both routes — the demo start (`./launch.sh --demo`)
+and the ordinary start — count as a first start. Whichever
 form you pick, the administrator account is asked to change its password on
 first sign-in.
 

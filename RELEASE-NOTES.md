@@ -2,6 +2,29 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
+## 1.2.0 (2026-09-01)
+
+The package no longer ships an encryption key, and the bundled demo is built
+on your machine at the first startup.
+
+- Earlier packages contained `store/secret.key`, so every download held the
+  same encryption key. Both key files (`store/secret.key` for encryption,
+  `store/db/jwt/secret.key` for token signing) are now generated on your
+  machine at the first startup; no two installations share a key.
+- The demo database and search index are no longer packaged. The first
+  `--demo` startup ingests the bundled sample material on the spot (measured:
+  21 files, about 120 chunks, about 39 seconds); later startups do not
+  re-ingest, and material you add is kept.
+- The bundled demo now has three workspaces (全社 / 営業 / 人事; 21 synthetic
+  sample files in total). The viewer account belongs to 全社 only, so the demo
+  shows that different accounts see different material.
+- `Cynovela-demo.command` starts the demo on a double-click. Starting with no
+  arguments (or `Cynovela-start.command`) is production mode — an empty
+  database for your own material — and its startup message points at the demo
+  entry.
+- An installation that used an earlier package keeps working; the keys and
+  demo content it already created on your machine are left as they are.
+
 ## 1.1.3 (2026-08-31)
 
 A cleanup release. Nothing changes in your ingested material, your settings or
@@ -333,6 +356,27 @@ from the old folder into the new one before starting.
 ---
 
 # 日本語
+
+## 1.2.0 (2026-09-01)
+
+配布物に暗号化用の鍵ファイルを同梱しなくなり、同梱デモは初回起動時にその機材の
+上で作られるようになった版です。
+
+- 以前の配布物には `store/secret.key` が入っており、ダウンロードした全員が同じ
+  暗号化用の鍵を持っていました。鍵ファイル2つ（暗号化用の `store/secret.key`・
+  トークン署名用の `store/db/jwt/secret.key`）は初回起動時にその機材で生成され、
+  別々のインストールが同じ鍵を持つことはありません。
+- デモのデータベースと検索用インデックスも同梱されません。`--demo` の初回起動時に
+  同梱のサンプル資料をその場で取り込みます（実測: 資料21件・チャンク約120・
+  約39秒）。2回目以降は取り込み直さず、自分で足した資料も消えません。
+- 同梱デモは3つの作業場所（全社／営業／人事・合成の架空データ21ファイル）に
+  なりました。閲覧者アカウントは「全社」にだけ所属するため、アカウントによって
+  見える範囲が違うことをデモで確かめられます。
+- `Cynovela-demo.command` のダブルクリックでデモを起動できます。引数なしの起動
+  （`Cynovela-start.command` も同じ）は本番＝空のデータベースで、その起動画面に
+  デモへの入り方が1行出ます。
+- 以前の配布物から使っている場合もそのまま動きます。その機材で作られた鍵と
+  デモの中身はそのまま残ります。
 
 ## 1.1.3 (2026-08-31)
 

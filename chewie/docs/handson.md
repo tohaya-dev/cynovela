@@ -44,10 +44,11 @@ The exercises assume Cynovela is already running with the bundled demo data.
 - Start with the demo data, open `http://127.0.0.1:8765` in a browser, and log in.
   The user names and passwords are the ones described in
   [getting-started.md](getting-started.md).
-- On a demo start, one workspace holding the bundled sample material is present, and
-  one source named `src-dummy` pointing at the ingest root `./dummy-corpus` is already
-  registered. The collection under it is already published, so you can ask questions
-  right away.
+- On a demo start, three workspaces holding the bundled sample material (全社 / 営業 /
+  人事) are present, with one source each (`src-general` / `src-sales` / `src-hr`)
+  under the ingest root `./dummy-corpus`. The material is ingested and published
+  automatically at the first start, so once that finishes you can ask questions
+  right away. These exercises use the 全社 workspace.
 
 Two things are worth turning on before you begin.
 
@@ -368,9 +369,10 @@ answer, because the highest vector score falls below the `confidence_threshold` 
 - 起動のしかたは [getting-started.md](getting-started.md) を見てください。
 - デモデータで起動し、ブラウザで `http://127.0.0.1:8765` を開いてログインします。
   ユーザー名とパスワードは [getting-started.md](getting-started.md) に書いてあるものです。
-- デモ起動では、同梱のサンプル資料が入った workspace が 1 件入っており、ingest root
-  `./dummy-corpus` を指す source が `src-dummy` という名前で最初から登録されています。
-  その下の collection は publish 済みなので、そのまま質問を試せます。
+- デモ起動では、同梱のサンプル資料が入った workspace が 3 件（全社・営業・人事）あり、
+  ingest root `./dummy-corpus` の下の source が `src-general`・`src-sales`・`src-hr` の
+  名前で登録されています。資料は初回起動時に自動で取り込まれ publish されるので、
+  終わるとそのまま質問を試せます。この演習で使うのは「全社」です。
 
 始める前に、2 つだけ入れておくとよいものがあります。
 

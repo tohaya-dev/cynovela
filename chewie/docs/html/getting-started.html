@@ -390,7 +390,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(2/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>Package edition</strong> <code>cynovela-chewie-package-1.1.3.tar.gz</code> (1 file, about 800 MB)</td><td>Apple silicon Macs. <strong>No Python and no conda are needed. Nothing is installed on this Mac.</strong></td><td>Extract it, add the AI models (last row), then run <code>./launch.sh</code>. To remove it, delete the folder.</td></tr><tr><td><strong>Source edition</strong> (not a download — the source is this repository)</td><td>Those who want to build the environment themselves</td><td>Clone the repository or use GitHub's "Download ZIP", take the <code>chewie/</code> tree, add the AI models (last row), then follow section 7 below.</td></tr></tbody></table>
+<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>Package edition</strong> <code>cynovela-chewie-package-1.2.0.tar.gz</code> (1 file, about 800 MB)</td><td>Apple silicon Macs. <strong>No Python and no conda are needed. Nothing is installed on this Mac.</strong></td><td>Extract it, add the AI models (last row), then run <code>./launch.sh</code>. To remove it, delete the folder.</td></tr><tr><td><strong>Source edition</strong> (not a download — the source is this repository)</td><td>Those who want to build the environment themselves</td><td>Clone the repository or use GitHub's "Download ZIP", take the <code>chewie/</code> tree, add the AI models (last row), then follow section 7 below.</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -404,7 +404,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(3/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>AI models</strong> <code>cynovela-chewie-models-1.1.3.tar.gz.part00</code>–<code>part02</code> (3 split files)</td><td>Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages.</td><td>Join the parts into one file, then run <code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code> <strong>inside the extracted chewie folder</strong> — <code>store/models/</code> is created.</td></tr></tbody></table>
+<table><thead><tr><th>Package</th><th>Who it is for</th><th>What to do</th></tr></thead><tbody><tr><td><strong>AI models</strong> <code>cynovela-chewie-models-1.2.0.tar.gz.part00</code>–<code>part02</code> (3 split files)</td><td>Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages.</td><td>Join the parts into one file, then run <code>tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz</code> <strong>inside the extracted chewie folder</strong> — <code>store/models/</code> is created.</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -468,14 +468,14 @@ a:hover { text-decoration: underline; }
 <span class="continued">(1/10)</span>
 </div>
 <div class="slide-body">
-<p>This section is for the <strong>package edition</strong> (<code>cynovela-chewie-package-1.1.3.tar.gz</code>). It assumes you have never opened Terminal. Nothing is skipped.</p>
+<p>This section is for the <strong>package edition</strong> (<code>cynovela-chewie-package-1.2.0.tar.gz</code>). It assumes you have never opened Terminal. Nothing is skipped.</p>
 <p>Do these in order. Do not read ahead for reasons; the reasons are in section 3.</p>
 <h4>Step 1. Download five files</h4>
 <p>On the releases page, download these into your <strong>Downloads</strong> folder:</p>
-<pre><code>cynovela-chewie-package-1.1.3.tar.gz
-cynovela-chewie-models-1.1.3.tar.gz.part00
-cynovela-chewie-models-1.1.3.tar.gz.part01
-cynovela-chewie-models-1.1.3.tar.gz.part02
+<pre><code>cynovela-chewie-package-1.2.0.tar.gz
+cynovela-chewie-models-1.2.0.tar.gz.part00
+cynovela-chewie-models-1.2.0.tar.gz.part01
+cynovela-chewie-models-1.2.0.tar.gz.part02
 SHA256SUMS</code></pre>
 </div>
 <div class="slide-footer">
@@ -513,7 +513,7 @@ SHA256SUMS</code></pre>
 <div class="slide-body">
 <h4>Step 4. Join the three model parts into one file</h4>
 <p>Type this as <strong>one line</strong> and press return:</p>
-<pre><code>cat cynovela-chewie-models-1.1.3.tar.gz.part* &gt; cynovela-chewie-models-1.1.3.tar.gz</code></pre>
+<pre><code>cat cynovela-chewie-models-1.2.0.tar.gz.part* &gt; cynovela-chewie-models-1.2.0.tar.gz</code></pre>
 <p>This takes <strong>one to three minutes</strong> and prints nothing while it works. When the cursor comes back, it is done.</p>
 <h4>Step 5. Check that the files arrived intact</h4>
 <pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS</code></pre>
@@ -531,11 +531,11 @@ SHA256SUMS</code></pre>
 <span class="continued">(4/10)</span>
 </div>
 <div class="slide-body">
-<pre><code>cynovela-chewie-models-1.1.3.tar.gz: OK
-cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
+<pre><code>cynovela-chewie-models-1.2.0.tar.gz: OK
+cynovela-chewie-package-1.2.0.tar.gz: OK</code></pre>
 <p>If any line shows <code>FAILED</code>, download that file again and repeat from step 4. Do not go on.</p>
 <h4>Step 6. Unpack the program</h4>
-<pre><code>tar -xzf cynovela-chewie-package-1.1.3.tar.gz</code></pre>
+<pre><code>tar -xzf cynovela-chewie-package-1.2.0.tar.gz</code></pre>
 <p>This takes <strong>three to ten minutes</strong> and prints nothing. A folder named <code>chewie</code> appears in Downloads.</p>
 <h4>Step 7. Go into that folder</h4>
 <pre><code>cd chewie</code></pre>
@@ -554,7 +554,7 @@ cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 <div class="slide-body">
 <p>Nothing is printed.</p>
 <h4>Step 8. Unpack the AI models inside it</h4>
-<pre><code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code></pre>
+<pre><code>tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz</code></pre>
 <p>This takes <strong>two to five minutes</strong> and prints nothing.</p>
 <h4>Step 9. Start it</h4>
 <pre><code>./launch.sh --demo</code></pre>
@@ -767,7 +767,7 @@ cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 <span class="continued">(1/7)</span>
 </div>
 <div class="slide-body">
-<p>These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version <code>1.1.3</code> (working directory <code>&lt;the folder where you extracted the package&gt;</code>).</p>
+<p>These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version <code>1.2.0</code> (working directory <code>&lt;the folder where you extracted the package&gt;</code>).</p>
 <h3>4-1. Setting up the environment (source edition only)</h3>
 <p><strong>The recommended way is to let <code>./launch.sh</code> do it.</strong> On the first run it offers the 2 choices below, and either way <strong>the shared conda environment is never created and never modified</strong> (everything goes into a dedicated place):</p>
 </div>
@@ -1408,7 +1408,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(3/5)</span>
 </div>
 <div class="slide-body">
-<p>On a <code>--demo</code> start, <strong>only 1 workspace containing the bundled dummy material</strong> is included (the 3 empty seed workspaces were removed on 2026-07-30 and are taken out at startup; measured 2026-08-02: right after a <code>--demo</code> start, <code>/api/workspaces</code> has only "デモワークスペース"). Create your own workspace from "新しいワークスペースを作成".</p>
+<p>On a <code>--demo</code> start, <strong>3 workspaces containing the bundled dummy material</strong> (全社 / 営業 / 人事) are included; the viewer account belongs to 全社 only. Create your own workspace from "新しいワークスペースを作成".</p>
 <p>In Publish, text extraction -&gt; chunk splitting -&gt; PII detection/masking -&gt; embedding generation (saved to ChromaDB) -&gt; BM25 index construction are performed. The progress is returned by SSE, and on completion the counts and elapsed time are recorded in <code>publish_history</code>, and the collection reaches the <code>ready</code> state.</p>
 <p>While ingest is running, the progress is shown on the screen. The stages advance in this order.</p>
 </div>
@@ -1520,7 +1520,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(3/10)</span>
 </div>
 <div class="slide-body">
-<p><strong>This procedure starts up with an empty database (production).</strong> To try it with the bundled dummy documents, run <code>./launch.sh --demo</code> from the terminal. Right after it opens, you can ask questions about the bundled documents. Both the administrator and the viewer can sign in with the passwords described in section 10.</p>
+<p><strong>This procedure starts up with an empty database (production).</strong> To try it with the bundled dummy documents, double-click <strong><code>Cynovela-demo.command</code></strong> (or run <code>./launch.sh --demo</code> from the terminal). Right after it opens, you can ask questions about the bundled documents. Both the administrator and the viewer can sign in with the passwords described in section 10.</p>
 <p>To use it with your own documents only, run it from the terminal <strong>with no arguments</strong>. That starts from an <strong>empty database</strong> (production). There is no viewer in an empty production database (you sign in as the administrator and ingest documents first).</p>
 </div>
 <div class="slide-footer">
@@ -1535,7 +1535,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(4/10)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>What starts</th><th>What happens</th><th>How to get it</th></tr></thead><tbody><tr><td>Demo</td><td>Starts with the bundled dummy documents (they are <strong>ingested automatically at the first start</strong>; once that finishes you can ask questions)</td><td><code>./launch.sh --demo</code> from the terminal</td></tr><tr><td>Production</td><td>Starts with an empty database. When there are 0 ingest sources, the dummy documents inside this package become the ingest source</td><td>Double-click <code>Cynovela-start.command</code>, or <code>./launch.sh</code> (no arguments)</td></tr></tbody></table>
+<table><thead><tr><th>What starts</th><th>What happens</th><th>How to get it</th></tr></thead><tbody><tr><td>Demo</td><td>Starts with the bundled dummy documents (they are <strong>ingested automatically at the first start</strong>; once that finishes you can ask questions)</td><td>Double-click <code>Cynovela-demo.command</code>, or <code>./launch.sh --demo</code> from the terminal</td></tr><tr><td>Production</td><td>Starts with an empty database. When there are 0 ingest sources, the dummy documents inside this package become the ingest source</td><td>Double-click <code>Cynovela-start.command</code>, or <code>./launch.sh</code> (no arguments)</td></tr></tbody></table>
 <p><strong>Start it from the terminal</strong></p>
 <p>In the folder you extracted, run the following single line. <strong>This is the only entry point when you use the terminal.</strong></p>
 <pre><code>./launch.sh --demo</code></pre>
@@ -2177,7 +2177,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="continued">(2/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>パッケージ版</strong> <code>cynovela-chewie-package-1.1.3.tar.gz</code>（1本・約800MB）</td><td>Apple silicon の Mac。<strong>Python も conda も要りません。この Mac には何も入れません。</strong></td><td>展開し、AIモデル（最終行）を重ねてから <code>./launch.sh</code> を叩きます。消すときはフォルダごと削除します。</td></tr><tr><td><strong>ソース版</strong>（ダウンロードではありません。ソースはこのリポジトリです）</td><td>自分で環境を作りたい方</td><td>リポジトリを clone するか GitHub の「Download ZIP」で取り、<code>chewie/</code> の木に AIモデル（最終行）を重ねてから、下の7節へ。</td></tr></tbody></table>
+<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>パッケージ版</strong> <code>cynovela-chewie-package-1.2.0.tar.gz</code>（1本・約800MB）</td><td>Apple silicon の Mac。<strong>Python も conda も要りません。この Mac には何も入れません。</strong></td><td>展開し、AIモデル（最終行）を重ねてから <code>./launch.sh</code> を叩きます。消すときはフォルダごと削除します。</td></tr><tr><td><strong>ソース版</strong>（ダウンロードではありません。ソースはこのリポジトリです）</td><td>自分で環境を作りたい方</td><td>リポジトリを clone するか GitHub の「Download ZIP」で取り、<code>chewie/</code> の木に AIモデル（最終行）を重ねてから、下の7節へ。</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2191,7 +2191,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="continued">(3/6)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>AIモデル</strong> <code>cynovela-chewie-models-1.1.3.tar.gz.part00</code>〜<code>part02</code>（分割3本）</td><td>パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく <strong>AIモデル本体</strong>です。</td><td>part を 1 本につないでから、<strong>展開済みの chewie フォルダの中で</strong> <code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code> を実行します（<code>store/models/</code> が作られます）。</td></tr></tbody></table>
+<table><thead><tr><th>配布物</th><th>対象</th><th>することは</th></tr></thead><tbody><tr><td><strong>AIモデル</strong> <code>cynovela-chewie-models-1.2.0.tar.gz.part00</code>〜<code>part02</code>（分割3本）</td><td>パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく <strong>AIモデル本体</strong>です。</td><td>part を 1 本につないでから、<strong>展開済みの chewie フォルダの中で</strong> <code>tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz</code> を実行します（<code>store/models/</code> が作られます）。</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2255,14 +2255,14 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="continued">(1/10)</span>
 </div>
 <div class="slide-body">
-<p>この節は<strong>パッケージ版</strong>（<code>cynovela-chewie-package-1.1.3.tar.gz</code>）向けです。ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。</p>
+<p>この節は<strong>パッケージ版</strong>（<code>cynovela-chewie-package-1.2.0.tar.gz</code>）向けです。ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。</p>
 <p>上から順に行ってください。理由は3節にあります。先に読む必要はありません。</p>
 <h4>手順1. ファイルを5つ落とす</h4>
 <p>リリースのページから、次の5つを<strong>ダウンロード</strong>フォルダへ落とします。</p>
-<pre><code>cynovela-chewie-package-1.1.3.tar.gz
-cynovela-chewie-models-1.1.3.tar.gz.part00
-cynovela-chewie-models-1.1.3.tar.gz.part01
-cynovela-chewie-models-1.1.3.tar.gz.part02
+<pre><code>cynovela-chewie-package-1.2.0.tar.gz
+cynovela-chewie-models-1.2.0.tar.gz.part00
+cynovela-chewie-models-1.2.0.tar.gz.part01
+cynovela-chewie-models-1.2.0.tar.gz.part02
 SHA256SUMS</code></pre>
 </div>
 <div class="slide-footer">
@@ -2300,7 +2300,7 @@ SHA256SUMS</code></pre>
 <div class="slide-body">
 <h4>手順4. モデルの3つの分割ファイルを1本につなぐ</h4>
 <p>次を<strong>1行で</strong>打って return を押します。</p>
-<pre><code>cat cynovela-chewie-models-1.1.3.tar.gz.part* &gt; cynovela-chewie-models-1.1.3.tar.gz</code></pre>
+<pre><code>cat cynovela-chewie-models-1.2.0.tar.gz.part* &gt; cynovela-chewie-models-1.2.0.tar.gz</code></pre>
 <p><strong>1〜3分</strong>かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。</p>
 <h4>手順5. ちゃんと落ちているかを確かめる</h4>
 <pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS</code></pre>
@@ -2318,11 +2318,11 @@ SHA256SUMS</code></pre>
 <span class="continued">(4/10)</span>
 </div>
 <div class="slide-body">
-<pre><code>cynovela-chewie-models-1.1.3.tar.gz: OK
-cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
+<pre><code>cynovela-chewie-models-1.2.0.tar.gz: OK
+cynovela-chewie-package-1.2.0.tar.gz: OK</code></pre>
 <p><code>FAILED</code> と出た行があれば、そのファイルを落とし直して手順4からやり直します。先へ進まないでください。</p>
 <h4>手順6. 本体を取り出す</h4>
-<pre><code>tar -xzf cynovela-chewie-package-1.1.3.tar.gz</code></pre>
+<pre><code>tar -xzf cynovela-chewie-package-1.2.0.tar.gz</code></pre>
 <p><strong>3〜10分</strong>かかります。何も出ません。ダウンロードの中に <code>chewie</code> という名前のフォルダができます。</p>
 <h4>手順7. そのフォルダの中へ移る</h4>
 <pre><code>cd chewie</code></pre>
@@ -2341,7 +2341,7 @@ cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 <div class="slide-body">
 <p>何も出ません。</p>
 <h4>手順8. その中で AIモデルを取り出す</h4>
-<pre><code>tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz</code></pre>
+<pre><code>tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz</code></pre>
 <p><strong>2〜5分</strong>かかります。何も出ません。</p>
 <h4>手順9. 起こす</h4>
 <pre><code>./launch.sh --demo</code></pre>
@@ -2554,7 +2554,7 @@ cynovela-chewie-package-1.1.3.tar.gz: OK</code></pre>
 <span class="continued">(1/6)</span>
 </div>
 <div class="slide-body">
-<p>Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 <code>1.1.3</code>（作業ディレクトリ <code>&lt;配布物を展開したフォルダ&gt;</code>）です。</p>
+<p>Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 <code>1.2.0</code>（作業ディレクトリ <code>&lt;配布物を展開したフォルダ&gt;</code>）です。</p>
 <h3>4-1. 環境のセットアップ（ソース版のみ）</h3>
 <p><strong>推奨は <code>./launch.sh</code> に作らせる形です。</strong> 初回に下の 2 択が出ます。どちらを選んでも<strong>共有の conda 環境は作りません・書き換えません</strong>（すべて専用の場所に作られます）:</p>
 <pre><code>cd &lt;配布物を展開したフォルダ&gt;
@@ -3116,7 +3116,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(3/4)</span>
 </div>
 <div class="slide-body">
-<p><code>--demo</code> 起動では、<strong>同梱のダミー資料が入ったワークスペースが 1 件だけ</strong>入っています（空のシード WS 3 件は 2026-07-30 に撤去済みで、起動時に取り除かれます。2026-08-02 実測: <code>--demo</code> 起動直後の <code>/api/workspaces</code> は「デモワークスペース」のみ）。自分用のワークスペースは「新しいワークスペースを作成」から作ります。</p>
+<p><code>--demo</code> 起動では、<strong>同梱のダミー資料が入ったワークスペースが 3 件</strong>（全社・営業・人事）入っています。閲覧者アカウントが所属するのは「全社」だけです。自分用のワークスペースは「新しいワークスペースを作成」から作ります。</p>
 <p>Publish では テキスト抽出 → チャンク分割 → PII 検出/マスキング → Embedding 生成（ChromaDB 保存）→ BM25 インデックス構築 が行われます。進捗は SSE で返り、完了時に <code>publish_history</code> へ件数・所要時間が記録され、コレクションは <code>ready</code> 状態になります。</p>
 <p>取り込みの間は、進み具合が画面に出ます。段は次の順に進みます。</p>
 <pre><code>読み込み中 → チャンク書き込み中 → マスキング処理中 → マスキング処理中(まとめ) → Embedding生成中 → 完了</code></pre>
@@ -3201,7 +3201,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <p>展開したフォルダの中の <strong><code>Cynovela-start.command</code></strong> をダブルクリックします。止めるときは <strong><code>Cynovela-stop.command</code></strong> をダブルクリックします。読み込むフォルダを足すときは <strong><code>Cynovela-add-folder.command</code></strong> をダブルクリックします（はじめて使うときは、先に <code>Cynovela-start.command</code> を一度押してください。フォルダのバックアップを扱う Python はその最初の一度で用意されます）。</p>
-<p><strong>この操作手順は、中身が空のデータベース（本番）で立ち上がります。</strong> 同梱のダミー資料で試すときは、ターミナルから <code>./launch.sh --demo</code> を叩きます。開いてすぐ、同梱の資料に質問できます。管理者・閲覧者とも、10節のパスワードでそのまま入れます。</p>
+<p><strong>この操作手順は、中身が空のデータベース（本番）で立ち上がります。</strong> 同梱のダミー資料で試すときは、<strong><code>Cynovela-demo.command</code></strong> をダブルクリックします（またはターミナルから <code>./launch.sh --demo</code>）。開いてすぐ、同梱の資料に質問できます。管理者・閲覧者とも、10節のパスワードでそのまま入れます。</p>
 <p>自分の資料だけで使いたいときは、ターミナルから<strong>引数なし</strong>で叩きます。こちらは<strong>中身が空のデータベース</strong>（本番）から始まります。空の本番に閲覧者は居ません（管理者で入って資料を取り込んでから使います）。</p>
 </div>
 <div class="slide-footer">
@@ -3216,7 +3216,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(3/8)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>起動の中身</th><th>どうなるか</th><th>出し方</th></tr></thead><tbody><tr><td>デモ</td><td>同梱のダミー資料を使って立ち上がる（<strong>初回起動時に自動で取り込まれ</strong>、終わると質問できる）</td><td>ターミナルから <code>./launch.sh --demo</code></td></tr><tr><td>本番</td><td>中身が空のデータベースで立ち上がる。取り込み元が 0 件のときは、この配布物の中のダミー資料が取り込み元になる</td><td><code>Cynovela-start.command</code> をダブルクリック、または <code>./launch.sh</code>（引数なし）</td></tr></tbody></table>
+<table><thead><tr><th>起動の中身</th><th>どうなるか</th><th>出し方</th></tr></thead><tbody><tr><td>デモ</td><td>同梱のダミー資料を使って立ち上がる（<strong>初回起動時に自動で取り込まれ</strong>、終わると質問できる）</td><td><code>Cynovela-demo.command</code> をダブルクリック、またはターミナルから <code>./launch.sh --demo</code></td></tr><tr><td>本番</td><td>中身が空のデータベースで立ち上がる。取り込み元が 0 件のときは、この配布物の中のダミー資料が取り込み元になる</td><td><code>Cynovela-start.command</code> をダブルクリック、または <code>./launch.sh</code>（引数なし）</td></tr></tbody></table>
 <p><strong>ターミナルから起動する</strong></p>
 <p>展開したフォルダの中で、次の1行を実行します。<strong>ターミナルから使うときの入口はこの1本だけです。</strong></p>
 <pre><code>./launch.sh --demo</code></pre>

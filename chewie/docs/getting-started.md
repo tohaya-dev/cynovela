@@ -101,9 +101,9 @@ There are 2 forms, plus the AI models as a separate download. **The package edit
 
 | Package | Who it is for | What to do |
 |---|---|---|
-| **Package edition** `cynovela-chewie-package-1.1.3.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
+| **Package edition** `cynovela-chewie-package-1.2.0.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
 | **Source edition** (not a download — the source is this repository) | Those who want to build the environment themselves | Clone the repository or use GitHub's "Download ZIP", take the `chewie/` tree, add the AI models (last row), then follow section 7 below. |
-| **AI models** `cynovela-chewie-models-1.1.3.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz` **inside the extracted chewie folder** — `store/models/` is created. |
+| **AI models** `cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` **inside the extracted chewie folder** — `store/models/` is created. |
 
 With the source edition you choose, at startup, one of 2 ways to build the environment.
 
@@ -125,7 +125,7 @@ The AI models are downloaded separately (see section 8, "First run only").
 
 ## 2. The gentle way in — the package edition, step by step
 
-This section is for the **package edition** (`cynovela-chewie-package-1.1.3.tar.gz`).
+This section is for the **package edition** (`cynovela-chewie-package-1.2.0.tar.gz`).
 It assumes you have never opened Terminal. Nothing is skipped.
 
 Do these in order. Do not read ahead for reasons; the reasons are in section 3.
@@ -135,10 +135,10 @@ Do these in order. Do not read ahead for reasons; the reasons are in section 3.
 On the releases page, download these into your **Downloads** folder:
 
 ```
-cynovela-chewie-package-1.1.3.tar.gz
-cynovela-chewie-models-1.1.3.tar.gz.part00
-cynovela-chewie-models-1.1.3.tar.gz.part01
-cynovela-chewie-models-1.1.3.tar.gz.part02
+cynovela-chewie-package-1.2.0.tar.gz
+cynovela-chewie-models-1.2.0.tar.gz.part00
+cynovela-chewie-models-1.2.0.tar.gz.part01
+cynovela-chewie-models-1.2.0.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -167,7 +167,7 @@ Nothing will be printed. That is correct.
 Type this as **one line** and press return:
 
 ```
-cat cynovela-chewie-models-1.1.3.tar.gz.part* > cynovela-chewie-models-1.1.3.tar.gz
+cat cynovela-chewie-models-1.2.0.tar.gz.part* > cynovela-chewie-models-1.2.0.tar.gz
 ```
 
 This takes **one to three minutes** and prints nothing while it works. When the
@@ -183,8 +183,8 @@ This takes **one to three minutes**. It then prints one line per file. Every lin
 must end in `OK`:
 
 ```
-cynovela-chewie-models-1.1.3.tar.gz: OK
-cynovela-chewie-package-1.1.3.tar.gz: OK
+cynovela-chewie-models-1.2.0.tar.gz: OK
+cynovela-chewie-package-1.2.0.tar.gz: OK
 ```
 
 If any line shows `FAILED`, download that file again and repeat from step 4. Do
@@ -193,7 +193,7 @@ not go on.
 #### Step 6. Unpack the program
 
 ```
-tar -xzf cynovela-chewie-package-1.1.3.tar.gz
+tar -xzf cynovela-chewie-package-1.2.0.tar.gz
 ```
 
 This takes **three to ten minutes** and prints nothing. A folder named `chewie`
@@ -210,7 +210,7 @@ Nothing is printed.
 #### Step 8. Unpack the AI models inside it
 
 ```
-tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz
+tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
 ```
 
 This takes **two to five minutes** and prints nothing.
@@ -391,7 +391,7 @@ Closing the window does not stop it. That is why there is a separate
 
 ## 4. The short route, for those in a hurry
 
-These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `1.1.3` (working directory `<the folder where you extracted the package>`).
+These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `1.2.0` (working directory `<the folder where you extracted the package>`).
 
 ### 4-1. Setting up the environment (source edition only)
 
@@ -816,7 +816,7 @@ You can also pass them all at once at startup in production.
    fast, quality, or vision (read as images / OCR). Wait until it finishes (large PDFs take time).
 7. When the "**✅ Publish 完了**" (publish complete) receipt appears, go back to section 12 and ask a question.
 
-On a `--demo` start, **only 1 workspace containing the bundled dummy material** is included (the 3 empty seed workspaces were removed on 2026-07-30 and are taken out at startup; measured 2026-08-02: right after a `--demo` start, `/api/workspaces` has only "デモワークスペース"). Create your own workspace from "新しいワークスペースを作成".
+On a `--demo` start, **3 workspaces containing the bundled dummy material** (全社 / 営業 / 人事) are included; the viewer account belongs to 全社 only. Create your own workspace from "新しいワークスペースを作成".
 
 In Publish, text extraction -> chunk splitting -> PII detection/masking -> embedding generation (saved to ChromaDB) -> BM25 index construction are performed. The progress is returned by SSE, and on completion the counts and elapsed time are recorded in `publish_history`, and the collection reaches the `ready` state.
 
@@ -889,7 +889,8 @@ To add a folder to be read, double-click **`Cynovela-add-folder.command`**
 to handle folder backups is prepared during that first run).
 
 **This procedure starts up with an empty database (production).** To try it with the
-bundled dummy documents, run `./launch.sh --demo` from the terminal.
+bundled dummy documents, double-click **`Cynovela-demo.command`** (or run
+`./launch.sh --demo` from the terminal).
 Right after it opens, you can ask questions about the bundled documents. Both the
 administrator and the viewer can sign in with the passwords described in section 10.
 
@@ -899,7 +900,7 @@ production database (you sign in as the administrator and ingest documents first
 
 | What starts | What happens | How to get it |
 |---|---|---|
-| Demo | Starts with the bundled dummy documents (they are **ingested automatically at the first start**; once that finishes you can ask questions) | `./launch.sh --demo` from the terminal |
+| Demo | Starts with the bundled dummy documents (they are **ingested automatically at the first start**; once that finishes you can ask questions) | Double-click `Cynovela-demo.command`, or `./launch.sh --demo` from the terminal |
 | Production | Starts with an empty database. When there are 0 ingest sources, the dummy documents inside this package become the ingest source | Double-click `Cynovela-start.command`, or `./launch.sh` (no arguments) |
 
 **Start it from the terminal**
@@ -1310,9 +1311,9 @@ More detail is in the bundled `README.md`.
 
 | 配布物 | 対象 | することは |
 |---|---|---|
-| **パッケージ版** `cynovela-chewie-package-1.1.3.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
+| **パッケージ版** `cynovela-chewie-package-1.2.0.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
 | **ソース版**（ダウンロードではありません。ソースはこのリポジトリです） | 自分で環境を作りたい方 | リポジトリを clone するか GitHub の「Download ZIP」で取り、`chewie/` の木に AIモデル（最終行）を重ねてから、下の7節へ。 |
-| **AIモデル** `cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz` を実行します（`store/models/` が作られます）。 |
+| **AIモデル** `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` を実行します（`store/models/` が作られます）。 |
 
 ソース版では、起動時に、環境の作り方を2つから選びます。
 
@@ -1334,7 +1335,7 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 
 ## 2. やさしい入口 — パッケージ版を一歩ずつ
 
-この節は**パッケージ版**（`cynovela-chewie-package-1.1.3.tar.gz`）向けです。
+この節は**パッケージ版**（`cynovela-chewie-package-1.2.0.tar.gz`）向けです。
 ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。
 
 上から順に行ってください。理由は3節にあります。先に読む必要はありません。
@@ -1344,10 +1345,10 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 リリースのページから、次の5つを**ダウンロード**フォルダへ落とします。
 
 ```
-cynovela-chewie-package-1.1.3.tar.gz
-cynovela-chewie-models-1.1.3.tar.gz.part00
-cynovela-chewie-models-1.1.3.tar.gz.part01
-cynovela-chewie-models-1.1.3.tar.gz.part02
+cynovela-chewie-package-1.2.0.tar.gz
+cynovela-chewie-models-1.2.0.tar.gz.part00
+cynovela-chewie-models-1.2.0.tar.gz.part01
+cynovela-chewie-models-1.2.0.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -1376,7 +1377,7 @@ cd ~/Downloads
 次を**1行で**打って return を押します。
 
 ```
-cat cynovela-chewie-models-1.1.3.tar.gz.part* > cynovela-chewie-models-1.1.3.tar.gz
+cat cynovela-chewie-models-1.2.0.tar.gz.part* > cynovela-chewie-models-1.2.0.tar.gz
 ```
 
 **1〜3分**かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。
@@ -1391,8 +1392,8 @@ shasum -a 256 --ignore-missing -c SHA256SUMS
 終わっていなければなりません。
 
 ```
-cynovela-chewie-models-1.1.3.tar.gz: OK
-cynovela-chewie-package-1.1.3.tar.gz: OK
+cynovela-chewie-models-1.2.0.tar.gz: OK
+cynovela-chewie-package-1.2.0.tar.gz: OK
 ```
 
 `FAILED` と出た行があれば、そのファイルを落とし直して手順4からやり直します。
@@ -1401,7 +1402,7 @@ cynovela-chewie-package-1.1.3.tar.gz: OK
 #### 手順6. 本体を取り出す
 
 ```
-tar -xzf cynovela-chewie-package-1.1.3.tar.gz
+tar -xzf cynovela-chewie-package-1.2.0.tar.gz
 ```
 
 **3〜10分**かかります。何も出ません。ダウンロードの中に `chewie` という名前の
@@ -1418,7 +1419,7 @@ cd chewie
 #### 手順8. その中で AIモデルを取り出す
 
 ```
-tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz
+tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
 ```
 
 **2〜5分**かかります。何も出ません。
@@ -1595,7 +1596,7 @@ Finder は隠します。これは「触らなくてよいもの」という mac
 
 ## 4. 急ぐ人のための最短の道
 
-Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.1.3`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
+Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.2.0`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
 
 ### 4-1. 環境のセットアップ（ソース版のみ）
 
@@ -2010,7 +2011,7 @@ Python（3.12 系）はその最初の一度で用意されます。無いまま
    fast（速い）/ quality（高品質）/ vision（画像として読む・OCR）から選べます。完了まで待ちます（大容量PDFは時間がかかります）。
 7. 「**✅ Publish 完了**」の受領書が出たら、12節に戻って質問できます。
 
-`--demo` 起動では、**同梱のダミー資料が入ったワークスペースが 1 件だけ**入っています（空のシード WS 3 件は 2026-07-30 に撤去済みで、起動時に取り除かれます。2026-08-02 実測: `--demo` 起動直後の `/api/workspaces` は「デモワークスペース」のみ）。自分用のワークスペースは「新しいワークスペースを作成」から作ります。
+`--demo` 起動では、**同梱のダミー資料が入ったワークスペースが 3 件**（全社・営業・人事）入っています。閲覧者アカウントが所属するのは「全社」だけです。自分用のワークスペースは「新しいワークスペースを作成」から作ります。
 
 Publish では テキスト抽出 → チャンク分割 → PII 検出/マスキング → Embedding 生成（ChromaDB 保存）→ BM25 インデックス構築 が行われます。進捗は SSE で返り、完了時に `publish_history` へ件数・所要時間が記録され、コレクションは `ready` 状態になります。
 
@@ -2076,7 +2077,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 （はじめて使うときは、先に `Cynovela-start.command` を一度押してください。フォルダの
 バックアップを扱う Python はその最初の一度で用意されます）。
 
-**この操作手順は、中身が空のデータベース（本番）で立ち上がります。** 同梱のダミー資料で試すときは、ターミナルから `./launch.sh --demo` を叩きます。
+**この操作手順は、中身が空のデータベース（本番）で立ち上がります。** 同梱のダミー資料で試すときは、**`Cynovela-demo.command`** をダブルクリックします（またはターミナルから `./launch.sh --demo`）。
 開いてすぐ、同梱の資料に質問できます。管理者・閲覧者とも、10節のパスワードでそのまま入れます。
 
 自分の資料だけで使いたいときは、ターミナルから**引数なし**で叩きます。こちらは**中身が空のデータベース**
@@ -2084,7 +2085,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 
 | 起動の中身 | どうなるか | 出し方 |
 |---|---|---|
-| デモ | 同梱のダミー資料を使って立ち上がる（**初回起動時に自動で取り込まれ**、終わると質問できる） | ターミナルから `./launch.sh --demo` |
+| デモ | 同梱のダミー資料を使って立ち上がる（**初回起動時に自動で取り込まれ**、終わると質問できる） | `Cynovela-demo.command` をダブルクリック、またはターミナルから `./launch.sh --demo` |
 | 本番 | 中身が空のデータベースで立ち上がる。取り込み元が 0 件のときは、この配布物の中のダミー資料が取り込み元になる | `Cynovela-start.command` をダブルクリック、または `./launch.sh`（引数なし） |
 
 **ターミナルから起動する**

@@ -15,7 +15,7 @@ is this repository — clone it, or use GitHub's "Download ZIP".)
 
 | | **App edition** | **Package edition** | **Source edition** | **AI models** |
 |---|---|---|---|---|
-| File | **In preparation** — not part of this release | `cynovela-chewie-package-1.1.3.tar.gz` | not a download — the source is this repository | `cynovela-chewie-models-1.1.3.tar.gz.part00`–`part02` |
+| File | **In preparation** — not part of this release | `cynovela-chewie-package-1.2.0.tar.gz` | not a download — the source is this repository | `cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02` |
 | How many files | — | 1 | — | 3 (join them) |
 | Download size | — | about 830 MB | — | about 3.1 GB |
 | Size once installed / unpacked | — | about 3.1 GB | about 8 MB before the environment is built | 4.84 GB |
@@ -82,7 +82,7 @@ file name, those parts are not conda packages.
 
 | | **アプリ版** | **パッケージ版** | **ソース版** | **AIモデル** |
 |---|---|---|---|---|
-| ファイル | **準備中です。** この版には入っていません | `cynovela-chewie-package-1.1.3.tar.gz` | ダウンロードではありません。ソースはこのリポジトリです | `cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02` |
+| ファイル | **準備中です。** この版には入っていません | `cynovela-chewie-package-1.2.0.tar.gz` | ダウンロードではありません。ソースはこのリポジトリです | `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02` |
 | 本数 | — | 1本 | — | 3本（つなぐ） |
 | 落とす大きさ | — | 約 830 MB | — | 約 3.1 GB |
 | 入れた後・展開後の大きさ | — | 約 3.1 GB | 環境を作る前は約 8 MB | 4.84 GB |

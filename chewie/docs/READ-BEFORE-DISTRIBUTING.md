@@ -11,14 +11,14 @@ A package comes in one of two forms — the **package edition** (a single file,
 about 800MB; no Python and no conda needed: unpack it and run `./launch.sh`)
 and the **source edition** (not a download: the source is the repository —
 clone it or use GitHub's "Download ZIP" and take the `chewie/` tree) — plus the
-**models split files** (`cynovela-chewie-models-1.1.3.tar.gz.part00`–`part02`).
+**models split files** (`cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02`).
 Neither form contains the AI models:
 download the models parts too, join them in part order with `cat`, and run
-`tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz` inside the unpacked chewie
+`tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` inside the unpacked chewie
 folder — that alone places them in the correct shape under `store/models/`
 (`models--BAAI--bge-m3/snapshots/<rev>/`; nowhere else). The joining and
 verification guide is `HOW-TO-ASSEMBLE.md`, published next to the files.
-All forms are version `1.1.3`. Where the forms differ, this document states so.
+All forms are version `1.2.0`. Where the forms differ, this document states so.
 The `store/` folder holds the ingested material's index, the database, the
 settings and the key files — back it up as a whole. The key files — the
 encryption key (`store/secret.key`) and the token-signing key
@@ -67,7 +67,7 @@ and builds them on this machine.
 
 この文書は、本配布物を受け取った方・配布する方に最初に読んでいただくガイドです。
 
-配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`chewie/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど明記します。版はいずれも `1.1.3` です。
+配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`chewie/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど明記します。版はいずれも `1.2.0` です。
 
 ## 1. この配布物の位置づけ
 
@@ -87,7 +87,7 @@ and builds them on this machine.
 **どちらも再起動して消えることはありません。**場所が分かれているので、デモで試したあとに本番を使い始めても、デモの中身が本番に混ざることはありません。
 
 > **起動の前にモデルを置いてください。**
-> どちらの形にも、検索に使う埋め込みモデルは入っていません。models の分割ファイル（`cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02`）を part の順に `cat` で 1 本につないだうえで、**展開済みの chewie フォルダの中で `tar -xzf ../cynovela-chewie-models-1.1.3.tar.gz` を実行**してください。それだけで `store/models/` の正しい形（`models--BAAI--bge-m3/snapshots/<版>/`）に置かれます。宛先は `store/models/` 配下だけです。つなぎ方と検証の手引きは、Releases に一緒に置いてある `HOW-TO-ASSEMBLE.md` にあります。置かないまま起動すると、検索や取り込みをしようとしたところで失敗します。
+> どちらの形にも、検索に使う埋め込みモデルは入っていません。models の分割ファイル（`cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02`）を part の順に `cat` で 1 本につないだうえで、**展開済みの chewie フォルダの中で `tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` を実行**してください。それだけで `store/models/` の正しい形（`models--BAAI--bge-m3/snapshots/<版>/`）に置かれます。宛先は `store/models/` 配下だけです。つなぎ方と検証の手引きは、Releases に一緒に置いてある `HOW-TO-ASSEMBLE.md` にあります。置かないまま起動すると、検索や取り込みをしようとしたところで失敗します。
 >
 > なお `store/` フォルダには、取り込んだ資料の索引・データベース・設定・鍵ファイルが入っています。控えを取るなら `store/` ごと取ってください。鍵ファイル（暗号化用の `store/secret.key` と、通行証のトークン署名用の `store/db/jwt/secret.key`）は初回起動時にその機械で新しく作られます（配布物には入っていないため、別々のインストールが同じ鍵を持つことはありません）。デモのデータベースとインデックスも配布物には入っておらず、`--demo` の初回起動時にサーバが同梱の `dummy-corpus/` をその場で取り込んで、その機械の上で作ります。
 

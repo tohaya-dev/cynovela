@@ -16,6 +16,29 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## v1.2.0 (2026-09-01)
+
+- **The package no longer ships `store/secret.key`.** Earlier packages
+  contained the encryption key file, so every download held the same key. Both
+  key files (`store/secret.key` for encryption, `store/db/jwt/secret.key` for
+  token signing) are now generated on your machine at the first startup — no
+  two installations share a key.
+- **The bundled demo database and search index are no longer packaged.** The
+  first `--demo` startup ingests the bundled sample material on the spot
+  (measured on an Apple silicon Mac: 21 files, about 120 chunks, about 39
+  seconds) and later startups do not re-ingest; material you add is kept.
+- **The bundled sample corpus grew from 7 to 21 files**, arranged as three
+  workspaces (全社 / 営業 / 人事). The viewer account belongs to 全社 only, so
+  the demo shows access separation as well as masking. All material is
+  synthetic, and each file states so in its first line.
+- **`Cynovela-demo.command` was added**: a double-click entry that runs
+  `./launch.sh --demo`. Starting with no arguments is production mode, and its
+  startup message prints a one-line pointer to the demo entry.
+- The legacy seed-row deletion in the database initialiser no longer deletes
+  rows the bundled demo creates.
+- The pre-release check of the packaging now fails when `store/secret.key`,
+  `demo.db` or a `store/vector/` tree is found inside the built archive.
+
 ## v1.1.3 (2026-08-31)
 
 - **`./launch.sh --help` now states the actual location of the first
@@ -291,6 +314,29 @@ The following are recorded as unfinished. They describe the state of the current
 Cynovela の主要な変更内容を時系列で記録します。
 
 ---
+
+## v1.2.0（2026-09-01）
+
+- **配布物に `store/secret.key` を同梱しなくなりました。** 以前の配布物には
+  暗号化用の鍵ファイルが入っており、ダウンロードした全員が同じ鍵を持っていました。
+  鍵ファイル2つ（暗号化用の `store/secret.key`・トークン署名用の
+  `store/db/jwt/secret.key`）は初回起動時にその機材で生成されます。別々の
+  インストールが同じ鍵を持つことはありません。
+- **デモのデータベースと検索用インデックスを同梱しなくなりました。** `--demo` の
+  初回起動時に同梱のサンプル資料をその場で取り込みます（Apple silicon の Mac での
+  実測: 資料21件・チャンク約120・約39秒）。2回目以降は取り込み直さず、自分で
+  足した資料も消えません。
+- **同梱のサンプル資料が 7 件から 21 件になり、3つの作業場所**（全社／営業／人事）
+  に分かれました。閲覧者アカウントは「全社」にだけ所属するため、伏字に加えて
+  アクセス権の分離もデモで確かめられます。資料はすべて架空の合成データで、
+  各ファイルの冒頭にその旨を明記しています。
+- **`Cynovela-demo.command` を追加しました。** ダブルクリックで `./launch.sh --demo`
+  を実行する入口です。引数なしの起動は本番で、その起動画面にデモへの入り方が
+  1行出ます。
+- データベース初期化の旧シード行の削除処理が、同梱デモの作る行を消さないように
+  なりました。
+- パッケージングのリリース前チェックに、作った配布物の中に `store/secret.key`・
+  `demo.db`・`store/vector/` が見つかったら失敗する検査を足しました。
 
 ## v1.1.3（2026-08-31）
 
