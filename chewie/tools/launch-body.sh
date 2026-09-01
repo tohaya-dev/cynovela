@@ -1580,6 +1580,11 @@ start_app() {
     echo " 使う python: $PY"
     echo " 由来: $PY_SRC"
     echo " 停止するには: bash stop.sh"
+    # demo-access-20260901: 本番 (引数なし) の起動では、同梱のサンプル資料で試す
+    # 入り方を1行案内する (--demo を知らない受け取り手が同梱デモへ到達できるように)。
+    if ! printf '%s' " ${APP_ARGS[*]:-} " | grep -q -- ' --demo '; then
+        echo " 同梱のサンプル資料で試すには: ./launch.sh --demo (または Cynovela-demo.command)"
+    fi
     if [ "$DEFAULT_INGEST_USED" = "1" ]; then
         echo "--------------------------------------------"
         echo " 取り込み元が1件も足されていなかったので、"

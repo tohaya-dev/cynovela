@@ -152,7 +152,8 @@ Disk space returns only after you empty the Trash. You can restore from the Tras
 
 | File | What it does |
 |---|---|
-| `Cynovela-start.command` | **Starts it. Double-click.** |
+| `Cynovela-start.command` | **Starts it (production, empty database). Double-click.** |
+| `Cynovela-demo.command` | **Starts the demo with the bundled sample material. Double-click.** Same as `./launch.sh --demo`; the material is ingested automatically at the first start |
 | `Cynovela-stop.command` | **Stops it. Double-click.** |
 | `Cynovela-add-folder.command` | **Adds a folder to be ingested. Double-click.** |
 | `check-managed-mac.command` | **Checks whether this Mac will let you run it. Double-click.** It only measures — it changes no setting, needs no administrator password, and works around no management policy. Useful on a managed Mac (under MDM): it prints a judgement for each item it checks and ends with an overall verdict, and when something is blocked it states which edition that blocks. The same file is also downloadable from the release page, so you can run it *before* downloading anything big. |
@@ -168,7 +169,7 @@ kept in `docs/USE-FROM-TERMINAL.txt`):
 | Flag | What it does |
 |---|---|
 | (none) | Starts by asking questions you answer with a number |
-| `--demo` | Starts the demo with the bundled dummy documents (they are ingested automatically at the first start) |
+| `--demo` | Starts the demo with the bundled dummy documents (they are ingested automatically at the first start). Double-clicking `Cynovela-demo.command` does the same |
 | `--add` / `--list` / `--remove <name>` | Add / list / remove folders to be read |
 | `--setup` | Installs what is required to run, then stops |
 | `--check` | Does not start; only checks the conditions for running |
@@ -413,7 +414,8 @@ that one. The same documents are repeated below.
 
 | ファイル | 何をするもの |
 |---|---|
-| `Cynovela-start.command` | **起動する。ダブルクリック** |
+| `Cynovela-start.command` | **起動する（本番＝空のデータベース）。ダブルクリック** |
+| `Cynovela-demo.command` | **同梱のサンプル資料のデモで起動する。ダブルクリック**。`./launch.sh --demo` と同じで、資料は初回起動時に自動で取り込まれます |
 | `Cynovela-stop.command` | **止める。ダブルクリック** |
 | `Cynovela-add-folder.command` | **読み込むフォルダを足す。ダブルクリック** |
 | `check-managed-mac.command` | **この Mac で動かせるかを下調べする。ダブルクリック**。測るだけで、設定は変えず、管理者のパスワードも要らず、管理の仕組みも迂回しない。管理された Mac（MDM 配下）で役に立つ: 調べる項目ごとに判定を出し、最後に全体の判定を出す。何かが止められているときは、それがどの形を止めるのかまで言う。同じファイルはリリースのページにも置いてあり、大きなものを落とす**前**に試せる |
@@ -429,7 +431,7 @@ that one. The same documents are repeated below.
 | 指定 | すること |
 |---|---|
 | （何も付けない） | 聞かれたことに番号で答えるだけで起動します |
-| `--demo` | 同梱のダミー資料を使うデモで起動します（初回起動時に自動で取り込まれます） |
+| `--demo` | 同梱のダミー資料を使うデモで起動します（初回起動時に自動で取り込まれます）。`Cynovela-demo.command` のダブルクリックでも同じです |
 | `--add` / `--list` / `--remove <名前>` | 読み込むフォルダを足す / 一覧で出す / 外す |
 | `--setup` | 動かすのに要るものを入れます（入れたら止まります） |
 | `--check` | 起動せず、動く条件だけを調べます |

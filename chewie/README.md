@@ -35,7 +35,7 @@ See [docs/NOTICE.md](docs/NOTICE.md) ("Before You Start") before you rely on it.
 
 Everything is on GitHub Releases (v1.1.3): https://github.com/tohaya-dev/cynovela/releases
 
-1. **Package edition** — `cynovela-chewie-package-1.1.3.tar.gz` (1 file, about 800 MB). For Apple silicon Macs. No Python and no conda are needed; extract it and run `./launch.sh`. The AI models are separate: also download the `models` files below and lay them on top.
+1. **Package edition** — `cynovela-chewie-package-1.1.3.tar.gz` (1 file, about 800 MB). For Apple silicon Macs. No Python and no conda are needed; extract it and run `./launch.sh`. To try it with the bundled sample material first, run `./launch.sh --demo` (or double-click `Cynovela-demo.command`); the material is ingested automatically at the first start. The AI models are separate: also download the `models` files below and lay them on top.
 2. **Source edition** — not a download: the source is this repository. Clone it, or use GitHub's "Download ZIP", take the `chewie/` tree, lay the `models` files below on top, and run `./launch.sh`; the first start builds the environment.
 
 - **AI models only** — `cynovela-chewie-models-1.1.3.tar.gz.part00`–`part02` (3 split files). Despite the name, these split files are not conda packages — they are the AI models themselves. (Byte-identical to the 1.0.7 models — the model weights did not change.)
@@ -129,7 +129,7 @@ Everything is on GitHub Releases (v1.1.3): https://github.com/tohaya-dev/cynovel
 
 すべて GitHub Releases (v1.1.3) にあります: https://github.com/tohaya-dev/cynovela/releases
 
-1. **パッケージ版** — `cynovela-chewie-package-1.1.3.tar.gz`（1本・約800MB）。Apple silicon の Mac 向け。Python も conda も要らず、展開して `./launch.sh` を叩くだけで動きます。ただし AIモデルは別です: 下の `models` の分割ファイルも落として重ねます。
+1. **パッケージ版** — `cynovela-chewie-package-1.1.3.tar.gz`（1本・約800MB）。Apple silicon の Mac 向け。Python も conda も要らず、展開して `./launch.sh` を叩くだけで動きます。同梱のサンプル資料でまず試すには `./launch.sh --demo`（または `Cynovela-demo.command` をダブルクリック）で起動します（資料は初回起動時に自動で取り込まれます）。ただし AIモデルは別です: 下の `models` の分割ファイルも落として重ねます。
 2. **ソース版** — ダウンロードではありません。ソースはこのリポジトリです。clone するか GitHub の「Download ZIP」で取り、`chewie/` の木に下の `models` を重ねて `./launch.sh` を叩けば、初回の起動が環境を作ります。
 
 - **AIモデルだけ** — `cynovela-chewie-models-1.1.3.tar.gz.part00`〜`part02`（分割3本）。名前は models ですが、この分割ファイルは conda のパッケージではなく **AIモデル本体**です。（1.0.7 のモデルとバイト同一 — モデル本体は変わっていません。）

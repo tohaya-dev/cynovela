@@ -1190,9 +1190,17 @@ def init_db(demo: bool = False):
         # cynovela.db は同梱しないが、受け取り手が本番で使い始めたあとも残り続ける機構
         # であるため、配る前に閉じる。
         try:
-            # 実体の無い保存先を指す旧シードの取り込み元。src-hr は 2026 年前半に、
-            # src-tech/src-shared は で投入をやめた (保存先が配布物に無い)。
+            # 実体の無い保存先を指す旧シードの取り込み元を消す。src-hr は 2026 年前半に、
+            # src-tech/src-shared は 2026-07 に投入をやめた (保存先が配布物に無い)。
+            # seed-tombstone-fix-20260901: 同梱デモの初回取り込み (server.py の
+            # _startup_demo_first_run) が同じ id 'src-hr' を path './dummy-corpus/hr' で
+            # 作るようになった。旧シードの行と区別せずに消すと、2回目の起動で
+            # 人事の資料 7 件が毎回消える (実測)。消してよいのは path が
+            # './dummy-corpus/' 配下を指さない旧シードの行だけとする。
             for _src in ("src-hr", "src-tech", "src-shared"):
+                _src_row = conn.execute("SELECT path FROM sources WHERE id = ?", (_src,)).fetchone()
+                if _src_row is not None and str(_src_row["path"] or "").startswith("./dummy-corpus/"):
+                    continue
                 conn.execute("DELETE FROM workspace_sources WHERE source_id = ?", (_src,))
                 conn.execute("DELETE FROM files WHERE source_id = ?", (_src,))
                 conn.execute("DELETE FROM sources WHERE id = ?", (_src,))
@@ -1201,20 +1209,21 @@ def init_db(demo: bool = False):
 
         # seed-ws-removal-20260730: 空のデモ用シード WS 3件 (ws-sales/ws-tech/ws-hr)
         # と紐付け3種 (workspace_sources/workspace_policies/workspace_users) の投入を
-        # 撤去 (2026-07-30 決定 7-2)。過去シードで残った可能性のある3件は src-hr の
-        # 先例と同じく最初の起動で除去する。ただし collections を持つ WS は消さない
-        # (workspaces の DELETE は FK CASCADE で collections/collection_files まで
-        # 連鎖するため、受け取り手が既存 WS 内に作った中身を巻き添えにしない)。
+        # 撤去 (2026-07-30 決定 7-2)。過去シードで残った可能性のある行は最初の起動で
+        # 除去する。
+        # seed-tombstone-fix-20260901: 同梱デモの初回取り込みが ws-sales と ws-hr を
+        # 同じ id で作るようになったため、この2件を削除の対象から外し、対象を
+        # ws-tech だけにした。従来の「collections を持つ WS は消さない」という条件は、
+        # 初回取り込みが collection を作る前に失敗すると次の起動で ws-sales/ws-hr ごと
+        # 消える隙間を残すため、id で外す形へ変えた (条件は撤去)。ws-tech は
+        # 同梱デモが使わない旧シード専用の id なので、残っていれば無条件で消してよい
+        # (旧シードの ws-tech は空で、利用者が id 'ws-tech' の WS を作る手段は無い)。
         try:
-            for _ws in ("ws-sales", "ws-tech", "ws-hr"):
-                _n_cols = conn.execute(
-                    "SELECT COUNT(*) FROM collections WHERE workspace_id = ?", (_ws,)
-                ).fetchone()[0]
-                if _n_cols == 0:
-                    conn.execute("DELETE FROM workspace_sources WHERE workspace_id = ?", (_ws,))
-                    conn.execute("DELETE FROM workspace_policies WHERE workspace_id = ?", (_ws,))
-                    conn.execute("DELETE FROM workspace_users WHERE workspace_id = ?", (_ws,))
-                    conn.execute("DELETE FROM workspaces WHERE id = ?", (_ws,))
+            for _ws in ("ws-tech",):
+                conn.execute("DELETE FROM workspace_sources WHERE workspace_id = ?", (_ws,))
+                conn.execute("DELETE FROM workspace_policies WHERE workspace_id = ?", (_ws,))
+                conn.execute("DELETE FROM workspace_users WHERE workspace_id = ?", (_ws,))
+                conn.execute("DELETE FROM workspaces WHERE id = ?", (_ws,))
         except Exception:
             pass
 

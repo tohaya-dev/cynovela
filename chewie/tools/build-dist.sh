@@ -597,11 +597,12 @@ PYYAML
 # ── ダブルクリックの入口は .command のファイルである ──
 #   F-8: 以前ここに在った「ダイアログの .app」の説明を落とした。同梱をやめた
 #   のは以前の走行であり、その原稿 (tools/launcher-app/launcher.applescript) は
-#   本流に残してある。受け取り手が押す入口は、下の 3 つの .command だけである
-#   (決定 31-2 で、起動・停止に「取り込み元を足す」が加わった)。
-#   3つの .command は追跡ファイルのため git archive がそのまま同梱する。
+#   本流に残してある。受け取り手が押す入口は、下の 4 つの .command だけである
+#   (決定 31-2 で起動・停止に「取り込み元を足す」が加わり、demo-access-20260901 で
+#   「同梱のサンプル資料で試す」入口が加わった)。
+#   4つの .command は追跡ファイルのため git archive がそのまま同梱する。
 #   ダブルクリックで開くには実行ビットが必須のため、ここで確かめて確実に付ける。
-for _cmdf in "Cynovela-start.command" "Cynovela-stop.command" "Cynovela-add-folder.command"; do
+for _cmdf in "Cynovela-start.command" "Cynovela-demo.command" "Cynovela-stop.command" "Cynovela-add-folder.command"; do
   if [ -f "$STAGE/$NAME/$_cmdf" ]; then
     chmod +x "$STAGE/$NAME/$_cmdf"
     echo "[dist] ダブルクリックの入口を同梱: $_cmdf"
