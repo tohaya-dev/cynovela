@@ -1484,7 +1484,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(1/10)</span>
 </div>
 <div class="slide-body">
-<p>There are two ways to start. <strong>No argument is production</strong> (it starts from an empty database, and you ingest and use your own documents), and <strong>adding <code>--demo</code> is the demo</strong> (the demo DB with the dummy documents loaded).</p>
+<p>There are two ways to start. <strong>No argument is production</strong> (it starts from an empty database, and you ingest and use your own documents), and <strong>adding <code>--demo</code> is the demo</strong> (the demo DB with the bundled dummy documents; they are ingested automatically at the first start).</p>
 <pre><code># The entry point is launch.sh (or double-click Cynovela-start.command)
 ./launch.sh            # production: an empty database
 ./launch.sh --demo     # if you want to try it first, use the demo (with the dummy documents)
@@ -1657,7 +1657,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 <span class="continued">(1/3)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td><code>--mode text</code></td><td>Text mode (standard)</td></tr><tr><td><code>--demo</code></td><td>Start with the demo DB that has the dummy documents loaded (if not given, production = an empty database)</td></tr><tr><td><code>--reset-admin</code></td><td>Reset the administrator password, show the new value, and exit. <strong>The target database is chosen by the same rule as the other options, so when fixing the administrator of the demo, write <code>--demo</code> together</strong> (without it, production <code>store/db/cynovela.db</code> becomes the target, and it is newly created if it does not exist. The demo side does not change, so the demo login stays 401. Measured 2026-08-02)</td></tr><tr><td><code>--local-only</code></td><td>Restrict to inside your own machine only (the default listens on all addresses, <code>0.0.0.0</code>)</td></tr><tr><td><code>--port N</code></td><td>Port number (default 8765)</td></tr></tbody></table>
+<table><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td><code>--mode text</code></td><td>Text mode (standard)</td></tr><tr><td><code>--demo</code></td><td>Start with the demo DB that uses the bundled dummy documents (ingested automatically at the first start; if not given, production = an empty database)</td></tr><tr><td><code>--reset-admin</code></td><td>Reset the administrator password, show the new value, and exit. <strong>The target database is chosen by the same rule as the other options, so when fixing the administrator of the demo, write <code>--demo</code> together</strong> (without it, production <code>store/db/cynovela.db</code> becomes the target, and it is newly created if it does not exist. The demo side does not change, so the demo login stays 401. Measured 2026-08-02)</td></tr><tr><td><code>--local-only</code></td><td>Restrict to inside your own machine only (the default listens on all addresses, <code>0.0.0.0</code>)</td></tr><tr><td><code>--port N</code></td><td>Port number (default 8765)</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

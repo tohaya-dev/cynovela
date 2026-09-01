@@ -129,8 +129,8 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
   入り方   : 管理者 cynovela / 閲覧者 demo
              最初のパスワードは、この配布物の中の cynovela.yaml (launch.sh と
              同じ場所) の auth.admin_initial_password に書いてあります
-             (閲覧者のぶんは auth.viewer_initial_password)。普通の ./launch.sh の
-             初回起動なら画面にも1回出ます。--demo の起動では出ません。
+             (閲覧者のぶんは auth.viewer_initial_password)。初回起動なら
+             画面にも1回出ます (--demo の初回起動でも同じです)。
              管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 

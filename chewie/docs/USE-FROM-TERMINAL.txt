@@ -7,7 +7,7 @@ Cynovela entry point — this is the only one the recipient runs.
                                   (the folder to search)
 
 ● Deciding beforehand instead of answering with a number
-  ./launch.sh --demo              Starts with the bundled dummy documents loaded.
+  ./launch.sh --demo              Starts the demo with the bundled dummy documents (they are ingested automatically at the first start).
   ./launch.sh --add               Shows a screen for choosing a folder to read, and adds it.
   ./launch.sh --list              Lists the folders that are currently added.
   ./launch.sh --remove <name>     Removes an added folder (the name is the one shown by --list).
@@ -32,9 +32,8 @@ Cynovela entry point — this is the only one the recipient runs.
   How to log in : administrator cynovela / viewer demo
                   The initial passwords are written inside this package, in
                   cynovela.yaml next to launch.sh: read auth.admin_initial_password
-                  (the viewer's is auth.viewer_initial_password). The ordinary
-                  ./launch.sh first start also prints them once — the --demo start
-                  does not.
+                  (the viewer's is auth.viewer_initial_password). The first start
+                  also prints them once (the --demo first start does too).
                   The administrator is asked to change the password on the first login.
                   Administrative operations do not go through until the change is finished.
 
@@ -76,8 +75,8 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
   入り方   : 管理者 cynovela / 閲覧者 demo
              最初のパスワードは、この配布物の中の cynovela.yaml (launch.sh と
              同じ場所) の auth.admin_initial_password に書いてあります
-             (閲覧者のぶんは auth.viewer_initial_password)。普通の ./launch.sh の
-             初回起動なら画面にも1回出ます。--demo の起動では出ません。
+             (閲覧者のぶんは auth.viewer_initial_password)。初回起動なら
+             画面にも1回出ます (--demo の初回起動でも同じです)。
              管理者は最初に入ったときにパスワードの変更を求められます。
              変え終わるまで管理の操作は通りません。
 

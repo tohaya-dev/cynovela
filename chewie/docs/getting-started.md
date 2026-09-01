@@ -867,7 +867,7 @@ collection and publish it.
 
 ## 16. Everyday startup
 
-There are two ways to start. **No argument is production** (it starts from an empty database, and you ingest and use your own documents), and **adding `--demo` is the demo** (the demo DB with the dummy documents loaded).
+There are two ways to start. **No argument is production** (it starts from an empty database, and you ingest and use your own documents), and **adding `--demo` is the demo** (the demo DB with the bundled dummy documents; they are ingested automatically at the first start).
 
 ```bash
 # The entry point is launch.sh (or double-click Cynovela-start.command)
@@ -982,7 +982,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 | Option | Description |
 |---|---|
 | `--mode text` | Text mode (standard) |
-| `--demo` | Start with the demo DB that has the dummy documents loaded (if not given, production = an empty database) |
+| `--demo` | Start with the demo DB that uses the bundled dummy documents (ingested automatically at the first start; if not given, production = an empty database) |
 | `--reset-admin` | Reset the administrator password, show the new value, and exit. **The target database is chosen by the same rule as the other options, so when fixing the administrator of the demo, write `--demo` together** (without it, production `store/db/cynovela.db` becomes the target, and it is newly created if it does not exist. The demo side does not change, so the demo login stays 401. Measured 2026-08-02) |
 | `--local-only` | Restrict to inside your own machine only (the default listens on all addresses, `0.0.0.0`) |
 | `--port N` | Port number (default 8765) |
