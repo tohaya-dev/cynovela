@@ -201,8 +201,11 @@ tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
 
 | 役割 | 利用者名 | 最初のパスワード |
 |---|---|---|
-| **管理者**（全部できる） | `cynovela` | `Cynovela1!` |
-| **閲覧者**（見るだけ） | `demo` | `demo1234` |
+| **管理者**（全部できる） | `cynovela` | **はじめて起動したとき、ターミナルの画面に1回だけ出ます** |
+| **閲覧者**（見るだけ） | `demo` | 展開したフォルダの `cynovela.yaml`（`auth.viewer_initial_password`）にあります |
+
+**管理者の値を見逃した場合は、**同じ `cynovela.yaml`（`launch.sh` と同じ場所）の
+`auth:` にもあります。
 
 **4-3. パスワードを変える**
 

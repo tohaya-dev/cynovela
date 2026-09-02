@@ -92,7 +92,7 @@ taken, another number is chosen and shown on screen.**
 | **Administrator** (full control) | `cynovela` | `Cynovela1!` |
 | **Viewer** (read-only) | `demo` | `demo1234` |
 
-**The same values are printed once in the Terminal window at the first start.**
+**The administrator's value is printed on the terminal once, at the first start. The viewer's value is in `cynovela.yaml` (`auth.viewer_initial_password`) in the folder you extracted.**
 They are also under `auth:` in `cynovela.yaml` in the folder you unpacked (next
 to `launch.sh`).
 

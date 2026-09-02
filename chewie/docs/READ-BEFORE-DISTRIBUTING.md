@@ -44,14 +44,14 @@ and builds them on this machine.
    different accounts see different material). Every person, organisation,
    address, phone number, email address and number in them is invented and
    bears no relation to anyone real. See `BUNDLED-DATA.md` for the breakdown.
-4. **The recipient does not need to look for the initial passwords. They are
-   printed once, on the terminal screen, at the first start.** (`launch.sh`
-   prints them — in both forms, `--demo` and production: neither database
-   ships in the package, so both routes count as a first start. From the
-   second start on they are not printed.) If you missed them, they are in this
-   package's own `cynovela.yaml` (`auth.admin_initial_password` /
-   `auth.viewer_initial_password`, next to `launch.sh`). They are fixed
-   values; nothing is delivered separately, and they are not written into any
+4. **The recipient does not need to look for the administrator's initial password.
+   It is printed once, on the terminal screen, at the first start.** (`launch.sh`
+   prints it — in both forms, `--demo` and production: neither database ships in
+   the package, so both routes count as a first start. From the second start on it
+   is not printed.) **The viewer's value is in this package's own `cynovela.yaml`**
+   (`auth.viewer_initial_password`, next to `launch.sh`); the administrator's value
+   is also there (`auth.admin_initial_password`) if the screen was missed. They are
+   fixed values; nothing is delivered separately, and they are not written into any
    of the documents. **The administrator is required to change the password at
    first sign-in** — tell the recipient to do that first.
 5. **In production mode, no ingest source is registered.** You must register one
@@ -98,11 +98,11 @@ and builds them on this machine.
 
 デモのデータベースとインデックスは配布物に入っていません。**`--demo` の初回起動時に、この配布物の中の `dummy-corpus/` だけから、受け取った機械の上で作られます**。作る側の作業用の資料やインデックスは入っていません。内訳は同梱の `BUNDLED-DATA.md` に書いてあります。
 
-## 4. 初期パスワードは初回起動のときに画面へ出ます（見逃したら `cynovela.yaml`）
+## 4. 管理者の初期パスワードは初回起動のときに画面へ出ます（閲覧者の値と控えは `cynovela.yaml`）
 
-**受け取り手は探さなくてよい。初回起動のときにターミナルの画面へ1回だけ出る。**`launch.sh` が出します（`tools/launch-body.sh` の `print_first_login`。2 回目からは出ません）。配布物にはどちらのデータベースも入っていないため、`--demo` でも本番でも初回起動で出ます。
+**受け取り手は管理者の初期パスワードを探さなくてよい。初回起動のときにターミナルの画面へ1回だけ出る。**`launch.sh` が出します（`tools/launch-body.sh` の `print_first_login`。2 回目からは出ません）。配布物にはどちらのデータベースも入っていないため、`--demo` でも本番でも初回起動で出ます。**閲覧者の値は、この配布物の `cynovela.yaml`（`auth.viewer_initial_password`・`launch.sh` と同じ場所）にあります。**管理者の値の控えも同じファイル（`auth.admin_initial_password`）にあります。
 
-見逃した場合は、**この配布物の `cynovela.yaml`**（`launch.sh` と同じ場所）の `auth.admin_initial_password` / `auth.viewer_initial_password` に書き込まれています。管理者と閲覧者の初期パスワードは**固定値**で、同梱の文書には書かれていません。**別便で渡すファイルはありません**（2026-08-02 に、乱数を作って別便で渡す形から変えました。受け取り手が入れない配布物を作らないためです）。
+管理者の値を画面で見逃した場合は、**この配布物の `cynovela.yaml`**（`launch.sh` と同じ場所）の `auth.admin_initial_password` に書き込まれています。管理者と閲覧者の初期パスワードは**固定値**で、同梱の文書には書かれていません。**別便で渡すファイルはありません**（2026-08-02 に、乱数を作って別便で渡す形から変えました。受け取り手が入れない配布物を作らないためです）。
 
 平文はこのリポジトリには置いていません。配布物を作るときに `tools/dist-initial-credentials.local`（git 追跡外・0600）から読み込み、同梱の `cynovela.yaml` の `auth.admin_initial_password` / `auth.viewer_initial_password` へ書き込みます。このファイルが無いと配布物は作れません（途中で止まります）。
 
