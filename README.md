@@ -42,7 +42,7 @@ Download them from the [releases page](https://github.com/tohaya-dev/cynovela/re
 | `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02` | **The AI models Cynovela uses.** The embedding models that turn documents into vectors (BGE-M3 and others) and the model that reranks search results — **not the answering LLM** (you set that up separately in step 5). GitHub caps a release file at 2 GiB, so they are split into three parts |
 | `SHA256SUMS` | The list for checking that nothing is corrupted |
 
-If you are on a company-issued Mac, download `check-managed-mac.command` first
+If you are on a managed Mac (under MDM), download `check-managed-mac.command` first
 and double-click it. It only checks whether this Mac can run Cynovela; it
 changes no settings.
 
@@ -135,7 +135,7 @@ change models, repeat 3–5 in the same order.**
     ./launch.sh --demo
 
 **The 21 bundled sample documents are ingested on the first start, and you can
-ask questions in `RAG Chat` right away** (ingestion takes about 39 seconds,
+ask questions in `RAG Chat` right away** (ingestion takes about 40 seconds,
 measured on an M4 Max). Start by asking
 「この資料の概要を教えてください」 ("give me an overview of these documents").
 **A local LLM takes time before the answer comes back.** Wait for it.
