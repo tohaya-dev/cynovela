@@ -602,7 +602,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-body">
     <ul>
     <li><strong>Zip nesting is only one level deep.</strong> A zip inside a zip is not opened (the extraction step in <code>rag.py</code> skips entries whose extension is <code>.zip</code>).</li>
-    <li><strong>By default images are not read for text.</strong> The default behaviour is <code>filename_only</code>, which puts only the file name into the index (<code>_extract_image_text</code> in <code>rag.py</code>). Text inside an image is not read. There are settings that generate a description (<code>caption</code> / <code>lm_studio</code>), but the bundled <code>cynovela.yaml</code> has no <code>image:</code> entry, so the default stays in place.</li>
+    <li><strong>Image files cannot be read (currently under development).</strong> You cannot search by what is inside a photo or screenshot. There is no OCR (optical character recognition) mechanism.</li>
     <li>If a PDF was produced as an image (merely scanned), not a single character can be extracted. There is no OCR (optical character recognition) mechanism.</li>
     <li>Encrypted PDFs and corrupted documents are skipped. They appear in the ingest result as "読めない/空: N件".</li>
     </ul>
@@ -841,7 +841,7 @@ a:hover { text-decoration: underline; }
     <li><strong>Neither is erased by a restart.</strong> They are not initialised on every startup. If you want to erase them, delete the files yourself.</li>
     <li>The package does not ship a database, an index, or key files. They are created on this machine: the keys at the first startup, the demo database and index at the first <code>--demo</code> startup, <strong>only from the <code>dummy-corpus/</code> inside the package</strong>. Not a single working document from the builder's side is included. See <code>BUNDLED-DATA.md</code> in the package.</li>
     <li><strong>Where <code>store/</code> itself sits depends on the edition.</strong> In every edition that is a folder you unpack, it is <code>store/</code> inside that folder. In the app edition — in preparation, not part of this release — the installed bundle is read-only, so the launcher sets <code>CYNOVELA_DATA_ROOT</code> and the same paths are taken relative to <code>~/Library/Application Support/Cynovela/</code> instead.</li>
-    <li><strong>The first sign-in name and password are printed at the first startup.</strong> The startup script decides "this is a first run" by asking whether the database file already exists, and neither database ships in the package, so the first startup prints them in both forms (<code>--demo</code> and production). They can also be read from the <code>cynovela.yaml</code> next to the startup script, on the <code>admin_initial_password:</code> line under <code>auth:</code> (<code>grep admin_initial_password cynovela.yaml</code>). You are asked to change the password at the first sign-in either way.</li>
+    <li><strong>The first sign-in name and password are printed on the terminal screen once, at the very first startup (on the <code>--demo</code> start as well as on the production start).</strong> The startup script decides "this is a first run" by asking whether the database file already exists, and neither database ships in the package, so the first startup prints them in both forms — there is no need to go looking for them. If you missed them, they can be read from the <code>cynovela.yaml</code> next to the startup script, on the <code>admin_initial_password:</code> line under <code>auth:</code> (<code>grep admin_initial_password cynovela.yaml</code>). You are asked to change the password at the first sign-in either way.</li>
     </ul>
 </div>
 <div class="slide-footer">
@@ -1566,7 +1566,7 @@ cd ../..
     <p>そのほかの制限:</p>
     <ul>
     <li><strong>zip の入れ子は 1 段だけです。</strong> zip の中の zip は開きません（<code>rag.py</code> の取り出し処理が、中身の拡張子が <code>.zip</code> のものを飛ばします）。</li>
-    <li><strong>画像は既定では本文を読みません。</strong> 既定の動作はファイル名だけをインデックスに入れる<code>filename_only</code> です（<code>rag.py</code> の <code>_extract_image_text</code>）。画像の中の文字は読みません。説明文を作らせる設定（<code>caption</code> / <code>lm_studio</code>）もありますが、同梱の <code>cynovela.yaml</code> には <code>image:</code> の項目がなく、既定のままです。</li>
+    <li><strong>画像ファイルは読めません（現在開発中）。</strong>写真やスクリーンショットの中身で探すことはできません。文字起こし（OCR）の仕組みは入っていません。</li>
     <li>PDF が画像として作られている（スキャンしただけの）場合、文字が 1 つも取れません。文字認識（OCR）の仕組みは入っていません。</li>
     <li>暗号化された PDF や壊れた文書は飛ばされます。取り込み結果に「読めない/空: ○件」として出ます。</li>
     </ul>
@@ -1805,7 +1805,7 @@ cd ../..
     <li><strong>どちらも再起動で消えません。</strong> 起動のたびに初期化されることはありません。消したい場合は自分でファイルを消してください。</li>
     <li>配布物にはデータベース・インデックス・鍵ファイルは入っていません。この機材の上で作られます: 鍵は初回起動時、デモのデータベースとインデックスは <code>--demo</code> の初回起動時に、<strong>配布物の中の <code>dummy-corpus/</code> だけ</strong>から作られます。作った側の作業用の資料は 1 件も入っていません。詳しくは配布物の <code>BUNDLED-DATA.md</code> を見てください。</li>
     <li><strong><code>store/</code> 自体の場所は形態で違います。</strong> 展開して使うフォルダの形では、そのフォルダの中の <code>store/</code> です。アプリ版（準備中。この版には入っていません）は入れたあとの包みが読み取り専用のため、入口が <code>CYNOVELA_DATA_ROOT</code> を与え、上の道筋は <code>~/Library/Application Support/Cynovela/</code> からの相対として扱われます。</li>
-    <li><strong>最初のユーザー名とパスワードは、初回起動時に画面へ出ます。</strong> 起動用スクリプトはデータベースのファイルがすでに在るかどうかで「初回である」と判定します。配布物にはどちらのデータベースも入っていないため、<code>--demo</code> でも本番でも初回起動でちゃんと出ます。起動用スクリプトと同じ場所にある <code>cynovela.yaml</code> の <code>auth:</code> の下、<code>admin_initial_password:</code> の行から読むこともできます（<code>grep admin_initial_password cynovela.yaml</code>）。どちらの道でも、最初のログインで変更を求められる点は同じです。</li>
+    <li><strong>最初のユーザー名とパスワードは、初回起動のときにターミナルの画面へ1回だけ出ます（<code>--demo</code> でも本番でも初回に出ます）。</strong> 起動用スクリプトはデータベースのファイルがすでに在るかどうかで「初回である」と判定します。配布物にはどちらのデータベースも入っていないため、どちらの姿でも初回にちゃんと出ます。探す必要はありません。見逃した場合は、起動用スクリプトと同じ場所にある <code>cynovela.yaml</code> の <code>auth:</code> の下、<code>admin_initial_password:</code> の行から読めます（<code>grep admin_initial_password cynovela.yaml</code>）。どちらの道でも、最初のログインで変更を求められる点は同じです。</li>
     </ul>
     <h3>横断検索</h3>
     <p>MCP のツールには <code>search_across_collections</code>（複数のコレクションをまたぐ検索）がありますが、<strong>画面（GUI）には横断検索の入口がありません。</strong>画面からはワークスペースを 1 つ選んで検索します。</p>

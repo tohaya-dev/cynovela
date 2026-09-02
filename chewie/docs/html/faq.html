@@ -307,7 +307,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <p><code>extract_text()</code> in <code>rag.py</code> is in charge of text extraction. The formats that can be ingested are the ones listed in <code>SUPPORTED_EXTENSIONS</code> — documents (<code>.txt</code> <code>.md</code> <code>.csv</code> <code>.pdf</code> <code>.docx</code>), spreadsheets and presentations (<code>.xlsx</code> <code>.xls</code> <code>.pptx</code>), web and mail (<code>.html</code> <code>.htm</code> <code>.eml</code>), archives (<code>.zip</code>), and images (<code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.heic</code> <code>.webp</code> <code>.gif</code>). The exhaustive list, together with the commonly brought-in formats that <strong>cannot</strong> be handled, is in <a href="limits.html" target="_blank" rel="noopener">limits.md</a>.</p>
-    <p><strong>About images.</strong> The default behaviour is <code>filename_only</code>, which puts only the file name into the index; text inside an image is not read, and there is no OCR (optical character recognition) mechanism. There are settings that generate a description (<code>caption</code> / <code>lm_studio</code>), but the bundled <code>cynovela.yaml</code> has no <code>image:</code> entry, so the default stays in place. A PDF that was produced as an image (merely scanned) yields not a single character.</p>
+    <p><strong>About images.</strong> <strong>Image files cannot be read (currently under development).</strong> You cannot search by what is inside a photo or screenshot. There is no OCR (optical character recognition) mechanism. A PDF that was produced as an image (merely scanned) yields not a single character.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -585,7 +585,7 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <p><code>rag.py</code> の <code>extract_text()</code> がテキスト抽出を担当します。取り込めるのは <code>SUPPORTED_EXTENSIONS</code> に書かれた形式——文書（<code>.txt</code> <code>.md</code> <code>.csv</code> <code>.pdf</code> <code>.docx</code>）、表計算・プレゼン（<code>.xlsx</code> <code>.xls</code> <code>.pptx</code>）、Web・メール（<code>.html</code> <code>.htm</code> <code>.eml</code>）、書庫（<code>.zip</code>）、画像（<code>.jpg</code> <code>.jpeg</code> <code>.png</code> <code>.heic</code> <code>.webp</code> <code>.gif</code>）——です。網羅的な一覧と、よく持ち込まれるのに<strong>扱えない</strong>形式は <a href="limits.html" target="_blank" rel="noopener">limits.md</a> にあります。</p>
-    <p><strong>画像について。</strong> 既定の動作は <code>filename_only</code> で、索引にはファイル名だけが入ります。画像の中の文字は読みません。OCR（光学文字認識）の仕組みはありません。説明文を生成する設定（<code>caption</code> / <code>lm_studio</code>）はありますが、同梱の <code>cynovela.yaml</code> に <code>image:</code> の項目が無いため既定のままです。画像として作られた PDF（単に読み取っただけのもの）からは一文字も取り出せません。</p>
+    <p><strong>画像について。</strong> <strong>画像ファイルは読めません（現在開発中）。</strong>写真やスクリーンショットの中身で探すことはできません。文字起こし（OCR）の仕組みはありません。画像として作られた PDF（単に読み取っただけのもの）からは一文字も取り出せません。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

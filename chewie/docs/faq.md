@@ -54,7 +54,7 @@ The cases where sending to the outside is deliberately stopped, and the cases wh
 
 `extract_text()` in `rag.py` is in charge of text extraction. The formats that can be ingested are the ones listed in `SUPPORTED_EXTENSIONS` — documents (`.txt` `.md` `.csv` `.pdf` `.docx`), spreadsheets and presentations (`.xlsx` `.xls` `.pptx`), web and mail (`.html` `.htm` `.eml`), archives (`.zip`), and images (`.jpg` `.jpeg` `.png` `.heic` `.webp` `.gif`). The exhaustive list, together with the commonly brought-in formats that **cannot** be handled, is in [limits.md](limits.md).
 
-**About images.** The default behaviour is `filename_only`, which puts only the file name into the index; text inside an image is not read, and there is no OCR (optical character recognition) mechanism. There are settings that generate a description (`caption` / `lm_studio`), but the bundled `cynovela.yaml` has no `image:` entry, so the default stays in place. A PDF that was produced as an image (merely scanned) yields not a single character.
+**About images.** **Image files cannot be read (currently under development).** You cannot search by what is inside a photo or screenshot. There is no OCR (optical character recognition) mechanism. A PDF that was produced as an image (merely scanned) yields not a single character.
 
 ## Q4. How much spec is required
 
@@ -181,7 +181,7 @@ Cynovela の既定構成では、以下のすべてがローカル環境で完�
 
 `rag.py` の `extract_text()` がテキスト抽出を担当します。取り込めるのは `SUPPORTED_EXTENSIONS` に書かれた形式——文書（`.txt` `.md` `.csv` `.pdf` `.docx`）、表計算・プレゼン（`.xlsx` `.xls` `.pptx`）、Web・メール（`.html` `.htm` `.eml`）、書庫（`.zip`）、画像（`.jpg` `.jpeg` `.png` `.heic` `.webp` `.gif`）——です。網羅的な一覧と、よく持ち込まれるのに**扱えない**形式は [limits.md](limits.md) にあります。
 
-**画像について。** 既定の動作は `filename_only` で、索引にはファイル名だけが入ります。画像の中の文字は読みません。OCR（光学文字認識）の仕組みはありません。説明文を生成する設定（`caption` / `lm_studio`）はありますが、同梱の `cynovela.yaml` に `image:` の項目が無いため既定のままです。画像として作られた PDF（単に読み取っただけのもの）からは一文字も取り出せません。
+**画像について。** **画像ファイルは読めません（現在開発中）。**写真やスクリーンショットの中身で探すことはできません。文字起こし（OCR）の仕組みはありません。画像として作られた PDF（単に読み取っただけのもの）からは一文字も取り出せません。
 
 ## Q4. スペック要件はどれくらい必要ですか
 

@@ -230,11 +230,7 @@ Other limitations:
 
 - **Zip nesting is only one level deep.** A zip inside a zip is not opened
   (the extraction step in `rag.py` skips entries whose extension is `.zip`).
-- **By default images are not read for text.** The default behaviour is `filename_only`,
-  which puts only the file name into the index (`_extract_image_text` in `rag.py`).
-  Text inside an image is not read.
-  There are settings that generate a description (`caption` / `lm_studio`), but the bundled
-  `cynovela.yaml` has no `image:` entry, so the default stays in place.
+- **Image files cannot be read (currently under development).** You cannot search by what is inside a photo or screenshot. There is no OCR (optical character recognition) mechanism.
 - If a PDF was produced as an image (merely scanned), not a single character can be extracted.
   There is no OCR (optical character recognition) mechanism.
 - Encrypted PDFs and corrupted documents are skipped. They appear in the ingest result as
@@ -406,11 +402,12 @@ If you want to run on Kubernetes, you need to write the Deployment definition yo
   part of this release — the installed bundle is read-only, so the launcher sets
   `CYNOVELA_DATA_ROOT` and the same paths are taken relative to
   `~/Library/Application Support/Cynovela/` instead.
-- **The first sign-in name and password are printed at the first startup.** The startup
-  script decides "this is a first run" by asking whether the database file already exists,
-  and neither database ships in the package, so the first startup prints them in both
-  forms (`--demo` and production). They can also be read from the `cynovela.yaml` next to
-  the startup script, on the `admin_initial_password:` line under `auth:`
+- **The first sign-in name and password are printed on screen at the first startup —
+  in both forms (`--demo` and production).** The startup script decides "this is a
+  first run" by asking whether the database file already exists, and neither database
+  ships in the package, so the first startup prints them either way. If you missed
+  that screen, the same value can be read from the `cynovela.yaml` next to the
+  startup script, on the `admin_initial_password:` line under `auth:`
   (`grep admin_initial_password cynovela.yaml`). You are asked to change the password at
   the first sign-in either way.
 
@@ -895,10 +892,7 @@ PDF は文字の並びではなく、文字を置く位置の情報として組�
 
 - **zip の入れ子は 1 段だけです。** zip の中の zip は開きません
   （`rag.py` の取り出し処理が、中身の拡張子が `.zip` のものを飛ばします）。
-- **画像は既定では本文を読みません。** 既定の動作はファイル名だけをインデックスに入れる
-  `filename_only` です（`rag.py` の `_extract_image_text`）。画像の中の文字は読みません。
-  説明文を作らせる設定（`caption` / `lm_studio`）もありますが、
-  同梱の `cynovela.yaml` には `image:` の項目がなく、既定のままです。
+- **画像ファイルは読めません（現在開発中）。**写真やスクリーンショットの中身で探すことはできません。文字起こし（OCR）の仕組みは入っていません。
 - PDF が画像として作られている（スキャンしただけの）場合、文字が 1 つも取れません。
   文字認識（OCR）の仕組みは入っていません。
 - 暗号化された PDF や壊れた文書は飛ばされます。取り込み結果に
@@ -1060,13 +1054,13 @@ Kubernetes で動かしたい場合は、Deployment の定義を自分で書く�
   中の `store/` です。アプリ版（準備中。この版には入っていません）は入れたあとの包みが
   読み取り専用のため、入口が `CYNOVELA_DATA_ROOT` を与え、上の道筋は
   `~/Library/Application Support/Cynovela/` からの相対として扱われます。
-- **最初のユーザー名とパスワードは、初回起動時に画面へ出ます。** 起動用スクリプトは
-  データベースのファイルがすでに在るかどうかで「初回である」と判定します。配布物には
-  どちらのデータベースも入っていないため、`--demo` でも本番でも初回起動でちゃんと
-  出ます。起動用スクリプトと同じ場所にある `cynovela.yaml` の `auth:` の下、
-  `admin_initial_password:` の行から読むこともできます
-  （`grep admin_initial_password cynovela.yaml`）。どちらの道でも、最初のログインで
-  変更を求められる点は同じです。
+- **最初のユーザー名とパスワードは、初回起動時に画面へ出ます（`--demo` でも本番でも
+  初回に出ます）。** 起動用スクリプトはデータベースのファイルがすでに在るかどうかで
+  「初回である」と判定します。配布物にはどちらのデータベースも入っていないため、
+  どちらの形でも初回起動でちゃんと出ます。この表示を見逃した場合は、起動用スクリプトと
+  同じ場所にある `cynovela.yaml` の `auth:` の下、`admin_initial_password:` の行から
+  読めます（`grep admin_initial_password cynovela.yaml`）。どちらの道でも、最初の
+  ログインで変更を求められる点は同じです。
 
 ### 横断検索
 

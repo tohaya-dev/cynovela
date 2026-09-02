@@ -2600,7 +2600,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <thead><tr><th>Environment variable</th><th>Use</th><th>Default</th></tr></thead>
     <tbody>
     <tr><td><code>CYNOVELA_ADMIN_USERNAME</code></td><td>User name of the first administrator</td><td><code>cynovela</code></td></tr>
-    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>Password of the first administrator</td><td>(The shipped packages write a fixed value into their own <code>cynovela.yaml</code> at <code>auth.admin_initial_password</code> — read it there. If neither the env var nor that key is set — which is the state of the repository source, not of a shipped package — a password change is forced at first login. Set the env var only if you want to override it.)</td></tr>
+    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>Password of the first administrator</td><td>(The first value is printed on the terminal once, at the very first start — on the <code>--demo</code> start as well as on the production start — so there is no need to go looking for it. If you missed it, the shipped packages write a fixed value into their own <code>cynovela.yaml</code> at <code>auth.admin_initial_password</code> — read it there. If neither the env var nor that key is set — which is the state of the repository source, not of a shipped package — a password change is forced at first login. Set the env var only if you want to override it.)</td></tr>
     </tbody>
     </table>
     <h3>9-3. Login Information of the Demo Database</h3>
@@ -2621,7 +2621,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <table>
     <thead><tr><th>User name</th><th>Role</th><th>Password</th></tr></thead>
     <tbody>
-    <tr><td><code>cynovela</code></td><td>admin</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>auth.admin_initial_password</code>). A change is forced at first login</td></tr>
+    <tr><td><code>cynovela</code></td><td>admin</td><td>The first value is printed on the terminal once, at the very first start. If you missed it, it is in this package's <code>cynovela.yaml</code> (<code>auth.admin_initial_password</code>). A change is forced at first login</td></tr>
     <tr><td><code>demo</code></td><td>viewer</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>auth.viewer_initial_password</code>). Nothing is delivered separately</td></tr>
     </tbody>
     </table>
@@ -5160,7 +5160,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <thead><tr><th>環境変数</th><th>用途</th><th>既定値</th></tr></thead>
     <tbody>
     <tr><td><code>CYNOVELA_ADMIN_USERNAME</code></td><td>初回 admin ユーザー名</td><td><code>cynovela</code></td></tr>
-    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>初回 admin パスワード</td><td>（配布物は固定値を配布物自身の <code>cynovela.yaml</code> の <code>auth.admin_initial_password</code> へ書き込んで出荷します。値はそこで読めます。env・当該キーのいずれも未設定＝リポジトリのソースそのままの状態なら、初回ログインでパスワード変更を強制します。上書きしたい場合のみ env に値を設定）</td></tr>
+    <tr><td><code>CYNOVELA_ADMIN_INITIAL_PASSWORD</code></td><td>初回 admin パスワード</td><td>（最初の値は、初回起動のときにターミナルの画面へ1回だけ出ます。<code>--demo</code> でも本番でも初回に出るので、探す必要はありません。見逃した場合は、配布物が固定値を配布物自身の <code>cynovela.yaml</code> の <code>auth.admin_initial_password</code> へ書き込んで出荷しているので、そこで読めます。env・当該キーのいずれも未設定＝リポジトリのソースそのままの状態なら、初回ログインでパスワード変更を強制します。上書きしたい場合のみ env に値を設定）</td></tr>
     </tbody>
     </table>
     <h3>9-3. デモのデータベースのログイン情報</h3>
@@ -5181,7 +5181,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <table>
     <thead><tr><th>ユーザー名</th><th>ロール</th><th>パスワード</th></tr></thead>
     <tbody>
-    <tr><td><code>cynovela</code></td><td>admin</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>auth.admin_initial_password</code>）に在ります。初回ログイン時に変更を強制</td></tr>
+    <tr><td><code>cynovela</code></td><td>admin</td><td>最初の値は、初回起動のときにターミナルの画面へ1回だけ出ます。見逃した場合は、この配布物の <code>cynovela.yaml</code>（<code>auth.admin_initial_password</code>）から読めます。初回ログイン時に変更を強制</td></tr>
     <tr><td><code>demo</code></td><td>viewer</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>auth.viewer_initial_password</code>）に在ります。別便で渡すファイルはありません</td></tr>
     </tbody>
     </table>

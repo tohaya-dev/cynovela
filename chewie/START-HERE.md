@@ -1,5 +1,13 @@
 # START HERE
 
+> **はじめての方は [`QUICKSTART.md`](QUICKSTART.md) を開いてください。**
+> 落とすところから、最初の質問に答えが返るところまでを1本にまとめてあります。
+> この文書は、そのあとに読むくわしい説明です。
+>
+> **If this is your first time, open [`QUICKSTART.md`](QUICKSTART.md).**
+> It takes you from the download to your first answer in one place.
+> This document is the detailed reference you read afterwards.
+
 **日本語版はこちら → [日本語](#日本語)**
 
 ## English
@@ -14,22 +22,19 @@ This package is the **application build (runs on macOS directly, no container)**
 
 ---
 
-### 1. Which package did you download?
+### 1. About this download
 
-```
-1) App edition (.pkg) — in preparation. Not part of this release.
-2) Package edition (for Apple silicon Macs — ready to use)
-     Extract it and run one line. No Python and no conda are needed.
-     Nothing is installed on this Mac. To remove it, delete the folder.
-3) Source edition (for everyone else, or those who want to build the environment themselves)
-     At startup you choose one of 2 ways to build the environment:
-       1) create a dedicated conda environment (name: cynovela-dist), or
-       2) use this Mac's Python (3.12 or later) and build a venv only inside this folder.
-```
+**This is the package edition.** Extract it and run one line. No Python and no
+conda are needed. Nothing is installed on this Mac. To remove it, delete the
+folder. **It runs on Apple silicon only.**
 
-**For the package edition and the source editions the AI models are downloaded
-separately** (a separate file on the release page, or the first start offers to
-fetch them); neither of those two packages contains them.
+**The AI models are downloaded separately** (`...models-1.2.0.tar.gz.part00` to
+`part02` on the release page). They are not inside this download. How to connect
+them is in section 2 of [`QUICKSTART.md`](QUICKSTART.md).
+**The AI models go in `store/models/` — they will not be found anywhere else.**
+
+If you want to build it from source yourself, get the repository and run
+`./launch.sh` from `chewie/`. No source archive is placed on the release page.
 
 ---
 
@@ -82,19 +87,27 @@ Three notes about **where you put the folder**:
 
 Then:
 
-1. **Sign in.** The administrator user name is `cynovela`; the viewer account is
-   `demo`. **The first password is written inside this package, in
-   `cynovela.yaml`** — open that file and read the value of
-   `auth.admin_initial_password` (the viewer's is `auth.viewer_initial_password`).
-   Nothing is sent to you separately, and no password is written in any of these
-   documents. `cynovela.yaml` sits in the folder you unpacked, next to
-   `launch.sh`.
+1. **Sign in.**
 
-   The start-up screen also prints it once, at the first start. Neither
-   database is inside the package, so both routes — the demo start
-   (`./launch.sh --demo`) and the ordinary start — count as a first start.
-   Reading `cynovela.yaml` works whichever route you took. You will be
-   asked to change the password straight after the first sign-in.
+   **First sign-in. You do not need to look for the password.**
+   **It is printed on screen, once, the first time you start.**
+
+       ────────────────────────────────────────────────
+         First login / はじめてのログイン
+           Open / ひらく          : http://localhost:8765
+           User name / ユーザー名 : cynovela
+           Password / パスワード  : (it appears here)
+         You will be asked to change it on the first sign-in.
+         Shown only this once.
+       ────────────────────────────────────────────────
+
+   - **Shown on the first start only.** It does not appear again.
+   - **The administrator is `cynovela`; the viewer account is `demo`.**
+   - **The administrator is asked to change the password on first sign-in.** The viewer is not.
+   - **Nothing is sent to you separately.**
+   - **If you missed that screen**, the same value is in `cynovela.yaml` in the folder you
+     unpacked, next to `launch.sh`: `auth.admin_initial_password`
+     (`auth.viewer_initial_password` for the viewer).
 2. **Add search targets.** Answer the question shown at startup; or use "Add a search folder" under "Settings" in the app screen; or run `./launch.sh --add` (list with `./launch.sh --list`; icon: `Cynovela-add-folder.command`).
 3. **Ask a question.** Open `http://localhost:8765` and type in plain language. Every answer carries the passage it came from — open it and check.
 4. **Stop it.** Double-click `Cynovela-stop.command` (or run `bash stop.sh`).
@@ -280,21 +293,19 @@ that one. The same documents are repeated below.
 
 ---
 
-### 1. どちらの配布物を落としましたか
+### 1. この配布物について
 
-```
-1) アプリ版（.pkg）— 準備中です。この版には入っていません。
-2) パッケージ版（M系 Mac の方はこちら・すぐ使える形）
-     展開して1行叩くだけで動きます。Python も conda も要りません。
-     この Mac には何も入れません。消すときはフォルダごと削除します。
-3) ソース版（上記以外の方、または自分で環境を作りたい方）
-     起動時に、環境の作り方を2つから選びます:
-       1) conda に専用の環境を作る（名前: cynovela-dist）
-       2) この Mac の Python（3.12 以上）を使い、このフォルダの中だけに venv を作る
-```
+**これはパッケージ版です。** 展開して1行叩くだけで動きます。Python も conda も
+要りません。この Mac には何も入れません。消すときはフォルダごと削除します。
+**Apple シリコン専用です。**
 
-**パッケージ版とソース版では AIモデルを別に落とします**（リリースページの別ファイル、
-または初回起動が取得を提案します）。この2つの配布物には入っていません。
+**AIモデルは別に落とします**（リリースのページの `...models-1.2.0.tar.gz.part00`〜
+`part02`）。この配布物には入っていません。つなぎ方は
+[`QUICKSTART.md`](QUICKSTART.md) の2節にあります。
+**AIモデルは `store/models/` に置きます。この場所でないと見つけられません。**
+
+ソースから自分で組み立てたい方は、リポジトリを取得して `chewie/` から
+`./launch.sh` を叩いてください。リリースのページにソースの書庫は置いていません。
 
 ---
 
@@ -344,18 +355,27 @@ that one. The same documents are repeated below.
 
 そのあとは:
 
-1. **ログインする。** 管理者のユーザー名は `cynovela`、閲覧者は `demo` です。
-   **最初のパスワードは、この配布物の中の `cynovela.yaml` に書いてあります。**
-   そのファイルを開き、`auth.admin_initial_password` の値を見てください
-   （閲覧者のぶんは `auth.viewer_initial_password` です）。別便で届くものはなく、
-   この一連の文書にもパスワードは書いてありません。`cynovela.yaml` は展開した
-   フォルダの中、`launch.sh` と同じ場所に在ります。
+1. **ログインする。**
 
-   起動の画面にも、初回起動のときに1回だけ出ます。配布物にはどちらの
-   データベースも入っていないため、デモ起動（`./launch.sh --demo`）でも
-   普通の起動でも初回に出ます。
-   `cynovela.yaml` を見る道は、どちらの経路でも同じように使えます。入るとすぐ
-   パスワードの変更を求められます。
+   **最初のログイン。パスワードを探す必要はありません。**
+   **はじめて起動したとき、ターミナルの画面に1回だけ出ます。**
+
+       ────────────────────────────────────────────────
+         First login / はじめてのログイン
+           Open / ひらく          : http://localhost:8765
+           User name / ユーザー名 : cynovela
+           Password / パスワード  : （ここに出ます）
+         最初のログインで変更を求められます。
+         この表示が出るのは初回だけです。
+       ────────────────────────────────────────────────
+
+   - **出るのは初回だけです。**2回目からは出ません。
+   - **管理者は `cynovela`、閲覧者は `demo` です。**
+   - **管理者は最初のログインでパスワードの変更を求められます。**閲覧者には求めません。
+   - **別便で届くものはありません。**
+   - **この画面を見逃した場合**は、展開したフォルダの `cynovela.yaml`
+     （`launch.sh` と同じ場所）の `auth.admin_initial_password` に同じ値が書いてあります
+     （閲覧者のぶんは `auth.viewer_initial_password`）。
 2. **検索の対象を足す。** 起動したときに聞かれる画面で足す / アプリ画面の「設定」の「検索の対象フォルダを足す」から足す / ターミナルで `./launch.sh --add`（一覧は `./launch.sh --list`。アイコンなら `Cynovela-add-folder.command`）。
 3. **質問する。** `http://localhost:8765` を開き、普通の言葉で聞きます。答えには必ず根拠にした箇所が付きます。開いて原文を確かめてください。
 4. **止める。** `Cynovela-stop.command` をダブルクリックします（または

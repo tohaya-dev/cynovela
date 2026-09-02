@@ -617,7 +617,7 @@ cynovela-chewie-package-1.2.0.tar.gz: OK</code></pre>
 <p>Hold <strong>⌘</strong> and click <code>http://127.0.0.1:8765/</code>, or type that address into Safari or Chrome yourself.</p>
 <p>A sign-in screen appears.</p>
 <h4>Step 11. Sign in</h4>
-<ul><li><strong>User name:</strong> <code>cynovela</code></li><li><strong>Password:</strong> it is written in the file <code>cynovela.yaml</code> inside the folder you unpacked, on the line that begins <code>admin_initial_password:</code>. To see it, type this in Terminal:<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>(It is also printed on the terminal screen once, the very first time — on this <code>--demo</code> start as well as on the ordinary start, because neither database ships in the package. Reading <code>cynovela.yaml</code> works either way.)</p></li></ul>
+<ul><li><strong>User name:</strong> <code>cynovela</code></li><li><strong>Password:</strong> it is printed on the terminal screen once, the very first time — on this <code>--demo</code> start as well as on the ordinary start, because neither database ships in the package. There is no need to go looking for it. If you missed it, it is written in the file <code>cynovela.yaml</code> inside the folder you unpacked, on the line that begins <code>admin_initial_password:</code>. To see it, type this in Terminal:<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>(Reading <code>cynovela.yaml</code> works at any time, later as well.)</p></li></ul>
 <p>It will ask you to choose a new password straight away. Do that.</p>
 </div>
 <div class="slide-footer">
@@ -1051,7 +1051,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>Administrator user name</td><td><code>cynovela</code></td></tr><tr><td>Viewer user name</td><td><code>demo</code></td></tr></tbody></table>
-<p>The default user names are <strong>administrator <code>cynovela</code></strong> / <strong>viewer <code>demo</code></strong> (not <code>admin</code>). <strong>The initial passwords are written into this package's own <code>cynovela.yaml</code></strong> — read them with <code>grep admin_initial_password cynovela.yaml</code> (the viewer's line is <code>viewer_initial_password:</code>). They are not written in this documentation, so that a copy of the documentation cannot be used to sign in. <code>./launch.sh</code> also prints them on the terminal once, the very first time — on the <code>--demo</code> start as well as on the ordinary start, because neither database ships in the package.</p>
+<p>The default user names are <strong>administrator <code>cynovela</code></strong> / <strong>viewer <code>demo</code></strong> (not <code>admin</code>). <strong>The initial passwords are printed by <code>./launch.sh</code> on the terminal once, the very first time</strong> — on the <code>--demo</code> start as well as on the ordinary start, because neither database ships in the package. There is no need to go looking for them. If you missed them, they are also written into this package's own <code>cynovela.yaml</code> — read them with <code>grep admin_initial_password cynovela.yaml</code> (the viewer's line is <code>viewer_initial_password:</code>). They are not written in this documentation, so that a copy of the documentation cannot be used to sign in.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1113,7 +1113,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(5/5)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>User name (default. It is not <code>admin</code>)</th><th>Role</th><th>Password</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>admin_initial_password:</code>). A change is forced at the first login</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>viewer_initial_password:</code>)</td></tr></tbody></table>
+<table><thead><tr><th>User name (default. It is not <code>admin</code>)</th><th>Role</th><th>Password</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>The first value is printed on the terminal once, at the very first start. If you missed it, it is in this package's <code>cynovela.yaml</code> (<code>admin_initial_password:</code>). A change is forced at the first login</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>viewer_initial_password:</code>)</td></tr></tbody></table>
 <h3>How to create a viewer when you started with nothing loaded</h3>
 <p>If you started with nothing loaded, at first only the administrator exists. You create the viewer yourself. Enter as the administrator, add a new user from user management, and choose viewer as the role. If you started with the trial documents, a viewer is prepared in advance.</p>
 </div>
@@ -2404,7 +2404,7 @@ cynovela-chewie-package-1.2.0.tar.gz: OK</code></pre>
 </div>
 <div class="slide-body">
 <h4>手順11. ログインする</h4>
-<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>合言葉:</strong> 取り出したフォルダの中の <code>cynovela.yaml</code> というファイルの、<code>admin_initial_password:</code> で始まる行に書いてあります。見るには、ターミナルで次を打ちます。<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>（はじめての1回だけターミナルの画面にも出ます。配布物にはどちらのデータベースも入っていないため、この <code>--demo</code> の起動でも普通の起動でも初回に出ます。<code>cynovela.yaml</code> を見る道は、どちらでも使えます。）</p></li></ul>
+<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>合言葉:</strong> はじめての1回だけ、ターミナルの画面に出ます。配布物にはどちらのデータベースも入っていないため、この <code>--demo</code> の起動でも普通の起動でも初回に出ます。探す必要はありません。見逃した場合は、取り出したフォルダの中の <code>cynovela.yaml</code> というファイルの、<code>admin_initial_password:</code> で始まる行から読めます。見るには、ターミナルで次を打ちます。<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>（<code>cynovela.yaml</code> を見る道は、あとからでもいつでも使えます。）</p></li></ul>
 <p>入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。</p>
 <h4>手順12. 最初の質問をする</h4>
 <p><code>--demo</code> で起こしたので、お試しの資料は初回起動時に自動で取り込まれ、探せる状態になっています（起動ログに取り込みの進捗がまだ出ている間は、終わるのを待ってください）。ふつうの言葉で枠に打ち込んで return を押します。たとえば次のようにです。</p>
@@ -2811,7 +2811,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>管理者の利用者名</td><td><code>cynovela</code></td></tr><tr><td>閲覧者の利用者名</td><td><code>demo</code></td></tr></tbody></table>
-<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>初期パスワードは、この配布物自身の <code>cynovela.yaml</code> に書き込まれています</strong> — <code>grep admin_initial_password cynovela.yaml</code> で見られます（閲覧者のぶんは <code>viewer_initial_password:</code> の行です）。この文書には書いていません。文書のコピーだけでログインできてしまうのを避けるためです。<code>./launch.sh</code> は、はじめての1回だけターミナルの画面にも出します。配布物にはどちらのデータベースも入っていないため、<code>--demo</code> の起動でも普通の起動でも初回に出ます。</p>
+<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>初期パスワードは、<code>./launch.sh</code> がはじめての1回だけターミナルの画面に出します。</strong>配布物にはどちらのデータベースも入っていないため、<code>--demo</code> の起動でも普通の起動でも初回に出ます。探す必要はありません。見逃した場合は、この配布物自身の <code>cynovela.yaml</code> にも書き込まれています — <code>grep admin_initial_password cynovela.yaml</code> で見られます（閲覧者のぶんは <code>viewer_initial_password:</code> の行です）。この文書には書いていません。文書のコピーだけでログインできてしまうのを避けるためです。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2860,7 +2860,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <div class="slide-body">
 <table><thead><tr><th>ロール</th><th>権限</th><th>検索対象</th></tr></thead><tbody><tr><td><code>admin</code></td><td>全機能</td><td>raw 保管庫（出力マスクなし）</td></tr><tr><td><code>viewer</code></td><td>閲覧中心</td><td>masked 保管庫（出口マスクあり）</td></tr></tbody></table>
 <blockquote><code>curator</code> / <code>data-scientist</code> 等の名称は内部的に <code>viewer</code> へ正規化されます。</blockquote>
-<table><thead><tr><th>ユーザー名（既定。<code>admin</code> ではありません）</th><th>ロール</th><th>パスワード</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>admin_initial_password:</code>）に在ります。初回ログイン時に変更を強制</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>viewer_initial_password:</code>）に在ります</td></tr></tbody></table>
+<table><thead><tr><th>ユーザー名（既定。<code>admin</code> ではありません）</th><th>ロール</th><th>パスワード</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>最初の値は、初回起動のときにターミナルの画面へ1回だけ出ます。見逃した場合は、この配布物の <code>cynovela.yaml</code>（<code>admin_initial_password:</code>）から読めます。初回ログイン時に変更を強制</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>viewer_initial_password:</code>）に在ります</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
