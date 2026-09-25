@@ -11,7 +11,7 @@
 #
 # 件数は 2026-08-17 の実測値。数えた範囲は、この置き場の
 # .md .txt .html .sh .py .command のうち hansolo/ dummy-corpus/ demo_data/ を除いたもの。
-# falcon / chewie / falcon-docker-beta の3つの木に同じ文が入るため、件数は3の倍数になりやすい。
+# falcon / tender / falcon-docker-beta の3つの木に同じ文が入るため、件数は3の倍数になりやすい。
 六本木	地名(東京都港区の町名)。辞書・住所表記に載っている。「木」を当てると「六本ディレクトリツリー」になる。	falcon/docs/demo-general.html:835,848 ほか3ツリー 計6件 (見本の資料の住所)
 マイナンバー控え	制度上の正規の言い方(本人へ交付される控え)。行政の用語。	falcon/docs/demo-general.html:836,849 ほか3ツリー 計6件 (見本の資料の項目名)
 控えめ	普通の形容動詞。辞書に載っている。	falcon/frontend/index.html:591 ほか3ツリー 計3件 (HTML のコメント)

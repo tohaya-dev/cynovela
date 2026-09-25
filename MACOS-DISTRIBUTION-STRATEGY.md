@@ -394,7 +394,7 @@ not used; the tree is walked explicitly.
 
 ### 15.8 The launcher does not reimplement startup
 
-`Contents/MacOS/Cynovela` is a small AppKit program (`chewie/macos-app/main.swift`,
+`Contents/MacOS/Cynovela` is a small AppKit program (`tender/macos-app/main.swift`,
 built with `xcrun swiftc`; no Xcode). It has exactly five responsibilities: start
 `launch.sh` in its own process group, show its output in a window that follows the
 tail, show progress while starting, open the browser when the server answers, and

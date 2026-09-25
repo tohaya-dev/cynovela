@@ -39,7 +39,7 @@
 edition (`.pkg`) is **in preparation** and is not part of this release. No
 source archive is distributed on the releases page: the source is this
 repository — clone it, or use GitHub's "Download ZIP", and start from the
-`chewie/` tree with `./launch.sh`. The table below lists the forms so that the
+`tender/` tree with `./launch.sh`. The table below lists the forms so that the
 names are in one place.
 
 Pick ONE:
@@ -121,7 +121,7 @@ If you have never used Terminal before, open **`docs/getting-started.md`** inste
 **この版（1.2.0）に入っているのは、パッケージ版と AIモデルです。** アプリ版（`.pkg`）は
 **準備中**で、この版には入っていません。ソースの書庫はリリースのページに置いて
 いません。ソースはこのリポジトリです。clone するか GitHub の「Download ZIP」で取り、
-`chewie/` の木から `./launch.sh` で始めてください。下の表は、名前を 1 か所で
+`tender/` の木から `./launch.sh` で始めてください。下の表は、名前を 1 か所で
 見られるように並べています。
 
 **どれか1つ**を選んでください。

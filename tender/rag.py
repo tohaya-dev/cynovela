@@ -1144,7 +1144,7 @@ def _external_embedding_provider():
 
     egress-guard (pre-ga-fix-all-20260720): 外部埋め込みが有効なとき、外部へ渡すテキストは
     masked-only であることを呼出側(publish)が保証する。raw 層ベクターは masked 由来ベクターを
-    再利用し、生テキスト/暗号文/原本は一切 egress しない。hansolo で実証済みの設計を falcon/chewie へ移植。
+    再利用し、生テキスト/暗号文/原本は一切 egress しない。hansolo で実証済みの設計を falcon/tender へ移植。
     既定(provider=local)・mlx・tfidf 等では None を返し従来の Chroma EF 経路(無回帰)を保つ。
     """
     try:

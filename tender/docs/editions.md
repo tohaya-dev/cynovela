@@ -39,7 +39,7 @@ Always download **`SHA256SUMS`** as well, whichever you pick.
   ingesting fail.
 * **None of these installs anything on your Mac.** Both are folders you
   keep wherever you like — and can move somewhere else later.
-* **The source edition is this repository's `chewie/` tree.** Take the source
+* **The source edition is this repository's `tender/` tree.** Take the source
   from the repository, add the models, and `./launch.sh` builds the environment
   on the first start.
 * The source edition starts small **because** it has neither an environment nor
@@ -109,7 +109,7 @@ file name, those parts are not conda packages.
   起動すると、探すところ・取り込むところで失敗します。
 * **どれも、この Mac には何も入れません。** どちらも、好きな場所に置くフォルダです。
   あとから別の場所へ移すこともできます。
-* **ソース版は、このリポジトリの `chewie/` の木です。** リポジトリからソースを取り、
+* **ソース版は、このリポジトリの `tender/` の木です。** リポジトリからソースを取り、
   モデルを重ねれば、`./launch.sh` が初回の起動で環境を作ります。
 * ソース版が最初は小さいのは、環境もモデルも持っていない**から**です。最初の起動のときに
   この Mac の上で環境を作ります。通信が要り、時間もかかります。

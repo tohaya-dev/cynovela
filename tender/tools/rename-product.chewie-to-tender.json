@@ -1,0 +1,327 @@
+{
+ "from": "chewie",
+ "to": "tender",
+ "root": "..",
+ "files": {
+  "README.md": {
+   "sha256_after": "1e7bcb47cc22f8851f248fcc5f36aeedf594eb37ce3ab084057b6822e495ef3a",
+   "edits": [
+    [
+     2904,
+     "chewie",
+     "tender"
+    ],
+    [
+     7458,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "START-HERE.md": {
+   "sha256_after": "bea8eb691b4e32bec690c14cfb2dacccc7ad745d97e7373bc810bb9b151235f9",
+   "edits": [
+    [
+     1526,
+     "chewie",
+     "tender"
+    ],
+    [
+     20898,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "VERSION": {
+   "sha256_after": "8f775608f509f1cc1e8c9120bbb7e4544448f599401274f67519e5665010be25",
+   "edits": [
+    [
+     10,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "check-managed-mac.command": {
+   "sha256_after": "96793da28556389c17addba26e347b7cd0e14b750b508e9775e569a0347b09d9",
+   "edits": [
+    [
+     8650,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "cynovela.yaml": {
+   "sha256_after": "ca4b34d7c232230a3749024e37248a3cb65f0f249d05cda42abe32d0e5fd7c0c",
+   "edits": [
+    [
+     2303,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "docs/READ-BEFORE-DISTRIBUTING.md": {
+   "sha256_after": "e799916dedc55ece6c25d4355fa349b7100cea1ad22061058adf31d3f40d21ce",
+   "edits": [
+    [
+     479,
+     "chewie",
+     "tender"
+    ],
+    [
+     4242,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "docs/assets/architecture-overview.svg": {
+   "sha256_after": "39c1e9f9229a921c2a63ea52dc48e2404fad8b6ec85fe29c9c0f21e8e41f8b03",
+   "edits": [
+    [
+     549,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "docs/editions.md": {
+   "sha256_after": "53c5ca57511751a42f7ba4adbbb4649d3655eea636abb9dfdae4c4ca464b9274",
+   "edits": [
+    [
+     2128,
+     "chewie",
+     "tender"
+    ],
+    [
+     5010,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "docs/getting-started.md": {
+   "sha256_after": "ab81f60be0880f3fccc38db236a445a006d13f8c012e1a2f0c2e552aa0d2d730",
+   "edits": [
+    [
+     6415,
+     "chewie",
+     "tender"
+    ],
+    [
+     56379,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "docs/html/architecture.html": {
+   "sha256_after": "9edb50500adc8868da0fa96fa39175775d178cc65513b3c7a609deae0827dc9e",
+   "edits": [
+    [
+     13831,
+     "chewie",
+     "tender"
+    ],
+    [
+     119745,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "docs/html/limits.html": {
+   "sha256_after": "bb47d86d4b328a2493b1e25feb86429bf766e8dd708a2f7062b5748e5d2cf615",
+   "edits": [
+    [
+     12438,
+     "chewie",
+     "tender"
+    ],
+    [
+     63886,
+     "chewie",
+     "tender"
+    ],
+    [
+     63951,
+     "chewie",
+     "tender"
+    ],
+    [
+     65703,
+     "chewie",
+     "tender"
+    ],
+    [
+     75796,
+     "chewie",
+     "tender"
+    ],
+    [
+     112206,
+     "chewie",
+     "tender"
+    ],
+    [
+     112251,
+     "chewie",
+     "tender"
+    ],
+    [
+     112627,
+     "chewie",
+     "tender"
+    ],
+    [
+     113230,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "docs/limits.md": {
+   "sha256_after": "4e529506a14792257c9990b53ddaede43a0fdeb4b4a06d923234c6265856bd21",
+   "edits": [
+    [
+     4235,
+     "chewie",
+     "tender"
+    ],
+    [
+     4272,
+     "chewie",
+     "tender"
+    ],
+    [
+     33664,
+     "chewie",
+     "tender"
+    ],
+    [
+     33718,
+     "chewie",
+     "tender"
+    ],
+    [
+     34787,
+     "chewie",
+     "tender"
+    ],
+    [
+     40869,
+     "chewie",
+     "tender"
+    ],
+    [
+     40905,
+     "chewie",
+     "tender"
+    ],
+    [
+     57592,
+     "chewie",
+     "tender"
+    ],
+    [
+     57626,
+     "chewie",
+     "tender"
+    ],
+    [
+     57884,
+     "chewie",
+     "tender"
+    ],
+    [
+     58293,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "frontend/js/state.js": {
+   "sha256_after": "e642808dff9ec3d001c1506e6242bf3f20cd2ce22d1006c3c0dda2ce1d3fafd7",
+   "edits": [
+    [
+     61097,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "rag.py": {
+   "sha256_after": "c18f7d32aa2295fe29acada9234fe07b8fff341d62e26dae285d1faf0c4a774f",
+   "edits": [
+    [
+     40957,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "scripts/ingest_roots.py": {
+   "sha256_after": "c2cfa531f4fdf326ad094579d474b987dbbb59acf80892650fc137bb81a039f5",
+   "edits": [
+    [
+     123,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "tools/build-dist.sh": {
+   "sha256_after": "ca58f1ef1dc05c8b0f31927ddbde11253035e863f0f8bd0410873fc7ad4cdc45",
+   "edits": [
+    [
+     12234,
+     "chewie",
+     "tender"
+    ],
+    [
+     15103,
+     "chewie",
+     "tender"
+    ],
+    [
+     18926,
+     "chewie",
+     "tender"
+    ],
+    [
+     25815,
+     "chewie",
+     "tender"
+    ],
+    [
+     27040,
+     "chewie",
+     "tender"
+    ],
+    [
+     37234,
+     "chewie",
+     "tender"
+    ]
+   ]
+  },
+  "uninstall.sh": {
+   "sha256_after": "7da0b846b503c29617411361e087e54e05e9ee2fe675c95993836e71d0f4644d",
+   "edits": [
+    [
+     39,
+     "chewie",
+     "tender"
+    ],
+    [
+     359,
+     "chewie",
+     "tender"
+    ]
+   ]
+  }
+ }
+}

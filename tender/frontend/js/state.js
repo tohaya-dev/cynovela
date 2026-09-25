@@ -1331,7 +1331,7 @@ function _resetIngestHostPathCache() { _ingestHostPathCache = undefined; _ingest
 function _displaySourcePath(p) {
   // multi-ingest-roots-20260728: /app/ingest/<name>... は該当するルートの host_path へ写像する。
   // /app/ingest そのもの (仮想の最上位) は「取り込み元」と表示する。
-  // (chewie はホスト直起動で実パスのまま流れるため実質素通りだが、falcon と同一コードを保つ)
+  // (tender はホスト直起動で実パスのまま流れるため実質素通りだが、falcon と同一コードを保つ)
   if (p === '/app/ingest') return lj('Ingest sources', '取り込み元');
   for (const r of (_ingestRootsCache || [])) {
     if (!r || !r.name || !r.host_path) continue;

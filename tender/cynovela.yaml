@@ -91,7 +91,7 @@ vector_store:
   path: ''
   qdrant_url: http://localhost:6333
   qdrant_api_key: ''
-# mas-device-20260725: chewie (ホスト直) の既定は自分の中の MPS。外へは寄せない
+# mas-device-20260725: tender (ホスト直) の既定は自分の中の MPS。外へは寄せない
 # (埋め込みは既に主要因ではなく、通信のぶん遅くなりうるため)。外の口へ寄せられる
 # ことの確認は設定画面から provider=openai_compat + base_url で行える。
 # device 本体側指定値: auto / cpu / mps / external

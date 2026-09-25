@@ -102,7 +102,7 @@ There are 2 forms, plus the AI models as a separate download. **The package edit
 | Package | Who it is for | What to do |
 |---|---|---|
 | **Package edition** `cynovela-chewie-package-1.2.0.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
-| **Source edition** (not a download — the source is this repository) | Those who want to build the environment themselves | Clone the repository or use GitHub's "Download ZIP", take the `chewie/` tree, add the AI models (last row), then follow section 7 below. |
+| **Source edition** (not a download — the source is this repository) | Those who want to build the environment themselves | Clone the repository or use GitHub's "Download ZIP", take the `tender/` tree, add the AI models (last row), then follow section 7 below. |
 | **AI models** `cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` **inside the extracted chewie folder** — `store/models/` is created. |
 
 With the source edition you choose, at startup, one of 2 ways to build the environment.
@@ -1324,7 +1324,7 @@ More detail is in the bundled `README.md`.
 | 配布物 | 対象 | することは |
 |---|---|---|
 | **パッケージ版** `cynovela-chewie-package-1.2.0.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
-| **ソース版**（ダウンロードではありません。ソースはこのリポジトリです） | 自分で環境を作りたい方 | リポジトリを clone するか GitHub の「Download ZIP」で取り、`chewie/` の木に AIモデル（最終行）を重ねてから、下の7節へ。 |
+| **ソース版**（ダウンロードではありません。ソースはこのリポジトリです） | 自分で環境を作りたい方 | リポジトリを clone するか GitHub の「Download ZIP」で取り、`tender/` の木に AIモデル（最終行）を重ねてから、下の7節へ。 |
 | **AIモデル** `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` を実行します（`store/models/` が作られます）。 |
 
 ソース版では、起動時に、環境の作り方を2つから選びます。

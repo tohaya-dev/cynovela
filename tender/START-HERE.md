@@ -34,7 +34,7 @@ them is in section 2 of [`QUICKSTART.md`](QUICKSTART.md).
 **The AI models go in `store/models/` — they will not be found anywhere else.**
 
 If you want to build it from source yourself, get the repository and run
-`./launch.sh` from `chewie/`. No source archive is placed on the release page.
+`./launch.sh` from `tender/`. No source archive is placed on the release page.
 
 ---
 
@@ -304,7 +304,7 @@ that one. The same documents are repeated below.
 [`QUICKSTART.md`](QUICKSTART.md) の2節にあります。
 **AIモデルは `store/models/` に置きます。この場所でないと見つけられません。**
 
-ソースから自分で組み立てたい方は、リポジトリを取得して `chewie/` から
+ソースから自分で組み立てたい方は、リポジトリを取得して `tender/` から
 `./launch.sh` を叩いてください。リリースのページにソースの書庫は置いていません。
 
 ---

@@ -20,8 +20,8 @@ constellation of the Sail).
 ## Quick start
 
 If this is your first time, follow this section alone, from top to bottom. The
-details come later, in [`chewie/QUICKSTART.md`](chewie/QUICKSTART.md) and
-[`chewie/START-HERE.md`](chewie/START-HERE.md).
+details come later, in [`tender/QUICKSTART.md`](tender/QUICKSTART.md) and
+[`tender/START-HERE.md`](tender/START-HERE.md).
 
 **Apple silicon Macs only. Neither Python nor conda is needed. Nothing is
 installed on this Mac.**
@@ -204,7 +204,7 @@ Everything is on GitHub Releases (v1.2.0):
 https://github.com/tohaya-dev/cynovela/releases
 
 The one-page answer to "which of these do I take" is in
-[chewie/docs/editions.md](chewie/docs/editions.md).
+[tender/docs/editions.md](tender/docs/editions.md).
 
 | Edition | Runs as | Models bundled | Download shape | What it needs |
 |---|---|---|---|---|
@@ -222,7 +222,7 @@ extracted folder can be moved to another location later — start it again from 
 new place with the same `./launch.sh`.
 
 Take the **source edition** if you want to see and control what is installed:
-the source is this repository — take the `chewie/` tree, add the AI models, and
+the source is this repository — take the `tender/` tree, add the AI models, and
 run `./launch.sh`; on the first start it builds the environment for you. No
 source archive is distributed on the releases page.
 
@@ -240,19 +240,19 @@ Distribution packages for them are not provided.
 ## First time here
 
 For `chewie` there is one entrance:
-**[chewie/START-HERE.md](chewie/START-HERE.md)**. Open that first; it carries
+**[tender/START-HERE.md](tender/START-HERE.md)**. Open that first; it carries
 the map of every other document.
 
 | Document | What it covers |
 |---|---|
-| [chewie/START-HERE.md](chewie/START-HERE.md) | The entrance. First start, restart, reinstall, uninstall, and where everything else is |
-| [chewie/docs/editions.md](chewie/docs/editions.md) | Which edition to take, on one page |
-| [chewie/docs/getting-started.md](chewie/docs/getting-started.md) | Never opened a terminal? From the downloaded file to the first answer, nothing skipped |
-| [chewie/docs/operations.md](chewie/docs/operations.md) | Keeping it running: stopping and starting, connecting an LLM, backup and restore, users, logs |
-| [chewie/docs/reference/cli.md](chewie/docs/reference/cli.md) | Every terminal command and every argument |
-| [chewie/docs/reference/mcp.md](chewie/docs/reference/mcp.md) | Every MCP tool: what you hand each one, what comes back |
-| [chewie/docs/reference/api.md](chewie/docs/reference/api.md) | Every HTTP endpoint, read out of the code |
-| [chewie/docs/handson.md](chewie/docs/handson.md) | Exercises against the bundled sample material, once it is running |
+| [tender/START-HERE.md](tender/START-HERE.md) | The entrance. First start, restart, reinstall, uninstall, and where everything else is |
+| [tender/docs/editions.md](tender/docs/editions.md) | Which edition to take, on one page |
+| [tender/docs/getting-started.md](tender/docs/getting-started.md) | Never opened a terminal? From the downloaded file to the first answer, nothing skipped |
+| [tender/docs/operations.md](tender/docs/operations.md) | Keeping it running: stopping and starting, connecting an LLM, backup and restore, users, logs |
+| [tender/docs/reference/cli.md](tender/docs/reference/cli.md) | Every terminal command and every argument |
+| [tender/docs/reference/mcp.md](tender/docs/reference/mcp.md) | Every MCP tool: what you hand each one, what comes back |
+| [tender/docs/reference/api.md](tender/docs/reference/api.md) | Every HTTP endpoint, read out of the code |
+| [tender/docs/handson.md](tender/docs/handson.md) | Exercises against the bundled sample material, once it is running |
 
 For `falcon`, start from [falcon/docs/HAJIMETE.md](falcon/docs/HAJIMETE.md),
 then [falcon/docs/STARTUP.md](falcon/docs/STARTUP.md). For

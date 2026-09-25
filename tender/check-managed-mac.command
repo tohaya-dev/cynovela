@@ -238,7 +238,7 @@ elif [ "$PKG_RISK" -gt 0 ]; then
   echo "   ・止めるのはフォルダを捨てるだけです"
   echo ""
   echo "   取り寄せ方と始め方は、配布ページの HOW-TO-ASSEMBLE.md に書いてあります。"
-  echo "   ファイル名は cynovela-chewie-package-<版>.tar.gz です。"
+  echo "   ファイル名は cynovela-tender-package-<版>.tar.gz です。"
   echo ""
   echo " (.pkg を使いたい場合は、上の [ 注意 ] の行を情報システム部門へ見せてください。)"
 elif [ "$WARN" -gt 0 ]; then

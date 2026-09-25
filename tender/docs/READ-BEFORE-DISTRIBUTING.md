@@ -10,7 +10,7 @@ on. Read it first.
 A package comes in one of two forms — the **package edition** (a single file,
 about 800MB; no Python and no conda needed: unpack it and run `./launch.sh`)
 and the **source edition** (not a download: the source is the repository —
-clone it or use GitHub's "Download ZIP" and take the `chewie/` tree) — plus the
+clone it or use GitHub's "Download ZIP" and take the `tender/` tree) — plus the
 **models split files** (`cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02`).
 Neither form contains the AI models:
 download the models parts too, join them in part order with `cat`, and run
@@ -68,7 +68,7 @@ and builds them on this machine.
 
 この文書は、本配布物を受け取った方・配布する方に最初に読んでいただくガイドです。
 
-配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`chewie/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど明記します。版はいずれも `1.2.0` です。
+配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`tender/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど明記します。版はいずれも `1.2.0` です。
 
 ## 1. この配布物の位置づけ
 

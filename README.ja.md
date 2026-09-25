@@ -19,8 +19,8 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 ## まず動かす
 
 はじめての方は、ここだけ上から順にやってください。くわしい話はあとから
-[`chewie/QUICKSTART.md`](chewie/QUICKSTART.md) と
-[`chewie/START-HERE.md`](chewie/START-HERE.md) にあります。
+[`tender/QUICKSTART.md`](tender/QUICKSTART.md) と
+[`tender/START-HERE.md`](tender/START-HERE.md) にあります。
 
 **Apple シリコンの Mac 専用です。Python も conda も要りません。この Mac には何も入れません。**
 
@@ -183,7 +183,7 @@ API キーが要ります）。
 https://github.com/tohaya-dev/cynovela/releases
 
 「どれを落とすか」の1枚での答えは
-[chewie/docs/editions.md](chewie/docs/editions.md) にあります。
+[tender/docs/editions.md](tender/docs/editions.md) にあります。
 
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
@@ -199,7 +199,7 @@ https://github.com/tohaya-dev/cynovela/releases
 あとから別の場所へ移せます。移した先でも同じ `./launch.sh` で起こしてください。
 
 **ソース版**＝何が入るかを自分で見て決めたい方向け。ソースはこのリポジトリです。
-`chewie/` の木を取り、AIモデルを重ねて `./launch.sh` を叩けば、初回の起動が環境を
+`tender/` の木を取り、AIモデルを重ねて `./launch.sh` を叩けば、初回の起動が環境を
 作ります。リリースのページにソースの書庫は置いていません。
 
 リリースには `HOW-TO-ASSEMBLE.md` と、突き合わせ用の一覧 `SHA256SUMS`（パッケージ版
@@ -214,19 +214,19 @@ https://github.com/tohaya-dev/cynovela/releases
 
 ## はじめての方へ
 
-`chewie` の入口は1つです ＝ **[chewie/START-HERE.md](chewie/START-HERE.md)**。
+`chewie` の入口は1つです ＝ **[tender/START-HERE.md](tender/START-HERE.md)**。
 まずここを開いてください。他の文書の地図もここに入っています。
 
 | 文書 | 何が書いてあるか |
 |---|---|
-| [chewie/START-HERE.md](chewie/START-HERE.md) | 入口。初回の起動・起こし直し・入れ直し・消し方と、他の文書の在りか |
-| [chewie/docs/editions.md](chewie/docs/editions.md) | どの形を選ぶか。1枚 |
-| [chewie/docs/getting-started.md](chewie/docs/getting-started.md) | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし |
-| [chewie/docs/operations.md](chewie/docs/operations.md) | 動かし続けるために。止め方と起こし直し方、LLM のつなぎ方、控えと戻し方、利用者、記録 |
-| [chewie/docs/reference/cli.md](chewie/docs/reference/cli.md) | ターミナルの命令と引数の全数 |
-| [chewie/docs/reference/mcp.md](chewie/docs/reference/mcp.md) | MCP の道具の全数。何を渡すと何が返るか |
-| [chewie/docs/reference/api.md](chewie/docs/reference/api.md) | HTTP の口の全数。コードから起こしたもの |
-| [chewie/docs/handson.md](chewie/docs/handson.md) | 動き出したあと、同梱の資料で試すための練習 |
+| [tender/START-HERE.md](tender/START-HERE.md) | 入口。初回の起動・起こし直し・入れ直し・消し方と、他の文書の在りか |
+| [tender/docs/editions.md](tender/docs/editions.md) | どの形を選ぶか。1枚 |
+| [tender/docs/getting-started.md](tender/docs/getting-started.md) | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし |
+| [tender/docs/operations.md](tender/docs/operations.md) | 動かし続けるために。止め方と起こし直し方、LLM のつなぎ方、控えと戻し方、利用者、記録 |
+| [tender/docs/reference/cli.md](tender/docs/reference/cli.md) | ターミナルの命令と引数の全数 |
+| [tender/docs/reference/mcp.md](tender/docs/reference/mcp.md) | MCP の道具の全数。何を渡すと何が返るか |
+| [tender/docs/reference/api.md](tender/docs/reference/api.md) | HTTP の口の全数。コードから起こしたもの |
+| [tender/docs/handson.md](tender/docs/handson.md) | 動き出したあと、同梱の資料で試すための練習 |
 
 `falcon` は [falcon/docs/HAJIMETE.md](falcon/docs/HAJIMETE.md) から読み、そのあと
 [falcon/docs/STARTUP.md](falcon/docs/STARTUP.md) へ進んでください。

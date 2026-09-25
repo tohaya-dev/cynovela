@@ -302,7 +302,7 @@ a:hover { text-decoration: underline; }
       <li><a href="#slide-45">11.4 With Ollama, the context length is whatever Ollama defaults to</a></li>
       <li><a href="#slide-46">11.5 An imported workspace searches by vector only</a></li>
       <li><a href="#slide-47">11.6 Not measured: the package edition on a Mac without conda</a></li>
-      <li><a href="#slide-47">11.7 Fixed in chewie, not in falcon</a></li>
+      <li><a href="#slide-47">11.7 Fixed in tender, not in falcon</a></li>
       </ul>
     </li>
     <li><a href="#slide-49">12. Authentication, authorization and communication</a></li>
@@ -1104,8 +1104,8 @@ cd ../..
 <div class="slide-body">
     <h3>11.6 Not measured: the package edition on a Mac without conda</h3>
     <p>The package edition is meant to need neither Python nor conda. That it starts from its bundled environment was measured on the build machine — but that machine has conda installed, so this run cannot tell you that a Mac with <strong>no</strong> conda at all behaves the same. Treat "no conda required" as designed-for and checked on a machine that happens to have conda, not as measured on a machine without it.</p>
-    <h3>11.7 Fixed in chewie, not in falcon</h3>
-    <p>The following were repaired in chewie and deliberately <strong>not</strong> carried into the container build (falcon) at 1.0.7, because falcon's code differs at those places and that release did not rewrite falcon to match:</p>
+    <h3>11.7 Fixed in tender, not in falcon</h3>
+    <p>The following were repaired in tender and deliberately <strong>not</strong> carried into the container build (falcon) at 1.0.7, because falcon's code differs at those places and that release did not rewrite falcon to match:</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1127,7 +1127,7 @@ cd ../..
     <tr><td>The CLI, including <code>login</code> / <code>logout</code></td><td>falcon ships no <code>cynovela-cli.py</code>. Its own, older <code>cynovela_cli.py</code> has neither <code>login</code> nor <code>logout</code></td></tr>
     </tbody>
     </table>
-    <p><strong>One of them has since been carried over.</strong> "Two scans of one folder cannot run at once" was ported into falcon on 2026-08-26. <code>_do_scan</code> in <code>falcon/server.py</code> is now a thin guarded entry point — a module-level lock plus a set of source ids, added before the work and discarded in a <code>finally</code> — wrapped around the previous body, which was renamed <code>_do_scan_body</code>. All eight call sites into the scan are covered by it. falcon still has no <code>scan_jobs</code> table, so the write-back to a job row that chewie does inside its own guard has no counterpart there; the guard itself is the same.</p>
+    <p><strong>One of them has since been carried over.</strong> "Two scans of one folder cannot run at once" was ported into falcon on 2026-08-26. <code>_do_scan</code> in <code>falcon/server.py</code> is now a thin guarded entry point — a module-level lock plus a set of source ids, added before the work and discarded in a <code>finally</code> — wrapped around the previous body, which was renamed <code>_do_scan_body</code>. All eight call sites into the scan are covered by it. falcon still has no <code>scan_jobs</code> table, so the write-back to a job row that tender does inside its own guard has no counterpart there; the guard itself is the same.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1307,7 +1307,7 @@ cd ../..
       <li><a href="#slide-91">11.4 Ollama を使うと、文脈の長さは Ollama の既定のままになる</a></li>
       <li><a href="#slide-92">11.5 取り込んだ作業場所は、ベクターだけで探される</a></li>
       <li><a href="#slide-92">11.6 測っていないこと: conda の入っていない Mac でのパッケージ版</a></li>
-      <li><a href="#slide-93">11.7 chewie では直し、falcon では直していないもの</a></li>
+      <li><a href="#slide-93">11.7 tender では直し、falcon では直していないもの</a></li>
       </ul>
     </li>
     <li><a href="#slide-94">12. 認証・認可と通信</a></li>
@@ -2044,17 +2044,17 @@ cd ../..
 <span class="continued">(6/6)</span>
 </div>
 <div class="slide-body">
-    <h3>11.7 chewie では直し、falcon では直していないもの</h3>
-    <p>次は chewie で直し、コンテナ版（falcon）へは 1.0.7 の時点では<strong>わざと</strong>当てていません。falcon はその箇所のコードが違っており、その版では falcon を書き換えて合わせることをしていないためです。</p>
+    <h3>11.7 tender では直し、falcon では直していないもの</h3>
+    <p>次は tender で直し、コンテナ版（falcon）へは 1.0.7 の時点では<strong>わざと</strong>当てていません。falcon はその箇所のコードが違っており、その版では falcon を書き換えて合わせることをしていないためです。</p>
     <table>
     <thead><tr><th>何</th><th>当てなかった理由</th></tr></thead>
     <tbody>
     <tr><td>時間切れの文言</td><td>falcon に <code>_timeout_answer</code> が無く、古い文が本文中の2か所に置かれている</td></tr>
-    <tr><td>出典の番号を MCP まで通すこと</td><td>falcon の MCP サーバは版が古い（道具 11件・chewie は 25件）</td></tr>
+    <tr><td>出典の番号を MCP まで通すこと</td><td>falcon の MCP サーバは版が古い（道具 11件・tender は 25件）</td></tr>
     <tr><td><code>login</code> / <code>logout</code> を含む CLI</td><td>falcon に <code>cynovela-cli.py</code> は無い。falcon 自身の古い <code>cynovela_cli.py</code> には <code>login</code> も <code>logout</code> も無い</td></tr>
     </tbody>
     </table>
-    <p><strong>このうち1件は、その後 falcon へも当てました。</strong>「同じフォルダの走査を2本同時に始められない件」は 2026-08-26 に falcon へ移してあります。<code>falcon/server.py</code> の <code>_do_scan</code> は、モジュール階層の錠と source の id の集合で守る薄い入口になり（始める前に足し、<code>finally</code> で外す）、元の本体は <code>_do_scan_body</code> へ改名されました。走査を呼ぶ 8 か所すべてがこの入口を通ります。falcon には今も <code>scan_jobs</code> の表が無いため、chewie が同じ錠の中で行っている job の行への書き戻しに当たるものは falcon にはありません。錠そのものは同じです。</p>
+    <p><strong>このうち1件は、その後 falcon へも当てました。</strong>「同じフォルダの走査を2本同時に始められない件」は 2026-08-26 に falcon へ移してあります。<code>falcon/server.py</code> の <code>_do_scan</code> は、モジュール階層の錠と source の id の集合で守る薄い入口になり（始める前に足し、<code>finally</code> で外す）、元の本体は <code>_do_scan_body</code> へ改名されました。走査を呼ぶ 8 か所すべてがこの入口を通ります。falcon には今も <code>scan_jobs</code> の表が無いため、tender が同じ錠の中で行っている job の行への書き戻しに当たるものは falcon にはありません。錠そのものは同じです。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

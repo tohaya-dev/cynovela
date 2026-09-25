@@ -315,7 +315,7 @@ if [ "$FLAVOR" = "package" ]; then
 fi
 
 # (版7): 配布物のディレクトリツリーは、リポジトリのルートディレクトリと同じとは限らない。
-#   いまの本流は 1 つのリポジトリの下に chewie/ と falcon/ が並ぶ形である。
+#   いまの本流は 1 つのリポジトリの下に tender/ と falcon/ が並ぶ形である。
 #   旧: ROOT=リポジトリのルートディレクトリ → NAME が "Cynovela" になり、出力名が
 #       cynovela-Cynovela-… となる。さらに `git archive "$REF"` がリポジトリ全体を
 #       取るため chewie+falcon+falcon-docker-beta が 1 本に混ざり、直後に
@@ -395,7 +395,7 @@ add_named() {   # add_named <ツリー内の相対パス> <説明>
   mkdir -p "$STAGE/$NAME/$(dirname "$rel")"
   # dist-nesting-fix-20260727: 宛先が既にディレクトリとして在ると `cp -R src dst` は
   #   dst の「中へ」入れてしまい store/vector/vector/... のように二重にネストする。
-  #   chewie は store/vector や store/uploads が追跡下にあり git archive が先に作るため、
+  #   tender は store/vector や store/uploads が追跡下にあり git archive が先に作るため、
   #   これが起きてインデックスと原本がアプリの読まないパスに入っていた（受け取り手からは
   #   資料は並ぶのに検索が空を返す）。宛先を消してから複製する。
   rm -rf "$STAGE/$NAME/$rel"
@@ -488,7 +488,7 @@ echo "[dist] 既定の取り込み元に絶対パス: 0件"
 # ∴ 画面までは開けるのに、同梱の設定に書いたパスワードが通らない。
 # 配布物の身元 (名前・形態・作った日) から決めた接頭辞をパッケージングの場で焼き込み、
 # 別の配布物の保存領域を引き当てないようにする。値は手入力しない。
-# chewie にはこの節が無い (この Mac の中で直接動き、保存領域は store/ の下である)。
+# tender にはこの節が無い (この Mac の中で直接動き、保存領域は store/ の下である)。
 if grep -q '^  volume_prefix:' "$STAGE/$NAME/cynovela.yaml"; then
   DIST_VOLPREFIX="cyn-${NAME}-$(printf '%s' "$FLAVOR" | cut -c1)-${DIST_DATE}"
   python3 - "$STAGE/$NAME/cynovela.yaml" "$DIST_VOLPREFIX" <<'PYVOL'
@@ -643,7 +643,7 @@ rm -f "$STAGE/$NAME/baseline-report.md" "$STAGE/$NAME/DEV-NOTE-mba.md"
 # scripts/ は従来どおり同梱し、この e2e は絶対に除外しない)。
 # falcon 限定の 2 ファイルには開発機の利用者名が残る。いずれも受け取り手には
 # 使い道が無いためステージから落とす (中身は当時の事実なのでツリー側は書き換えない)。
-# falcon 限定の 2 パスは chewie の追跡下に無く、rm -f は無いものには何もしない
+# falcon 限定の 2 パスは tender の追跡下に無く、rm -f は無いものには何もしない
 # (両ツリーでこのスクリプトを同一内容に保つための書き方)。
 echo "[dist] 開発向けの資料をステージから除去"
 rm -rf "$STAGE/$NAME/instructions" "$STAGE/$NAME/docs/spec-raw" \
@@ -669,7 +669,7 @@ rm -f "$STAGE/$NAME/tools/build-macos-app.sh" "$STAGE/$NAME/tools/split-pkg.sh"
 #   作られる」ことを書いた内容になっており、git archive がそのまま同梱する。
 # oss-init-20260729: 旧同梱デモの原稿と取り込み試験の資材を配布物から外す。
 #   falcon ingest/ (実在ベンダー文書の PDF を含む取り込み試験の資材)、
-#   chewie sample_data/ と data/ (旧デモの原稿一式)。同梱資料は dummy-corpus/
+#   tender sample_data/ と data/ (旧デモの原稿一式)。同梱資料は dummy-corpus/
 #   へ全入れ替えしたため受け取り手には使い道が無い。ツリー側は開発資材
 #   (pytest の基線) として残し、ステージから落とすだけにする。
 #   欠損時の実挙動は確認済み: server.py の data/demo 投入は「無ければ何もしない」、
@@ -902,7 +902,7 @@ for _g in "$DIST_DEV_USER" "$DIST_WORK_PAT"; do
 done
 
 # (4) 内部の作業番号 (2026-08-31 新設)。この関門は build-dist.sh が組む配布物
-#     (Portable を含む chewie/falcon の梱包物) だけを見る。.app の組み立て工程には
+#     (Portable を含む tender/falcon の梱包物) だけを見る。.app の組み立て工程には
 #     当てない。パターンを正規表現で書くのは、この行自身がステージに同梱されても
 #     字面としては一致しないため (自己検出の回避・既知の型)。
 gate_work_ids="$( { grep -rlE "DD-CYN-[0-9]{4}" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"
