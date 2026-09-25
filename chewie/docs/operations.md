@@ -912,7 +912,7 @@ curl -s -X POST http://127.0.0.1:8765/api/auth/login \
 ```
 
 3. The printed string is the token. Put it into the `env` block of `mcp.json` (next step).
-4. **The token does not expire unless you ask it to.** Signing in gives a token with no expiry; pass `expires_in_hours` to the login call if you want one that does. If tool calls start failing with an authentication error, issue a new token with the same command and update `mcp.json`.
+4. **By default the token has no expiry** (the session hours default to 0). It expires only if you pass `expires_in_hours` to the login call, or if the administrator has set the session hours to a positive number. Changing that user's password also makes the token stop working. If tool calls start failing with an authentication error, issue a new token with the same command and update `mcp.json`.
 
 Note: for the settings tools (and other admin tools) the login must be the **administrator** account; a viewer token is rejected by the server with 403.
 
@@ -969,7 +969,7 @@ export CYNOVELA_MCP_PYTHON=/path/to/.condapack-cynovela/bin/python3
 The MCP server authenticates to the main Cynovela API with the `Authorization: Bearer<token>` header. The token is passed through an environment variable on the client side.
 
 - Authentication is the JWT issued by `POST /api/auth/login` (the procedure is in 4-3-3). The old `Bearer demo-token-<user_id>` form has been abolished and is not accepted.
-- The token does not expire unless the login call asked for an expiry (`expires_in_hours`). Issue a new one with the same login call whenever you need to.
+- The token has no expiry by default (session hours 0). It expires after the lifetime the login call asked for (`expires_in_hours`), or after the session hours if the administrator has set them. Changing that user's password also revokes it. Issue a new one with the same login call whenever you need to.
 
 #### 4-5-2. Role permissions
 
@@ -998,7 +998,7 @@ The three administration tools (`delete_item`, `manage_users`, `manage_backups`)
 |---|---|
 | The tools are not found | Whether the Cynovela main body (`server.py`) is already running at `http://127.0.0.1:8765` |
 | The server appears in LM Studio but no tool is ever called | The human permission in LM Studio has not been granted yet — see 4-3-5. The registration alone does not allow calls; allow the tool call in the chat window's confirmation dialog |
-| Authentication error | The value of the `CYNOVELA_TOKEN` environment variable, and whether the token is still valid — **a token has no expiry unless the login call asked for one**; re-issue with the login call in 4-3-3 |
+| Authentication error | The value of the `CYNOVELA_TOKEN` environment variable, and whether the token is still valid — **a token has no expiry by default, but expires after the lifetime the login call asked for, or after the session hours if the administrator has set them, and stops working when that user's password is changed**; re-issue with the login call in 4-3-3 |
 | `settings_set` answers "the write is closed by default" | That is the write guard (4-5-4), not a fault. Add `"CYNOVELA_MCP_ALLOW_SETTINGS_WRITE": "1"` to the `env` block of `mcp.json` if you really want writes |
 | `delete_item` / `manage_users` / `manage_backups` do not appear in the tool list | That is the guard (4-5-5), not a fault. Add `"CYNOVELA_MCP_ALLOW_ADMIN_WRITE": "1"` to the `env` block of `mcp.json` if you really want them |
 | ImportError appears | Whether the Python is 3.12 or later (`mcp_server.py` itself has no external dependencies) |
@@ -1126,7 +1126,9 @@ network.
 
 Because the configuration can end up accepting file uploads from any user on the LAN, always
 check the validation of the `path` argument of `/api/sources` and the upload limit setting
-(`CYNOVELA_MAX_UPLOAD_BYTES`, default 100 MB).
+(`CYNOVELA_MAX_UPLOAD_BYTES`, default 100 MB). `/api/sources` accepts only a folder inside a
+registered ingest root (`store/ingest-roots.json`) and answers 403 for anything else, so keep
+the list of roots short.
 
 #### 5-4-5. Recommended configurations
 
@@ -1396,6 +1398,8 @@ The `demo.db` created at the first `--demo` startup has the following accounts.
 ### 9-4. Adding and Deleting Users, and Changing Passwords
 
 After logging in with the administrator role, you can do this from the "ユーザー管理" (user management) screen. Operation via the API is also possible, but the user management endpoints are protected by `_require_admin` or `_require_admin_or_self` (the person themselves or an administrator only).
+
+Changing a user's password (including a reset by the administrator or `server.py --reset-admin`), switching the account off, and switching it on again make every token already issued to that user stop working at once; that user signs in again.
 
 ### 9-5. Vault Access and Masking by Role
 
@@ -2430,7 +2434,7 @@ curl -s -X POST http://127.0.0.1:8765/api/auth/login \
 ```
 
 3. 出力された文字列がトークンです。次の手順の `mcp.json` の `env` に貼ります。
-4. **トークンは、頼まないかぎり切れません。** ログインすると期限の無いトークンが渡されます。切れる形が欲しいときは、ログインの呼び出しに `expires_in_hours` を渡してください。道具の呼び出しが認証エラーで失敗しはじめたら、同じコマンドで新しいトークンを発行して `mcp.json` を書き替えてください。
+4. **トークンは既定では期限がありません**（セッション時間の既定は 0）。切れるのは、ログインの呼び出しに `expires_in_hours` を渡したときか、管理者がセッション時間を正の数にしたときだけです。その利用者のパスワードを変えたときも使えなくなります。道具の呼び出しが認証エラーで失敗しはじめたら、同じコマンドで新しいトークンを発行して `mcp.json` を書き替えてください。
 
 注意: 設定系の道具（と他の管理系の道具）を使うには、ログインは**管理者**のアカウントで行います。閲覧者のトークンはサーバ側が 403 で拒否します。
 
@@ -2487,7 +2491,7 @@ export CYNOVELA_MCP_PYTHON=/path/to/.condapack-cynovela/bin/python3
 MCP サーバーは Cynovela 本体 API に対して `Authorization: Bearer<token>` ヘッダーで認証します。トークンはクライアント側の環境変数で渡します。
 
 - 認証は `POST /api/auth/login` が発行する JWT です（手順は 4-3-3）。旧 `Bearer demo-token-<user_id>` 形式は廃止済みで受理しません。
-- トークンは、ログインの呼び出しで期間（`expires_in_hours`）を渡さないかぎり切れません。要るときは同じ呼び出しで発行し直してください。
+- トークンは既定では期限がありません（セッション時間の既定は 0）。ログインの呼び出しで期間（`expires_in_hours`）を渡したときはその長さで、管理者がセッション時間を決めたときはその時間で切れます。その利用者のパスワードを変えたときも無効になります。要るときは同じ呼び出しで発行し直してください。
 
 #### 4-5-2. ロール権限
 
@@ -2516,7 +2520,7 @@ MCP 経由の操作も本体と同じ監査ログ（`audit_logs` テーブル）
 |---|---|
 | ツールが見つからない | Cynovela 本体（`server.py`）が `http://127.0.0.1:8765` で起動済みか |
 | LM Studio にサーバは並ぶのに道具が一度も呼ばれない | LM Studio の画面での人の許可がまだ出ていません — 4-3-5 を見てください。登録だけでは呼び出しは許可されません。チャット画面の確認ダイアログで許可を出します |
-| 認証エラー | `CYNOVELA_TOKEN` 環境変数の値、トークンの有効性 — **トークンは、ログインで期間を渡さないかぎり切れません**。4-3-3 のログインの呼び出しで発行し直してください |
+| 認証エラー | `CYNOVELA_TOKEN` 環境変数の値、トークンの有効性 — **トークンは既定では期限がありませんが、ログインで期間を渡したときや管理者がセッション時間を決めたときはその長さで切れ、その利用者のパスワードを変えたときも使えなくなります**。4-3-3 のログインの呼び出しで発行し直してください |
 | `settings_set` が「書き込みは既定で閉じています」と答える | それは守り（4-5-4）であって故障ではありません。本当に書き込みたいときだけ `mcp.json` の `env` に `"CYNOVELA_MCP_ALLOW_SETTINGS_WRITE": "1"` を足します |
 | `delete_item` / `manage_users` / `manage_backups` が一覧に出ない | それは守り（4-5-5）であって故障ではありません。本当に使いたいときだけ `mcp.json` の `env` に `"CYNOVELA_MCP_ALLOW_ADMIN_WRITE": "1"` を足します |
 | ImportError が出る | Python が 3.12 以上か（`mcp_server.py` 自体に外部依存はありません） |
@@ -2623,7 +2627,7 @@ Cynovela 本体は HTTP で待ち受けています。HTTPS 化は組み込ま�
 
 #### 5-4-4. ファイルアップロードの権限
 
-LAN 内の任意のユーザーからファイルアップロードを受け付ける構成になり得るため、`/api/sources` の path 引数のバリデーションやアップロード上限の設定値（`CYNOVELA_MAX_UPLOAD_BYTES`、既定 100 MB）を必ず確認してください。
+LAN 内の任意のユーザーからファイルアップロードを受け付ける構成になり得るため、`/api/sources` の path 引数のバリデーションやアップロード上限の設定値（`CYNOVELA_MAX_UPLOAD_BYTES`、既定 100 MB）を必ず確認してください。`/api/sources` が受け付けるのは登録済みの取り込み元のルート（`store/ingest-roots.json`）の内側のフォルダだけで、それ以外は 403 です。ルートは必要な分だけにしてください。
 
 #### 5-4-5. 推奨構成
 
@@ -2893,6 +2897,8 @@ Cynovela には 2 種類のロールがあります。
 ### 9-4. ユーザー追加・削除・パスワード変更
 
 admin ロールでログイン後、「ユーザー管理」画面から実行できます。API での操作も可能ですが、ユーザー管理系エンドポイントは `_require_admin` または `_require_admin_or_self`（本人か admin のみ）で保護されています。
+
+利用者のパスワードを変えたとき（管理者による出し直しや `server.py --reset-admin` を含む）、使えなくしたとき、使えるように戻したときは、その人に出したトークンがすべてすぐ使えなくなります。その人はログインし直します。
 
 ### 9-5. ロール別の保管庫アクセスとマスキング
 

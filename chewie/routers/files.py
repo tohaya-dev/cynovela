@@ -273,6 +273,10 @@ async def folder_scan_preview(request: Request):
         raise HTTPException(400, f"system path is not allowed: {_normalized}")
     if any(s in _normalized for s in _forbidden_substrings):
         raise HTTPException(400, f"sensitive path is not allowed: {_normalized}")
+    # overnight-20260923 ①: /api/sources と同じく、取り込み元のルートの中 (実体パスで判定) に限る。
+    from routers.sources import resolve_within_ingest_roots
+
+    resolve_within_ingest_roots(_normalized)
 
     folder = Path(_normalized)
     if not folder.is_dir():

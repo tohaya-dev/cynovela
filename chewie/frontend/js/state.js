@@ -3714,8 +3714,22 @@ window._submitMustChangePw = async function () {
       body: JSON.stringify({ current_password: current, new_password: newPw }),
     });
     if (res.ok) {
+      // overnight-20260923 ④: 変更と同時に、それまでのトークンは全て失効する。
+      //   返ってきた新しいトークンに差し替えて、この画面は続けて使えるようにする。
+      const d = await res.json().catch(() => ({}));
+      if (d.access_token) {
+        try {
+          localStorage.setItem('cynovela_token', d.access_token);
+          if (d.refresh_token) localStorage.setItem('cynovela_refresh_token', d.refresh_token);
+        } catch (e) { /* localStorage 利用不可環境では諦める */ }
+        State.token = d.access_token;
+        API.token = d.access_token;
+        try { _scheduleTokenRefresh(d.access_token); } catch (e) { /* ignore */ }
+      }
       const overlay = document.getElementById('must-change-pw-overlay');
       if (overlay) overlay.style.display = 'none';
+      // overnight-20260923 ③: 変更前は一般 API も 403 で止まっていたので、ここで読み直す。
+      try { if (typeof refreshAllData === 'function') await refreshAllData(); } catch (e) { /* ignore */ }
       // first-run-tour-20260817: 初回パスワード変更が先。済んでから「はじめての方へ」を出す
       // (同時に2枚出さない)。
       try { if (_shouldShowFirstRunTour()) showFirstRunTour(); } catch {}

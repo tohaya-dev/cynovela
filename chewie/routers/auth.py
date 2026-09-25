@@ -68,6 +68,58 @@ def _requested_expiry_seconds(body) -> int | None:
     return secs
 
 
+def _default_expiry_seconds() -> int | None:
+    """overnight-20260923 ④: 呼ぶ側が期間を渡さなかったときのアクセストークンの寿命。
+
+    管理画面の「セッション持続時間」(settings の auth.session_hours) を使う。
+    prep-tender-20260925 B: 既定は 0 (= 1.0.7〜1.2.0 と同じ「期限なし」) に戻した。
+    正の数を入れたときだけ、その時間で切れる。発行済みトークンの即時失効 (tv) と
+    リフレッシュトークンの使い捨ては、期限の有無によらず効く。
+    """
+    hours = 0.0
+    try:
+        c = get_db()
+        try:
+            r = c.execute("SELECT value FROM settings WHERE key = 'auth.session_hours'").fetchone()
+        finally:
+            c.close()
+        if r is not None and str(r["value"]).strip() != "":
+            hours = float(r["value"])
+    except Exception:
+        hours = 0.0
+    if hours <= 0:
+        return None
+    return int(hours * 3600)
+
+
+def _issue_access_token(user_id: str, role: str, token_version, exp_secs: int | None) -> str:
+    """アクセストークンを作る。tv (トークンの版) を入れ、core/auth.py が毎回照合する。"""
+    from core.auth import _get_jwt_secret
+
+    now = datetime.now(_tz.utc)
+    payload = {
+        "sub": str(user_id),
+        "role": role,
+        "tv": int(token_version or 0),
+        "iat": int(now.timestamp()),
+    }
+    if exp_secs is not None:
+        payload["exp"] = int((now + _td(seconds=exp_secs)).timestamp())
+    return _pyjwt.encode(payload, _get_jwt_secret(), algorithm="HS256")
+
+
+def _issue_refresh_token(conn, user_id: str) -> str:
+    """リフレッシュトークン (30日) を作って保存し、生の値を返す。commit は呼ぶ側。"""
+    raw_refresh = secrets.token_urlsafe(32)
+    refresh_hash = _hashlib.sha256(raw_refresh.encode()).hexdigest()
+    rt_expires = (datetime.now(_tz.utc) + _td(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute(
+        "INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)",
+        (_uuid.uuid4().hex, str(user_id), refresh_hash, rt_expires),
+    )
+    return raw_refresh
+
+
 @router.get("/api/auth/users", response_model=None)
 def list_users(request: Request):
     # 2026-05-23 sec4 v4.1 項目①: 旧 fix060 B の demo 未認証許可を撤廃。常時 admin 認証必須。
@@ -131,33 +183,24 @@ async def login(request: Request):
         _audit_auth_failure(request, "bad_password")
         raise HTTPException(401, "ユーザー名またはパスワードが正しくありません")
 
-    # アクセストークンの既定を無制限にした（従来は 8時間 固定）。
-    # 呼ぶ側が expires_in_hours / expires_in_seconds を渡したときだけ exp を入れる。
-    from core.auth import _get_jwt_secret
-    now = datetime.now(_tz.utc)
+    # overnight-20260923 ④ / prep-tender-20260925 B: 呼ぶ側が期間を渡さなければ
+    #   「セッション持続時間」(auth.session_hours・既定 0 = 期限なし) に従う。
+    #   漏れたトークンは、その利用者のパスワード変更 (または無効化→再有効化) で止められる (tv)。
+    #   呼ぶ側が expires_in_hours / expires_in_seconds を渡したときは従来どおりその期間。
     _exp_secs = _requested_expiry_seconds(body)
-    access_payload = {
-        "sub": str(user["id"]),
-        "role": user["role"],
-        "iat": int(now.timestamp()),
-    }
-    if _exp_secs is not None:
-        access_payload["exp"] = int((now + _td(seconds=_exp_secs)).timestamp())
-    access_token = _pyjwt.encode(
-        access_payload, _get_jwt_secret(), algorithm="HS256"
+    if _exp_secs is None:
+        _exp_secs = _default_expiry_seconds()
+    _user_keys = user.keys()
+    access_token = _issue_access_token(
+        user["id"], user["role"],
+        user["token_version"] if "token_version" in _user_keys else 0,
+        _exp_secs,
     )
 
     # Batch-B S1-3: リフレッシュトークン（30日）
-    raw_refresh = secrets.token_urlsafe(32)
-    refresh_hash = _hashlib.sha256(raw_refresh.encode()).hexdigest()
-    rt_expires = (now + _td(days=30)).strftime("%Y-%m-%dT%H:%M:%S")
     conn2 = get_db()
     try:
-        conn2.execute(
-            "INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at)"
-            " VALUES (?, ?, ?, ?)",
-            (_uuid.uuid4().hex, str(user["id"]), refresh_hash, rt_expires),
-        )
+        raw_refresh = _issue_refresh_token(conn2, str(user["id"]))
         # Batch-B S1-1: must_change_password フラグ取得
         mcpw_row = conn2.execute(
             "SELECT must_change_password FROM users WHERE id = ?",
@@ -294,7 +337,7 @@ def auth_session_config(request: Request):
     finally:
         c.close()
     return {
-        "session_hours": int(rows.get("auth.session_hours", "8")),
+        "session_hours": int(rows.get("auth.session_hours", "0")),
         "idle_logout_minutes": int(rows.get("auth.idle_logout_minutes", "0")),
     }
 
@@ -334,15 +377,25 @@ def refresh_access_token(
 ):
     """Batch-B S1-3: リフレッシュトークンで新しいアクセストークンを発行する。
 
-    既定は無制限（exp を入れない）。login と同じで、
-    expires_in_hours / expires_in_seconds を渡したときだけ、その期間で切れる。
+    期限は login と同じ (既定は auth.session_hours、渡されたときはその期間)。
+
+    prep-20260926 Task1: リフレッシュトークンは使い捨てにしない (2026-09-24 決定)。
+    同じ値を期限まで何度でも使え、同じ値を複数のエージェント・MCP が同時に使っても
+    互いを失効させない。漏れた値を止めるのは失効の仕組みの側で行う: その利用者の
+    パスワード変更・再設定、無効化→再有効化で、DB のトリガーがトークンの版を進め、
+    リフレッシュトークンを全て消す (db.py の trg_users_revoke_tokens)。
     """
-    from core.auth import _get_jwt_secret
     token_hash = _hashlib.sha256(refresh_token.encode()).hexdigest()
+    _exp_secs = _requested_expiry_seconds(
+        {"expires_in_hours": expires_in_hours, "expires_in_seconds": expires_in_seconds}
+    )
+    if _exp_secs is None:
+        _exp_secs = _default_expiry_seconds()
     conn = get_db()
     try:
         row = conn.execute(
-            """SELECT rt.user_id, u.role, COALESCE(u.is_active, 1) AS is_active
+            """SELECT rt.user_id, u.role, COALESCE(u.is_active, 1) AS is_active,
+                      COALESCE(u.token_version, 0) AS token_version
                FROM refresh_tokens rt
                JOIN users u ON rt.user_id = u.id
                WHERE rt.token_hash = ?
@@ -353,25 +406,15 @@ def refresh_access_token(
         conn.close()
     if not row or not row["is_active"]:
         raise HTTPException(401, "Invalid or expired refresh token")
-    now = datetime.now(_tz.utc)
-    _exp_secs = _requested_expiry_seconds(
-        {"expires_in_hours": expires_in_hours, "expires_in_seconds": expires_in_seconds}
-    )
-    payload = {
-        "sub": row["user_id"],
-        "role": row["role"],
-        "iat": int(now.timestamp()),
-    }
-    if _exp_secs is not None:
-        payload["exp"] = int((now + _td(seconds=_exp_secs)).timestamp())
     return {
-        "access_token": _pyjwt.encode(payload, _get_jwt_secret(), algorithm="HS256"),
+        "access_token": _issue_access_token(row["user_id"], row["role"], row["token_version"], _exp_secs),
         "token_type": "bearer",
         "expires_in": _exp_secs,
     }
 
 
 @router.post("/api/auth/change-password", response_model=None)
+@_auth_rate_limit()  # overnight-20260923 ②: current_password の総当たりを login と同じ 5/min/IP で止める
 async def change_password_endpoint(request: Request):
     """Batch-B S1-1: ログイン済みユーザーが自分のパスワードを変更する。current_password 検証必須。"""
     from core.auth import _require_authenticated as _ra
@@ -396,13 +439,31 @@ async def change_password_endpoint(request: Request):
             "UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?",
             (new_hash, user["user_id"]),
         )
+        # overnight-20260923 ④: この UPDATE で DB のトリガーがトークンの版を進め、
+        #   この利用者のリフレッシュトークンを全て消す (他の端末・漏れた値も含めて失効)。
+        #   変更した本人の画面だけは続けて使えるよう、新しい版で発行し直して返す。
+        new_row = conn.execute(
+            "SELECT role, COALESCE(token_version, 0) AS token_version FROM users WHERE id = ?",
+            (user["user_id"],),
+        ).fetchone()
+        new_refresh = _issue_refresh_token(conn, user["user_id"])
         conn.commit()
     finally:
         conn.close()
-    return {"ok": True}
+    _exp_secs = _default_expiry_seconds()
+    return {
+        "ok": True,
+        "access_token": _issue_access_token(
+            user["user_id"], new_row["role"], new_row["token_version"], _exp_secs
+        ),
+        "refresh_token": new_refresh,
+        "token_type": "bearer",
+        "expires_in": _exp_secs,
+    }
 
 
 @router.post("/api/auth/verify-password", response_model=None)
+@_auth_rate_limit()  # overnight-20260923 ②: 正誤を返す口なので login と同じ 5/min/IP で止める
 async def verify_password_endpoint(request: Request):
     """Batch-B S1-3: パスワードを検証する（ロック画面解除用）。トークンは発行しない。"""
     from core.auth import _require_authenticated as _ra

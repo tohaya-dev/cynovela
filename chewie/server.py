@@ -344,6 +344,32 @@ if True:
         # SlowAPI の handler シグネチャは ExceptionHandler protocol と非互換 (RateLimitExceeded 専用)
         # FastAPI は runtime ダックタイプで受け入れるため抑制
         app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # pyright: ignore[reportArgumentType]
+        # overnight-20260923 ②: default_limits (200/分) は一度も効いていなかった。
+        #   原因は2つ。(1) SlowAPIMiddleware を登録していなかった。(2) 登録しても、
+        #   この FastAPI (0.139) は include_router した経路を _IncludedRouter で包むため、
+        #   SlowAPIMiddleware が経路の関数を見つけられず、全要求を「対象外」として素通しする
+        #   (実測: /api/auth/me に 230 回連続で 429 が 0 件)。
+        #   ∴ FastAPI の内部構造に依らない形で、/api/ 配下に既定の上限を掛ける。
+        #   数え方は IP × メソッド × パスごとに 200/分 (slowapi の既定と同じ limits の固定ウィンドウ)。
+        #   login・chat・パスワード系はデコレータの厳しい上限がそのまま効く (こちらは上乗せ)。
+        from limits import parse as _rl_parse
+        from limits.storage import MemoryStorage as _RLMemoryStorage
+        from limits.strategies import FixedWindowRateLimiter as _RLFixedWindow
+        from starlette.responses import JSONResponse as _RLJSONResponse
+
+        _default_rl_item = _rl_parse("200/minute")
+        _default_rl = _RLFixedWindow(_RLMemoryStorage())
+
+        @app.middleware("http")
+        async def _default_rate_limit_mw(request: Request, call_next):
+            _p = request.url.path
+            if _p.startswith("/api/"):
+                _ip = request.client.host if request.client else "-"
+                if not _default_rl.hit(_default_rl_item, "default", _ip, request.method, _p):
+                    return _RLJSONResponse(
+                        {"error": "Rate limit exceeded: 200 per 1 minute"}, status_code=429
+                    )
+            return await call_next(request)
     except Exception as _e:
         logger.warning(f"SlowAPI 初期化失敗 (rate limit 無効): {_e}")
         limiter = None
@@ -1720,6 +1746,7 @@ def _do_scan_body(source_id: str, job_id: str | None = None, skip_unchanged: boo
             return _hl.md5(f"{source_id}|{_p}".encode(), usedforsecurity=False).hexdigest()[:16]
 
         seen_paths: set[str] = set()
+        _src_real = os.path.realpath(src_path)
 
         file_count = 0
         try:
@@ -1810,6 +1837,14 @@ def _do_scan_body(source_id: str, job_id: str | None = None, skip_unchanged: boo
                         if ext not in SUPPORTED_EXTENSIONS:
                             continue
                         fpath = unicodedata.normalize("NFC", os.path.join(root, fname))
+                        # overnight-20260923 ①: フォルダの中にあるシンボリックリンクがフォルダの外の
+                        #   実体を指すときは読まない (os.walk はフォルダのリンクは辿らないが、
+                        #   ファイルのリンクはそのまま開いてしまう)。
+                        if os.path.islink(fpath):
+                            _lt = os.path.realpath(fpath)
+                            if not (_lt == _src_real or _lt.startswith(_src_real.rstrip(os.sep) + os.sep)):
+                                logger.warning(f"[scan] フォルダの外を指すリンクを飛ばしました: {fpath}")
+                                continue
                         fsize = os.path.getsize(fpath)
 
                         # skip_unchanged: 前回走査以降に変わっていないファイルは読み直さない。

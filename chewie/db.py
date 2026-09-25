@@ -762,6 +762,29 @@ def migrate_db(conn) -> None:
         "CREATE INDEX IF NOT EXISTS idx_rt_expires ON refresh_tokens(expires_at)"
     )
 
+    # overnight-20260923 ④: トークンの版。アクセストークンに発行時の版 (tv) を入れ、
+    #   core/auth.py が毎回いまの版と比べる。パスワードが変わったとき・有効/無効が
+    #   変わったときは、どの経路 (本人の変更・管理者の再設定・--reset-admin・削除/復帰) で
+    #   変わっても版を1つ進め、リフレッシュトークンも全て消す。経路ごとに書き足すと
+    #   漏れるので、DB のトリガー1か所で行う。
+    try:
+        conn.execute(
+            "ALTER TABLE users ADD COLUMN token_version INTEGER NOT NULL DEFAULT 0"
+        )
+    except Exception:
+        pass
+    conn.execute("""
+        CREATE TRIGGER IF NOT EXISTS trg_users_revoke_tokens
+        AFTER UPDATE OF password_hash, is_active ON users
+        WHEN NEW.password_hash IS NOT OLD.password_hash
+          OR COALESCE(NEW.is_active, 1) IS NOT COALESCE(OLD.is_active, 1)
+        BEGIN
+            UPDATE users SET token_version = COALESCE(token_version, 0) + 1
+             WHERE id = NEW.id;
+            DELETE FROM refresh_tokens WHERE user_id = NEW.id;
+        END
+    """)
+
     # PDF-mode 差分: file_hashes に pdf_mode 列を後足し（既存DB互換、存在時は無視）
     try:
         conn.execute(

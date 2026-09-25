@@ -208,8 +208,15 @@ def _require_authenticated(request: Request) -> dict:
             _audit_auth_failure(request, "user_deactivated")
             raise HTTPException(401, "User deactivated")
         result = dict(row)
+        # overnight-20260923 ④: 発行時の版 (tv) が利用者の今の版と違えば失効扱い。
+        #   版はパスワードの変更・再設定、無効化・再有効化で1つ進む (db.py のトリガー)。
+        #   期限の無いトークンでも、これで発行済みの分をまとめて止められる。
+        if int(payload.get("tv") or 0) != int(result.get("token_version") or 0):
+            _audit_auth_failure(request, "token_revoked")
+            raise HTTPException(401, "Token revoked")
         result["user_id"] = row["id"]
         _remember_audit_actor(request, result)
+        _enforce_must_change_gate(request, result)
         return result
 
     # 旧 hex32 セッショントークン: 既存の state.sessions 経由
@@ -220,7 +227,36 @@ def _require_authenticated(request: Request) -> dict:
     result = dict(user)
     result["user_id"] = user.get("id")
     _remember_audit_actor(request, result)
+    _enforce_must_change_gate(request, result)
     return result
+
+
+# overnight-20260923 ③: 初回パスワード変更が済むまで通してよい口。変更の画面を出して
+#   変更を済ませるのに要るもの (自分が誰か・変更・ログアウト) だけに絞る。
+MUST_CHANGE_EXEMPT_PATHS: frozenset[str] = frozenset({
+    "/api/auth/me",
+    "/api/auth/logout",
+    "/api/auth/change-password",
+})
+
+
+def _enforce_must_change_gate(request: Request, user: dict) -> None:
+    """must_change_password の利用者は、変更に要る口以外を 403 で断る。
+
+    従来は _require_admin の中だけで見ていたため、閲覧者の一般 API や
+    _require_role / _require_admin_or_self を使う管理操作 (PATCH /api/users/{id} 等) は
+    初期パスワードのまま通っていた。認証の共通の入口 (_require_authenticated) で見る。
+    """
+    if not user.get("must_change_password"):
+        return
+    try:
+        _path = request.url.path
+    except Exception:
+        _path = ""
+    if _path in MUST_CHANGE_EXEMPT_PATHS:
+        return
+    _audit_auth_failure(request, "must_change_password")
+    raise HTTPException(403, "初回パスワードの変更が必要です。パスワードを変更してから操作してください。")
 
 
 def _require_role(request: Request, allowed_roles) -> dict:

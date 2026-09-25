@@ -205,7 +205,7 @@ kept in `docs/USE-FROM-TERMINAL.txt`):
 
 | Command | What it does |
 |---|---|
-| `login --username <name>` | Signs in and remembers the token in `~/.cynovela_cli.env` (mode 600). Reads the password from the terminal, or from standard input with `--password-stdin`. The token has no expiry unless `--hours` / `--seconds` is given. The token itself is never printed |
+| `login --username <name>` | Signs in and remembers the token in `~/.cynovela_cli.env` (mode 600). Reads the password from the terminal, or from standard input with `--password-stdin`. By default the token has no expiry (the session hours default to 0). It expires after `--hours` / `--seconds` if given, or after the session hours if the administrator has set them. Changing that user's password makes it stop working. The token itself is never printed |
 | `logout` | Forgets the remembered token and tells the server |
 | `doctor` | What is missing right now: Python version, models, inference server (LM Studio / Ollama), **whether the configured model is actually loaded**, port, database, conda |
 | `status` | Is the server up |
@@ -215,7 +215,7 @@ kept in `docs/USE-FROM-TERMINAL.txt`):
 | `audit-logs [--limit N]` | Recent audit log entries (admin token) |
 | `search --workspace <id> --collection <id> --query "..."` | Returns source fragments only (no answer is shown) |
 | `chat --workspace <id> --query "..." [--collection <id>]` | Asks a question and prints the answer with its sources |
-| `ingest --path <folder> [--name <name>] [--workspace <id>]` | One line that registers a folder as a source and starts scanning it. Returns a `job_id` at once |
+| `ingest --path <folder> [--name <name>] [--workspace <id>]` | One line that registers a folder as a source and starts scanning it. Returns a `job_id` at once. The folder must be inside a search folder already added (`./launch.sh --add` or the screen); anything else is refused (403) |
 | `scan start --source <id>` / `scan status --job <job_id>` / `scan cancel --source <id>` | Start a scan (returns a `job_id` at once) / see its progress / cancel it |
 | `publish start --collection <id>` / `publish status --job <job_id>` / `publish stop` / `publish recover` | Start a publish (returns a `job_id` at once) / progress / stop / recover a stuck one |
 | `index-status` | Chunk counts per collection |
@@ -238,7 +238,7 @@ Every command accepts `--json` (machine-readable) and `--lang en|ja`. Exit codes
 }}}
 ```
 
-What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two common problems: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. The token does not expire unless the caller asked for an expiry when signing in (see `docs/reference/api.md`). Every tool, with what you hand it and what comes back, is in `docs/reference/mcp.md`; the walkthrough of connecting a client, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/operations.md`.
+What the connected AI can see follows the token's role: a viewer token gets masked text, an admin token does not. Two common problems: in LM Studio the file to edit is `mcp.json` (open it from the **Program** panel → **Install** → **Edit mcp.json**), and after registering, **LM Studio still asks you on screen to allow each tool call** — until you allow it, no tool ever runs. By default the token has no expiry; it expires only if another lifetime was asked for when signing in or the administrator has set the session hours (see `docs/reference/api.md`), and it stops working when that user's password is changed. When tool calls fail with an authentication error, sign in again. Every tool, with what you hand it and what comes back, is in `docs/reference/mcp.md`; the walkthrough of connecting a client, the settings tools, and the write guard (`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`) are in `docs/operations.md`.
 
 ---
 
@@ -474,7 +474,7 @@ that one. The same documents are repeated below.
 
 | 命令 | すること |
 |---|---|
-| `login --username <名前>` | ログインして、トークンを `~/.cynovela_cli.env` へ覚えさせます（自分だけが読める権限）。合言葉はターミナルから、または `--password-stdin` で標準入力から受け取ります。`--hours` / `--seconds` を渡さないかぎりトークンに期限はつきません。トークンそのものは画面に出しません |
+| `login --username <名前>` | ログインして、トークンを `~/.cynovela_cli.env` へ覚えさせます（自分だけが読める権限）。合言葉はターミナルから、または `--password-stdin` で標準入力から受け取ります。トークンは既定では期限がありません（セッション時間の既定は 0）。`--hours` / `--seconds` を渡したときはその長さで、管理者がセッション時間を決めたときはその時間で切れます。その利用者のパスワードを変えたときは使えなくなります。トークンそのものは画面に出しません |
 | `logout` | 覚えているトークンを忘れ、サーバにも伝えます |
 | `doctor` | いま何が足りないか: Python の版・モデル・推論サーバ（LM Studio / Ollama）・**設定されたモデルが実際に読み込まれているか**・番号・データベース・conda |
 | `status` | サーバが起きているか |
@@ -484,7 +484,7 @@ that one. The same documents are repeated below.
 | `audit-logs [--limit N]` | 監査ログの直近の記録（管理者トークン） |
 | `search --workspace <id> --collection <id> --query "..."` | 出典の断片だけを返します（回答は表示しません） |
 | `chat --workspace <id> --query "..." [--collection <id>]` | 質問して、回答と出典を表示します |
-| `ingest --path <フォルダ> [--name <名前>] [--workspace <id>]` | フォルダを資料として登録し走査を始める、を1行で。`job_id` を即返します |
+| `ingest --path <フォルダ> [--name <名前>] [--workspace <id>]` | フォルダを資料として登録し走査を始める、を1行で。`job_id` を即返します。フォルダは足してある検索の対象フォルダ（`./launch.sh --add` か画面で足したもの）の内側でなければならず、それ以外は断られます（403） |
 | `scan start --source <id>` / `scan status --job <job_id>` / `scan cancel --source <id>` | 走査を始める（`job_id` を即返す）/ 進み具合を見る / 中止する |
 | `publish start --collection <id>` / `publish status --job <job_id>` / `publish stop` / `publish recover` | 公開を始める（`job_id` を即返す）/ 進み具合 / 止める / 固着からの復旧 |
 | `index-status` | コレクションごとの塊の数 |
@@ -507,7 +507,7 @@ that one. The same documents are repeated below.
 }}}
 ```
 
-繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。つまずきやすい点が2つあります: LM Studio で書くファイルは `mcp.json` です（**Program** パネル → **Install** → **Edit mcp.json** から開けます）。そして登録した後も、**LM Studio は道具の呼び出しごとに画面で許可を求めます** — 許可を出すまで道具は一度も動きません。トークンは、ログインのときに期間を渡さないかぎり切れません（`docs/reference/api.md` を参照）。道具ごとに何を渡すと何が返るかは `docs/reference/mcp.md` に、クライアントを繋ぐ手順の全体・設定系の道具・書き込みの守り（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）は `docs/operations.md` にあります。
+繋いだ AI に見えるものはトークンの資格に従います: 閲覧者のトークンでは伏字済みの本文、管理者のトークンでは伏字前の本文です。つまずきやすい点が2つあります: LM Studio で書くファイルは `mcp.json` です（**Program** パネル → **Install** → **Edit mcp.json** から開けます）。そして登録した後も、**LM Studio は道具の呼び出しごとに画面で許可を求めます** — 許可を出すまで道具は一度も動きません。トークンは既定では期限がありません。ログインのときに期間を渡したときや、管理者がセッション時間を決めたときだけ切れます。その利用者のパスワードを変えたときも使えなくなります（`docs/reference/api.md` を参照）。道具の呼び出しが認証エラーで失敗したら、ログインし直してください。道具ごとに何を渡すと何が返るかは `docs/reference/mcp.md` に、クライアントを繋ぐ手順の全体・設定系の道具・書き込みの守り（`CYNOVELA_MCP_ALLOW_SETTINGS_WRITE=1`）は `docs/operations.md` にあります。
 
 ---
 

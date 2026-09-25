@@ -12,7 +12,8 @@ explicit --yes: without it they show what would happen and stop.
   Sign in:
     login         Sign in with a username and password, and remember the token
                   in ~/.cynovela_cli.env so the other commands just work.
-                  The token never expires unless --hours / --seconds is given.
+                  The token never expires unless --hours / --seconds is given
+                  or the server's session hours is set above 0.
     logout        Forget the remembered token (and tell the server about it).
   See:
     doctor        What is missing right now, and the one line to run next.
@@ -1287,9 +1288,9 @@ def build_parser() -> Parser:
     p_li.add_argument("--password-stdin", action="store_true",
                       help="read the password from standard input instead")
     p_li.add_argument("--hours", type=float,
-                      help="make the token expire after this many hours (default: it never expires)")
+                      help="make the token expire after this many hours (default: the server's session hours; 0 = never expires)")
     p_li.add_argument("--seconds", type=float,
-                      help="make the token expire after this many seconds (default: it never expires)")
+                      help="make the token expire after this many seconds (default: the server's session hours; 0 = never expires)")
     sub.add_parser("logout", help="forget the remembered token")
 
     sub.add_parser("doctor", help="what is missing right now (works without the server)")

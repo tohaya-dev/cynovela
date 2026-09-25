@@ -1846,7 +1846,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <div class="slide-body">
     <ol start="3">
     <li>The printed string is the token. Put it into the <code>env</code> block of <code>mcp.json</code> (next step).</li>
-    <li><strong>The token does not expire unless you ask it to.</strong> Signing in gives a token with no expiry; pass <code>expires_in_hours</code> to the login call if you want one that does. If tool calls start failing with an authentication error, issue a new token with the same command and update <code>mcp.json</code>.</li>
+    <li><strong>By default the token has no expiry</strong> (the session hours default to 0). It expires only if you pass <code>expires_in_hours</code> to the login call, or if the administrator has set the session hours to a positive number. Changing that user's password also makes the token stop working. If tool calls start failing with an authentication error, issue a new token with the same command and update <code>mcp.json</code>.</li>
     </ol>
     <p>Note: for the settings tools (and other admin tools) the login must be the <strong>administrator</strong> account; a viewer token is rejected by the server with 403.</p>
     <h4>4-3-4. Configuration example</h4>
@@ -1952,7 +1952,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
     <p>The MCP server authenticates to the main Cynovela API with the <code>Authorization: Bearer&lt;token&gt;</code> header. The token is passed through an environment variable on the client side.</p>
     <ul>
     <li>Authentication is the JWT issued by <code>POST /api/auth/login</code> (the procedure is in 4-3-3). The old <code>Bearer demo-token-&lt;user_id&gt;</code> form has been abolished and is not accepted.</li>
-    <li>The token does not expire unless the login call asked for an expiry (<code>expires_in_hours</code>). Issue a new one with the same login call whenever you need to.</li>
+    <li>The token has no expiry by default (session hours 0). It expires after the lifetime the login call asked for (<code>expires_in_hours</code>), or after the session hours if the administrator has set them. Changing that user's password also revokes it. Issue a new one with the same login call whenever you need to.</li>
     </ul>
 </div>
 <div class="slide-footer">
@@ -2025,7 +2025,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
     <tbody>
     <tr><td>The tools are not found</td><td>Whether the Cynovela main body (<code>server.py</code>) is already running at <code>http://127.0.0.1:8765</code></td></tr>
     <tr><td>The server appears in LM Studio but no tool is ever called</td><td>The human permission in LM Studio has not been granted yet — see 4-3-5. The registration alone does not allow calls; allow the tool call in the chat window's confirmation dialog</td></tr>
-    <tr><td>Authentication error</td><td>The value of the <code>CYNOVELA_TOKEN</code> environment variable, and whether the token is still valid — <strong>a token has no expiry unless the login call asked for one</strong>; re-issue with the login call in 4-3-3</td></tr>
+    <tr><td>Authentication error</td><td>The value of the <code>CYNOVELA_TOKEN</code> environment variable, and whether the token is still valid — <strong>a token has no expiry by default, but expires after the lifetime the login call asked for, or after the session hours if the administrator has set them, and stops working when that user's password is changed</strong>; re-issue with the login call in 4-3-3</td></tr>
     </tbody>
     </table>
 </div>
@@ -2208,7 +2208,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 </div>
 <div class="slide-body">
     <h4>5-4-4. Permission for file upload</h4>
-    <p>Because the configuration can end up accepting file uploads from any user on the LAN, always check the validation of the <code>path</code> argument of <code>/api/sources</code> and the upload limit setting (<code>CYNOVELA_MAX_UPLOAD_BYTES</code>, default 100 MB).</p>
+    <p>Because the configuration can end up accepting file uploads from any user on the LAN, always check the validation of the <code>path</code> argument of <code>/api/sources</code> and the upload limit setting (<code>CYNOVELA_MAX_UPLOAD_BYTES</code>, default 100 MB). <code>/api/sources</code> accepts only a folder inside a registered ingest root (<code>store/ingest-roots.json</code>) and answers 403 for anything else, so keep the list of roots short.</p>
     <h4>5-4-5. Recommended configurations</h4>
     <p>Even for verification and learning use, one of the following is recommended.</p>
     <ul>
@@ -2627,6 +2627,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     </table>
     <h3>9-4. Adding and Deleting Users, and Changing Passwords</h3>
     <p>After logging in with the administrator role, you can do this from the "ユーザー管理" (user management) screen. Operation via the API is also possible, but the user management endpoints are protected by <code>_require_admin</code> or <code>_require_admin_or_self</code> (the person themselves or an administrator only).</p>
+    <p>Changing a user's password (including a reset by the administrator or <code>server.py --reset-admin</code>), switching the account off, and switching it on again make every token already issued to that user stop working at once; that user signs in again.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -4419,7 +4420,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <div class="slide-body">
     <ol start="3">
     <li>出力された文字列がトークンです。次の手順の <code>mcp.json</code> の <code>env</code> に貼ります。</li>
-    <li><strong>トークンは、頼まないかぎり切れません。</strong> ログインすると期限の無いトークンが渡されます。切れる形が欲しいときは、ログインの呼び出しに <code>expires_in_hours</code> を渡してください。道具の呼び出しが認証エラーで失敗しはじめたら、同じコマンドで新しいトークンを発行して <code>mcp.json</code> を書き替えてください。</li>
+    <li><strong>トークンは既定では期限がありません</strong>（セッション時間の既定は 0）。切れるのは、ログインの呼び出しに <code>expires_in_hours</code> を渡したときか、管理者がセッション時間を正の数にしたときだけです。その利用者のパスワードを変えたときも使えなくなります。道具の呼び出しが認証エラーで失敗しはじめたら、同じコマンドで新しいトークンを発行して <code>mcp.json</code> を書き替えてください。</li>
     </ol>
     <p>注意: 設定系の道具（と他の管理系の道具）を使うには、ログインは<strong>管理者</strong>のアカウントで行います。閲覧者のトークンはサーバ側が 403 で拒否します。</p>
     <h4>4-3-4. 設定例</h4>
@@ -4525,7 +4526,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
 <div class="slide-body">
     <ul>
     <li>認証は <code>POST /api/auth/login</code> が発行する JWT です（手順は 4-3-3）。旧 <code>Bearer demo-token-&lt;user_id&gt;</code> 形式は廃止済みで受理しません。</li>
-    <li>トークンは、ログインの呼び出しで期間（<code>expires_in_hours</code>）を渡さないかぎり切れません。要るときは同じ呼び出しで発行し直してください。</li>
+    <li>トークンは既定では期限がありません（セッション時間の既定は 0）。ログインの呼び出しで期間（<code>expires_in_hours</code>）を渡したときはその長さで、管理者がセッション時間を決めたときはその時間で切れます。その利用者のパスワードを変えたときも無効になります。要るときは同じ呼び出しで発行し直してください。</li>
     </ul>
     <h4>4-5-2. ロール権限</h4>
     <p>MCP 経由の呼び出しも本体 API と同じロール（admin / curator / viewer）の権限チェックを通過します。特に <code>ingest_source</code> や <code>publish_collection</code>、<code>create_workspace</code> など書き込みを伴うツールは admin 権限を要する場合があり、設定系の 5 件はすべて admin 権限が必要です。</p>
@@ -4585,7 +4586,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
     <tbody>
     <tr><td>ツールが見つからない</td><td>Cynovela 本体（<code>server.py</code>）が <code>http://127.0.0.1:8765</code> で起動済みか</td></tr>
     <tr><td>LM Studio にサーバは並ぶのに道具が一度も呼ばれない</td><td>LM Studio の画面での人の許可がまだ出ていません — 4-3-5 を見てください。登録だけでは呼び出しは許可されません。チャット画面の確認ダイアログで許可を出します</td></tr>
-    <tr><td>認証エラー</td><td><code>CYNOVELA_TOKEN</code> 環境変数の値、トークンの有効性 — <strong>トークンは、ログインで期間を渡さないかぎり切れません</strong>。4-3-3 のログインの呼び出しで発行し直してください</td></tr>
+    <tr><td>認証エラー</td><td><code>CYNOVELA_TOKEN</code> 環境変数の値、トークンの有効性 — <strong>トークンは既定では期限がありませんが、ログインで期間を渡したときや管理者がセッション時間を決めたときはその長さで切れ、その利用者のパスワードを変えたときも使えなくなります</strong>。4-3-3 のログインの呼び出しで発行し直してください</td></tr>
     <tr><td><code>settings_set</code> が「書き込みは既定で閉じています」と答える</td><td>それは守り（4-5-4）であって故障ではありません。本当に書き込みたいときだけ <code>mcp.json</code> の <code>env</code> に <code>"CYNOVELA_MCP_ALLOW_SETTINGS_WRITE": "1"</code> を足します</td></tr>
     </tbody>
     </table>
@@ -4755,7 +4756,7 @@ Cynovela 本体（FastAPI サーバー）</code></pre>
     <h4>5-4-3. 認証の制約</h4>
     <p>認証は JWT（<code>POST /api/auth/login</code> が発行）で、<code>--demo</code> 起動でも必要です。旧 <code>Bearer demo-token-&lt;user_id&gt;</code> 形式は廃止済みで受理しません。LAN 共有時は信頼できるユーザーのみがネットワーク上にいる前提で運用してください。</p>
     <h4>5-4-4. ファイルアップロードの権限</h4>
-    <p>LAN 内の任意のユーザーからファイルアップロードを受け付ける構成になり得るため、<code>/api/sources</code> の path 引数のバリデーションやアップロード上限の設定値（<code>CYNOVELA_MAX_UPLOAD_BYTES</code>、既定 100 MB）を必ず確認してください。</p>
+    <p>LAN 内の任意のユーザーからファイルアップロードを受け付ける構成になり得るため、<code>/api/sources</code> の path 引数のバリデーションやアップロード上限の設定値（<code>CYNOVELA_MAX_UPLOAD_BYTES</code>、既定 100 MB）を必ず確認してください。<code>/api/sources</code> が受け付けるのは登録済みの取り込み元のルート（<code>store/ingest-roots.json</code>）の内側のフォルダだけで、それ以外は 403 です。ルートは必要な分だけにしてください。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -5187,6 +5188,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     </table>
     <h3>9-4. ユーザー追加・削除・パスワード変更</h3>
     <p>admin ロールでログイン後、「ユーザー管理」画面から実行できます。API での操作も可能ですが、ユーザー管理系エンドポイントは <code>_require_admin</code> または <code>_require_admin_or_self</code>（本人か admin のみ）で保護されています。</p>
+    <p>利用者のパスワードを変えたとき（管理者による出し直しや <code>server.py --reset-admin</code> を含む）、使えなくしたとき、使えるように戻したときは、その人に出したトークンがすべてすぐ使えなくなります。その人はログインし直します。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

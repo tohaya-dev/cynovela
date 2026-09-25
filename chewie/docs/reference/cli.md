@@ -63,8 +63,8 @@ sign in and remember the token in ~/.cynovela_cli.env
 | `--username` | yes | user name |
 | `--password` | no | password (discouraged: it stays in the shell history) |
 | `--password-stdin` | no | read the password from standard input instead |
-| `--hours` | no | make the token expire after this many hours (default: it never expires) |
-| `--seconds` | no | make the token expire after this many seconds (default: it never expires) |
+| `--hours` | no | make the token expire after this many hours (default: the server's session hours, 0 = no expiry unless the administrator changed it) |
+| `--seconds` | no | make the token expire after this many seconds (default: the server's session hours, 0 = no expiry unless the administrator changed it) |
 
 #### `logout`
 
@@ -516,8 +516,8 @@ cd <展開したフォルダ>
 | `--username` | 要る | 利用者の名前 |
 | `--password` | 省ける | 合言葉（勧めません: ターミナルの履歴に残ります） |
 | `--password-stdin` | 省ける | 合言葉を標準入力から読む |
-| `--hours` | 省ける | この時間でトークンを切れさせる（既定: 切れない） |
-| `--seconds` | 省ける | この秒数でトークンを切れさせる（既定: 切れない） |
+| `--hours` | 省ける | この時間でトークンを切れさせる（既定: サーバのセッション時間。変えていなければ 0 で、切れない） |
+| `--seconds` | 省ける | この秒数でトークンを切れさせる（既定: サーバのセッション時間。変えていなければ 0 で、切れない） |
 
 #### `logout`
 

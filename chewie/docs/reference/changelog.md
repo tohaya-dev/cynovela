@@ -16,6 +16,56 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## Unreleased (work of 2026-09-24)
+
+- **This edition is renamed from chewie to tender.** The name in `VERSION` (codename) and in
+  the text is now tender. The source tree in the repository is `tender/` (formerly `chewie/`),
+  and packages built from now on are named after it (`cynovela-tender-…`). The published 1.2.0
+  downloads keep their names (`cynovela-chewie-…-1.2.0…`), and so do the steps that unpack them
+  (they make a folder named `chewie`): those are the names of files that already exist. The
+  rename was done with `tools/rename-product.py`, which can undo it
+  (`--revert tools/rename-product.chewie-to-tender.json`).
+- **A pass still has no expiry by default; an administrator can make it expire.** As in
+  1.0.7 to 1.2.0, `POST /api/auth/login` and `POST /api/auth/refresh` issue a pass with no
+  expiry unless the caller passes `expires_in_hours` or `expires_in_seconds`: the
+  administrator's "session hours" (`session_hours` of `POST /api/auth/session-config`,
+  stored as `auth.session_hours`) default to 0. Set them to a positive number and a pass
+  issued without a lifetime expires after that many hours. Passing a lifetime works as
+  before. `expires_in` in the answer is the lifetime in seconds (`null` only when
+  `session_hours` is 0 and none was asked for). `cynovela-cli login` without `--hours`
+  follows the same rule. A leaked pass no longer has to be waited out: changing that
+  user's password stops it at once (per-user token version, next item).
+- **A pass can be revoked per user.** Changing a password (your own, an administrator's
+  reset, or `server.py --reset-admin`), switching an account off (`PATCH` with
+  `is_active=false` or `DELETE`) and switching it on again make every pass and refresh
+  token already issued to that user stop working at once (401 "Token revoked").
+  Signing out still removes the refresh tokens. Deleting `store/db/jwt/secret.key` is no
+  longer the only way to invalidate a leaked pass; it still invalidates everyone's.
+- **A refresh token stays reusable.** `POST /api/auth/refresh` does not replace it: the
+  same refresh token keeps working until it expires, even when several agents share it.
+  It is revoked only by the password change / switch-off-and-on described above.
+- **`POST /api/auth/change-password` returns new tokens**: `{ok, access_token,
+  refresh_token, token_type, expires_in}`. The change revokes the caller's old ones.
+- **The first-password change is enforced everywhere.** Before, it was checked only on
+  administrator APIs. Now, while a user still has to change the first password, every
+  signed-in API answers 403 ("初回パスワードの変更が必要です…") except
+  `/api/auth/me`, `/api/auth/logout` and `/api/auth/change-password` — for viewers and
+  administrators alike.
+- **The 200-per-minute rate limit is really applied.** It was set as the default in the code
+  (`server.py`) but never took effect: only sign-in (5 per minute) and the chat endpoints (30 per minute) were limited.
+  Now every `/api/` path is limited to 200 requests per minute per address, counted per
+  method and path (429, `{"error": "Rate limit exceeded: 200 per 1 minute"}`).
+  `/api/auth/change-password` and `/api/auth/verify-password` are limited to 5 per
+  minute per address, like sign-in.
+- **A source must be inside a registered ingest root.** `POST /api/sources` and
+  `POST /api/folder-scan-preview` accept only a folder whose real path (links followed)
+  is inside a root in `store/ingest-roots.json` — the same boundary as the folder
+  browser. Anything else answers 403. Before, only a short deny-list (`/etc`, `/.ssh`,
+  …) was checked, so any other place (`/Volumes/…`, another user's folder) could be
+  registered and read. The CLI `ingest` and the MCP `ingest_source` go through the same
+  check. During a scan, a file link inside the folder that points outside it is skipped
+  and logged.
+
 ## v1.2.0 (2026-09-01)
 
 - **The package no longer ships `store/secret.key`.** Earlier packages
@@ -314,6 +364,50 @@ The following are recorded as unfinished. They describe the state of the current
 Cynovela の主要な変更内容を時系列で記録します。
 
 ---
+
+## 未リリース（2026-09-24 の作業）
+
+- **この形の名前を chewie から tender に改めた。** `VERSION` の名前（codename）と本文中の呼び名は
+  tender になった。リポジトリのソースの木は `tender/`（旧 `chewie/`）になり、これから作る
+  配布物の名前もそれに従う（`cynovela-tender-…`）。公開済みの 1.2.0 の配布物のファイル名
+  （`cynovela-chewie-…-1.2.0…`）と、それを展開する手順（`chewie` というフォルダができる）は
+  そのまま。どちらも既にあるファイルの名前だからである。改名は `tools/rename-product.py` で
+  行い、元に戻せる（`--revert tools/rename-product.chewie-to-tender.json`）。
+- **通行証は既定では期限なしのまま。管理者が切れるようにできる。** 1.0.7 から 1.2.0 までと同じく、
+  `POST /api/auth/login` と `POST /api/auth/refresh` は、呼ぶ側が `expires_in_hours` か
+  `expires_in_seconds` を渡さないかぎり期限の無い通行証を出す。管理者が決める「セッション時間」
+  （`POST /api/auth/session-config` の `session_hours`。設定の `auth.session_hours`）の既定は 0 で、
+  正の数にすると、期間を渡さずに出した通行証はその時間で切れる。
+  期間を渡したときは従来どおり。返る `expires_in` は秒数（`null` は `session_hours` が 0 で
+  期間も渡さなかったときだけ）。`--hours` なしの `cynovela-cli login` も同じ決まりに従う。
+  漏れた通行証は、その利用者の合言葉を変えればすぐ止められる（利用者ごとのトークンの版。次の項）。
+- **通行証を利用者ごとに無効にできるようになった。** 合言葉を変えたとき（自分で変える・
+  管理者が出し直す・`server.py --reset-admin`）、利用者を使えなくしたとき（`PATCH` で
+  `is_active=false`、または `DELETE`）、使えるように戻したときは、その人に出した通行証と
+  リフレッシュトークンがすべてすぐ使えなくなる（401 "Token revoked"）。ログアウトは
+  従来どおりリフレッシュトークンを消す。漏れた通行証を無効にする道は
+  `store/db/jwt/secret.key` を消すことだけではなくなった（消せば従来どおり全員ぶんが無効）。
+- **リフレッシュトークンは使い回せるまま。** `POST /api/auth/refresh` は差し替えない。
+  同じリフレッシュトークンを、複数のエージェントで共有していても期限まで使える。
+  無効になるのは、上の合言葉の変更・使えなくしてから戻す操作のときだけ。
+- **`POST /api/auth/change-password` が新しいトークンを返すようになった**:
+  `{ok, access_token, refresh_token, token_type, expires_in}`。変更で呼んだ側の古いものは無効になる。
+- **最初の合言葉の変更を、どの口でも求めるようになった。** 以前は管理者向けの API でしか
+  確かめていなかった。いまは最初の合言葉を変えていない利用者には、`/api/auth/me`・
+  `/api/auth/logout`・`/api/auth/change-password` 以外のログインが要る API がすべて 403
+  （「初回パスワードの変更が必要です…」）を返す。閲覧者にも管理者にも効く。
+- **1分あたり 200回の上限が、本当に掛かるようになった。** コード（`server.py`）に既定として設定してあったが
+  一度も効いておらず、実際に絞っていたのはログイン（1分あたり 5回）とチャットの口（1分あたり 30回）だけだった。
+  いまは `/api/` の口はどれも、接続元ごと・動作と口ごとに 1分あたり 200回まで
+  （429、`{"error": "Rate limit exceeded: 200 per 1 minute"}`）。`/api/auth/change-password` と
+  `/api/auth/verify-password` はログインと同じく 1分あたり 5回まで・接続元ごと。
+- **取り込み元は、登録済みのルートの内側に限るようになった。** `POST /api/sources` と
+  `POST /api/folder-scan-preview` は、実体のパス（リンクをたどった先）が
+  `store/ingest-roots.json` のルートの内側にあるフォルダだけを受け付ける（フォルダを辿る
+  画面と同じ境界）。それ以外は 403。以前は短い拒否リスト（`/etc`・`/.ssh` など）しか
+  見ていなかったので、それ以外の場所（`/Volumes/…`・他の利用者のフォルダ）を登録して
+  読めてしまった。CLI の `ingest` と MCP の `ingest_source` も同じ確認を通る。走査のとき、
+  フォルダの中にあってフォルダの外を指すファイルのリンクは飛ばし、記録に残す。
 
 ## v1.2.0（2026-09-01）
 

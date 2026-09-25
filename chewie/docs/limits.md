@@ -476,18 +476,21 @@ is built (because if it were shared, a pass issued elsewhere would be accepted).
 If saving the key fails, the key is valid only for that one run.
 In that case, restarting invalidates any issued passes (logging in again works).
 
-**Since 1.0.7 the pass does not expire unless the caller asks it to.** Before,
-every pass stopped working 8 hours after it was issued. Now `POST /api/auth/login`
-issues a pass with no expiry unless you pass `expires_in_hours` or
-`expires_in_seconds`. Two consequences you should know about:
+**By default the pass has no expiry.** As in 1.0.7 to 1.2.0, a pass expires only when
+`expires_in_hours` or `expires_in_seconds` is passed, or when the administrator has set
+the "session hours" (`session_hours` of `POST /api/auth/session-config`, default 0 =
+no expiry) to a positive number; then `POST /api/auth/login` and `POST /api/auth/refresh`
+use those hours when no lifetime is passed. What you should know:
 
 - **Signing out does not make the pass stop working.** `POST /api/auth/logout`
   removes the refresh token and the in-memory session, but the pass itself is
-  checked by its signature alone, so a copy of it keeps working. Previously the
-  8-hour limit put a floor under this; now there is none. If a pass leaks, the
-  only way to invalidate it is to delete `store/db/jwt/secret.key` and restart,
-  which invalidates **every** pass.
-- Pass `expires_in_hours` when you hand a pass to something you do not control.
+  checked by its signature, so a copy of it keeps working until it expires (by default it has none) or is revoked as below.
+- **If a pass leaks, change that user's password** (or switch the account off and
+  on again). Every pass and refresh token already issued to that user stops working
+  at once (401 "Token revoked"). Deleting `store/db/jwt/secret.key` and restarting
+  still works too, but it invalidates **every** user's pass.
+- A refresh token can be used again and again until it expires (30 days), and several agents may share one. It stops working when that user's password changes or the account is switched off and on again.
+- Pass a short `expires_in_hours` when you hand a pass to something you do not control.
 
 ### Pitfalls
 
@@ -1125,18 +1128,21 @@ MCP のツールには `search_across_collections`（複数のコレクション
 鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります。
 この場合、再起動すると発行済みの通行証は無効になります（再ログインで通ります）。
 
-**1.0.7 から、通行証は呼ぶ側が頼まないかぎり期限を持ちません。** 従来は発行から
-8時間で必ず使えなくなっていました。いまは `POST /api/auth/login` に
-`expires_in_hours` か `expires_in_seconds` を渡さないかぎり、期限の入っていない
-通行証が出ます。承知しておくべきことが2つあります。
+**通行証は、既定では期限がありません。**
+1.0.7 から 1.2.0 までと同じく、切れるのは `expires_in_hours` か `expires_in_seconds` を渡したときか、
+管理者が「セッション時間」（`POST /api/auth/session-config` の `session_hours`。既定 0 = 期限なし）を
+正の数にしたときだけです。そのときは、期間を渡さない `POST /api/auth/login` と
+`POST /api/auth/refresh` がその時間を使います。承知しておくべきことです。
 
 - **ログアウトしても、その通行証は使えなくなりません。** `POST /api/auth/logout` は
-  リフレッシュトークンと記憶の中の入室記録を消しますが、通行証そのものは署名だけで
-  確かめられるので、写しを持っている側は使い続けられます。従来は8時間という下限が
-  ありましたが、いまはありません。漏れた通行証を無効にする道は、
-  `store/db/jwt/secret.key` を消して起動し直すことだけで、そのときは**すべての**
-  通行証が無効になります。
-- 自分の手の届かないところへ通行証を渡すときは、`expires_in_hours` を渡してください。
+  リフレッシュトークンと記憶の中の入室記録を消しますが、通行証そのものは署名で
+  確かめられるので、写しを持っている側は期限が来るか（既定では期限なし）、次のとおり無効にされるまで使い続けられます。
+- **通行証が漏れたら、その利用者のパスワードを変えてください**（または使えなくしてから戻す）。
+  その人に出した通行証とリフレッシュトークンがすべてすぐ使えなくなります（401 "Token revoked"）。
+  `store/db/jwt/secret.key` を消して起動し直すやり方も使えますが、そのときは**すべての**
+  利用者の通行証が無効になります。
+- リフレッシュトークンは期限（30日）まで何度でも使え、複数のエージェントで同じものを使っても構いません。その利用者のパスワードを変えたとき、または使えなくしてから戻したときに使えなくなります。
+- 自分の手の届かないところへ通行証を渡すときは、短い `expires_in_hours` を渡してください。
 
 ### 落とし穴
 

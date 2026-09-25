@@ -957,7 +957,7 @@ a:hover { text-decoration: underline; }
     <h3>The pass (login token)</h3>
     <p>The pass is a JWT issued by <code>POST /api/auth/login</code>. The signing key is <strong>not included in the package</strong>. The receiving side auto-generates it from cryptographic random numbers at first startup and saves it to <code>store/db/jwt/secret.key</code> (<code>_load_or_create_jwt_signing_key</code> in <code>config.py</code>). This key is always dropped when the package is built (because if it were shared, a pass issued elsewhere would be accepted).</p>
     <p>If saving the key fails, the key is valid only for that one run. In that case, restarting invalidates any issued passes (logging in again works).</p>
-    <p><strong>Since 1.0.7 the pass does not expire unless the caller asks it to.</strong> Before, every pass stopped working 8 hours after it was issued. Now <code>POST /api/auth/login</code> issues a pass with no expiry unless you pass <code>expires_in_hours</code> or <code>expires_in_seconds</code>. Two consequences you should know about:</p>
+    <p><strong>By default the pass has no expiry.</strong> As in 1.0.7 to 1.2.0, a pass expires only when <code>expires_in_hours</code> or <code>expires_in_seconds</code> is passed, or when the administrator has set the "session hours" (<code>session_hours</code> of <code>POST /api/auth/session-config</code>, default 0 = no expiry) to a positive number; then <code>POST /api/auth/login</code> and <code>POST /api/auth/refresh</code> use those hours when no lifetime is passed. What you should know:</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -972,8 +972,10 @@ a:hover { text-decoration: underline; }
 </div>
 <div class="slide-body">
     <ul>
-    <li><strong>Signing out does not make the pass stop working.</strong> <code>POST /api/auth/logout</code> removes the refresh token and the in-memory session, but the pass itself is checked by its signature alone, so a copy of it keeps working. Previously the 8-hour limit put a floor under this; now there is none. If a pass leaks, the only way to invalidate it is to delete <code>store/db/jwt/secret.key</code> and restart, which invalidates <strong>every</strong> pass.</li>
-    <li>Pass <code>expires_in_hours</code> when you hand a pass to something you do not control.</li>
+    <li><strong>Signing out does not make the pass stop working.</strong> <code>POST /api/auth/logout</code> removes the refresh token and the in-memory session, but the pass itself is checked by its signature, so a copy of it keeps working until it expires (by default it has none) or is revoked as below.</li>
+    <li><strong>If a pass leaks, change that user's password</strong> (or switch the account off and on again). Every pass and refresh token already issued to that user stops working at once (401 "Token revoked"). Deleting <code>store/db/jwt/secret.key</code> and restarting still works too, but it invalidates <strong>every</strong> user's pass.</li>
+    <li>A refresh token can be used again and again until it expires (30 days), and several agents may share one. It stops working when that user's password changes or the account is switched off and on again.</li>
+    <li>Pass a short <code>expires_in_hours</code> when you hand a pass to something you do not control.</li>
     </ul>
     <h3>Pitfalls</h3>
     <ul>
@@ -1908,7 +1910,7 @@ cd ../..
     <h3>通行証（ログイン用のトークン）</h3>
     <p>通行証は <code>POST /api/auth/login</code> が発行する JWT です。署名鍵は<strong>配布物には入っていません</strong>。受け取った側で初回起動時に暗号乱数から自動生成し、<code>store/db/jwt/secret.key</code> に保存します（<code>config.py</code> の<code>_load_or_create_jwt_signing_key</code>）。配布物を作るときに、この鍵は必ず落とします（共有すると、よそで発行された通行証が通ってしまうためです）。</p>
     <p>鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります。この場合、再起動すると発行済みの通行証は無効になります（再ログインで通ります）。</p>
-    <p><strong>1.0.7 から、通行証は呼ぶ側が頼まないかぎり期限を持ちません。</strong> 従来は発行から8時間で必ず使えなくなっていました。いまは <code>POST /api/auth/login</code> に<code>expires_in_hours</code> か <code>expires_in_seconds</code> を渡さないかぎり、期限の入っていない通行証が出ます。承知しておくべきことが2つあります。</p>
+    <p><strong>通行証は、既定では期限がありません。</strong> 1.0.7 から 1.2.0 までと同じく、切れるのは <code>expires_in_hours</code> か <code>expires_in_seconds</code> を渡したときか、管理者が「セッション時間」（<code>POST /api/auth/session-config</code> の <code>session_hours</code>。既定 0 = 期限なし）を正の数にしたときだけです。そのときは、期間を渡さない <code>POST /api/auth/login</code> と <code>POST /api/auth/refresh</code> がその時間を使います。承知しておくべきことです。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1923,8 +1925,10 @@ cd ../..
 </div>
 <div class="slide-body">
     <ul>
-    <li><strong>ログアウトしても、その通行証は使えなくなりません。</strong> <code>POST /api/auth/logout</code> はリフレッシュトークンと記憶の中の入室記録を消しますが、通行証そのものは署名だけで確かめられるので、写しを持っている側は使い続けられます。従来は8時間という下限がありましたが、いまはありません。漏れた通行証を無効にする道は、<code>store/db/jwt/secret.key</code> を消して起動し直すことだけで、そのときは<strong>すべての</strong>通行証が無効になります。</li>
-    <li>自分の手の届かないところへ通行証を渡すときは、<code>expires_in_hours</code> を渡してください。</li>
+    <li><strong>ログアウトしても、その通行証は使えなくなりません。</strong> <code>POST /api/auth/logout</code> はリフレッシュトークンと記憶の中の入室記録を消しますが、通行証そのものは署名で確かめられるので、写しを持っている側は期限が来るか（既定では期限なし）、次のとおり無効にされるまで使い続けられます。</li>
+    <li><strong>通行証が漏れたら、その利用者のパスワードを変えてください</strong>（または使えなくしてから戻す）。その人に出した通行証とリフレッシュトークンがすべてすぐ使えなくなります（401 "Token revoked"）。<code>store/db/jwt/secret.key</code> を消して起動し直すやり方も使えますが、そのときは<strong>すべての</strong>利用者の通行証が無効になります。</li>
+    <li>リフレッシュトークンは期限（30日）まで何度でも使え、複数のエージェントで同じものを使っても構いません。その利用者のパスワードを変えたとき、または使えなくしてから戻したときに使えなくなります。</li>
+    <li>自分の手の届かないところへ通行証を渡すときは、短い <code>expires_in_hours</code> を渡してください。</li>
     </ul>
     <h3>落とし穴</h3>
     <ul>

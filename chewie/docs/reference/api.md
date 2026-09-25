@@ -19,7 +19,12 @@ Content-Type: application/json
 * The port is 8765 unless you started the server with `--port`.
 * The token is the one issued at sign-in. `cynovela-cli login` writes it to
   `~/.cynovela_cli.env` for you; the web screen shows it too.
-* A token has no expiry unless the caller asked for one (see `/api/auth/login`).
+* A token has no expiry by default. It expires after the lifetime the caller asked for,
+  or after the administrator's "session hours" if set (default 0; see `/api/auth/login`).
+* Changing a user's password, or switching the account off, makes every token
+  already issued to that user stop working at once (401 "Token revoked").
+* While a user still has to change the first password, every call except
+  `/api/auth/me`, `/api/auth/logout` and `/api/auth/change-password` answers 403.
 * Bodies are JSON. Answers are JSON, except the export endpoints (a ZIP), the CSV
   endpoints (text), the stream endpoints (server-sent events) and the page
   endpoints (HTML).
@@ -30,13 +35,14 @@ Content-Type: application/json
 |---|---|
 | 400 | The body was not what the endpoint expects. |
 | 401 | No token, or a token that is not valid any more. |
-| 403 | Signed in, but not allowed to do this. |
+| 403 | Signed in, but not allowed to do this (or the first password still has to be changed). |
 | 404 | No such workspace / collection / source / file. |
 | 409 | It clashes with something that already exists or is already running. |
-| 429 | Too many attempts (sign-in is limited to 5 per minute per address). |
+| 429 | Too many attempts. Every `/api/` path is limited to 200 per minute per address (counted per method and path); sign-in, `change-password` and `verify-password` to 5 per minute per address. |
 | 500 | The server failed. The reason is in `store/logs/server.log`. |
 
-The body of a failure is `{"detail": "..."}`.
+The body of a failure is `{"detail": "..."}`. The 429 of the 200-per-minute limit
+is `{"error": "Rate limit exceeded: 200 per 1 minute"}`.
 
 ### Endpoints worth spelling out
 
@@ -47,12 +53,14 @@ The body of a failure is `{"detail": "..."}`.
 ```
 
 `expires_in_hours` (or `expires_in_seconds`) is optional. **Leave it out and the
-token never expires.** Pass it and the token stops working after that long.
+token follows the "session hours" setting** (`POST /api/auth/session-config`
+`session_hours`, default 0 = no expiry). Setting `session_hours` to a positive number
+makes such a token expire after that many hours. Pass it and the token stops working after that long.
 A number that is zero or below is rejected with 400.
 
 The answer carries `access_token`, `refresh_token`, `role`,
-`must_change_password`, and `expires_in` (the number of seconds, or `null` when
-the token does not expire).
+`must_change_password`, and `expires_in` (the number of seconds; `null` only when
+`session_hours` is 0 and no lifetime was asked for).
 
 #### `POST /api/auth/refresh`
 
@@ -60,7 +68,14 @@ the token does not expire).
 { "refresh_token": "...", "expires_in_hours": 8 }
 ```
 
-Same rule: no expiry unless you ask for one.
+Same rule for the lifetime. The refresh token you sent stays valid: it can be used
+again until it expires (30 days), and several clients may share one. It is revoked
+when that user's password changes or the account is switched off and on again.
+
+#### `POST /api/auth/change-password`
+
+The change makes the caller's old tokens stop working, so the answer carries new
+ones: `{ok, access_token, refresh_token, token_type, expires_in}`. Switch to them.
 
 #### `GET /api/workspaces/{id}/full-export`
 
@@ -96,13 +111,20 @@ do not treat that as a success.
 #### `DELETE /api/admin/users/{id}` and `?purge=true`
 
 Without `purge`, the account is only switched off (`is_active = 0`) and the row
-stays. With `?purge=true` the row is removed for good, along with its workspace
+stays. Switching an account off (here or with `PATCH ... is_active=false`) or on
+again makes every token already issued to it stop working. With `?purge=true` the row is removed for good, along with its workspace
 assignments, refresh tokens and sessions. Audit log entries are kept either way.
 
 #### `POST /api/sources`
 
 Rejects with 409 when the folder is already registered, comparing resolved real
 paths — so the same folder cannot be registered twice under two names.
+
+Only a folder whose real path (links followed) is inside a registered ingest root
+(`store/ingest-roots.json`, the roots added on the screen, with `/api/ingest-roots`
+or `./launch.sh --add`) is accepted; anything else is refused with 403. The same
+rule applies to `POST /api/folder-scan-preview`. During a scan, a file link inside
+the folder that points outside it is skipped and logged.
 
 #### `POST /api/sources/{id}/scan` and `/scan/async`
 
@@ -559,7 +581,9 @@ Content-Type: application/json
 * 番号は 8765 です（起動のときに `--port` を付けたなら、その番号）。
 * トークンはログインで発行された値です。`cynovela-cli login` が
   `~/.cynovela_cli.env` に書きます。画面のログインでも出ます。
-* トークンには期限がありません（呼ぶ側が期間を渡したときだけ切れます。`/api/auth/login` を参照）。
+* トークンは既定では期限がありません。呼ぶ側が期間を渡したときはその長さで、管理者が「セッション時間」を決めたときはその時間で切れます（既定 0。`/api/auth/login` を参照）。
+* 合言葉を変えたとき、また利用者を使えなくしたときは、その人に出したトークンがすべてすぐ使えなくなります（401 "Token revoked"）。
+* 最初の合言葉をまだ変えていない利用者は、`/api/auth/me`・`/api/auth/logout`・`/api/auth/change-password` 以外すべて 403 になります。
 * 本文は JSON です。返るものも JSON です。ただし書き出しの口は ZIP、CSV の口は文字、
   流し込みの口は server-sent events、画面の口は HTML を返します。
 
@@ -569,13 +593,14 @@ Content-Type: application/json
 |---|---|
 | 400 | 本文がその口の求める形ではありません。 |
 | 401 | トークンが無いか、もう使えません。 |
-| 403 | ログインはしているが、その操作は許されていません。 |
+| 403 | ログインはしているが、その操作は許されていません（または最初の合言葉をまだ変えていません）。 |
 | 404 | その作業場所・まとまり・取り込み元・資料がありません。 |
 | 409 | 既に在るもの、または既に走っているものとぶつかります。 |
-| 429 | 試しすぎです（ログインは 1分あたり 5回まで・接続元ごと）。 |
+| 429 | 試しすぎです。`/api/` の口はどれも 1分あたり 200回まで（接続元ごと・動作と口ごとに数えます）。ログイン・`change-password`・`verify-password` は 1分あたり 5回まで・接続元ごと。 |
 | 500 | サーバ側で失敗しました。理由は `store/logs/server.log` にあります。 |
 
-失敗の本文は `{"detail": "…"}` の形です。
+失敗の本文は `{"detail": "…"}` の形です。1分あたり 200回の上限による 429 は
+`{"error": "Rate limit exceeded: 200 per 1 minute"}` です。
 
 ### 細かく書いておく口
 
@@ -585,11 +610,12 @@ Content-Type: application/json
 { "username": "cynovela", "password": "…", "expires_in_hours": 8 }
 ```
 
-`expires_in_hours`（または `expires_in_seconds`）は省けます。**省くとトークンに期限はつきません。**
-渡すと、その長さで使えなくなります。0 以下の数は 400 で拒否されます。
+`expires_in_hours`（または `expires_in_seconds`）は省けます。**省くと「セッション時間」の設定**
+（`POST /api/auth/session-config` の `session_hours`、既定 0 = 期限なし）**に従います。** `session_hours` を正の数にすると
+その時間で切れるトークンになります。渡すと、その長さで使えなくなります。0 以下の数は 400 で拒否されます。
 
 返るものは `access_token`・`refresh_token`・`role`・`must_change_password`、そして
-`expires_in`（秒数。期限が無いときは `null`）です。
+`expires_in`（秒数。`null` になるのは `session_hours` が 0 で期間も渡さなかったときだけ）です。
 
 #### `POST /api/auth/refresh`
 
@@ -597,7 +623,14 @@ Content-Type: application/json
 { "refresh_token": "…", "expires_in_hours": 8 }
 ```
 
-同じ決まりです。渡さなければ期限はつきません。
+期間の決まりは同じです。送ったリフレッシュトークンはそのまま使えます。期限（30日）まで何度でも
+使え、複数のクライアントで同じものを使っても構いません。その利用者の合言葉を変えたとき、
+または使えなくしてから戻したときに無効になります。
+
+#### `POST /api/auth/change-password`
+
+変えると呼んだ側の古いトークンは使えなくなるので、新しいトークンが返ります:
+`{ok, access_token, refresh_token, token_type, expires_in}`。こちらに切り替えてください。
 
 #### `GET /api/workspaces/{id}/full-export`
 
@@ -633,6 +666,8 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 #### `DELETE /api/admin/users/{id}` と `?purge=true`
 
 `purge` を付けないと、使えなくするだけ（`is_active = 0`）で行は残ります。
+使えなくしたとき（ここでも `PATCH … is_active=false` でも）と使えるように戻したときは、
+その人に出したトークンがすべて使えなくなります。
 `?purge=true` を付けると行そのものを消し、作業場所の割り当て・リフレッシュトークン・
 入室の記録も一緒に消えます。監査の記録はどちらの場合も残ります。
 
@@ -640,6 +675,11 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 
 同じフォルダが既に登録されているときは 409 で拒否されます。見分けは実体のパスで行うので、
 名前を変えて同じフォルダを二重に登録することはできません。
+
+受け付けるのは、実体のパス（リンクをたどった先）が登録済みの取り込み元のルート
+（`store/ingest-roots.json`。画面・`/api/ingest-roots`・`./launch.sh --add` で足したもの）の内側にある
+フォルダだけです。それ以外は 403 で拒否されます。`POST /api/folder-scan-preview` も同じです。
+走査のとき、フォルダの中にあってフォルダの外を指すファイルのリンクは飛ばし、記録に残します。
 
 #### `POST /api/sources/{id}/scan` と `/scan/async`
 

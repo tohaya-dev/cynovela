@@ -165,6 +165,11 @@ async def create_source(request: Request):
         raise HTTPException(400, f"sensitive path is not allowed: {_normalized}")
     if ".." in path.split(os.sep):
         raise HTTPException(400, "relative path traversal is not allowed")
+    # overnight-20260923 ①: 上の拒否リストは既知の場所しか断れない。登録してよいのは
+    #   取り込み元のルート (/api/ingest-roots・./launch.sh --add で足した場所) の中だけ、と
+    #   /api/browse と同じ境界に揃える。判定は realpath で解いた実体に対して行うので、
+    #   ルートの外を指すシンボリックリンクを経由した登録も断る。
+    resolve_within_ingest_roots(_normalized)
     sid = new_id()
     _existing = None
     conn = get_db()
@@ -525,6 +530,55 @@ def _load_ingest_roots() -> list:
         return [x for x in _r if isinstance(x, dict) and x.get("host_path")]
     except Exception:
         return []
+
+
+def _allowed_ingest_root_paths() -> list:
+    """取り込みを許す場所 (ルートの実体パス) の一覧。
+
+    正本は store/ingest-roots.json (画面・入口スクリプト・起動時の3か所が書く)。
+    読めないときは起動時に確定した一覧 (state.ingest_roots) に退く。
+    コンテナで動く形態では、受け取り手の機械から差し込まれる /app/ingest も許す。
+    """
+    _roots = _load_ingest_roots()
+    if not _roots:
+        try:
+            import state as _st
+
+            _roots = list(_st.ingest_roots or [])
+        except Exception:
+            _roots = []
+    _out = []
+    for _r in _roots:
+        _hp = _r.get("host_path")
+        if isinstance(_hp, str) and _hp:
+            _out.append(os.path.realpath(os.path.expanduser(_hp)))
+    if _in_container():
+        _out.append(os.path.realpath("/app/ingest"))
+    return _out
+
+
+def path_is_within(target: str, root: str) -> bool:
+    """target (実体パス) が root (実体パス) そのものか、その中にあるか。"""
+    return target == root or target.startswith(root.rstrip(os.sep) + os.sep)
+
+
+def resolve_within_ingest_roots(path: str) -> str:
+    """path を実体パスへ解き、取り込み元のルートの中にあるときだけ返す。外なら 403。
+
+    /api/sources・/api/folder-scan-preview と、それを呼ぶ CLI・MCP の ingest の共通の門。
+    """
+    try:
+        _target = os.path.realpath(os.path.abspath(os.path.expanduser(path)))
+    except Exception as e:
+        raise HTTPException(400, f"Invalid path: {e}")
+    for _root in _allowed_ingest_root_paths():
+        if path_is_within(_target, _root):
+            return _target
+    raise HTTPException(
+        403,
+        "取り込み元のルートの外は登録できません。先にルートとして追加してください"
+        " (画面の「取り込み元」または ./launch.sh --add)",
+    )
 
 
 def _ingest_roots_helper():
