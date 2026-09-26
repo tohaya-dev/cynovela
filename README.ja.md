@@ -156,7 +156,7 @@ API キーが要ります）。
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
-| `chewie` | Mac の上で直に動く形 | GitHub Releases (v1.2.0) で公開しています |
+| `tender` | Mac の上で直に動く形 | GitHub Releases (v1.2.0) で公開しています。v1.2.0 のファイル名と、展開してできるフォルダ名は、以前の名前 `chewie` のままです |
 | `falcon` | コンテナの中で動く形（Podman） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 | `falcon-docker-beta` | コンテナの中で動く形（Docker・開発中のベータ・モデル同梱なし） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 
@@ -165,10 +165,10 @@ API キーが要ります）。
 ## 要るもの
 
 - Apple silicon の macOS。
-- `chewie` のアプリ版（`.pkg`）＝ **準備中です。** この版には入っていません。
-- `chewie` のパッケージ版 ＝ **Python も `conda` も要りません。** フォルダの中に
+- `tender` のアプリ版（`.pkg`）＝ **準備中です。** この版には入っていません。
+- `tender` のパッケージ版 ＝ **Python も `conda` も要りません。** フォルダの中に
   自分用の Python を持っており、この Mac には何も入れません。
-- `chewie` のソース版 ＝ Python 3.12 以降が要ります。環境は `launch.sh` が作ります。
+- `tender` のソース版 ＝ Python 3.12 以降が要ります。環境は `launch.sh` が作ります。
   `conda` に専用の環境を作る道を用意しており、`conda` が無い場合は配布物の
   フォルダの中に環境を作ります。
 - `falcon` ＝ `Podman`。
@@ -214,7 +214,7 @@ https://github.com/tohaya-dev/cynovela/releases
 
 ## はじめての方へ
 
-`chewie` の入口は1つです ＝ **[tender/START-HERE.md](tender/START-HERE.md)**。
+`tender` の入口は1つです ＝ **[tender/START-HERE.md](tender/START-HERE.md)**。
 まずここを開いてください。他の文書の地図もここに入っています。
 
 | 文書 | 何が書いてあるか |

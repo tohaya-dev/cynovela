@@ -173,7 +173,7 @@ search) in `Settings`.
 
 | Directory | What it is | Distribution package |
 |---|---|---|
-| `chewie` | Runs directly on macOS. | Published on GitHub Releases (v1.2.0). |
+| `tender` | Runs directly on macOS. | Published on GitHub Releases (v1.2.0). The v1.2.0 files and the folder they unpack into still use the former name `chewie`. |
 | `falcon` | Runs inside a container (Podman). | Built from the source in this repository. No distribution package is provided. |
 | `falcon-docker-beta` | Runs inside a container (Docker; in-development beta, no bundled models). | Built from the source in this repository. No distribution package is provided. |
 
@@ -182,11 +182,11 @@ You only need one of them. They are three ways of running the same thing.
 ## Requirements
 
 - macOS on Apple silicon.
-- `chewie`, App edition (`.pkg`): **in preparation.** It is not part of this
+- `tender`, App edition (`.pkg`): **in preparation.** It is not part of this
   release.
-- `chewie`, Package edition: **neither Python nor conda is needed.** The folder
+- `tender`, Package edition: **neither Python nor conda is needed.** The folder
   carries its own Python inside it, and nothing is installed on this Mac.
-- `chewie`, Source editions: Python 3.12 or later. `launch.sh` builds the
+- `tender`, Source editions: Python 3.12 or later. `launch.sh` builds the
   environment for you — it offers a dedicated `conda` environment, and where
   `conda` is not present it builds the environment inside the distribution
   folder instead.
@@ -239,7 +239,7 @@ Distribution packages for them are not provided.
 
 ## First time here
 
-For `chewie` there is one entrance:
+For `tender` there is one entrance:
 **[tender/START-HERE.md](tender/START-HERE.md)**. Open that first; it carries
 the map of every other document.
 
