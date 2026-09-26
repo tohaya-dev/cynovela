@@ -32,13 +32,13 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 ### 1. 落とす（5つ・同じフォルダへ）
 
 [リリースのページ](https://github.com/tohaya-dev/cynovela/releases) から落とします。
-ここに並べたのは 2.0.0 のファイルです。前の版 v1.2.0 も、
+ここに並べたのは 2.0.1 のファイルです。前の版 v1.2.0 も、
 リリースのページに残っています。
 
 | ファイル | 何か |
 |---|---|
-| `cynovela-tender-package-2.0.0.tar.gz` | **Cynovela 本体。**`package` と付いているものが本体です |
-| `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` | **Cynovela が使う AIモデル。**資料をベクターにする埋め込みモデル（BGE-M3 ほか）と、検索結果を並べ替えるモデルです。**答えを作る LLM は入っていません**（5節で別に用意します）。GitHub は1ファイル 2 GiB までのため、3つに分けてあります |
+| `cynovela-tender-package-2.0.1.tar.gz` | **Cynovela 本体。**`package` と付いているものが本体です |
+| `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` | **Cynovela が使う AIモデル。**資料をベクターにする埋め込みモデル（BGE-M3 ほか）と、検索結果を並べ替えるモデルです。**答えを作る LLM は入っていません**（5節で別に用意します）。GitHub は1ファイル 2 GiB までのため、3つに分けてあります |
 | `SHA256SUMS` | 壊れていないか確かめる一覧 |
 
 管理された Mac（MDM 配下）をお使いの方は、先に `check-managed-mac.command` を落として
@@ -52,7 +52,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 **2-1. 3つをつなぎます。**
 
     cd ~/Downloads
-    cat cynovela-tender-models-2.0.0.tar.gz.part00 cynovela-tender-models-2.0.0.tar.gz.part01 cynovela-tender-models-2.0.0.tar.gz.part02 > cynovela-tender-models-2.0.0.tar.gz
+    cat cynovela-tender-models-2.0.1.tar.gz.part00 cynovela-tender-models-2.0.1.tar.gz.part01 cynovela-tender-models-2.0.1.tar.gz.part02 > cynovela-tender-models-2.0.1.tar.gz
 
 **2-2. 壊れていないか確かめます。**出た行が全部 `OK` なら成功です。
 
@@ -60,12 +60,12 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 **2-3. 本体を展開します。**`tender` フォルダができます。
 
-    tar -xzf cynovela-tender-package-2.0.0.tar.gz
+    tar -xzf cynovela-tender-package-2.0.1.tar.gz
 
 **2-4. AIモデルを、本体の中で展開します。**
 
     cd tender
-    tar -xzf ../cynovela-tender-models-2.0.0.tar.gz
+    tar -xzf ../cynovela-tender-models-2.0.1.tar.gz
 
 **`tender/store/models/` ができます。この場所でないと見つけられません。**
 先に別の場所で展開してしまった場合は、できた `models` フォルダを `tender/store/` の中へ
@@ -156,18 +156,20 @@ API キーが要ります）。
 
 ## 1.2.0 から入れ替える
 
-2.0.0 は新しい `tender` フォルダへ展開され、1.2.0 の `chewie` フォルダの `store/` は
-読みません。資料・利用者・設定を引き継ぐには、2.0.0 をはじめて起動する前に
+2.0.1 は新しい `tender` フォルダへ展開され、1.2.0 の `chewie` フォルダの `store/` は
+読みません。資料・利用者・設定を引き継ぐには、2.0.1 をはじめて起動する前に
 `chewie/store/` の中身を `tender/store/` へコピーしてください。手順は
-[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える) にあります。2.0.0 では
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える) にあります。1.2.0 と比べて
 動きの変わったところ（最初のパスワードの変更・回数の上限・取り込み元・トークン）も
-あります。一覧は [RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26-1) にあります。
+あります。一覧は [RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26-1) の 2.0.0 の節に
+あります。2.0.0 から入れ替える手順は
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#200-から入れ替える) にあります。
 
 ## このリポジトリにあるもの
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
-| `tender` | Mac の上で直に動く形 | GitHub Releases (v2.0.0) で公開しています。v2.0.0 のファイル名は `cynovela-tender-…` で、展開すると `tender` フォルダができます。v1.2.0 までは以前の名前 `chewie` でした |
+| `tender` | Mac の上で直に動く形 | GitHub Releases (v2.0.1) で公開しています。v2.0.1 のファイル名は `cynovela-tender-…` で、展開すると `tender` フォルダができます。v1.2.0 までは以前の名前 `chewie` でした |
 
 コンテナ版（Falcon）はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
 
@@ -185,7 +187,7 @@ API キーが要ります）。
 
 ## 落とすもの
 
-すべて GitHub Releases (v2.0.0) にあります。
+すべて GitHub Releases (v2.0.1) にあります。
 https://github.com/tohaya-dev/cynovela/releases
 
 「どれを落とすか」の1枚での答えは
@@ -194,9 +196,9 @@ https://github.com/tohaya-dev/cynovela/releases
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
 | **アプリ版**（`.pkg`） | — | — | **準備中です。** この版には入っていません | — |
-| **パッケージ版** `cynovela-tender-package-2.0.0.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
+| **パッケージ版** `cynovela-tender-package-2.0.1.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
 | **ソース版** | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | ダウンロードではありません。ソースはこのリポジトリです（clone するか、GitHub の「Download ZIP」で取れます） | Python 3.12 以降、または conda |
-| **AIモデル** `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
+| **AIモデル** `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
 **アプリ版**（`.pkg`）＝ **準備中です。** この版には入っていません。
 

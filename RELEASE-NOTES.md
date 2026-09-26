@@ -2,6 +2,28 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
+## 2.0.1 (2026-09-26)
+
+2.0.1 replaces 2.0.0. The program is the same as 2.0.0 and behaves the same;
+only comments and documents differ.
+
+- The container editions were removed from the repository. The repository now
+  carries only tender.
+- Old names were removed from code comments and documents.
+- The rename tool and its ledger were removed from the repository.
+- Version 2.0.1 replaces 2.0.0. The release files are
+  `cynovela-tender-package-2.0.1.tar.gz` and
+  `cynovela-tender-models-2.0.1.tar.gz.part00`–`part02`; the models parts hold
+  the same content as the 1.2.0 and 2.0.0 models.
+
+The previous version v1.2.0 remains available on the Releases page.
+
+The container edition (Falcon) is not included from this version; if you need it, see v1.2.0 on the Releases page.
+
+Upgrading from 1.2.0 or from 2.0.0: see [Upgrading from 1.2.0](HOW-TO-ASSEMBLE.md#upgrading-from-120) or [Upgrading from 2.0.0](HOW-TO-ASSEMBLE.md#upgrading-from-200) in HOW-TO-ASSEMBLE.md.
+
+The changes compared with 1.2.0 are listed under 2.0.0 below.
+
 ## 2.0.0 (2026-09-26)
 
 This edition is renamed to tender, several security gaps are
@@ -13,16 +35,16 @@ remains available on the releases page.
 
 The package now unpacks into `tender/`, and the new folder does not read the
 old `chewie/store/`. Copy `chewie/store/` into `tender/store/` before the first
-start of 2.0.0; the steps are in
+start of the new version; the steps are in
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-120). At the first start
 the database gains a `token_version` column by itself. Tokens issued by 1.2.0
 keep working after the upgrade.
 
 ### What changed
 
-- **Renamed to tender.** The release files are
-  `cynovela-tender-package-2.0.0.tar.gz` and
-  `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02`, and the package
+- **Renamed to tender.** The release files are named
+  `cynovela-tender-package-<version>.tar.gz` and
+  `cynovela-tender-models-<version>.tar.gz.part00`–`part02`, and the package
   unpacks into a folder named `tender`. The models parts hold the same content
   as the 1.2.0 models, under the new name.
 - **Security fixes.**
@@ -439,6 +461,27 @@ from the old folder into the new one before starting.
 
 # 日本語
 
+## 2.0.1 (2026-09-26)
+
+2.0.1 は 2.0.0 に置き換わる版です。プログラムは 2.0.0 と同じで、動きも同じです。
+違うのはコメントと文書だけです。
+
+- コンテナ版をリポジトリから外しました。リポジトリにあるのは tender だけです。
+- コードのコメントと文書から、以前の名前を外しました。
+- 名前の変更に使ったツールとその記録を、リポジトリから外しました。
+- 版は 2.0.1 で、2.0.0 に置き換わります。リリースのファイルは
+  `cynovela-tender-package-2.0.1.tar.gz` と
+  `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` です。AIモデルの分割
+  ファイルの中身は 1.2.0・2.0.0 のモデルと同じです。
+
+前の版 v1.2.0 は Releases に引き続き残っています。
+
+コンテナ版（Falcon）はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
+
+1.2.0 または 2.0.0 からの入れ替えは、HOW-TO-ASSEMBLE.md の [1.2.0 から入れ替える](HOW-TO-ASSEMBLE.md#120-から入れ替える) か [2.0.0 から入れ替える](HOW-TO-ASSEMBLE.md#200-から入れ替える) を見てください。
+
+1.2.0 と比べて変わったところは、下の 2.0.0 の節にあります。
+
 ## 2.0.0 (2026-09-26)
 
 この形の名前を tender に改め、いくつかの安全上の穴をふさぎ、1.2.0 向けに
@@ -448,16 +491,16 @@ from the old folder into the new one before starting.
 ### 1.2.0 から入れ替える
 
 配布物は `tender/` へ展開されるようになり、新しいフォルダは古い `chewie/store/` を
-読みません。2.0.0 をはじめて起動する前に、`chewie/store/` の中身を `tender/store/` へ
+読みません。新しい版をはじめて起動する前に、`chewie/store/` の中身を `tender/store/` へ
 コピーしてください。手順は [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える)
 にあります。データベースには、初回の起動時に `token_version` の列が自動で足されます。
 1.2.0 が出したトークンは、入れ替えたあとも使えます。
 
 ### 変わったこと
 
-- **名前を tender に改めました。** リリースのファイルは
-  `cynovela-tender-package-2.0.0.tar.gz` と
-  `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` で、展開すると `tender` と
+- **名前を tender に改めました。** リリースのファイルの名前は
+  `cynovela-tender-package-<版>.tar.gz` と
+  `cynovela-tender-models-<版>.tar.gz.part00`〜`part02` で、展開すると `tender` と
   いうフォルダができます。AIモデルの分割ファイルの中身は 1.2.0 のモデルと同じで、
   名前だけが変わりました。
 - **安全上の修正**

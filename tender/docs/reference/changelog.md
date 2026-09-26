@@ -16,12 +16,26 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## v2.0.1 (2026-09-26)
+
+- **2.0.1 replaces 2.0.0; the program is unchanged.** It behaves the same as 2.0.0; only
+  comments and documents differ. The release files are `cynovela-tender-package-2.0.1.tar.gz`
+  and `cynovela-tender-models-2.0.1.tar.gz.part00`–`part02`; the models parts hold the same
+  content as the 1.2.0 and 2.0.0 models.
+- **The container editions were removed from the repository.** The repository now carries only
+  tender. The container edition (Falcon) is not included from this version; if you need it, see
+  v1.2.0 on the Releases page.
+- **Old names were removed from code comments and documents.**
+- **The rename tool and its ledger were removed from the repository.**
+- The previous version v1.2.0 remains available on the Releases page. Upgrading from 1.2.0 or
+  from 2.0.0 is described in `HOW-TO-ASSEMBLE.md` at the repository root.
+
 ## v2.0.0 (2026-09-26)
 
 - **This edition is renamed to tender, and the version is 2.0.0 because of the
   breaking changes below.** The name in `VERSION` (codename) and in the text is now tender. The
-  source tree in the repository is `tender/`. The release files are
-  `cynovela-tender-package-2.0.0.tar.gz` and `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02`;
+  source tree in the repository is `tender/`. The release files are named
+  `cynovela-tender-package-<version>.tar.gz` and `cynovela-tender-models-<version>.tar.gz.part00`–`part02`;
   the package unpacks into a folder named `tender`, and the models parts hold the same content as
   the 1.2.0 models under the new name. The previous release, v1.2.0, remains on the releases
   page unchanged.
@@ -65,7 +79,7 @@ This records the main changes to Cynovela in chronological order.
   registered and read. The CLI `ingest` and the MCP `ingest_source` go through the same
   check. During a scan, a file link inside the folder that points outside it is skipped
   and logged.
-- **Upgrading from 1.2.0.** A 2.0.0 folder does not read the old `chewie/store/`; copy it into
+- **Upgrading from 1.2.0.** The new `tender` folder does not read the old `chewie/store/`; copy it into
   `tender/store/` before the first start (the steps are in `HOW-TO-ASSEMBLE.md` at the repository
   root). The `users` table gains a `token_version` column by itself at startup, and tokens issued
   by 1.2.0 keep working. In a new installation the bundled demo's ingest root is named
@@ -380,12 +394,25 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ---
 
+## v2.0.1（2026-09-26）
+
+- **2.0.1 は 2.0.0 に置き換わる版で、プログラムは変わらない。** 動きは 2.0.0 と同じで、違うのは
+  コメントと文書だけ。リリースのファイルは `cynovela-tender-package-2.0.1.tar.gz` と
+  `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` で、AIモデルの分割ファイルの中身は
+  1.2.0・2.0.0 のモデルと同じ。
+- **コンテナ版をリポジトリから外した。** リポジトリにあるのは tender だけになった。
+  コンテナ版（Falcon）はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
+- **コードのコメントと文書から、以前の名前を外した。**
+- **名前の変更に使ったツールとその記録を、リポジトリから外した。**
+- 前の版 v1.2.0 は Releases に引き続き残っています。1.2.0 または 2.0.0 からの入れ替えは、
+  リポジトリの直下の `HOW-TO-ASSEMBLE.md` にある。
+
 ## v2.0.0（2026-09-26）
 
 - **この形の名前を tender に改めた。下に挙げる互換性の無い変更があるため、版は 2.0.0
   とした。** `VERSION` の名前（codename）と本文中の呼び名は tender になった。リポジトリのソースの
-  フォルダは `tender/` になった。リリースのファイルは
-  `cynovela-tender-package-2.0.0.tar.gz` と `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02`
+  フォルダは `tender/` になった。リリースのファイルの名前は
+  `cynovela-tender-package-<版>.tar.gz` と `cynovela-tender-models-<版>.tar.gz.part00`〜`part02`
   で、展開すると `tender` というフォルダができる。AIモデルの分割ファイルの中身は 1.2.0 のモデルと
   同じで、名前だけが変わった。前の版 v1.2.0 は、リリースのページにそのまま残る。
 - **通行証は既定では期限なしのまま。管理者が切れるようにできる。** 1.0.7 から 1.2.0 までと同じく、
@@ -423,7 +450,7 @@ Cynovela の主要な変更内容を時系列で記録します。
   見ていなかったので、それ以外の場所（`/Volumes/…`・他の利用者のフォルダ）を登録して
   読めてしまった。CLI の `ingest` と MCP の `ingest_source` も同じ確認を通る。走査のとき、
   フォルダの中にあってフォルダの外を指すファイルのリンクは飛ばし、記録に残す。
-- **1.2.0 からの入れ替え。** 2.0.0 のフォルダは古い `chewie/store/` を読まない。はじめて起動する前に
+- **1.2.0 からの入れ替え。** 新しい `tender` のフォルダは古い `chewie/store/` を読まない。はじめて起動する前に
   `tender/store/` へコピーする（手順はリポジトリの直下の `HOW-TO-ASSEMBLE.md`）。`users` の表には
   起動時に `token_version` の列が自動で足され、1.2.0 が出したトークンはそのまま使える。新しく
   入れた場合、同梱デモの取り込み元のルートの名前は `tender-dummy-corpus`（以前は

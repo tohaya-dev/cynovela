@@ -28,7 +28,7 @@ This package is the **application build (runs on macOS directly, no container)**
 conda are needed. Nothing is installed on this Mac. To remove it, delete the
 folder. **It runs on Apple silicon only.**
 
-**The AI models are downloaded separately** (`...models-2.0.0.tar.gz.part00` to
+**The AI models are downloaded separately** (`...models-2.0.1.tar.gz.part00` to
 `part02` on the release page). They are not inside this download. How to connect
 them is in section 2 of [`QUICKSTART.md`](QUICKSTART.md).
 **The AI models go in `store/models/` — they will not be found anywhere else.**
@@ -301,7 +301,7 @@ that one. The same documents are repeated below.
 要りません。この Mac には何も入れません。消すときはフォルダごと削除します。
 **Apple シリコン専用です。**
 
-**AIモデルは別に落とします**（リリースのページの `...models-2.0.0.tar.gz.part00`〜
+**AIモデルは別に落とします**（リリースのページの `...models-2.0.1.tar.gz.part00`〜
 `part02`）。この配布物には入っていません。つなぎ方は
 [`QUICKSTART.md`](QUICKSTART.md) の2節にあります。
 **AIモデルは `store/models/` に置きます。この場所でないと見つけられません。**
