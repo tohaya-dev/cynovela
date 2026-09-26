@@ -64,7 +64,7 @@ Two relevant `.pyc` path forms were observed:
 ### Form B — post-pack extraction/workspace prefix
 
 ```text
-/Users/<username>/cynovela-work-.../chewie/.condapack-cynovela/...
+/Users/<username>/cynovela-work-.../<package folder>/.condapack-cynovela/...
 ```
 
 Form B strongly indicates that Python was executed after the original conda-pack archive was expanded into a work directory, generating fresh bytecode before the final release archive was created.

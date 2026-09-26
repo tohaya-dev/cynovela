@@ -3417,7 +3417,7 @@ _MODE_MODELS = {
 #   重複形式 (onnx 等) まで取るため実測 4.47GB になっていた (2026-08-12)。必要な部品は
 #   同梱スナップショット (全部入りで実運用済み) の構成と同一で、bge-m3 は
 #   pytorch_model.bin ＋ tokenizer/config 系 ＋ colbert/sparse の .pt、reranker は
-#   model.safetensors ＋ tokenizer/config 系である。falcon 軽量版の curl ダウンロード
+#   model.safetensors ＋ tokenizer/config 系である。コンテナ版の軽量版の curl ダウンロード
 #   (T-1 で実証) も同じ構成を用いている。
 _LITE_DL_ALLOW_PATTERNS = {
     "BAAI/bge-m3": [

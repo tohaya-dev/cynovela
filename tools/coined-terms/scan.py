@@ -104,7 +104,7 @@ from pathlib import Path
 
 DDR = "DD-CYN-0123"
 
-#: 決定 §61 により hansolo/ は GitHub 公開絶対禁止。置き換え作業の対象外なので、
+#: 決定 §61 により下の前置きのフォルダは GitHub 公開絶対禁止。置き換え作業の対象外なので、
 #: scan-scope が何を言おうと走査しない。黙って落とすと欠陥になるため、
 #: 落とした件数は必ず標準エラーへ知らせる。
 HARD_EXCLUDE_PREFIXES = ("hansolo/",)

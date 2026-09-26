@@ -18,15 +18,13 @@ This records the main changes to Cynovela in chronological order.
 
 ## v2.0.0 (2026-09-26)
 
-- **This edition is renamed from chewie to tender, and the version is 2.0.0 because of the
+- **This edition is renamed to tender, and the version is 2.0.0 because of the
   breaking changes below.** The name in `VERSION` (codename) and in the text is now tender. The
-  source tree in the repository is `tender/` (formerly `chewie/`). The release files are
+  source tree in the repository is `tender/`. The release files are
   `cynovela-tender-package-2.0.0.tar.gz` and `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02`;
   the package unpacks into a folder named `tender`, and the models parts hold the same content as
-  the 1.2.0 models under the new name. The previous release, v1.2.0 (`cynovela-chewie-…-1.2.0…`,
-  unpacking into `chewie`), remains on the releases page unchanged. The rename was done with
-  `tools/rename-product.py`, which can undo it
-  (`--revert tools/rename-product.chewie-to-tender.json`).
+  the 1.2.0 models under the new name. The previous release, v1.2.0, remains on the releases
+  page unchanged.
 - **A pass still has no expiry by default; an administrator can make it expire.** As in
   1.0.7 to 1.2.0, `POST /api/auth/login` and `POST /api/auth/refresh` issue a pass with no
   expiry unless the caller passes `expires_in_hours` or `expires_in_seconds`: the
@@ -209,8 +207,8 @@ This records the main changes to Cynovela in chronological order.
   afterwards — `known-limitations.md` is now `limits.md`, `first-run.md` is now
   `getting-started.md`, and the four reference documents moved under `docs/reference/`.
   `docs/INDEX.md` lists what exists now.)
-- The same repairs were carried into falcon wherever its code is identical; where it is not,
-  `limits.md` §11.7 says so.
+- The same repairs were carried into the container edition (no longer included) wherever its
+  code is identical; where it is not, `limits.md` §11.7 says so.
 
 ## v1.0.6 (2026-08-20)
 
@@ -238,8 +236,10 @@ This records the main changes to Cynovela in chronological order.
 ## Public repository and package form (2026-08-12)
 
 - In the public GitHub repository (cynovela), two forms were placed side by side:
-  falcon (the form that runs inside a container) and chewie (the form that runs directly on a Mac).
-- There are now four package forms: falcon all-in-one, falcon lightweight, chewie all-in-one, and chewie lightweight.
+  the container edition (the form that runs inside a container; no longer included) and the
+  macOS edition (the form that runs directly on a Mac; then under its former name).
+- There are now four package forms: container all-in-one, container lightweight, macOS all-in-one,
+  and macOS lightweight.
 - The all-in-one form (the form that bundles the models) is too large to fit in a single file, so it is
   distributed **split into multiple files**. `HOW-TO-ASSEMBLE.md` and `SHA256SUMS` are placed in the same location as the split files;
   assemble them and verify the SHA256 before use.
@@ -382,14 +382,12 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ## v2.0.0（2026-09-26）
 
-- **この形の名前を chewie から tender に改めた。下に挙げる互換性の無い変更があるため、版は 2.0.0
+- **この形の名前を tender に改めた。下に挙げる互換性の無い変更があるため、版は 2.0.0
   とした。** `VERSION` の名前（codename）と本文中の呼び名は tender になった。リポジトリのソースの
-  フォルダは `tender/`（旧 `chewie/`）になった。リリースのファイルは
+  フォルダは `tender/` になった。リリースのファイルは
   `cynovela-tender-package-2.0.0.tar.gz` と `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02`
   で、展開すると `tender` というフォルダができる。AIモデルの分割ファイルの中身は 1.2.0 のモデルと
-  同じで、名前だけが変わった。前の版 v1.2.0（`cynovela-chewie-…-1.2.0…`。展開すると `chewie`
-  ができる）は、リリースのページにそのまま残る。改名は `tools/rename-product.py` で行い、元に
-  戻せる（`--revert tools/rename-product.chewie-to-tender.json`）。
+  同じで、名前だけが変わった。前の版 v1.2.0 は、リリースのページにそのまま残る。
 - **通行証は既定では期限なしのまま。管理者が切れるようにできる。** 1.0.7 から 1.2.0 までと同じく、
   `POST /api/auth/login` と `POST /api/auth/refresh` は、呼ぶ側が `expires_in_hours` か
   `expires_in_seconds` を渡さないかぎり期限の無い通行証を出す。管理者が決める「セッション時間」
@@ -560,7 +558,7 @@ Cynovela の主要な変更内容を時系列で記録します。
   `known-limitations.md` は `limits.md`、`first-run.md` は `getting-started.md` に、
   引くための4本は `docs/reference/` の下へ移った。いま在るものは `docs/INDEX.md` に
   並んでいる。）
-- 同じ直しは、コードが同じ箇所であれば falcon へも当てた。当てていない箇所は
+- 同じ直しは、コードが同じ箇所であればコンテナ版（この版からは含まない）へも当てた。当てていない箇所は
   `limits.md` の §11.7 に書いた。
 
 ## v1.0.6（2026-08-20）
@@ -588,9 +586,9 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ## 公開のリポジトリと配る形（2026-08-12）
 
-- 公開の GitHub リポジトリ（cynovela）に、falcon（コンテナの中で動く形）と
-  chewie（Mac の上で直に動く形）の2つの形を並べた。
-- 配る形は4つになった。falcon 全部入り・falcon 軽量版・chewie 全部入り・chewie 軽量版。
+- 公開の GitHub リポジトリ（cynovela）に、コンテナ版（コンテナの中で動く形。この版からは含まない）と
+  Mac 版（Mac の上で直に動く形。当時は以前の名前）の2つの形を並べた。
+- 配る形は4つになった。コンテナ版の全部入り・コンテナ版の軽量版・Mac 版の全部入り・Mac 版の軽量版。
 - 全部入り（モデルを同梱する形）は、1つのファイルに収まらない大きさのため、
   **分割ファイルに分けて**配る。分割ファイルと同じ場所に `HOW-TO-ASSEMBLE.md` と `SHA256SUMS` を置き、
   組み立てと SHA256 の確認をしてから使う。

@@ -56,7 +56,7 @@ The version is `2.0.0` (`APP_VERSION` in `core/version.py` is the only source, a
   - [11.4 With Ollama, the context length is whatever Ollama defaults to](#114-with-ollama-the-context-length-is-whatever-ollama-defaults-to)
   - [11.5 An imported workspace searches by vector only](#115-an-imported-workspace-searches-by-vector-only)
   - [11.6 Not measured: the package edition on a Mac without conda](#116-not-measured-the-package-edition-on-a-mac-without-conda)
-  - [11.7 Fixed in tender, not in falcon](#117-fixed-in-tender-not-in-falcon)
+  - [11.7 Fixed in tender, not in the container edition](#117-fixed-in-tender-not-in-the-container-edition)
 - [12. Authentication, authorization and communication](#12-authentication-authorization-and-communication)
 - [13. Linkages that are defined but not integrated](#13-linkages-that-are-defined-but-not-integrated)
 - [14. Areas skipped in the tests](#14-areas-skipped-in-the-tests)
@@ -589,24 +589,24 @@ has conda installed, so this run cannot tell you that a Mac with **no** conda at
 all behaves the same. Treat "no conda required" as designed-for and checked on a
 machine that happens to have conda, not as measured on a machine without it.
 
-### 11.7 Fixed in tender, not in falcon
+### 11.7 Fixed in tender, not in the container edition
 
 The following were repaired in tender and deliberately **not** carried into the
-container build (falcon) at 1.0.7, because falcon's code differs at those places
-and that release did not rewrite falcon to match:
+container edition (no longer included) at 1.0.7, because the container edition's
+code differs at those places and that release did not rewrite it to match:
 
 | What | Why not |
 |---|---|
-| The generation-timeout wording | falcon has no `_timeout_answer`; the old sentence sits inline in two places |
-| Citation numbers carried through to MCP | falcon's MCP server is an older build (11 tools against 25) |
-| The CLI, including `login` / `logout` | falcon ships no `cynovela-cli.py`. Its own, older `cynovela_cli.py` has neither `login` nor `logout` |
+| The generation-timeout wording | The container edition has no `_timeout_answer`; the old sentence sits inline in two places |
+| Citation numbers carried through to MCP | The container edition's MCP server is an older build (11 tools against 25) |
+| The CLI, including `login` / `logout` | The container edition ships no `cynovela-cli.py`. Its own, older `cynovela_cli.py` has neither `login` nor `logout` |
 
 **One of them has since been carried over.** "Two scans of one folder cannot run
-at once" was ported into falcon on 2026-08-26. `_do_scan` in `falcon/server.py` is
-now a thin guarded entry point — a module-level lock plus a set of source ids,
+at once" was ported into the container edition on 2026-08-26. `_do_scan` in its
+`server.py` is now a thin guarded entry point — a module-level lock plus a set of source ids,
 added before the work and discarded in a `finally` — wrapped around the previous
 body, which was renamed `_do_scan_body`. All eight call sites into the scan are
-covered by it. falcon still has no `scan_jobs` table, so the write-back to a job
+covered by it. The container edition has no `scan_jobs` table, so the write-back to a job
 row that tender does inside its own guard has no counterpart there; the guard
 itself is the same.
 
@@ -732,7 +732,7 @@ They are written here as the state of the current build, not as a schedule.
   - [11.4 Ollama を使うと、文脈の長さは Ollama の既定のままになる](#114-ollama-を使うと文脈の長さは-ollama-の既定のままになる)
   - [11.5 取り込んだ作業場所は、ベクターだけで探される](#115-取り込んだ作業場所はベクターだけで探される)
   - [11.6 測っていないこと: conda の入っていない Mac でのパッケージ版](#116-測っていないこと-conda-の入っていない-mac-でのパッケージ版)
-  - [11.7 tender では直し、falcon では直していないもの](#117-tender-では直しfalcon-では直していないもの)
+  - [11.7 tender では直し、コンテナ版では直していないもの](#117-tender-では直しコンテナ版では直していないもの)
 - [12. 認証・認可と通信](#12-認証認可と通信)
 - [13. 定義はあるが統合されていない連携](#13-定義はあるが統合されていない連携)
 - [14. テストでスキップされている領域](#14-テストでスキップされている領域)
@@ -1240,25 +1240,25 @@ Cynovela は `num_ctx` を Ollama へ送りません。送っているのは `to
 「conda 不要」は、そう作られていて、conda の在る機械で確かめた、という意味に
 とどめてください。conda の無い機械で測った、ではありません。
 
-### 11.7 tender では直し、falcon では直していないもの
+### 11.7 tender では直し、コンテナ版では直していないもの
 
-次は tender で直し、コンテナ版（falcon）へは 1.0.7 の時点では**わざと**当てていません。
-falcon はその箇所のコードが違っており、その版では falcon を書き換えて合わせることを
-していないためです。
+次は tender で直し、コンテナ版（この版からは含みません）へは 1.0.7 の時点では**わざと**
+当てていません。コンテナ版はその箇所のコードが違っており、その版ではコンテナ版を書き換えて
+合わせることをしていないためです。
 
 | 何 | 当てなかった理由 |
 |---|---|
-| 時間切れの文言 | falcon に `_timeout_answer` が無く、古い文が本文中の2か所に置かれている |
-| 出典の番号を MCP まで通すこと | falcon の MCP サーバは版が古い（道具 11件・tender は 25件） |
-| `login` / `logout` を含む CLI | falcon に `cynovela-cli.py` は無い。falcon 自身の古い `cynovela_cli.py` には `login` も `logout` も無い |
+| 時間切れの文言 | コンテナ版に `_timeout_answer` が無く、古い文が本文中の2か所に置かれている |
+| 出典の番号を MCP まで通すこと | コンテナ版の MCP サーバは版が古い（道具 11件・tender は 25件） |
+| `login` / `logout` を含む CLI | コンテナ版に `cynovela-cli.py` は無い。コンテナ版自身の古い `cynovela_cli.py` には `login` も `logout` も無い |
 
-**このうち1件は、その後 falcon へも当てました。**「同じフォルダの走査を2本同時に
-始められない件」は 2026-08-26 に falcon へ移してあります。`falcon/server.py` の
+**このうち1件は、その後コンテナ版へも当てました。**「同じフォルダの走査を2本同時に
+始められない件」は 2026-08-26 にコンテナ版へ移してあります。コンテナ版の `server.py` の
 `_do_scan` は、モジュール階層の錠と source の id の集合で守る薄い入口になり
 （始める前に足し、`finally` で外す）、元の本体は `_do_scan_body` へ改名されました。
-走査を呼ぶ 8 か所すべてがこの入口を通ります。falcon には今も `scan_jobs` の表が
+走査を呼ぶ 8 か所すべてがこの入口を通ります。コンテナ版には `scan_jobs` の表が
 無いため、tender が同じ錠の中で行っている job の行への書き戻しに当たるものは
-falcon にはありません。錠そのものは同じです。
+コンテナ版にはありません。錠そのものは同じです。
 
 
 ---

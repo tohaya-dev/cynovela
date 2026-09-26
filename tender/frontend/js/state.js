@@ -626,7 +626,7 @@ const POLICY_TYPES = ["EMAIL", "PHONE_JP", "PHONE_LAND", "CREDIT", "MYNUMBER", "
 //   これらは (a) の CREDIT / MYNUMBER / IPV4 / PHONE_JP / EMAIL と同じ物を指す別名だが、
 //   別のキーとして届くので行も別に持つ (件数を足し合わせる処理は入れない。
 //   数え方を変えると受領書・一覧・公開履歴の実測と食い違うため)。
-//   実測 (2026-08-02・chewie コピー・pii_mode: lite で 1 ファイルを取り込み):
+//   実測 (2026-08-02・以前の版のコピー・pii_mode: lite で 1 ファイルを取り込み):
 //     直す前の取り込み画面 … 「🔒PHONE_INTL×2 🔒IP_ADDRESS×1 🔒CREDIT_CARD×1」と生の値が出ていた
 const PII_TYPE_LABELS = {
   PERSON_JP:    { icon: '👤', en: 'Name',                    ja: '氏名' },
@@ -1331,7 +1331,7 @@ function _resetIngestHostPathCache() { _ingestHostPathCache = undefined; _ingest
 function _displaySourcePath(p) {
   // multi-ingest-roots-20260728: /app/ingest/<name>... は該当するルートの host_path へ写像する。
   // /app/ingest そのもの (仮想の最上位) は「取り込み元」と表示する。
-  // (tender はホスト直起動で実パスのまま流れるため実質素通りだが、falcon と同一コードを保つ)
+  // (tender はホスト直起動で実パスのまま流れるため実質素通りだが、コンテナ版と同一コードを保つ)
   if (p === '/app/ingest') return lj('Ingest sources', '取り込み元');
   for (const r of (_ingestRootsCache || [])) {
     if (!r || !r.name || !r.host_path) continue;

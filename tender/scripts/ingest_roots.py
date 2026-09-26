@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """multi-ingest-roots-20260728: 取り込み元のバックアップファイル (store/ingest-roots.json) の操作。
 
-標準ライブラリのみ。falcon / tender で同一ファイルを保つこと (書式・命名規則の一致が要件)。
+標準ライブラリのみ。コンテナ版 / tender で同一ファイルを保つこと (書式・命名規則の一致が要件)。
 
 バックアップファイル書式 (JSON):
   {"version": 1,

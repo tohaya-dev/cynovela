@@ -35,7 +35,7 @@ See [docs/NOTICE.md](docs/NOTICE.md) ("Before You Start") before you rely on it.
 
 Everything is on GitHub Releases (v2.0.0): https://github.com/tohaya-dev/cynovela/releases
 
-Upgrading from 1.2.0? Read "Upgrading from 1.2.0" in HOW-TO-ASSEMBLE.md and the 2.0.0 section of RELEASE-NOTES.md first. The previous release, v1.2.0 (named chewie), stays on the Releases page.
+Upgrading from 1.2.0? Read "Upgrading from 1.2.0" in HOW-TO-ASSEMBLE.md and the 2.0.0 section of RELEASE-NOTES.md first. The previous release, v1.2.0, stays on the Releases page.
 
 1. **Package edition** — `cynovela-tender-package-2.0.0.tar.gz` (1 file, about 800 MB). For Apple silicon Macs. No Python and no conda are needed; extract it and run `./launch.sh`. To try it with the bundled sample material first, run `./launch.sh --demo` (or double-click `Cynovela-demo.command`); the material is ingested automatically at the first start. The AI models are separate: also download the `models` files below and lay them on top.
 2. **Source edition** — not a download: the source is this repository. Clone it, or use GitHub's "Download ZIP", take the `tender/` tree, lay the `models` files below on top, and run `./launch.sh`; the first start builds the environment.
@@ -131,7 +131,7 @@ Upgrading from 1.2.0? Read "Upgrading from 1.2.0" in HOW-TO-ASSEMBLE.md and the 
 
 すべて GitHub Releases (v2.0.0) にあります: https://github.com/tohaya-dev/cynovela/releases
 
-1.2.0 から入れ替える場合は、先に HOW-TO-ASSEMBLE.md の「1.2.0 から入れ替える」と RELEASE-NOTES.md の 2.0.0 の節を読んでください。前の版 v1.2.0（名前は chewie）も Releases のページに残っています。
+1.2.0 から入れ替える場合は、先に HOW-TO-ASSEMBLE.md の「1.2.0 から入れ替える」と RELEASE-NOTES.md の 2.0.0 の節を読んでください。前の版 v1.2.0 も Releases のページに残っています。
 
 1. **パッケージ版** — `cynovela-tender-package-2.0.0.tar.gz`（1本・約800MB）。Apple silicon の Mac 向け。Python も conda も要らず、展開して `./launch.sh` を叩くだけで動きます。同梱のサンプル資料でまず試すには `./launch.sh --demo`（または `Cynovela-demo.command` をダブルクリック）で起動します（資料は初回起動時に自動で取り込まれます）。ただし AIモデルは別です: 下の `models` の分割ファイルも落として重ねます。
 2. **ソース版** — ダウンロードではありません。ソースはこのリポジトリです。clone するか GitHub の「Download ZIP」で取り、`tender/` の木に下の `models` を重ねて `./launch.sh` を叩けば、初回の起動が環境を作ります。

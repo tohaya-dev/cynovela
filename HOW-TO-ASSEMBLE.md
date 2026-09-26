@@ -29,8 +29,8 @@
 **5. 展開したフォルダの `QUICKSTART.md` を開く。**
 起動・ログイン・モデルのつなぎ方・最初の質問まで、そこに続きがあります。
 
-1.2.0（`chewie`）から入れ替える場合は、先に [1.2.0 から入れ替える](#120-から入れ替える) を読んでください。
-Upgrading from 1.2.0 (`chewie`)? Read [Upgrading from 1.2.0](#upgrading-from-120) first.
+1.2.0 から入れ替える場合は、先に [1.2.0 から入れ替える](#120-から入れ替える) を読んでください。
+Upgrading from 1.2.0? Read [Upgrading from 1.2.0](#upgrading-from-120) first.
 
 ---
 
@@ -55,7 +55,7 @@ Pick ONE:
 
 The package edition and the AI models are on the
 [v2.0.0 release](https://github.com/tohaya-dev/cynovela/releases/tag/v2.0.0).
-The previous version, v1.2.0 (named `chewie`), remains available on the releases page.
+The previous version, v1.2.0, remains available on the releases page.
 
 The AI models: `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02` (split; the same content as the 1.2.0, 1.1.3 and 1.0.7 models, under a new name).
 
@@ -175,7 +175,7 @@ If you changed `cynovela.yaml` in the `chewie` folder, make the same changes in
 
 パッケージ版・AIモデルは
 [v2.0.0 の release](https://github.com/tohaya-dev/cynovela/releases/tag/v2.0.0) に
-あります。前の版 v1.2.0（名前は `chewie`）も、リリースのページに残っています。
+あります。前の版 v1.2.0 も、リリースのページに残っています。
 
 AIモデル: `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02`（分割。中身は 1.2.0・1.1.3・1.0.7 のモデルと同じで、名前だけが変わりました）。
 

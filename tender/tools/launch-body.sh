@@ -1361,7 +1361,7 @@ setup_conda() {
     install_requirements
 }
 
-# venv を作れる python を探す (新しい版から順に。順序と書き方は falcon 側 tools/mas-phase.sh の原文と同じ)
+# venv を作れる python を探す (新しい版から順に。順序と書き方はコンテナ版の tools/mas-phase.sh の原文と同じ)
 venv_base_python() {
     # R-6 (版7): 要件は 3.12 以上である (pyproject.toml requires-python
     #   = ">=3.12" / environment.yml が python=3.12.13 を固定 / conf_pick_py も 3.12 以上)。
@@ -1482,7 +1482,7 @@ do_setup() {
 print_first_login() {
     local _db _pw _dir
     _dir="${DATA_DIR:-$SCRIPT_DIR/store}"
-    # entry-fix-20260817: この配布物の引数の配列は APP_ARGS である (PART_ARGS は falcon の名前。
+    # entry-fix-20260817: この配布物の引数の配列は APP_ARGS である (PART_ARGS はコンテナ版の名前。
     # 前は存在しない変数を見ていて、--demo の判定が常に外れていた)。
     if printf '%s' "${APP_ARGS[*]:-}$*" | grep -q -- '--demo'; then
         _db="$_dir/db/demo.db"
@@ -1619,7 +1619,7 @@ start_app() {
 #   --setup の道は do_setup を呼んで exit するため start_app を通らない。
 #   ∴ 部品を入れる pip が、実在しない指し先のまま走っていた (無言で失敗しうる)。
 #   本編の頭で 1 度だけ外し、以後どの道 (--setup / --check / 起動) でも同じ状態にする。
-#   falcon 側はダウンロードの直前で同じことをしており、順序はもともと正しい。
+#   コンテナ版はダウンロードの直前で同じことをしており、順序はもともと正しい。
 _drop_stale_ssl_cert_file() {
     #   指し先が実在しないものだけを外す。実在するものは外さない。
     #   組織の証明書を指している場合、外すと逆に通信ができなくなる。

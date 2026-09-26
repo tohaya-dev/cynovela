@@ -77,10 +77,10 @@ def _clear_all_conversations(conn, dump_dir: str | None) -> dict:
     従来は「テスト由来のみ選別除去し、デモ由来の会話はマスキングデモの材料として残す」方針
     (key-vector-fix-20260721 Part E) だったが、配布物では次の2つの理由で成立しない。
 
-    1. 他人の会話履歴が配布物に入る。前実行の配布物には falcon 2行・chewie 4行
+    1. 他人の会話履歴が配布物に入る。前実行の配布物にはコンテナ版 2行・Mac 版 4行
        (計 4,716文字) が残っていた。
     2. **配布物は secret.key を同梱しない。** 残った本文は `enc:` の暗号文のまま
-       復号できず、管理者経路のプロンプトへそのまま流れる。chewie ではこれで回答が
+       復号できず、管理者経路のプロンプトへそのまま流れる。Mac 版ではこれで回答が
        「該当なし」に落ちた (事実108-6)。マスキングデモの材料になるどころか壊す。
 
     セッションの器も消す。本文の無いセッションは画面上「題だけあって中身が空の会話」
@@ -248,8 +248,8 @@ def _relocate_source_paths(conn) -> dict:
 # demo.db 側 (_relocate_source_paths) は 2026-07-28 から相対化しているが、インデックスの
 # embedding_metadata.file_path ほかには取り込み時の**絶対**パスがそのまま残る。
 # 実測 2026-08-02 (本流の作業ツリー・読み取りのみ):
-#   chewie 26,371 セル / falcon 26 セル / hansolo 0 セル (インデックス自体が空)
-#   内訳 (chewie): embedding_metadata.string_value 25,752 /
+#   Mac 版 26,371 セル / コンテナ版 26 セル / 別のリポジトリ 0 セル (インデックス自体が空)
+#   内訳 (Mac 版): embedding_metadata.string_value 25,752 /
 #                  embeddings_queue.metadata 491 / embedding_fulltext_search 63 ×2 /
 #                  collections.schema_str 2
 # 取り込み元を相対で入れてもインデックスには絶対パスが焼き込まれる (ossinit-20260729 の知見)。
@@ -509,7 +509,7 @@ def main(src: str, out: str, dump_dir: str | None = None,
 
     # 4d) N-1 (): インデックス (chroma.sqlite3) 側の絶対パスも同じ規則で相対へ改める。
     #     demo.db だけ相対化しても、インデックスには取り込み時の絶対パスが焼き込まれたまま残る
-    #     (実測 2026-08-02: 本流の作業ツリーで chewie 26,371 セル / falcon 26 セル)。
+    #     (実測 2026-08-02: 本流の作業ツリーで Mac 版 26,371 セル / コンテナ版 26 セル)。
     _chroma_path = chroma if chroma is not None else _default_chroma_path(out)
     _store_root = os.path.dirname(os.path.dirname(os.path.abspath(out)))
     _app_root = os.path.dirname(_store_root)

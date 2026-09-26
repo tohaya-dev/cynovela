@@ -35,8 +35,8 @@ installed on this Mac.**
 ### 1. Download (5 files, into the same folder)
 
 Download them from the [releases page](https://github.com/tohaya-dev/cynovela/releases).
-These are the 2.0.0 files. The previous version, v1.2.0 (named `chewie`),
-remains available on the releases page.
+These are the 2.0.0 files. The previous version, v1.2.0, remains available on
+the releases page.
 
 | File | What it is |
 |---|---|

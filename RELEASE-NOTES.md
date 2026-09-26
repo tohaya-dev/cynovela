@@ -4,10 +4,10 @@
 
 ## 2.0.0 (2026-09-26)
 
-This edition is renamed from chewie to tender, several security gaps are
+This edition is renamed to tender, several security gaps are
 closed, and some API behaviour changes in ways a script written for 1.2.0 can
-notice. That is why the version number is 2.0.0. The previous release, v1.2.0
-(named `chewie`), remains available on the releases page.
+notice. That is why the version number is 2.0.0. The previous release, v1.2.0,
+remains available on the releases page.
 
 ### Upgrading from 1.2.0
 
@@ -20,7 +20,7 @@ keep working after the upgrade.
 
 ### What changed
 
-- **Renamed from chewie to tender.** The release files are
+- **Renamed to tender.** The release files are
   `cynovela-tender-package-2.0.0.tar.gz` and
   `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02`, and the package
   unpacks into a folder named `tender`. The models parts hold the same content
@@ -60,8 +60,8 @@ keep working after the upgrade.
 
 ### Breaking changes compared with 1.2.0
 
-- The package unpacks into `tender/` instead of `chewie/`, and the new folder
-  does not read `chewie/store/`.
+- The package unpacks into `tender/` instead of the former folder, and the new
+  folder does not read the old `store/` (see "Upgrading from 1.2.0" above).
 - In a new installation, the bundled demo's ingest root is named
   `tender-dummy-corpus` (was `chewie-dummy-corpus`).
 - A user who still has to change the first password gets 403 on every API
@@ -441,9 +441,9 @@ from the old folder into the new one before starting.
 
 ## 2.0.0 (2026-09-26)
 
-この形の名前を chewie から tender に改め、いくつかの安全上の穴をふさぎ、1.2.0 向けに
+この形の名前を tender に改め、いくつかの安全上の穴をふさぎ、1.2.0 向けに
 書いたスクリプトから見て分かる形で API の動きを変えた版です。そのため版の番号を
-2.0.0 にしました。前の版 v1.2.0（名前は `chewie`）は、リリースのページに残っています。
+2.0.0 にしました。前の版 v1.2.0 は、リリースのページに残っています。
 
 ### 1.2.0 から入れ替える
 
@@ -455,7 +455,7 @@ from the old folder into the new one before starting.
 
 ### 変わったこと
 
-- **名前を chewie から tender に改めました。** リリースのファイルは
+- **名前を tender に改めました。** リリースのファイルは
   `cynovela-tender-package-2.0.0.tar.gz` と
   `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` で、展開すると `tender` と
   いうフォルダができます。AIモデルの分割ファイルの中身は 1.2.0 のモデルと同じで、
@@ -493,8 +493,8 @@ from the old folder into the new one before starting.
 
 ### 1.2.0 と互換性の無いところ
 
-- 配布物の展開先が `chewie/` から `tender/` に変わりました。新しいフォルダは
-  `chewie/store/` を読みません。
+- 配布物の展開先が以前のフォルダから `tender/` に変わりました。新しいフォルダは
+  古い `store/` を読みません（上の「1.2.0 から入れ替える」を参照）。
 - 新しく入れた場合、同梱デモの取り込み元のルートの名前は `tender-dummy-corpus`
   です（以前は `chewie-dummy-corpus`）。
 - 最初のパスワードを変えていない利用者は、`/api/auth/me`・`/api/auth/logout`・

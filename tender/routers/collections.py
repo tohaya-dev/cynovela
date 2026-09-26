@@ -745,7 +745,7 @@ async def link_files(col_id: str, request: Request):
 # ingest-eventloop-unblock-20260727 (GA ブロッカー①):
 #   この関数は publish_collection_iter を await 無しで最後まで回す。PDF 抽出・チャンク化・
 #   マスキング・埋め込み・保存のすべてがイベントループ上で動くため、大型 PDF の取り込み中は
-#   / も /api/ready も応答できなくなっていた (前実行 falcon 約34分・90サンプル中 89 が HTTP 000)。
+#   / も /api/ready も応答できなくなっていた (前実行のコンテナ版で約34分・90サンプル中 89 が HTTP 000)。
 #   本文に await は1つも無いので `async def` を `def` にするだけでよい。FastAPI が
 #   同期の経路操作をスレッドプールへ回すため、実行内容・応答形・ガード・履歴記録は不変で
 #   イベントループだけが解放される。SSE 版 publish_stream (下) は元から `def` で同じ実行模型。

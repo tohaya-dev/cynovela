@@ -315,11 +315,11 @@ if [ "$FLAVOR" = "package" ]; then
 fi
 
 # (版7): 配布物のディレクトリツリーは、リポジトリのルートディレクトリと同じとは限らない。
-#   いまの本流は 1 つのリポジトリの下に tender/ と falcon/ が並ぶ形である。
+#   いまの本流は 1 つのリポジトリの下に tender/ などのフォルダが並ぶ形である。
 #   旧: ROOT=リポジトリのルートディレクトリ → NAME が "Cynovela" になり、出力名が
 #       cynovela-Cynovela-… となる。さらに `git archive "$REF"` がリポジトリ全体を
-#       取るため chewie+falcon+falcon-docker-beta が 1 本に混ざり、直後に
-#       `欠落: mas` ($ROOT/mas を見るが実体は chewie/mas) で落ちていた。
+#       取るため全部の形 (Mac 版・コンテナ版 2 種) が 1 本に混ざり、直後に
+#       `欠落: mas` ($ROOT/mas を見るが実体は <Mac 版のフォルダ>/mas) で落ちていた。
 #   新: ROOT=この build-dist.sh が置かれている配布物のディレクトリツリー (tools/ の 1 つ上)。
 #       取り出しは `"$REF:$SUBDIR"` でそのディレクトリツリーだけに絞る。
 #       リポジトリのルートディレクトリと同じ場合は SUBDIR が空になり、従来と同じ動きになる。
@@ -381,7 +381,7 @@ fi
 echo "[dist] 追跡ファイルのみを取り出す (未追跡は原理的に入らない)"
 mkdir -p "$STAGE/$NAME"
 # `git archive "$REF:$SUBDIR"` は cwd 依存で、このディレクトリツリーの中から叩くと空になる
-# (chewie の中では chewie/chewie を探して 0 項目。実測 20260817)。
+# (配布物のフォルダ X の中では X/X を探して 0 項目。実測 20260817)。
 # ∴ git はリポジトリのルートディレクトリに固定して呼ぶ。
 git -C "$REPO" archive --format=tar "$REF_TREE" | tar -x -C "$STAGE/$NAME"
 
@@ -461,7 +461,7 @@ echo "[dist] デモのデータベースとインデックスは同梱しない 
 #   従来はこのバックアップ (store/ingest-roots.json) をパッケージングの場で 1 度も書いていなかったため、
 #   受け取り手の側では取り込み元 0 件で立ち上がり、一覧が空のまま行き止まりになっていた。
 #   作る側の絶対パスを書くわけにはいかないので (受け取り手の機材には存在せず、
-#   falcon はその場所をコンテナへ繋げないため起動そのものが失敗する)、
+#   コンテナ版はその場所をコンテナへ繋げないため起動そのものが失敗する)、
 #   配布物のルートディレクトリからの相対 "@app/dummy-corpus" で書く。解くのは起動時である
 #   (scripts/ingest_roots.py が自分の保存先からルートを実測して解く)。
 # 受け取り手が自分で足したものは、従来どおりその機材の絶対パスで保存される。
@@ -481,7 +481,7 @@ fi
 echo "[dist] 既定の取り込み元に絶対パス: 0件"
 
 # ── 保存領域の名前を配布物ごとに分ける (dist-volume-identity-20260808 / F-3) ──
-# falcon の保存領域は Podman の名前つき保存領域 (${volume_prefix}-db / -vec / -bk) であって、
+# コンテナ版の保存領域は Podman の名前つき保存領域 (${volume_prefix}-db / -vec / -bk) であって、
 # 配布物のディレクトリの中には無い。接頭辞が全配布物で同じ既定値 (cyn) だったため、
 # 以前の配布物・以前の実行が作った cyn-db がその機材に残っていると podman はそれを黙って
 # 再利用し、この配布物が同梱した demo.db は保存領域へ写されない。
@@ -586,7 +586,7 @@ PYYAML
 # git archive で来る側には未追跡物は入らないので、この網が実際に効くのは
 # 上の add_named で名指しで足した中身 (インデックス・モデル) に対してである。
 # ga-close-v3 PartG (2026-07-27): SQLite の道連れファイルは -wal/-shm だけではない。
-#   非WALのときは <db>-journal が出る (hansolo の .containerignore は同じ理由で
+#   非WALのときは <db>-journal が出る (別のリポジトリの .containerignore は同じ理由で
 #   *-journal を除いている)。インデックス (chroma.sqlite3) に付いてくるため同じ扱いにする。
 #   .ruff_cache は .pytest_cache と同族、*.bak は死蔵のコピーで、どちらも配る意味がない。
 # first-run-ingest-20260901: 金庫鍵の同梱をやめたため、`secret.key` という名前の
@@ -641,9 +641,9 @@ rm -f "$STAGE/$NAME/baseline-report.md" "$STAGE/$NAME/DEV-NOTE-mba.md"
 # tests/ は開発用資材のため配布物からディレクトリごと除外する。受け入れ確認は
 # scripts/test_comprehensive_e2e.py で行う (tests/ を一切参照しないことは確認済み。
 # scripts/ は従来どおり同梱し、この e2e は絶対に除外しない)。
-# falcon 限定の 2 ファイルには開発機の利用者名が残る。いずれも受け取り手には
+# コンテナ版限定の 2 ファイルには開発機の利用者名が残る。いずれも受け取り手には
 # 使い道が無いためステージから落とす (中身は当時の事実なのでツリー側は書き換えない)。
-# falcon 限定の 2 パスは tender の追跡下に無く、rm -f は無いものには何もしない
+# コンテナ版限定の 2 パスは tender の追跡下に無く、rm -f は無いものには何もしない
 # (両ツリーでこのスクリプトを同一内容に保つための書き方)。
 echo "[dist] 開発向けの資料をステージから除去"
 rm -rf "$STAGE/$NAME/instructions" "$STAGE/$NAME/docs/spec-raw" \
@@ -675,7 +675,7 @@ rm -f "$STAGE/$NAME/tools/build-macos-app.sh" "$STAGE/$NAME/tools/split-pkg.sh"
 #   ため外した。docs/BUNDLED-DATA.md は追跡ファイルとして「初回起動時に各機材で
 #   作られる」ことを書いた内容になっており、git archive がそのまま同梱する。
 # oss-init-20260729: 旧同梱デモの原稿と取り込み試験の資材を配布物から外す。
-#   falcon ingest/ (実在ベンダー文書の PDF を含む取り込み試験の資材)、
+#   コンテナ版の ingest/ (実在ベンダー文書の PDF を含む取り込み試験の資材)、
 #   tender sample_data/ と data/ (旧デモの原稿一式)。同梱資料は dummy-corpus/
 #   へ全入れ替えしたため受け取り手には使い道が無い。ツリー側は開発資材
 #   (pytest の基線) として残し、ステージから落とすだけにする。
@@ -909,7 +909,7 @@ for _g in "$DIST_DEV_USER" "$DIST_WORK_PAT"; do
 done
 
 # (4) 内部の作業番号 (2026-08-31 新設)。この関門は build-dist.sh が組む配布物
-#     (Portable を含む tender/falcon の梱包物) だけを見る。.app の組み立て工程には
+#     (Portable を含む tender とコンテナ版の梱包物) だけを見る。.app の組み立て工程には
 #     当てない。パターンを正規表現で書くのは、この行自身がステージに同梱されても
 #     字面としては一致しないため (自己検出の回避・既知の型)。
 gate_work_ids="$( { grep -rlE "DD-CYN-[0-9]{4}" "$GATE_DIR" --binary-files=text 2>/dev/null || true; } | wc -l | tr -d ' ')"

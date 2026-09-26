@@ -1,7 +1,7 @@
 """Mac Accelerator Service (MAS) — 外部の推論サーバ。
 
-同一 Mac のホスト側ネイティブで動く推論の口。コンテナ (falcon / hansolo worker) や
-ホスト直アプリ (chewie) から HTTP で呼ばれ、Apple GPU (Metal / MPS) に届かせる。
+同一 Mac のホスト側ネイティブで動く推論の口。コンテナ (コンテナ版・別のリポジトリの worker) や
+ホスト直アプリ (この Mac 版) から HTTP で呼ばれ、Apple GPU (Metal / MPS) に届かせる。
 信頼境界は Mac の中から出ない設計だが、口自体は「同一マシン内にいること」を
 作り込まない (呼び先は呼ぶ側の設定で決まる)。複数 Mac にまたがる配置は外部送出に
 なるため、渡すものが原文かマスキング済みかを常に明示的に受け取る (content_class)。
@@ -46,7 +46,7 @@ _DEFAULT_CONFIG = {
     # device: auto / cpu / mps  (auto = MPS が使えれば MPS)
     "device": "auto",
     "batch": {"max_texts": 512},
-    # ANE (Core ML) 経路はベータ。既定オフで並べるところまで (正式統合は hansolo 側)。
+    # ANE (Core ML) 経路はベータ。既定オフで並べるところまで (正式統合は別のリポジトリの側)。
     "ane": {"enabled": False, "rerank_mlpackage": ""},
     # 同一 Mac 内では raw も受けられるが、複数 Mac にまたがる配置 (=外部送出) では
     # マスキング済みのみ受ける不変条件に合わせて false にすること。

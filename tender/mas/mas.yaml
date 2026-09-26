@@ -14,7 +14,7 @@ models:
 batch:
   max_texts: 512
 ane:
-  enabled: false         # ベータ。既定オフ (正式統合は hansolo 側)
+  enabled: false         # ベータ。既定オフ (正式統合は別のリポジトリの側)
   rerank_mlpackage: ''
 policy:
   allow_raw_content: true  # 複数 Mac にまたがる配置 (=外部送出) では false にする (伏字済みのみ)
