@@ -35,11 +35,13 @@ installed on this Mac.**
 ### 1. Download (5 files, into the same folder)
 
 Download them from the [releases page](https://github.com/tohaya-dev/cynovela/releases).
+These are the 2.0.0 files. The previous version, v1.2.0 (named `chewie`),
+remains available on the releases page.
 
 | File | What it is |
 |---|---|
-| `cynovela-chewie-package-1.2.0.tar.gz` | **Cynovela itself.** `package` is the application itself |
-| `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02` | **The AI models Cynovela uses.** The embedding models that turn documents into vectors (BGE-M3 and others) and the model that reranks search results — **not the answering LLM** (you set that up separately in step 5). GitHub caps a release file at 2 GiB, so they are split into three parts |
+| `cynovela-tender-package-2.0.0.tar.gz` | **Cynovela itself.** `package` is the application itself |
+| `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` | **The AI models Cynovela uses.** The embedding models that turn documents into vectors (BGE-M3 and others) and the model that reranks search results — **not the answering LLM** (you set that up separately in step 5). GitHub caps a release file at 2 GiB, so they are split into three parts |
 | `SHA256SUMS` | The list for checking that nothing is corrupted |
 
 If you are on a managed Mac (under MDM), download `check-managed-mac.command` first
@@ -54,25 +56,25 @@ folder you downloaded into, in order.
 **2-1. Join the three parts.**
 
     cd ~/Downloads
-    cat cynovela-chewie-models-1.2.0.tar.gz.part00 cynovela-chewie-models-1.2.0.tar.gz.part01 cynovela-chewie-models-1.2.0.tar.gz.part02 > cynovela-chewie-models-1.2.0.tar.gz
+    cat cynovela-tender-models-2.0.0.tar.gz.part00 cynovela-tender-models-2.0.0.tar.gz.part01 cynovela-tender-models-2.0.0.tar.gz.part02 > cynovela-tender-models-2.0.0.tar.gz
 
 **2-2. Check that nothing is corrupted.** If every printed line says `OK`, it
 worked.
 
     shasum -a 256 --ignore-missing -c SHA256SUMS
 
-**2-3. Extract the application.** A `chewie` folder appears.
+**2-3. Extract the application.** A `tender` folder appears.
 
-    tar -xzf cynovela-chewie-package-1.2.0.tar.gz
+    tar -xzf cynovela-tender-package-2.0.0.tar.gz
 
 **2-4. Unpack the AI models inside the application.**
 
-    cd chewie
-    tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
+    cd tender
+    tar -xzf ../cynovela-tender-models-2.0.0.tar.gz
 
-**This creates `chewie/store/models/` — it will not be found anywhere else.**
+**This creates `tender/store/models/` — it will not be found anywhere else.**
 If you already extracted the models somewhere else, move the resulting `models`
-folder into `chewie/store/`.
+folder into `tender/store/`.
 
 **Do not put any of this inside a cloud-synced folder (iCloud Drive, Dropbox,
 OneDrive, Google Drive).** Files get replaced with forms that cannot be run.
@@ -169,11 +171,20 @@ search) in `Settings`.
   searchable. **Ingestion runs in the background. Closing the browser does not
   stop it.**
 
+## Upgrading from 1.2.0
+
+2.0.0 unpacks into a new folder, `tender`, and does not read the `store/` of
+your 1.2.0 `chewie` folder. To keep your documents, users and settings, copy
+`chewie/store/` into `tender/store/` before the first start of 2.0.0. The steps
+are in [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-120). 2.0.0 also
+changes some behaviour (the first-password change, rate limits, ingest roots,
+tokens); the list is in [RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26).
+
 ## The three forms in this repository
 
 | Directory | What it is | Distribution package |
 |---|---|---|
-| `tender` | Runs directly on macOS. | Published on GitHub Releases (v1.2.0). The v1.2.0 files and the folder they unpack into still use the former name `chewie`. |
+| `tender` | Runs directly on macOS. | Published on GitHub Releases (v2.0.0). The v2.0.0 files are named `cynovela-tender-…` and unpack into a folder named `tender`. v1.2.0 and earlier used the former name `chewie`. |
 | `falcon` | Runs inside a container (Podman). | Built from the source in this repository. No distribution package is provided. |
 | `falcon-docker-beta` | Runs inside a container (Docker; in-development beta, no bundled models). | Built from the source in this repository. No distribution package is provided. |
 
@@ -200,7 +211,7 @@ You only need one of them. They are three ways of running the same thing.
 
 ## Downloads
 
-Everything is on GitHub Releases (v1.2.0):
+Everything is on GitHub Releases (v2.0.0):
 https://github.com/tohaya-dev/cynovela/releases
 
 The one-page answer to "which of these do I take" is in
@@ -209,15 +220,15 @@ The one-page answer to "which of these do I take" is in
 | Edition | Runs as | Models bundled | Download shape | What it needs |
 |---|---|---|---|---|
 | **App edition** (`.pkg`) | — | — | **In preparation.** Not part of this release | — |
-| **Package edition** `cynovela-chewie-package-1.2.0.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
+| **Package edition** `cynovela-tender-package-2.0.0.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
 | **Source edition** | a folder you run in place | no — take the AI models as well | not a download — the source is this repository (clone it, or use GitHub's "Download ZIP") | Python 3.12 or later, or conda |
-| **AI models** `cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
+| **AI models** `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
 
 The **App edition** (`.pkg`) is **in preparation** and is not part of this
 release.
 
 Take the **Package edition** if you would rather not install anything: extract it,
-unpack the AI models into `chewie/store/models/`, and run `./launch.sh`. It writes inside its own folder, and the
+unpack the AI models into `tender/store/models/`, and run `./launch.sh`. It writes inside its own folder, and the
 extracted folder can be moved to another location later — start it again from the
 new place with the same `./launch.sh`.
 

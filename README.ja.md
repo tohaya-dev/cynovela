@@ -32,11 +32,13 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 ### 1. 落とす（5つ・同じフォルダへ）
 
 [リリースのページ](https://github.com/tohaya-dev/cynovela/releases) から落とします。
+ここに並べたのは 2.0.0 のファイルです。前の版 v1.2.0（名前は `chewie`）も、
+リリースのページに残っています。
 
 | ファイル | 何か |
 |---|---|
-| `cynovela-chewie-package-1.2.0.tar.gz` | **Cynovela 本体。**`package` と付いているものが本体です |
-| `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02` | **Cynovela が使う AIモデル。**資料をベクターにする埋め込みモデル（BGE-M3 ほか）と、検索結果を並べ替えるモデルです。**答えを作る LLM は入っていません**（5節で別に用意します）。GitHub は1ファイル 2 GiB までのため、3つに分けてあります |
+| `cynovela-tender-package-2.0.0.tar.gz` | **Cynovela 本体。**`package` と付いているものが本体です |
+| `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` | **Cynovela が使う AIモデル。**資料をベクターにする埋め込みモデル（BGE-M3 ほか）と、検索結果を並べ替えるモデルです。**答えを作る LLM は入っていません**（5節で別に用意します）。GitHub は1ファイル 2 GiB までのため、3つに分けてあります |
 | `SHA256SUMS` | 壊れていないか確かめる一覧 |
 
 管理された Mac（MDM 配下）をお使いの方は、先に `check-managed-mac.command` を落として
@@ -50,23 +52,23 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 **2-1. 3つをつなぎます。**
 
     cd ~/Downloads
-    cat cynovela-chewie-models-1.2.0.tar.gz.part00 cynovela-chewie-models-1.2.0.tar.gz.part01 cynovela-chewie-models-1.2.0.tar.gz.part02 > cynovela-chewie-models-1.2.0.tar.gz
+    cat cynovela-tender-models-2.0.0.tar.gz.part00 cynovela-tender-models-2.0.0.tar.gz.part01 cynovela-tender-models-2.0.0.tar.gz.part02 > cynovela-tender-models-2.0.0.tar.gz
 
 **2-2. 壊れていないか確かめます。**出た行が全部 `OK` なら成功です。
 
     shasum -a 256 --ignore-missing -c SHA256SUMS
 
-**2-3. 本体を展開します。**`chewie` フォルダができます。
+**2-3. 本体を展開します。**`tender` フォルダができます。
 
-    tar -xzf cynovela-chewie-package-1.2.0.tar.gz
+    tar -xzf cynovela-tender-package-2.0.0.tar.gz
 
 **2-4. AIモデルを、本体の中で展開します。**
 
-    cd chewie
-    tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
+    cd tender
+    tar -xzf ../cynovela-tender-models-2.0.0.tar.gz
 
-**`chewie/store/models/` ができます。この場所でないと見つけられません。**
-先に別の場所で展開してしまった場合は、できた `models` フォルダを `chewie/store/` の中へ
+**`tender/store/models/` ができます。この場所でないと見つけられません。**
+先に別の場所で展開してしまった場合は、できた `models` フォルダを `tender/store/` の中へ
 移してください。
 
 **クラウド同期のフォルダ（iCloud Drive・Dropbox・OneDrive・Google Drive）の中には
@@ -152,11 +154,20 @@ API キーが要ります）。
 - 足したあと、資料を読み込んで `Publish` すると検索の対象になります。
   **取り込みは裏で動きます。ブラウザを閉じても止まりません。**
 
+## 1.2.0 から入れ替える
+
+2.0.0 は新しい `tender` フォルダへ展開され、1.2.0 の `chewie` フォルダの `store/` は
+読みません。資料・利用者・設定を引き継ぐには、2.0.0 をはじめて起動する前に
+`chewie/store/` の中身を `tender/store/` へコピーしてください。手順は
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える) にあります。2.0.0 では
+動きの変わったところ（最初のパスワードの変更・回数の上限・取り込み元・トークン）も
+あります。一覧は [RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26-1) にあります。
+
 ## このリポジトリにある3つの形
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
-| `tender` | Mac の上で直に動く形 | GitHub Releases (v1.2.0) で公開しています。v1.2.0 のファイル名と、展開してできるフォルダ名は、以前の名前 `chewie` のままです |
+| `tender` | Mac の上で直に動く形 | GitHub Releases (v2.0.0) で公開しています。v2.0.0 のファイル名は `cynovela-tender-…` で、展開すると `tender` フォルダができます。v1.2.0 までは以前の名前 `chewie` でした |
 | `falcon` | コンテナの中で動く形（Podman） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 | `falcon-docker-beta` | コンテナの中で動く形（Docker・開発中のベータ・モデル同梱なし） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 
@@ -179,7 +190,7 @@ API キーが要ります）。
 
 ## 落とすもの
 
-すべて GitHub Releases (v1.2.0) にあります。
+すべて GitHub Releases (v2.0.0) にあります。
 https://github.com/tohaya-dev/cynovela/releases
 
 「どれを落とすか」の1枚での答えは
@@ -188,14 +199,14 @@ https://github.com/tohaya-dev/cynovela/releases
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
 | **アプリ版**（`.pkg`） | — | — | **準備中です。** この版には入っていません | — |
-| **パッケージ版** `cynovela-chewie-package-1.2.0.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
+| **パッケージ版** `cynovela-tender-package-2.0.0.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
 | **ソース版** | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | ダウンロードではありません。ソースはこのリポジトリです（clone するか、GitHub の「Download ZIP」で取れます） | Python 3.12 以降、または conda |
-| **AIモデル** `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
+| **AIモデル** `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
 **アプリ版**（`.pkg`）＝ **準備中です。** この版には入っていません。
 
 **パッケージ版**＝この Mac に何も入れたくない方向け。展開し、AIモデルを
-`chewie/store/models/` へ展開して `./launch.sh` を叩きます。書き込みはそのフォルダの中で完結します。展開したフォルダは
+`tender/store/models/` へ展開して `./launch.sh` を叩きます。書き込みはそのフォルダの中で完結します。展開したフォルダは
 あとから別の場所へ移せます。移した先でも同じ `./launch.sh` で起こしてください。
 
 **ソース版**＝何が入るかを自分で見て決めたい方向け。ソースはこのリポジトリです。

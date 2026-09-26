@@ -2,6 +2,88 @@
 
 **日本語版はこちら → [日本語](#日本語)**
 
+## 2.0.0 (2026-09-26)
+
+This edition is renamed from chewie to tender, several security gaps are
+closed, and some API behaviour changes in ways a script written for 1.2.0 can
+notice. That is why the version number is 2.0.0. The previous release, v1.2.0
+(named `chewie`), remains available on the releases page.
+
+### Upgrading from 1.2.0
+
+The package now unpacks into `tender/`, and the new folder does not read the
+old `chewie/store/`. Copy `chewie/store/` into `tender/store/` before the first
+start of 2.0.0; the steps are in
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-120). At the first start
+the database gains a `token_version` column by itself. Tokens issued by 1.2.0
+keep working after the upgrade.
+
+### What changed
+
+- **Renamed from chewie to tender.** The release files are
+  `cynovela-tender-package-2.0.0.tar.gz` and
+  `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02`, and the package
+  unpacks into a folder named `tender`. The models parts hold the same content
+  as the 1.2.0 models, under the new name.
+- **Security fixes.**
+  - A source must be inside a registered ingest root. `POST /api/sources` and
+    `POST /api/folder-scan-preview` answer 403 for a folder outside the roots
+    in `store/ingest-roots.json` (judged after following links). Before, any
+    place not on a short deny-list could be registered and read.
+  - The default rate limit on `/api/` — 200 requests per minute per client,
+    429 beyond it — is now applied. `POST /api/auth/change-password` and
+    `POST /api/auth/verify-password` are limited to 5 per minute, like sign-in.
+  - The first-password change is enforced on every API. While a user still has
+    to change the first password, everything except `/api/auth/me`,
+    `/api/auth/logout` and `/api/auth/change-password` answers 403, for
+    administrators and viewers alike. Before, only administrator APIs checked
+    it.
+  - Tokens can be revoked per user. Changing a password (your own, or an
+    administrator's reset) and switching an account off or back on make every
+    token already issued to that user stop working at once (401
+    "Token revoked").
+- **Tokens.** An access token still has no expiry by default
+  (`auth.session_hours` is 0). When an administrator sets
+  `auth.session_hours` to a positive number, an access token issued without a
+  lifetime now expires after that many hours. `POST /api/auth/change-password`
+  returns new tokens. A refresh token stays reusable: `POST /api/auth/refresh`
+  does not replace it.
+- **Documentation fixes.**
+  - `confidence_threshold`: below it, the LLM is not called.
+  - The reranker is enabled by the shipped `cynovela.yaml`; it falls back from
+    the external accelerator to in-process reranking, then to none.
+  - Data is kept in `store/` inside the app folder, not in `~/.cynovela`.
+  - `docs/readme.md` states Python 3.12 or later.
+  - A one-page overview for non-technical readers (`docs/one-page.md`).
+  - The slide versions of the documents are linked from `docs/INDEX.md`.
+  - The backup and restore procedure in `docs/operations.md` was corrected.
+
+### Breaking changes compared with 1.2.0
+
+- The package unpacks into `tender/` instead of `chewie/`, and the new folder
+  does not read `chewie/store/`.
+- In a new installation, the bundled demo's ingest root is named
+  `tender-dummy-corpus` (was `chewie-dummy-corpus`).
+- A user who still has to change the first password gets 403 on every API
+  except `/api/auth/me`, `/api/auth/logout` and `/api/auth/change-password`,
+  administrators and viewers alike.
+- `POST /api/sources` and `POST /api/folder-scan-preview` answer 403 for a
+  path outside the registered ingest roots.
+- `/api/` answers 429 beyond 200 requests per minute per client;
+  change-password and verify-password beyond 5 per minute.
+- Changing a password, an administrator's reset, or switching a user off
+  revokes all of that user's tokens (401 "Token revoked").
+- `POST /api/auth/change-password` now returns new tokens (`access_token`,
+  `refresh_token`, `token_type`, `expires_in`) together with `ok`.
+- A positive saved `auth.session_hours` now becomes the access-token lifetime.
+  The default is 0, which means no expiry.
+
+### What has not changed
+
+- Environment variable names, CLI commands, MCP tool names and script names.
+- A refresh token can be reused; it is not single-use.
+- Tokens issued by 1.2.0 keep working after the upgrade.
+
 ## 1.2.0 (2026-09-01)
 
 The package no longer ships an encryption key, and the bundled demo is built
@@ -356,6 +438,84 @@ from the old folder into the new one before starting.
 ---
 
 # 日本語
+
+## 2.0.0 (2026-09-26)
+
+この形の名前を chewie から tender に改め、いくつかの安全上の穴をふさぎ、1.2.0 向けに
+書いたスクリプトから見て分かる形で API の動きを変えた版です。そのため版の番号を
+2.0.0 にしました。前の版 v1.2.0（名前は `chewie`）は、リリースのページに残っています。
+
+### 1.2.0 から入れ替える
+
+配布物は `tender/` へ展開されるようになり、新しいフォルダは古い `chewie/store/` を
+読みません。2.0.0 をはじめて起動する前に、`chewie/store/` の中身を `tender/store/` へ
+コピーしてください。手順は [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える)
+にあります。データベースには、初回の起動時に `token_version` の列が自動で足されます。
+1.2.0 が出したトークンは、入れ替えたあとも使えます。
+
+### 変わったこと
+
+- **名前を chewie から tender に改めました。** リリースのファイルは
+  `cynovela-tender-package-2.0.0.tar.gz` と
+  `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02` で、展開すると `tender` と
+  いうフォルダができます。AIモデルの分割ファイルの中身は 1.2.0 のモデルと同じで、
+  名前だけが変わりました。
+- **安全上の修正**
+  - 取り込み元は、登録済みのルートの内側に限るようになりました。`POST /api/sources`
+    と `POST /api/folder-scan-preview` は、`store/ingest-roots.json` のルートの外に
+    あるフォルダ（リンクをたどった先で判定）に 403 を返します。以前は、短い拒否
+    リストに無い場所なら登録して読めました。
+  - `/api/` の既定の回数の上限（接続元ごとに 1分あたり 200回。超えると 429）が、
+    実際に掛かるようになりました。`POST /api/auth/change-password` と
+    `POST /api/auth/verify-password` は、ログインと同じく 1分あたり 5回までです。
+  - 最初のパスワードの変更を、すべての API で求めるようになりました。最初の
+    パスワードを変えていない利用者には、`/api/auth/me`・`/api/auth/logout`・
+    `/api/auth/change-password` 以外が 403 を返します。管理者にも閲覧者にも効きます。
+    以前は管理者向けの API だけが確かめていました。
+  - トークンを利用者ごとに無効にできるようになりました。パスワードを変えたとき
+    （自分で変える・管理者が再設定する）と、利用者を使えなくしたとき・使えるように
+    戻したときは、その利用者に出したトークンがすべてすぐ使えなくなります
+    （401 "Token revoked"）。
+- **トークン**: アクセストークンは既定では期限なしのままです（`auth.session_hours`
+  の既定は 0）。管理者が `auth.session_hours` を正の数にすると、期限を指定せずに
+  出したアクセストークンは、その時間で切れるようになりました。
+  `POST /api/auth/change-password` は新しいトークンを返します。リフレッシュ
+  トークンは使い回せるままで、`POST /api/auth/refresh` は差し替えません。
+- **文書の修正**
+  - `confidence_threshold`: これを下回ると LLM を呼ばない、と正しく書きました。
+  - 再ランク: 同梱の `cynovela.yaml` で有効になっており、外部の推論サーバ →
+    本体内 → 再ランクなし の順に退避する、と書きました。
+  - データの場所は本体のフォルダの中の `store/` で、`~/.cynovela` ではありません。
+  - `docs/readme.md` の要件を Python 3.12 以上に直しました。
+  - 技術に詳しくない読み手向けの1枚の概要（`docs/one-page.md`）を足しました。
+  - スライド版の文書を `docs/INDEX.md` から開けるようにしました。
+  - `docs/operations.md` のバックアップと復元の手順を直しました。
+
+### 1.2.0 と互換性の無いところ
+
+- 配布物の展開先が `chewie/` から `tender/` に変わりました。新しいフォルダは
+  `chewie/store/` を読みません。
+- 新しく入れた場合、同梱デモの取り込み元のルートの名前は `tender-dummy-corpus`
+  です（以前は `chewie-dummy-corpus`）。
+- 最初のパスワードを変えていない利用者は、`/api/auth/me`・`/api/auth/logout`・
+  `/api/auth/change-password` 以外で 403 を受けます（管理者も閲覧者も）。
+- `POST /api/sources` と `POST /api/folder-scan-preview` は、登録済みのルートの
+  外のパスに 403 を返します。
+- `/api/` は、接続元ごとに 1分あたり 200回を超えると 429 を返します。
+  change-password と verify-password は 1分あたり 5回までです。
+- パスワードの変更・管理者による再設定・利用者を使えなくする操作で、その利用者の
+  トークンがすべて無効になります（401 "Token revoked"）。
+- `POST /api/auth/change-password` の答えに、`ok` と一緒に新しいトークン
+  （`access_token`・`refresh_token`・`token_type`・`expires_in`）が返るように
+  なりました。
+- 保存された `auth.session_hours` が正の数なら、それがアクセストークンの有効時間に
+  なります。既定は 0（期限なし）です。
+
+### 変わっていないこと
+
+- 環境変数の名前・CLI の命令・MCP の道具の名前・スクリプトの名前。
+- リフレッシュトークンは使い回せます（1回限りではありません）。
+- 1.2.0 が出したトークンは、入れ替えたあとも使えます。
 
 ## 1.2.0 (2026-09-01)
 

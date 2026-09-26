@@ -16,14 +16,16 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
-## Unreleased (work of 2026-09-24)
+## v2.0.0 (2026-09-26)
 
-- **This edition is renamed from chewie to tender.** The name in `VERSION` (codename) and in
-  the text is now tender. The source tree in the repository is `tender/` (formerly `chewie/`),
-  and packages built from now on are named after it (`cynovela-tender-…`). The published 1.2.0
-  downloads keep their names (`cynovela-chewie-…-1.2.0…`), and so do the steps that unpack them
-  (they make a folder named `chewie`): those are the names of files that already exist. The
-  rename was done with `tools/rename-product.py`, which can undo it
+- **This edition is renamed from chewie to tender, and the version is 2.0.0 because of the
+  breaking changes below.** The name in `VERSION` (codename) and in the text is now tender. The
+  source tree in the repository is `tender/` (formerly `chewie/`). The release files are
+  `cynovela-tender-package-2.0.0.tar.gz` and `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02`;
+  the package unpacks into a folder named `tender`, and the models parts hold the same content as
+  the 1.2.0 models under the new name. The previous release, v1.2.0 (`cynovela-chewie-…-1.2.0…`,
+  unpacking into `chewie`), remains on the releases page unchanged. The rename was done with
+  `tools/rename-product.py`, which can undo it
   (`--revert tools/rename-product.chewie-to-tender.json`).
 - **A pass still has no expiry by default; an administrator can make it expire.** As in
   1.0.7 to 1.2.0, `POST /api/auth/login` and `POST /api/auth/refresh` issue a pass with no
@@ -65,6 +67,19 @@ This records the main changes to Cynovela in chronological order.
   registered and read. The CLI `ingest` and the MCP `ingest_source` go through the same
   check. During a scan, a file link inside the folder that points outside it is skipped
   and logged.
+- **Upgrading from 1.2.0.** A 2.0.0 folder does not read the old `chewie/store/`; copy it into
+  `tender/store/` before the first start (the steps are in `HOW-TO-ASSEMBLE.md` at the repository
+  root). The `users` table gains a `token_version` column by itself at startup, and tokens issued
+  by 1.2.0 keep working. In a new installation the bundled demo's ingest root is named
+  `tender-dummy-corpus` (was `chewie-dummy-corpus`). Environment variable names, CLI commands, MCP
+  tool names and script names are unchanged.
+- **Documentation fixes.** `confidence_threshold` is described as what it does: below it, the
+  LLM is not called. The reranker is described as enabled by the shipped `cynovela.yaml`, falling
+  back from the external accelerator to in-process reranking, then to none. Data is kept in
+  `store/` inside the app folder, not in `~/.cynovela`. `docs/readme.md` states Python 3.12 or
+  later. A one-page overview for non-technical readers was added (`docs/one-page.md`). The slide
+  versions of the documents are linked from `docs/INDEX.md`. The backup and restore procedure in
+  `docs/operations.md` was corrected.
 
 ## v1.2.0 (2026-09-01)
 
@@ -365,14 +380,16 @@ Cynovela の主要な変更内容を時系列で記録します。
 
 ---
 
-## 未リリース（2026-09-24 の作業）
+## v2.0.0（2026-09-26）
 
-- **この形の名前を chewie から tender に改めた。** `VERSION` の名前（codename）と本文中の呼び名は
-  tender になった。リポジトリのソースの木は `tender/`（旧 `chewie/`）になり、これから作る
-  配布物の名前もそれに従う（`cynovela-tender-…`）。公開済みの 1.2.0 の配布物のファイル名
-  （`cynovela-chewie-…-1.2.0…`）と、それを展開する手順（`chewie` というフォルダができる）は
-  そのまま。どちらも既にあるファイルの名前だからである。改名は `tools/rename-product.py` で
-  行い、元に戻せる（`--revert tools/rename-product.chewie-to-tender.json`）。
+- **この形の名前を chewie から tender に改めた。下に挙げる互換性の無い変更があるため、版は 2.0.0
+  とした。** `VERSION` の名前（codename）と本文中の呼び名は tender になった。リポジトリのソースの
+  フォルダは `tender/`（旧 `chewie/`）になった。リリースのファイルは
+  `cynovela-tender-package-2.0.0.tar.gz` と `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02`
+  で、展開すると `tender` というフォルダができる。AIモデルの分割ファイルの中身は 1.2.0 のモデルと
+  同じで、名前だけが変わった。前の版 v1.2.0（`cynovela-chewie-…-1.2.0…`。展開すると `chewie`
+  ができる）は、リリースのページにそのまま残る。改名は `tools/rename-product.py` で行い、元に
+  戻せる（`--revert tools/rename-product.chewie-to-tender.json`）。
 - **通行証は既定では期限なしのまま。管理者が切れるようにできる。** 1.0.7 から 1.2.0 までと同じく、
   `POST /api/auth/login` と `POST /api/auth/refresh` は、呼ぶ側が `expires_in_hours` か
   `expires_in_seconds` を渡さないかぎり期限の無い通行証を出す。管理者が決める「セッション時間」
@@ -408,6 +425,18 @@ Cynovela の主要な変更内容を時系列で記録します。
   見ていなかったので、それ以外の場所（`/Volumes/…`・他の利用者のフォルダ）を登録して
   読めてしまった。CLI の `ingest` と MCP の `ingest_source` も同じ確認を通る。走査のとき、
   フォルダの中にあってフォルダの外を指すファイルのリンクは飛ばし、記録に残す。
+- **1.2.0 からの入れ替え。** 2.0.0 のフォルダは古い `chewie/store/` を読まない。はじめて起動する前に
+  `tender/store/` へコピーする（手順はリポジトリの直下の `HOW-TO-ASSEMBLE.md`）。`users` の表には
+  起動時に `token_version` の列が自動で足され、1.2.0 が出したトークンはそのまま使える。新しく
+  入れた場合、同梱デモの取り込み元のルートの名前は `tender-dummy-corpus`（以前は
+  `chewie-dummy-corpus`）。環境変数の名前・CLI の命令・MCP の道具の名前・スクリプトの名前は
+  変わらない。
+- **文書の修正。** `confidence_threshold` を、実際の働きどおり「これを下回ると LLM を呼ばない」と
+  書いた。再ランクは、同梱の `cynovela.yaml` で有効で、外部の推論サーバ → 本体内 → 再ランクなし
+  の順に退避する、と書いた。データの場所は本体のフォルダの中の `store/` で、`~/.cynovela` では
+  ない。`docs/readme.md` の要件を Python 3.12 以上に直した。技術に詳しくない読み手向けの1枚の
+  概要（`docs/one-page.md`）を足した。スライド版の文書を `docs/INDEX.md` から開けるようにした。
+  `docs/operations.md` のバックアップと復元の手順を直した。
 
 ## v1.2.0（2026-09-01）
 
