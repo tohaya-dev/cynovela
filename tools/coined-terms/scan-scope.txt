@@ -205,7 +205,7 @@ skip-file	hansolo/*	決定 §61。GitHub 公開絶対禁止のため公開文書
 #   demo-tech.html has no doc-content region (that is, it has no sample document body),
 #   so no region is written for it.
 # --- J-1: デモ用の架空のサンプル文書の本文だけを外す ---
-#   Tocchi の判断 (2026-08-17) = 「サンプル文書の本文のみ保護する」。
+#   開発者の判断 (2026-08-17) = 「サンプル文書の本文のみ保護する」。
 #   ∴ demo-general.html はファイルごと外さない。同ファイル内の解説文
 #   (step-desc / explain-panel / h3 見出し) は走査の対象に残す。
 #   区間は <div class="doc-content"> …</div> の2か所 (原文側・伏字後側)。

@@ -24,7 +24,7 @@ router = APIRouter(tags=["sources"])
 
 # 同期の走査要求が「走査中」に当たったときに待つ上限と、
 #   その間の見に行く間隔。起動時の `scan` (_startup_scan_sources) は登録済みの `source` を
-#   直列に処理するため、`file` が多いほどここで待つ時間が延びる。値の是非は Tocchi の裁定事項。
+#   直列に処理するため、`file` が多いほどここで待つ時間が延びる。値の是非は開発者の裁定事項。
 _SCAN_WAIT_SEC = 300.0
 _SCAN_WAIT_POLL_SEC = 0.5
 

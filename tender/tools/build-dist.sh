@@ -636,7 +636,7 @@ rm -rf "$STAGE/$NAME/store/logs" "$STAGE/$NAME/.git"
 #   DEV-NOTE-mba.md は開発の覚え書きで、旧名と作る側のバックアップ先を含む。
 rm -f "$STAGE/$NAME/baseline-report.md" "$STAGE/$NAME/DEV-NOTE-mba.md"
 
-# ── 開発向けの資料を配布物から外す (distclean-20260729・Tocchi 決定) ──────
+# ── 開発向けの資料を配布物から外す (distclean-20260729・開発者決定) ──────
 # instructions/ と docs/spec-raw/ は開発中の文書そのもの。
 # tests/ は開発用資材のため配布物からディレクトリごと除外する。受け入れ確認は
 # scripts/test_comprehensive_e2e.py で行う (tests/ を一切参照しないことは確認済み。
