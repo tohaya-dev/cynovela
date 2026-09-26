@@ -278,6 +278,7 @@ that one. The same documents are repeated below.
 | `docs/READ-BEFORE-DISTRIBUTING.md` | Read this before you pass the package on to anyone |
 | `docs/NOTICE.md` | Before you start: no warranty, masking limits, checking answers |
 | `docs/BUNDLED-DATA.md` | What sample material is bundled, and what is created on this machine at the first startup |
+| `docs/html/index.html` | Slide versions of eight of the documents above, for a browser or a screen. Same content as the `.md` of the same name |
 
 ---
 
@@ -546,3 +547,4 @@ that one. The same documents are repeated below.
 | `docs/READ-BEFORE-DISTRIBUTING.md` | 誰かに配る前にお読みください |
 | `docs/NOTICE.md` | 使う前のご注意。無保証・マスキングの限界・答えの確かめ方 |
 | `docs/BUNDLED-DATA.md` | 同梱のサンプル資料に何が入っているか。初回起動時にこの機材の上で作られるものの内訳 |
+| `docs/html/index.html` | 上の文書のうち 8 本のスライド版。ブラウザで読む・画面に映すとき用。中身は同じ名前の `.md` と同じ |

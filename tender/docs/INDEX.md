@@ -72,6 +72,25 @@ For the person who needs an exact name, argument or return value.
 | [architecture.md](architecture.md) | How it works inside: the components, how ingest and classification work, how search works, how to read the scores a search returns, the shape of an answer, and the main categories of endpoint. The overview diagram is [assets/architecture-overview.svg](assets/architecture-overview.svg). |
 | [faq.md](faq.md) | When you are not sure which of the four references above holds the answer, the last question of the FAQ states where to look next. |
 
+### Slide versions
+
+Eight of the documents above also come as slide pages in [html/](html/), for reading in a
+browser or showing on a screen. They carry the same content as the `.md` of the same name
+and are updated together with it; when the two differ, the `.md` is the one to trust.
+Start from [html/index.html](html/index.html).
+
+| Slide page | Same content as |
+|---|---|
+| [html/getting-started.html](html/getting-started.html) | [getting-started.md](getting-started.md) |
+| [html/concept.html](html/concept.html) | [concept.md](concept.md) |
+| [html/handson.html](html/handson.html) | [handson.md](handson.md) |
+| [html/faq.html](html/faq.html) | [faq.md](faq.md) |
+| [html/operations.html](html/operations.html) | [operations.md](operations.md) |
+| [html/security.html](html/security.html) | [security.md](security.md) |
+| [html/limits.html](html/limits.html) | [limits.md](limits.md) |
+| [html/architecture.html](html/architecture.html) | [architecture.md](architecture.md) |
+| [html/index.html](html/index.html) | this page |
+
 ---
 
 # 日本語
@@ -135,3 +154,21 @@ For the person who needs an exact name, argument or return value.
 | [reference/changelog.md](reference/changelog.md) | 版ごとの変更点。新しいものが上。 |
 | [architecture.md](architecture.md) | 内側の作り。構成要素・取り込みと分類のしくみ・検索のしくみ・検索が返すスコアの読み方・回答のかたち・API の主要カテゴリ。全体図は [assets/architecture-overview.svg](assets/architecture-overview.svg) です。 |
 | [faq.md](faq.md) | 上の 4 本のどれに答えがあるか分からないとき、FAQ の最後の問いが次に見る場所を示します。 |
+
+### スライド版
+
+上の文書のうち 8 本は、[html/](html/) にスライド形式のページもあります。ブラウザで読むときや、
+画面に映して見せるときに使います。中身は同じ名前の `.md` と同じで、一緒に更新しています。
+両者が食い違うときは `.md` の方を正としてください。入口は [html/index.html](html/index.html) です。
+
+| スライドのページ | 中身が同じもの |
+|---|---|
+| [html/getting-started.html](html/getting-started.html) | [getting-started.md](getting-started.md) |
+| [html/concept.html](html/concept.html) | [concept.md](concept.md) |
+| [html/handson.html](html/handson.html) | [handson.md](handson.md) |
+| [html/faq.html](html/faq.html) | [faq.md](faq.md) |
+| [html/operations.html](html/operations.html) | [operations.md](operations.md) |
+| [html/security.html](html/security.html) | [security.md](security.md) |
+| [html/limits.html](html/limits.html) | [limits.md](limits.md) |
+| [html/architecture.html](html/architecture.html) | [architecture.md](architecture.md) |
+| [html/index.html](html/index.html) | このページ |
