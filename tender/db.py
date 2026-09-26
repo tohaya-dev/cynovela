@@ -767,23 +767,7 @@ def migrate_db(conn) -> None:
     #   変わったときは、どの経路 (本人の変更・管理者の再設定・--reset-admin・削除/復帰) で
     #   変わっても版を1つ進め、リフレッシュトークンも全て消す。経路ごとに書き足すと
     #   漏れるので、DB のトリガー1か所で行う。
-    try:
-        conn.execute(
-            "ALTER TABLE users ADD COLUMN token_version INTEGER NOT NULL DEFAULT 0"
-        )
-    except Exception:
-        pass
-    conn.execute("""
-        CREATE TRIGGER IF NOT EXISTS trg_users_revoke_tokens
-        AFTER UPDATE OF password_hash, is_active ON users
-        WHEN NEW.password_hash IS NOT OLD.password_hash
-          OR COALESCE(NEW.is_active, 1) IS NOT COALESCE(OLD.is_active, 1)
-        BEGIN
-            UPDATE users SET token_version = COALESCE(token_version, 0) + 1
-             WHERE id = NEW.id;
-            DELETE FROM refresh_tokens WHERE user_id = NEW.id;
-        END
-    """)
+    _ensure_token_revocation(conn)
 
     # PDF-mode 差分: file_hashes に pdf_mode 列を後足し（既存DB互換、存在時は無視）
     try:
@@ -991,6 +975,34 @@ def _rebase_relative_files(conn) -> int:
     return n
 
 
+def _ensure_token_revocation(conn) -> None:
+    """overnight-20260923 ④ の列とトリガーを揃える (何度呼んでも同じ結果になる)。
+
+    dd0202: migrations/0001・0007 は users 表を作り直すため、その前に作ったトリガーが
+    消え、列の既定値 (DEFAULT 0) も落ちる。新しいデータベースでは migrate_db の後に
+    migrations が走るので、初回起動の間だけ失効が効かなかった (実測: 無効化・パスワード
+    変更の後も古いトークンが 200)。init_db は migrations の後にもう一度これを呼ぶ。
+    """
+    try:
+        conn.execute(
+            "ALTER TABLE users ADD COLUMN token_version INTEGER NOT NULL DEFAULT 0"
+        )
+    except Exception:
+        pass
+    conn.execute("UPDATE users SET token_version = 0 WHERE token_version IS NULL")
+    conn.execute("""
+        CREATE TRIGGER IF NOT EXISTS trg_users_revoke_tokens
+        AFTER UPDATE OF password_hash, is_active ON users
+        WHEN NEW.password_hash IS NOT OLD.password_hash
+          OR COALESCE(NEW.is_active, 1) IS NOT COALESCE(OLD.is_active, 1)
+        BEGIN
+            UPDATE users SET token_version = COALESCE(token_version, 0) + 1
+             WHERE id = NEW.id;
+            DELETE FROM refresh_tokens WHERE user_id = NEW.id;
+        END
+    """)
+
+
 def init_db(demo: bool = False):
     conn = get_db()
     try:
@@ -1006,6 +1018,8 @@ def init_db(demo: bool = False):
             import logging as _logging_for_mig
 
             _logging_for_mig.getLogger("cynovela.db").warning("migrations apply_all 失敗 (init_db 起動継続): %s", _mig_e)
+        # dd0202: migrations が users 表を作り直すと失効のトリガーが消えるため、ここで揃え直す。
+        _ensure_token_revocation(conn)
 
         # Always insert seed data (skip if already exists).
         # 個人名は使わず役割名 (Admin / Viewer) を使う方針。
