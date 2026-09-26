@@ -653,6 +653,10 @@ rm -f "$STAGE/$NAME/MANIFEST-anchor-candidate-20260713.md" \
 # docs-part3-20260926: docs/html/_conversion-rules.md は docs/*.md から docs/html/*.html を
 #   作るときの手順書で、読み手には使い道が無い。ツリー側には残し、ステージから落とす。
 rm -f "$STAGE/$NAME/docs/html/_conversion-rules.md"
+# dd0202: docs/html/_slide-base.css も同じ手順の材料で (中身は各 html へ全文を埋め込み済み)、
+#   配布物のどのファイルからも読まれない。ツリー側には残し、ステージから落とす。
+#   docs/html/_tokens.txt は各 html の注釈がその名前を挙げているため、ここでは落とさない。
+rm -f "$STAGE/$NAME/docs/html/_slide-base.css"
 # bundled-data-20260731 (B11): 過去の実行の一覧文書は、当時の作業ツリーの
 #   数え上げ (資料30本 / 47,106 塊) をそのまま書いており、いま同梱するもの (dummy-corpus
 #   の資料と、そこから作った塊) とは別物である。過去の事実の記録なのでツリー側は
@@ -927,7 +931,9 @@ fi
 if ! python3 - "$GATE_DIR" <<'PYSTYLE'
 import os, re, sys
 root = sys.argv[1]
-ja_stance = ["会社", "勤務先", "職場", "社内", "業務", "支給"]
+# dd0202: 弊社・当社・貸与 を足した (決定の一覧に揃える。ツリーの中で当たるのは
+#   dummy-corpus の中だけで、そこは下の in_scope が見ない)。
+ja_stance = ["会社", "勤務先", "職場", "社内", "業務", "支給", "弊社", "当社", "貸与"]
 en_stance = [r"\bcompany\b", r"\bcorporate\b", r"\bworkplace\b", r"\bemployer\b", r"\bwork-issued\b"]
 alias = ["関門", "梱包", "素性",
          "積み荷命令", "落とし物", "証拠束"]

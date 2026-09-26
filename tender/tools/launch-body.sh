@@ -1517,8 +1517,13 @@ print_next_steps() {
     echo "  ■ 入り方"
     echo "      管理者の利用者名: cynovela"
     echo "      閲覧者の利用者名: demo"
-    echo "      最初のパスワードは、はじめて起動したときにこの画面へ出ます。"
+    # dd0202 (決定 §103-2): 管理者と閲覧者で、パスワードの在りかを分けて書く。
+    #   管理者の値は print_first_login が初回だけ画面に出す。閲覧者の値は画面に出さない。
+    echo "      The administrator's password is shown on this screen once, the first time it starts."
+    echo "      管理者のパスワードは、はじめて起動したときにこの画面へ1回だけ表示されます。"
     echo "      (2回目からは出ません。別便で受け取るファイルはありません。)"
+    echo '      The viewer (`demo`) password is in `auth.viewer_initial_password` in `cynovela.yaml`.'
+    echo '      閲覧者（`demo`）のパスワードは `cynovela.yaml` の `auth.viewer_initial_password` にあります。'
     echo "      管理者は初回にパスワードの変更を求められます。"
     echo ""
     print_first_login
