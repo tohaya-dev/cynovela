@@ -808,7 +808,7 @@ start FastAPI with uvicorn.run()</code></pre>
 <span class="continued">(3/10)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>Feature</th><th>State</th><th>Overview</th></tr></thead><tbody><tr><td>CRAG (self-evaluating re-search)</td><td>Implemented</td><td>The LLM evaluates the quality of the search results and searches again if needed</td></tr><tr><td>HyDE (hypothetical document embedding)</td><td>Implemented</td><td>Generates a hypothetical answer and searches with its embedding</td></tr><tr><td>Reranker</td><td>Implemented (replaceable)</td><td>The default is disabled (NoReranker); can be switched to CrossEncoder / FlashRank / Ollama / HTTP and others</td></tr><tr><td>Adaptive RAG</td><td>Implemented</td><td>Automatically switches between "basic" and "agentic" by query complexity</td></tr><tr><td>Citation embedding</td><td>Implemented</td><td>Embeds citation numbers in the <code>[1][2]</code> form into the answer</td></tr></tbody></table>
+<table><thead><tr><th>Feature</th><th>State</th><th>Overview</th></tr></thead><tbody><tr><td>CRAG (self-evaluating re-search)</td><td>Implemented</td><td>The LLM evaluates the quality of the search results and searches again if needed</td></tr><tr><td>HyDE (hypothetical document embedding)</td><td>Implemented</td><td>Generates a hypothetical answer and searches with its embedding</td></tr><tr><td>Reranker</td><td>Implemented (replaceable)</td><td>Enabled in the shipped <code>cynovela.yaml</code> (<code>cross_encoder</code> with <code>device: external</code>: the external accelerator first, then in-process, then no reranking; see limits.md). Without a configuration file the code default is <code>none</code> (NoReranker). Can be switched to CrossEncoder / FlashRank / Ollama / HTTP and others</td></tr><tr><td>Adaptive RAG</td><td>Implemented</td><td>Automatically switches between "basic" and "agentic" by query complexity</td></tr><tr><td>Citation embedding</td><td>Implemented</td><td>Embeds citation numbers in the <code>[1][2]</code> form into the answer</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1552,7 +1552,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 </div>
 <div class="slide-body">
 <p><strong>RRF Score</strong>: The score of reciprocal rank fusion. It is a method that sums <code>1 / (k + rank)</code> for each rank (k=60 by default), and the maximum value is a small number of roughly 0.033.</p>
-<p><strong>Rerank Score</strong>: The score that a reranker provider assigns after evaluating a pair of the query and a candidate chunk. It is held as <code>rerank_score: float = 0.0</code> at <code>pipeline_types.py:71</code>, and 0 means it was not applied. The default is <code>NoReranker</code> (disabled); you enable it by choosing <code>yaml.reranker.provider</code> from the providers listed in §4.3.1.</p>
+<p><strong>Rerank Score</strong>: The score that a reranker provider assigns after evaluating a pair of the query and a candidate chunk. It is held as <code>rerank_score: float = 0.0</code> at <code>pipeline_types.py:71</code>, and 0 means it was not applied. The shipped <code>cynovela.yaml</code> enables it (<code>reranker.provider: cross_encoder</code>, <code>device: external</code>); when the external accelerator is not reachable and no reranker weights are present, reranking is skipped and the value stays 0. Without a configuration file the code default is <code>NoReranker</code>. You change it by choosing <code>yaml.reranker.provider</code> from the providers listed in §4.3.1.</p>
 <h3>5.3 Confidence Threshold (confidence_threshold)</h3>
 <p>This is the threshold used for the decision of the low confidence fallback (Abstention: the behavior of withholding an answer and returning "I don't know" when the grounds are insufficient).</p>
 </div>
@@ -2498,7 +2498,7 @@ uvicorn.run() で FastAPI 起動</code></pre>
 <span class="continued">(3/10)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>機能</th><th>状態</th><th>概要</th></tr></thead><tbody><tr><td>CRAG（自己評価式再検索）</td><td>実装済み</td><td>検索結果の質を LLM が評価し、必要なら追加検索</td></tr><tr><td>HyDE（仮想文書埋め込み）</td><td>実装済み</td><td>仮想回答を生成して、その埋め込みで検索</td></tr><tr><td>Reranker</td><td>実装済み（差替可能）</td><td>既定は無効（NoReranker）、CrossEncoder / FlashRank / Ollama / HTTP などに切替可能</td></tr><tr><td>Adaptive RAG</td><td>実装済み</td><td>クエリ複雑度で「basic」「agentic」を自動切替</td></tr><tr><td>引用埋め込み</td><td>実装済み</td><td>回答中に <code>[1][2]</code> 形式の引用番号を埋め込み</td></tr></tbody></table>
+<table><thead><tr><th>機能</th><th>状態</th><th>概要</th></tr></thead><tbody><tr><td>CRAG（自己評価式再検索）</td><td>実装済み</td><td>検索結果の質を LLM が評価し、必要なら追加検索</td></tr><tr><td>HyDE（仮想文書埋め込み）</td><td>実装済み</td><td>仮想回答を生成して、その埋め込みで検索</td></tr><tr><td>Reranker</td><td>実装済み（差替可能）</td><td>同梱の <code>cynovela.yaml</code> では有効（<code>cross_encoder</code>・<code>device: external</code>。外部の推論サーバ → 本体内 → 再ランクなし の順に退避。limits.md 参照）。設定ファイルが無いときのコードの既定は <code>none</code>（NoReranker）。CrossEncoder / FlashRank / Ollama / HTTP などに切替可能</td></tr><tr><td>Adaptive RAG</td><td>実装済み</td><td>クエリ複雑度で「basic」「agentic」を自動切替</td></tr><tr><td>引用埋め込み</td><td>実装済み</td><td>回答中に <code>[1][2]</code> 形式の引用番号を埋め込み</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -3229,7 +3229,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 <span class="continued">(3/9)</span>
 </div>
 <div class="slide-body">
-<p><strong>Rerank Score</strong>: Reranker プロバイダーがクエリと候補チャンクのペアを評価して付与するスコア。<code>pipeline_types.py:71</code> で <code>rerank_score: float = 0.0</code> として保持され、0 なら未適用を意味します。既定は <code>NoReranker</code>（無効）で、<code>yaml.reranker.provider</code> を §4.3.1 の一覧から選んで有効化します。</p>
+<p><strong>Rerank Score</strong>: Reranker プロバイダーがクエリと候補チャンクのペアを評価して付与するスコア。<code>pipeline_types.py:71</code> で <code>rerank_score: float = 0.0</code> として保持され、0 なら未適用を意味します。同梱の <code>cynovela.yaml</code> では有効です（<code>reranker.provider: cross_encoder</code>・<code>device: external</code>）。外部の推論サーバに届かず、再ランクの重みも無いときは再ランクを飛ばし、値は 0 のままです。設定ファイルが無いときのコードの既定は <code>NoReranker</code> です。<code>yaml.reranker.provider</code> を §4.3.1 の一覧から選んで切り替えます。</p>
 <h3>5.3 信頼度閾値（confidence_threshold）</h3>
 <p>低信頼度フォールバック（Abstention：根拠不足のときに回答を保留・「分かりません」と返す挙動）の判定に使うしきい値です。</p>
 <h4>5.3.1 設定値</h4>

@@ -299,7 +299,7 @@ This section lists the features that are confirmed as implemented, so that they 
 | Multi-Query expansion | Implemented | The LLM expands the query into several variants and merges them with RRF |
 | CRAG (self-evaluating re-search) | Implemented | The LLM evaluates the quality of the search results and searches again if needed |
 | HyDE (hypothetical document embedding) | Implemented | Generates a hypothetical answer and searches with its embedding |
-| Reranker | Implemented (replaceable) | The default is disabled (NoReranker); can be switched to CrossEncoder / FlashRank / Ollama / HTTP and others |
+| Reranker | Implemented (replaceable) | Enabled in the shipped `cynovela.yaml` (`cross_encoder` with `device: external`: the external accelerator first, then in-process, then no reranking; see limits.md). Without a configuration file the code default is `none` (NoReranker). Can be switched to CrossEncoder / FlashRank / Ollama / HTTP and others |
 | Adaptive RAG | Implemented | Automatically switches between "basic" and "agentic" by query complexity |
 | Citation embedding | Implemented | Embeds citation numbers in the `[1][2]` form into the answer |
 
@@ -735,7 +735,7 @@ Several scores with different scales appear in Cynovela's search. It is importan
 
 **RRF Score**: The score of reciprocal rank fusion. It is a method that sums `1 / (k + rank)` for each rank (k=60 by default), and the maximum value is a small number of roughly 0.033.
 
-**Rerank Score**: The score that a reranker provider assigns after evaluating a pair of the query and a candidate chunk. It is held as `rerank_score: float = 0.0` at `pipeline_types.py:71`, and 0 means it was not applied. The default is `NoReranker` (disabled); you enable it by choosing `yaml.reranker.provider` from the providers listed in §4.3.1.
+**Rerank Score**: The score that a reranker provider assigns after evaluating a pair of the query and a candidate chunk. It is held as `rerank_score: float = 0.0` at `pipeline_types.py:71`, and 0 means it was not applied. The shipped `cynovela.yaml` enables it (`reranker.provider: cross_encoder`, `device: external`); when the external accelerator is not reachable and no reranker weights are present, reranking is skipped and the value stays 0. Without a configuration file the code default is `NoReranker`. You change it by choosing `yaml.reranker.provider` from the providers listed in §4.3.1.
 
 ### 5.3 Confidence Threshold (confidence_threshold)
 
@@ -1226,7 +1226,7 @@ uvicorn.run() で FastAPI 起動
 | Multi-Query 展開 | 実装済み | LLM でクエリを複数バリアントに展開して RRF 統合 |
 | CRAG（自己評価式再検索） | 実装済み | 検索結果の質を LLM が評価し、必要なら追加検索 |
 | HyDE（仮想文書埋め込み） | 実装済み | 仮想回答を生成して、その埋め込みで検索 |
-| Reranker | 実装済み（差替可能） | 既定は無効（NoReranker）、CrossEncoder / FlashRank / Ollama / HTTP などに切替可能 |
+| Reranker | 実装済み（差替可能） | 同梱の `cynovela.yaml` では有効（`cross_encoder`・`device: external`。外部の推論サーバ → 本体内 → 再ランクなし の順に退避。limits.md 参照）。設定ファイルが無いときのコードの既定は `none`（NoReranker）。CrossEncoder / FlashRank / Ollama / HTTP などに切替可能 |
 | Adaptive RAG | 実装済み | クエリ複雑度で「basic」「agentic」を自動切替 |
 | 引用埋め込み | 実装済み | 回答中に `[1][2]` 形式の引用番号を埋め込み |
 
@@ -1662,7 +1662,7 @@ Cynovela の検索ではスケールの異なる複数のスコアが登場し�
 
 **RRF Score**: 相互順位融合のスコア。各順位（rank）に対して `1 / (k + rank)`（k=60 既定）を足し合わせる方式で、最大値はおおむね 0.033 程度の小さな値になります。
 
-**Rerank Score**: Reranker プロバイダーがクエリと候補チャンクのペアを評価して付与するスコア。`pipeline_types.py:71` で `rerank_score: float = 0.0` として保持され、0 なら未適用を意味します。既定は `NoReranker`（無効）で、`yaml.reranker.provider` を §4.3.1 の一覧から選んで有効化します。
+**Rerank Score**: Reranker プロバイダーがクエリと候補チャンクのペアを評価して付与するスコア。`pipeline_types.py:71` で `rerank_score: float = 0.0` として保持され、0 なら未適用を意味します。同梱の `cynovela.yaml` では有効です（`reranker.provider: cross_encoder`・`device: external`）。外部の推論サーバに届かず、再ランクの重みも無いときは再ランクを飛ばし、値は 0 のままです。設定ファイルが無いときのコードの既定は `NoReranker` です。`yaml.reranker.provider` を §4.3.1 の一覧から選んで切り替えます。
 
 ### 5.3 信頼度閾値（confidence_threshold）
 
