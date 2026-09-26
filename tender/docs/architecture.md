@@ -251,7 +251,7 @@ main() called
 parse CLI arguments with argparse
    ↓
 _preflight_model_check()
-  ├─ check whether the required models exist in ~/.cynovela/models/
+  ├─ check whether the required models exist in store/models/
   └─ if missing, offer the user download / alternative mode / cancel
        (exits immediately if CYNOVELA_NONINTERACTIVE=1)
    ↓
@@ -1178,7 +1178,7 @@ main() 呼び出し
 argparse で CLI 引数パース
    ↓
 _preflight_model_check()
-  ├─ 必要モデルが ~/.cynovela/models/ に存在するか確認
+  ├─ 必要モデルが store/models/ に存在するか確認
   └─ 不足時はユーザに DL / 代替モード / キャンセルを提示
        （CYNOVELA_NONINTERACTIVE=1 なら即 exit）
    ↓
