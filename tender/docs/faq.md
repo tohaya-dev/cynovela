@@ -108,7 +108,7 @@ Features that were explicitly abolished:
 
 Features that are defined as settings but whose integration into the search pipeline is partial:
 
-- `confidence_threshold` (default 0.40) is defined in config, but the logic to exclude low-confidence results is only partly integrated.
+- `confidence_threshold` (default 0.40) only decides whether the LLM is called: when the highest `vector_score` among the hits is below it, the LLM is not called and a low-confidence reply is returned instead. It does not remove individual hits: when the highest score clears it, lower-scoring hits are passed to the LLM as they are (see [architecture.md](architecture.md) §5.3).
 - Structured answer templates (JSON format, forced tags, and so on) are unimplemented. Answers are free-form.
 
 Authentication is enforced even on a `--demo` start. The `@pytest.mark.skip` that remains in the authentication boundary tests is a leftover from when `--demo` bypassed authentication, and the reason text no longer matches the implementation.
@@ -235,7 +235,7 @@ Cynovela は二段構えで PII（Personally Identifiable Information: 個人情
 
 設定としては定義されているが、検索パイプラインへの統合が部分的な機能:
 
-- `confidence_threshold`（既定 0.40）は config に定義済みだが、低信頼度結果の除外ロジックは部分統合に留まります。
+- `confidence_threshold`（既定 0.40）は LLM を呼ぶかどうかの判定にだけ使われます。hits の中で最も高い `vector_score` がこれを下回ると LLM は呼ばれず、低信頼の返しが代わりに返ります。個々の hit を取り除くことはしません。最も高いスコアがしきい値を超えれば、それより低い hit もそのまま LLM へ渡ります（[architecture.md](architecture.md) §5.3）。
 - 構造化回答テンプレート（JSON 形式・タグ強制など）は未実装。回答は自由形式。
 
 `--demo` 起動でも認証は強制されます。認証境界テストに残っている `@pytest.mark.skip` は、`--demo` が認証をバイパスしていた頃の名残で、理由文はすでに実装と合っていません。

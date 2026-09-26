@@ -912,7 +912,7 @@ a:hover { text-decoration: underline; }
     <h3>How answers are built</h3>
     <ul>
     <li><strong>Structured answers cannot be returned.</strong> Answers are free-form (Markdown where needed). Responses in JSON or with fixed tags are not provided. Citation of sources (in the <code>[1][2]</code> form) is implemented.</li>
-    <li><strong>There is no automatic switching when confidence is low.</strong> <code>cynovela.yaml</code> has <code>confidence_threshold</code> (default <code>0.4</code>), but no behaviour that automatically switches to a general-knowledge mode when it falls below is built in. The value is defined as a setting, and the processing that switches to <code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> when there are 0 search results is not integrated; the exclusion logic in the search pipeline is only <strong>partly integrated</strong>.</li>
+    <li><strong>There is no automatic switching when confidence is low.</strong> <code>cynovela.yaml</code> has <code>confidence_threshold</code> (default <code>0.4</code>), but no behaviour that automatically switches to a general-knowledge mode when it falls below is built in. Below the threshold the LLM is not called and a low-confidence reply is returned; with 0 search results the reply is that no related document was found. Neither case switches to <code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code>, which is used only when it is asked for explicitly.</li>
     <li><strong>Self-evaluation of an answer is a simple rule.</strong> <code>evaluate_answer_quality()</code> in <code>adaptive_rag.py</code> decides sufficiency from "the answer is empty", "under 60 characters with few hits", and "contains a negative phrasing". It does not have an LLM evaluate it.</li>
     </ul>
 </div>
@@ -1163,7 +1163,7 @@ cd ../..
     <ul>
     <li><strong>DataSyncService is not connected to publish.</strong> The hash-based differential sync only writes logs; the actual call into <code>rag.publish</code> is a noop.</li>
     <li><strong>The difference detection is per path.</strong> Addition and deletion over the set of paths are detected (at a 60 second interval by default), but comparison by <code>content_hash</code> is not implemented and the comparison method is not fixed, so a change to the <em>content</em> of a file is not detected this way.</li>
-    <li><strong>The exclusion logic of <code>confidence_threshold</code> is only partly integrated</strong> into the search pipeline. What this means in practice is in §10, "How answers are built".</li>
+    <li><strong><code>confidence_threshold</code> only decides whether the LLM is called; it does not remove individual hits</strong> from the search pipeline. What this means in practice is in §10, "How answers are built".</li>
     <li><strong>A structured answer template is not implemented.</strong> Fixing the LLM's answer into a structured format such as JSON or an <code>&lt;answer&gt;</code> tag is not supported; a free-form answer is the standard. Whether such a feature will be introduced is not decided.</li>
     <li><strong>Some elements of the i18n switch are fixed.</strong> A few elements whose display is controlled by the language switch (Japanese / English) do not follow it.</li>
     <li><strong>Some UI elements are hidden until the tab is initialised.</strong> They stay <code>display:none</code> until the JavaScript initialisation finishes.</li>
@@ -1865,7 +1865,7 @@ cd ../..
     <h3>回答の作り</h3>
     <ul>
     <li><strong>構造化された回答は返せません。</strong> 回答は自由形式（必要に応じて Markdown）です。JSON や決まったタグでの応答は用意していません。出典の引用（<code>[1][2]</code> の形）は実装済みです。</li>
-    <li><strong>信頼度の低いときの自動切り替えはありません。</strong> <code>cynovela.yaml</code> に <code>confidence_threshold</code>（既定 <code>0.4</code>）がありますが、下回ったときに一般知識モードへ自動で切り替えるような動きは組み込まれていません。値は設定としては定義済みですが、検索結果が 0 件のときに<code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> へ自動切替する処理は未統合で、検索パイプラインからの除外ロジックも <strong>部分統合</strong> に留まります。</li>
+    <li><strong>信頼度の低いときの自動切り替えはありません。</strong> <code>cynovela.yaml</code> に <code>confidence_threshold</code>（既定 <code>0.4</code>）がありますが、下回ったときに一般知識モードへ自動で切り替えるような動きは組み込まれていません。しきい値を下回ると LLM は呼ばれず低信頼の返しが返り、検索結果が 0 件のときは関連する文書が見つからなかったと返ります。どちらの場合も<code>GENERAL_KNOWLEDGE_SYSTEM_PROMPT</code> へは切り替わらず、一般知識モードは明示的に指定されたときだけ使われます。</li>
     <li><strong>回答の自己評価は単純な規則です。</strong> <code>adaptive_rag.py</code> の<code>evaluate_answer_quality()</code> は「回答が空」「60 文字未満でヒットも少ない」「否定的な言い回しを含む」で足りているかを決めます。LLM に評価させてはいません。</li>
     </ul>
 </div>
@@ -2090,7 +2090,7 @@ cd ../..
     <ul>
     <li><strong>DataSyncService は publish につながっていません。</strong> ハッシュ差分同期はログ出力のみで、実際の <code>rag.publish</code> への接続は noop です。</li>
     <li><strong>差分検出はパス単位です。</strong> パスの集合に対する追加・削除は検出します（既定 60 秒間隔）が、<code>content_hash</code> 比較は実装されておらず比較方式も確定していないため、ファイルの*内容*の変更はこの経路では検出されません。</li>
-    <li><strong><code>confidence_threshold</code> の除外ロジックは検索パイプラインへ部分統合に留まります。</strong>実際の挙動は §10「回答の作り」にあります。</li>
+    <li><strong><code>confidence_threshold</code> は LLM を呼ぶかどうかの判定にだけ使われ、検索パイプラインから個々の hit を取り除くことはしません。</strong>実際の挙動は §10「回答の作り」にあります。</li>
     <li><strong>構造化回答テンプレートは未実装です。</strong> LLM の回答を JSON や <code>&lt;answer&gt;</code> タグなどの構造化フォーマットで固定する機能はありません。自由形式の回答が標準です。導入するかどうかは決まっていません。</li>
     <li><strong>i18n 切替の一部要素は固定です。</strong> 言語切替（日本語 / 英語）で表示制御される要素の一部が切替に追随しません。</li>
     <li><strong>タブ初期化前に隠れている UI 要素があります。</strong> JavaScript の初期化が終わるまで<code>display:none</code> のままです。</li>

@@ -992,7 +992,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(3/3)</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>Unimplemented features</strong>: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG are skeletons only. The structured answer template is unimplemented, and the exclusion logic of <code>confidence_threshold</code> is only partially integrated. Authentication is enforced even when starting with <code>--demo</code> (the fixed token in the form <code>Bearer demo-token-&lt;user_id&gt;</code> was abolished on 2026-07-29). The full list is in <a href="limits.html" target="_blank" rel="noopener">limits.md</a>.</li><li><strong>Commercial use is out of scope</strong>: this is a personal implementation for learning purposes. It does not represent the official position of the AI infrastructure tools it was inspired by.</li></ul>
+<ul><li><strong>Unimplemented features</strong>: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG are skeletons only. The structured answer template is unimplemented, and <code>confidence_threshold</code> only decides whether the LLM is called; it does not remove individual hits. Authentication is enforced even when starting with <code>--demo</code> (the fixed token in the form <code>Bearer demo-token-&lt;user_id&gt;</code> was abolished on 2026-07-29). The full list is in <a href="limits.html" target="_blank" rel="noopener">limits.md</a>.</li><li><strong>Commercial use is out of scope</strong>: this is a personal implementation for learning purposes. It does not represent the official position of the AI infrastructure tools it was inspired by.</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1673,7 +1673,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(2/3)</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>コア フロー（source 登録 → scan → workspace → collection → publish → RAG Chat）は動作</strong>: スモークテストで 2 秒程度で完了します。</li><li><strong>テスト スイートは 14 PHASE / 405+ アサーション</strong>: <code>scripts/run_all_tests.sh</code> で一括実行可能。静的解析・拡張 API・GUI Playwright・セキュリティ・整合性・CASCADE 削除・SSE 異常系・チャット異常系・スキャン異常系・Embedding 互換・DB マイグレーション・GUI 回復・audit_log を網羅。</li><li><strong>未実装機能</strong>: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG は骨格のみ。構造化回答テンプレートは未実装、<code>confidence_threshold</code> の除外ロジックは部分統合。認証は <code>--demo</code> 起動でも強制されます（<code>Bearer demo-token-&lt;user_id&gt;</code> 形式の固定トークンは 2026-07-29 に廃止）。全一覧は <a href="limits.html" target="_blank" rel="noopener">limits.md</a> にあります。</li></ul>
+<ul><li><strong>コア フロー（source 登録 → scan → workspace → collection → publish → RAG Chat）は動作</strong>: スモークテストで 2 秒程度で完了します。</li><li><strong>テスト スイートは 14 PHASE / 405+ アサーション</strong>: <code>scripts/run_all_tests.sh</code> で一括実行可能。静的解析・拡張 API・GUI Playwright・セキュリティ・整合性・CASCADE 削除・SSE 異常系・チャット異常系・スキャン異常系・Embedding 互換・DB マイグレーション・GUI 回復・audit_log を網羅。</li><li><strong>未実装機能</strong>: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG は骨格のみ。構造化回答テンプレートは未実装、<code>confidence_threshold</code> は LLM を呼ぶかどうかの判定にだけ使われ、個々の hit は取り除きません。認証は <code>--demo</code> 起動でも強制されます（<code>Bearer demo-token-&lt;user_id&gt;</code> 形式の固定トークンは 2026-07-29 に廃止）。全一覧は <a href="limits.html" target="_blank" rel="noopener">limits.md</a> にあります。</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

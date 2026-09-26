@@ -764,7 +764,7 @@ rag:
 - **Scale**: cosine similarity (0 to 1)
 - **BGE-M3 noise floor**: 0.35 to 0.45 (even an unrelated query produces roughly this score)
 - **Typical range of a real query**: 0.55 to 0.75 (a query whose answer is in a published file)
-- **`confidence_threshold` default**: 0.40. When the highest `vector_score` falls below it, the grounds are judged insufficient, and the answer is withheld or general knowledge mode is offered instead
+- **`confidence_threshold` default**: 0.40. When the highest `vector_score` falls below it, the grounds are judged insufficient: the LLM is not called and a low-confidence reply is returned instead (see §5.3.5). There is no automatic switch to general knowledge mode
 
 #### 5.3.3 Important Note About the Scale
 
@@ -1691,7 +1691,7 @@ rag:
 - **スケール**: コサイン類似度（0〜1）
 - **BGE-M3 ノイズフロア**: 0.35〜0.45（無関係なクエリでもこの程度の score が出る）
 - **実存クエリの典型範囲**: 0.55〜0.75（publish 済みの file に答えがあるクエリ）
-- **`confidence_threshold` の既定**: 0.40。最高 `vector_score` がこれを下回ると「根拠不足」と判断し、回答保留や一般知識モードへの切替の候補となる
+- **`confidence_threshold` の既定**: 0.40。最高 `vector_score` がこれを下回ると「根拠不足」と判断し、LLM を呼ばずに低信頼の返しを返す（§5.3.5 参照）。一般知識モードへ自動で切り替わることはない
 
 #### 5.3.3 スケールに関する重要な注意
 

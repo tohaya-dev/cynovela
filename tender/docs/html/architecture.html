@@ -1591,7 +1591,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 </div>
 <div class="slide-body">
 <h4>5.3.2 Grounds for the Value</h4>
-<ul><li><strong>Scale</strong>: cosine similarity (0 to 1)</li><li><strong>BGE-M3 noise floor</strong>: 0.35 to 0.45 (even an unrelated query produces roughly this score)</li><li><strong>Typical range of a real query</strong>: 0.55 to 0.75 (a query whose answer is in a published file)</li><li><strong><code>confidence_threshold</code> default</strong>: 0.40. When the highest <code>vector_score</code> falls below it, the grounds are judged insufficient, and the answer is withheld or general knowledge mode is offered instead</li></ul>
+<ul><li><strong>Scale</strong>: cosine similarity (0 to 1)</li><li><strong>BGE-M3 noise floor</strong>: 0.35 to 0.45 (even an unrelated query produces roughly this score)</li><li><strong>Typical range of a real query</strong>: 0.55 to 0.75 (a query whose answer is in a published file)</li><li><strong><code>confidence_threshold</code> default</strong>: 0.40. When the highest <code>vector_score</code> falls below it, the grounds are judged insufficient: the LLM is not called and a low-confidence reply is returned instead (see §5.3.5). There is no automatic switch to general knowledge mode</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -3268,7 +3268,7 @@ LLM 回答 + Citation([1][2]...)</code></pre>
 </div>
 <div class="slide-body">
 <h4>5.3.2 値の根拠</h4>
-<ul><li><strong>スケール</strong>: コサイン類似度（0〜1）</li><li><strong>BGE-M3 ノイズフロア</strong>: 0.35〜0.45（無関係なクエリでもこの程度の score が出る）</li><li><strong>実存クエリの典型範囲</strong>: 0.55〜0.75（publish 済みの file に答えがあるクエリ）</li><li><strong><code>confidence_threshold</code> の既定</strong>: 0.40。最高 <code>vector_score</code> がこれを下回ると「根拠不足」と判断し、回答保留や一般知識モードへの切替の候補となる</li></ul>
+<ul><li><strong>スケール</strong>: コサイン類似度（0〜1）</li><li><strong>BGE-M3 ノイズフロア</strong>: 0.35〜0.45（無関係なクエリでもこの程度の score が出る）</li><li><strong>実存クエリの典型範囲</strong>: 0.55〜0.75（publish 済みの file に答えがあるクエリ）</li><li><strong><code>confidence_threshold</code> の既定</strong>: 0.40。最高 <code>vector_score</code> がこれを下回ると「根拠不足」と判断し、LLM を呼ばずに低信頼の返しを返す（§5.3.5 参照）。一般知識モードへ自動で切り替わることはない</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

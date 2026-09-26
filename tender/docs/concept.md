@@ -322,7 +322,7 @@ Cynovela is a learning-purpose verification implementation.
 
 - **The core flow (source registration → scan → workspace → collection → publish → RAG Chat) works**: a smoke test completes in about 2 seconds.
 - **The test suite has 14 PHASEs / 405+ assertions**: it can be run all at once with `scripts/run_all_tests.sh`. It covers static analysis, extended APIs, GUI Playwright, security, consistency, CASCADE deletion, SSE error cases, chat error cases, scan error cases, embedding compatibility, DB migration, GUI recovery, and audit_log.
-- **Unimplemented features**: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG are skeletons only. The structured answer template is unimplemented, and the exclusion logic of `confidence_threshold` is only partially integrated. Authentication is enforced even when starting with `--demo` (the fixed token in the form `Bearer demo-token-<user_id>` was abolished on 2026-07-29). The full list is in [limits.md](limits.md).
+- **Unimplemented features**: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG are skeletons only. The structured answer template is unimplemented, and `confidence_threshold` only decides whether the LLM is called; it does not remove individual hits. Authentication is enforced even when starting with `--demo` (the fixed token in the form `Bearer demo-token-<user_id>` was abolished on 2026-07-29). The full list is in [limits.md](limits.md).
 - **Commercial use is out of scope**: this is a personal implementation for learning purposes. It does not represent the official position of the AI infrastructure tools it was inspired by.
 
 ---
@@ -654,7 +654,7 @@ Cynovela は学習用の検証実装です。
 
 - **コア フロー（source 登録 → scan → workspace → collection → publish → RAG Chat）は動作**: スモークテストで 2 秒程度で完了します。
 - **テスト スイートは 14 PHASE / 405+ アサーション**: `scripts/run_all_tests.sh` で一括実行可能。静的解析・拡張 API・GUI Playwright・セキュリティ・整合性・CASCADE 削除・SSE 異常系・チャット異常系・スキャン異常系・Embedding 互換・DB マイグレーション・GUI 回復・audit_log を網羅。
-- **未実装機能**: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG は骨格のみ。構造化回答テンプレートは未実装、`confidence_threshold` の除外ロジックは部分統合。認証は `--demo` 起動でも強制されます（`Bearer demo-token-<user_id>` 形式の固定トークンは 2026-07-29 に廃止）。全一覧は [limits.md](limits.md) にあります。
+- **未実装機能**: MLX Embedding / MLX Reranker / Qdrant VectorStore / LanceDB / GraphRAG は骨格のみ。構造化回答テンプレートは未実装、`confidence_threshold` は LLM を呼ぶかどうかの判定にだけ使われ、個々の hit は取り除きません。認証は `--demo` 起動でも強制されます（`Bearer demo-token-<user_id>` 形式の固定トークンは 2026-07-29 に廃止）。全一覧は [limits.md](limits.md) にあります。
 - **商用利用は想定外**: 学習目的の個人実装です。参照元の AI 基盤ツールの公式見解を代表しません。
 
 ---

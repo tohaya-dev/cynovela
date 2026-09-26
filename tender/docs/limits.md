@@ -446,9 +446,9 @@ From the screen you select one workspace and search it.
 - **There is no automatic switching when confidence is low.**
   `cynovela.yaml` has `confidence_threshold` (default `0.4`), but no behaviour that
   automatically switches to a general-knowledge mode when it falls below is built in.
-  The value is defined as a setting, and the processing that switches to
-  `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` when there are 0 search results is not integrated;
-  the exclusion logic in the search pipeline is only **partly integrated**.
+  Below the threshold the LLM is not called and a low-confidence reply is returned; with
+  0 search results the reply is that no related document was found. Neither case switches
+  to `GENERAL_KNOWLEDGE_SYSTEM_PROMPT`, which is used only when it is asked for explicitly.
 - **Self-evaluation of an answer is a simple rule.** `evaluate_answer_quality()` in
   `adaptive_rag.py` decides sufficiency from "the answer is empty", "under 60 characters with
   few hits", and "contains a negative phrasing". It does not have an LLM evaluate it.
@@ -640,8 +640,8 @@ itself is the same.
   detected (at a 60 second interval by default), but comparison by `content_hash` is not
   implemented and the comparison method is not fixed, so a change to the *content* of a file
   is not detected this way.
-- **The exclusion logic of `confidence_threshold` is only partly integrated** into the search
-  pipeline. What this means in practice is in §10, "How answers are built".
+- **`confidence_threshold` only decides whether the LLM is called; it does not remove
+  individual hits** from the search pipeline. What this means in practice is in §10, "How answers are built".
 - **A structured answer template is not implemented.** Fixing the LLM's answer into a
   structured format such as JSON or an `<answer>` tag is not supported; a free-form answer is
   the standard. Whether such a feature will be introduced is not decided.
@@ -1098,9 +1098,9 @@ MCP のツールには `search_across_collections`（複数のコレクション
 - **信頼度の低いときの自動切り替えはありません。**
   `cynovela.yaml` に `confidence_threshold`（既定 `0.4`）がありますが、
   下回ったときに一般知識モードへ自動で切り替えるような動きは組み込まれていません。
-  値は設定としては定義済みですが、検索結果が 0 件のときに
-  `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` へ自動切替する処理は未統合で、
-  検索パイプラインからの除外ロジックも **部分統合** に留まります。
+  しきい値を下回ると LLM は呼ばれず低信頼の返しが返り、検索結果が 0 件のときは
+  関連する文書が見つからなかったと返ります。どちらの場合も
+  `GENERAL_KNOWLEDGE_SYSTEM_PROMPT` へは切り替わらず、一般知識モードは明示的に指定されたときだけ使われます。
 - **回答の自己評価は単純な規則です。** `adaptive_rag.py` の
   `evaluate_answer_quality()` は「回答が空」「60 文字未満でヒットも少ない」
   「否定的な言い回しを含む」で足りているかを決めます。LLM に評価させてはいません。
@@ -1287,7 +1287,7 @@ falcon にはありません。錠そのものは同じです。
 - **差分検出はパス単位です。** パスの集合に対する追加・削除は検出します（既定 60 秒間隔）が、
   `content_hash` 比較は実装されておらず比較方式も確定していないため、ファイルの*内容*の
   変更はこの経路では検出されません。
-- **`confidence_threshold` の除外ロジックは検索パイプラインへ部分統合に留まります。**
+- **`confidence_threshold` は LLM を呼ぶかどうかの判定にだけ使われ、検索パイプラインから個々の hit を取り除くことはしません。**
   実際の挙動は §10「回答の作り」にあります。
 - **構造化回答テンプレートは未実装です。** LLM の回答を JSON や `<answer>` タグなどの
   構造化フォーマットで固定する機能はありません。自由形式の回答が標準です。
