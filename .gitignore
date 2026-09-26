@@ -66,4 +66,3 @@ tools/dist-initial-credentials.local
 .Spotlight-V100
 .Trashes
 tender/store/server.pid
-falcon/store/engine-bin/podman

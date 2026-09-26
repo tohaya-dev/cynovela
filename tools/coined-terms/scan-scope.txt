@@ -32,15 +32,14 @@
 # skip-region は開始行にマッチするたびに区間へ入り、次に終了行にマッチした行で
 # 区間を閉じる (両端を含めて外す)。1ファイル内に同じ形の区間が複数あってよい。
 #
-# Target packages: the three packages falcon / tender / falcon-docker-beta, plus the
-#   *.md files directly under the repository root.
+# Target packages: tender, plus the *.md files directly under the repository root.
 # Target file extensions: .md .txt .html .sh .py .command .js
 #   .js only under frontend/js/. The wording of one screen is split between html and js,
 #   so looking at only one of them lets a screen pass with inconsistent terminology
 #   (this actually happened in DD-CYN-0122).
 # Guiding idea for the target: only "text we wrote" and "wording that appears on the
 #   screen of the person who receives the package".
-# 対象の配布物: falcon / tender / falcon-docker-beta の3つ + リポジトリ直下の *.md
+# 対象の配布物: tender + リポジトリ直下の *.md
 # 対象の拡張子: .md .txt .html .sh .py .command .js
 #   .js は frontend/js/ のみ。同じ画面の文言が html と js に分かれており、
 #   片方だけ見ると1つの画面で用語が割れたまま素通りするため (DD-CYN-0122 で実際に起きた)。
@@ -66,37 +65,6 @@
 # include — リポジトリ直下
 # ============================================================
 include	*.md
-
-# ============================================================
-# include — falcon (the same list applies to tender and falcon-docker-beta below)
-# include — falcon
-# ============================================================
-include	falcon/*.md
-include	falcon/*.txt
-include	falcon/*.command
-include	falcon/*.sh
-include	falcon/*.py
-include	falcon/core/*.py
-include	falcon/core/schemas/*.py
-include	falcon/deploy/*.md
-include	falcon/deploy/container/*.sh
-include	falcon/docs/*.md
-include	falcon/docs/*.html
-include	falcon/docs/html/*.html
-include	falcon/docs/html/*.md
-include	falcon/frontend/*.html
-include	falcon/frontend/js/*.js
-include	falcon/mas/*.py
-include	falcon/migrations/*.py
-include	falcon/providers/*.py
-include	falcon/routers/*.py
-include	falcon/scripts/*.py
-include	falcon/services/*.py
-include	falcon/tools/*.py
-include	falcon/tools/*.sh
-include	falcon/tools/launcher-app/*.sh
-include	falcon/utils/*.py
-include	falcon/utils/metadata/*.py
 
 # ============================================================
 # include — tender
@@ -129,48 +97,13 @@ include	tender/tools/launcher-app/*.sh
 include	tender/utils/*.py
 include	tender/utils/metadata/*.py
 
-# ============================================================
-# include — falcon-docker-beta
-# (same set of globs as falcon)
-# ============================================================
-include	falcon-docker-beta/*.md
-include	falcon-docker-beta/*.txt
-include	falcon-docker-beta/*.command
-include	falcon-docker-beta/*.sh
-include	falcon-docker-beta/*.py
-include	falcon-docker-beta/core/*.py
-include	falcon-docker-beta/core/schemas/*.py
-include	falcon-docker-beta/deploy/*.md
-include	falcon-docker-beta/deploy/container/*.sh
-include	falcon-docker-beta/docs/*.md
-include	falcon-docker-beta/docs/*.html
-include	falcon-docker-beta/docs/html/*.html
-include	falcon-docker-beta/docs/html/*.md
-include	falcon-docker-beta/frontend/*.html
-include	falcon-docker-beta/frontend/js/*.js
-include	falcon-docker-beta/mas/*.py
-include	falcon-docker-beta/migrations/*.py
-include	falcon-docker-beta/providers/*.py
-include	falcon-docker-beta/routers/*.py
-include	falcon-docker-beta/scripts/*.py
-include	falcon-docker-beta/services/*.py
-include	falcon-docker-beta/tools/*.py
-include	falcon-docker-beta/tools/*.sh
-include	falcon-docker-beta/tools/launcher-app/*.sh
-include	falcon-docker-beta/utils/*.py
-include	falcon-docker-beta/utils/metadata/*.py
-
 
 # ============================================================
 # skip-file — files that match an include glob but are excluded anyway (J-3)
 # skip-file — include の glob に入るが外すもの (J-3)
 # ============================================================
-skip-file	falcon/requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。当機の文章でも画面の文言でもない。
 skip-file	tender/requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。当機の文章でも画面の文言でもない。
-skip-file	falcon-docker-beta/requirements.txt	外から取り込んだ部品の固定値の一覧 (版を留めた依存の並び)。当機の文章でも画面の文言でもない。
-skip-file	falcon/scripts/test_comprehensive_e2e.py	試験の走行台本と試験データ。受け取り手の目に触れず、言い換えると試験が落ちる。
 skip-file	tender/scripts/test_comprehensive_e2e.py	試験の走行台本と試験データ。受け取り手の目に触れず、言い換えると試験が落ちる。
-skip-file	falcon-docker-beta/scripts/test_comprehensive_e2e.py	試験の走行台本と試験データ。受け取り手の目に触れず、言い換えると試験が落ちる。
 
 # ------------------------------------------------------------
 # The entries below are not listed in include, so at present they match zero files.
@@ -199,7 +132,7 @@ skip-file	hansolo/*	決定 §61。GitHub 公開絶対禁止のため公開文書
 #   the same file (step-desc / explain-panel / h3 headings) stays in scope.
 #   The regions are the two <div class="doc-content"> …</div> blocks (the original side
 #   and the side after masking).
-#   Measured: identical in all three packages (md5 11bb165cee6dbaceb9db24705d66bc8a);
+#   Measured in tender (md5 11bb165cee6dbaceb9db24705d66bc8a);
 #         the regions are lines 829-838 and 842-851. The fictional personal information
 #         is contained inside them.
 #   demo-tech.html has no doc-content region (that is, it has no sample document body),
@@ -209,48 +142,29 @@ skip-file	hansolo/*	決定 §61。GitHub 公開絶対禁止のため公開文書
 #   ∴ demo-general.html はファイルごと外さない。同ファイル内の解説文
 #   (step-desc / explain-panel / h3 見出し) は走査の対象に残す。
 #   区間は <div class="doc-content"> …</div> の2か所 (原文側・伏字後側)。
-#   実測: 3配布物とも同一 (md5 11bb165cee6dbaceb9db24705d66bc8a)・
+#   実測: tender (md5 11bb165cee6dbaceb9db24705d66bc8a)・
 #         区間は 829-838 行と 842-851 行。架空の個人情報はこの中に収まる。
 #   demo-tech.html には doc-content 区間が無い (=サンプル文書の本文が無い) ため
 #   区間指定を書かない。
-skip-region	falcon/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
 skip-region	tender/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
-skip-region	falcon-docker-beta/docs/demo-general.html	<div class="doc-content">	^\s*</div>\s*$	デモ用の架空のサンプル文書の本文 (架空の個人情報を含む)。当機の文章ではない。解説文は対象に残す。
 
 # --- J-3: machine-generated list of third-party components ---
 #   Only the region holding the version-pinned dependency list (alphanumeric only) is
 #   excluded.
 #   The title, the introduction, the headings, the list of bundled models and the count
 #   line at the end are our own text, so they stay in scope.
-#   Measured (HEAD 80f23b5): falcon and falcon-docker-beta have two list regions
-#   (lines 10-178 and 182-229); tender has one (lines 10-178). tender has no MAS list,
-#   so a second entry is not written for it.
-#   The start/end words of the second entry also appear inside the first region
-#   (lines 14 and 167), but the first region is already excluded by the first entry, so
-#   they merely overlap and do no harm, and heading line 180 can stay in scope.
+#   Measured (HEAD 80f23b5): tender has one list region (lines 10-178). tender has no
+#   MAS list, so a second entry is not written for it.
 # --- J-3: 機械で作った外部部品の一覧 ---
 #   外すのは版を留めた依存の並び (英数字のみ) の区間だけ。
 #   題・前置き・見出し・同梱モデルの並び・末尾の件数行は当機の文章なので対象に残す。
-#   実測 (HEAD 80f23b5): falcon と falcon-docker-beta は並びが2区間 (10-178 行・182-229 行)、
-#   tender は1区間 (10-178 行)。tender には MAS の並びが無いので2本目を書かない。
-#   2本目の開始/終了の語は1区間目にも現れる (14 行・167 行) が、1区間目は1本目で
-#   既に外れているため重なるだけで害はなく、見出し 180 行を対象に残せる。
-skip-region	falcon/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- yarl 1\.24\.5 — Apache-2\.0$	外から取り込んだ部品の一覧を機械で書き出したもの。固定値の並びで言い換えの対象にならない。
-skip-region	falcon/THIRD_PARTY_NOTICES.md	^- annotated-doc 0\.0\.5 — MIT$	^- uvicorn 0\.51\.0 — BSD-3-Clause$	同上 (MAS 環境の部品の並び)。
+#   実測 (HEAD 80f23b5): tender は並びが1区間 (10-178 行)。tender には MAS の並びが無いので2本目を書かない。
 skip-region	tender/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- yarl 1\.24\.5 — Apache-2\.0$	外から取り込んだ部品の一覧を機械で書き出したもの。固定値の並びで言い換えの対象にならない。
-skip-region	falcon-docker-beta/THIRD_PARTY_NOTICES.md	^- accelerate 1\.14\.0 — Apache$	^- yarl 1\.24\.5 — Apache-2\.0$	外から取り込んだ部品の一覧を機械で書き出したもの。固定値の並びで言い換えの対象にならない。
-skip-region	falcon-docker-beta/THIRD_PARTY_NOTICES.md	^- annotated-doc 0\.0\.5 — MIT$	^- uvicorn 0\.51\.0 — BSD-3-Clause$	同上 (MAS 環境の部品の並び)。
 
 # --- J-3: full text of third-party licenses (not one character may be changed) ---
 #   The Japanese introduction (lines 1-25) is our own text, so it stays in scope.
 # --- J-3: 他所の許諾文の全文 (一字一句変えてはならない) ---
 #   前置きの日本語 (1-25行) は当機の文章なので対象に残す。
-skip-region	falcon/LICENSES-MODELS.md	^## MIT License \(BAAI/bge-m3\)$	^SOFTWARE\.$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
-skip-region	falcon/LICENSES-MODELS.md	^Licensed under the Apache License, Version 2\.0 \(the "License"\);$	^limitations under the License\.$	他所の許諾文の定型句。一字も変えられない。
-skip-region	falcon/LICENSES-MODELS.md	^ +Apache License$	^   END OF TERMS AND CONDITIONS$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
 skip-region	tender/LICENSES-MODELS.md	^## MIT License \(BAAI/bge-m3\)$	^SOFTWARE\.$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
 skip-region	tender/LICENSES-MODELS.md	^Licensed under the Apache License, Version 2\.0 \(the "License"\);$	^limitations under the License\.$	他所の許諾文の定型句。一字も変えられない。
 skip-region	tender/LICENSES-MODELS.md	^ +Apache License$	^   END OF TERMS AND CONDITIONS$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
-skip-region	falcon-docker-beta/LICENSES-MODELS.md	^## MIT License \(BAAI/bge-m3\)$	^SOFTWARE\.$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。
-skip-region	falcon-docker-beta/LICENSES-MODELS.md	^Licensed under the Apache License, Version 2\.0 \(the "License"\);$	^limitations under the License\.$	他所の許諾文の定型句。一字も変えられない。
-skip-region	falcon-docker-beta/LICENSES-MODELS.md	^ +Apache License$	^   END OF TERMS AND CONDITIONS$	他所の許諾文の全文。表示の保持義務があり一字も変えられない。

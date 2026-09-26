@@ -180,15 +180,13 @@ are in [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-120). 2.0.0 also
 changes some behaviour (the first-password change, rate limits, ingest roots,
 tokens); the list is in [RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26).
 
-## The three forms in this repository
+## What is in this repository
 
 | Directory | What it is | Distribution package |
 |---|---|---|
 | `tender` | Runs directly on macOS. | Published on GitHub Releases (v2.0.0). The v2.0.0 files are named `cynovela-tender-…` and unpack into a folder named `tender`. v1.2.0 and earlier used the former name `chewie`. |
-| `falcon` | Runs inside a container (Podman). | Built from the source in this repository. No distribution package is provided. |
-| `falcon-docker-beta` | Runs inside a container (Docker; in-development beta, no bundled models). | Built from the source in this repository. No distribution package is provided. |
 
-You only need one of them. They are three ways of running the same thing.
+The container edition (Falcon) is not included from this version; if you need it, see the v1.2.0 release on the Releases page.
 
 ## Requirements
 
@@ -201,9 +199,6 @@ You only need one of them. They are three ways of running the same thing.
   environment for you — it offers a dedicated `conda` environment, and where
   `conda` is not present it builds the environment inside the distribution
   folder instead.
-- `falcon`: Podman.
-- Docker and other container engines can be selected, but we have not verified
-  them here. You will need to adjust the setup yourself.
 - An internet connection is needed on first start for the source editions,
   because they build their environment at that point.
 - 8 GB of RAM or more, and an LM Studio or OpenAI-compatible API for the
@@ -245,9 +240,6 @@ managed Mac (under MDM) will let you run this. A single release file cannot exce
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) describes and check the result against
 `SHA256SUMS` before starting.
 
-`falcon` and `falcon-docker-beta` are built from the source in this repository.
-Distribution packages for them are not provided.
-
 ## First time here
 
 For `tender` there is one entrance:
@@ -264,12 +256,6 @@ the map of every other document.
 | [tender/docs/reference/mcp.md](tender/docs/reference/mcp.md) | Every MCP tool: what you hand each one, what comes back |
 | [tender/docs/reference/api.md](tender/docs/reference/api.md) | Every HTTP endpoint, read out of the code |
 | [tender/docs/handson.md](tender/docs/handson.md) | Exercises against the bundled sample material, once it is running |
-
-For `falcon`, start from [falcon/docs/HAJIMETE.md](falcon/docs/HAJIMETE.md),
-then [falcon/docs/STARTUP.md](falcon/docs/STARTUP.md). For
-`falcon-docker-beta`, start from
-[falcon-docker-beta/docs/HAJIMETE.md](falcon-docker-beta/docs/HAJIMETE.md),
-then [falcon-docker-beta/docs/STARTUP.md](falcon-docker-beta/docs/STARTUP.md).
 
 Every guide is bilingual: English first, Japanese after.
 
@@ -306,8 +292,6 @@ Every guide is bilingual: English first, Japanese after.
   landline area codes.
 - It is a tool for learning and experimentation. Do not put real confidential
   material through it, and do not treat its output as authoritative.
-- Behaviour with Docker, or with container engines other than Podman, has not
-  been verified here.
 
 ## License
 

@@ -163,15 +163,13 @@ API キーが要ります）。
 動きの変わったところ（最初のパスワードの変更・回数の上限・取り込み元・トークン）も
 あります。一覧は [RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26-1) にあります。
 
-## このリポジトリにある3つの形
+## このリポジトリにあるもの
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
 | `tender` | Mac の上で直に動く形 | GitHub Releases (v2.0.0) で公開しています。v2.0.0 のファイル名は `cynovela-tender-…` で、展開すると `tender` フォルダができます。v1.2.0 までは以前の名前 `chewie` でした |
-| `falcon` | コンテナの中で動く形（Podman） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
-| `falcon-docker-beta` | コンテナの中で動く形（Docker・開発中のベータ・モデル同梱なし） | このリポジトリのソースから自分で組み立てる形であり、配布物は用意していません |
 
-使うのはどれか1つだけです。同じものの動かし方が3通りある、という形です。
+コンテナ版（Falcon）はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
 
 ## 要るもの
 
@@ -182,9 +180,6 @@ API キーが要ります）。
 - `tender` のソース版 ＝ Python 3.12 以降が要ります。環境は `launch.sh` が作ります。
   `conda` に専用の環境を作る道を用意しており、`conda` が無い場合は配布物の
   フォルダの中に環境を作ります。
-- `falcon` ＝ `Podman`。
-- `Docker` その他も選べますが、当方では確認していません。利用者が自分で調整する
-  必要があります。
 - ソース版は初回の起動でそのときに環境を作るため、インターネットが要ります。
 - RAM は 8 GB 以上。答えを作るモデルとして LM Studio か OpenAI 互換の API。
 
@@ -220,9 +215,6 @@ https://github.com/tohaya-dev/cynovela/releases
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md) のとおりにつなぎ、`SHA256SUMS` と
 突き合わせてから起動してください。
 
-`falcon` と `falcon-docker-beta` は、このリポジトリのソースから自分で組み立てる形で
-あり、配布物は用意していません。
-
 ## はじめての方へ
 
 `tender` の入口は1つです ＝ **[tender/START-HERE.md](tender/START-HERE.md)**。
@@ -238,13 +230,6 @@ https://github.com/tohaya-dev/cynovela/releases
 | [tender/docs/reference/mcp.md](tender/docs/reference/mcp.md) | MCP の道具の全数。何を渡すと何が返るか |
 | [tender/docs/reference/api.md](tender/docs/reference/api.md) | HTTP の口の全数。コードから起こしたもの |
 | [tender/docs/handson.md](tender/docs/handson.md) | 動き出したあと、同梱の資料で試すための練習 |
-
-`falcon` は [falcon/docs/HAJIMETE.md](falcon/docs/HAJIMETE.md) から読み、そのあと
-[falcon/docs/STARTUP.md](falcon/docs/STARTUP.md) へ進んでください。
-`falcon-docker-beta` は
-[falcon-docker-beta/docs/HAJIMETE.md](falcon-docker-beta/docs/HAJIMETE.md) から読み、
-そのあと [falcon-docker-beta/docs/STARTUP.md](falcon-docker-beta/docs/STARTUP.md) へ
-進んでください。
 
 手引きはすべて英語と日本語の併記です（英語が先・日本語が後ろ）。
 
@@ -280,7 +265,6 @@ https://github.com/tohaya-dev/cynovela/releases
   から先、固定電話の一部の市外局番があります。
 - 学びと試しのための道具です。本物の機密の文書を通さないでください。出てきた答えを
   そのまま正しいものとして扱わないでください。
-- `Podman` 以外のコンテナエンジンでの動きは、当方では確かめていません。
 
 ## ライセンス
 
