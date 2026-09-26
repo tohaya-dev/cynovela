@@ -493,7 +493,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(2/5)</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>Data stays on the local disk</strong>: SQLite and ChromaDB are created under <code>~/.cynovela/</code> by default (can be overridden with the <code>CYNOVELA_DB</code> / <code>CYNOVELA_CHROMA</code> environment variables). The body text, chunks, and embedding vectors of the ingested internal documents are all confined to the local SQLite and ChromaDB. Because the raw tier body text is stored encrypted with an <code>enc:</code> prefix using Fernet (one of the symmetric-key encryption schemes), a minimum defense is in place even if the whole disk is carried away.</li></ul>
+<ul><li><strong>Data stays on the local disk</strong>: SQLite and ChromaDB are created under <code>store/</code> inside the folder Cynovela runs from (<code>paths.data_dir</code> in <code>cynovela.yaml</code>), for the package edition and the source edition alike; only the <code>.app</code> form, whose own folder cannot be written to, uses <code>~/Library/Application Support/Cynovela</code> instead. The <code>CYNOVELA_DB</code> / <code>CYNOVELA_CHROMA</code> environment variables are overwritten at startup and do not move them. The body text, chunks, and embedding vectors of the ingested internal documents are all confined to the local SQLite and ChromaDB. Because the raw tier body text is stored encrypted with an <code>enc:</code> prefix using Fernet (one of the symmetric-key encryption schemes), a minimum defense is in place even if the whole disk is carried away.</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1268,7 +1268,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(2/4)</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>データはローカル ディスクに留まる</strong>: SQLite と ChromaDB は既定で <code>~/.cynovela/</code> 配下に作られます（<code>CYNOVELA_DB</code> / <code>CYNOVELA_CHROMA</code> 環境変数で上書き可）。取り込んだ組織内ドキュメントの本文・チャンク・埋め込みベクトルが、すべて手元の SQLite と ChromaDB に閉じます。Fernet（対称鍵暗号方式の一つ）で raw tier の本文を <code>enc:</code> プレフィックス付きで暗号化保管しているため、ディスクごと持ち去られた場合の防御も最低限備わります。</li></ul>
+<ul><li><strong>データはローカル ディスクに留まる</strong>: SQLite と ChromaDB はCynovela を動かすフォルダの中の <code>store/</code> 配下に作られます（<code>cynovela.yaml</code> の <code>paths.data_dir</code>）。パッケージ版でもソース版でも同じで、自分のフォルダに書き込めない <code>.app</code> の形だけは <code>~/Library/Application Support/Cynovela</code> を使います。<code>CYNOVELA_DB</code> / <code>CYNOVELA_CHROMA</code> 環境変数は起動時に上書きされるため、保存先は変わりません。取り込んだ組織内ドキュメントの本文・チャンク・埋め込みベクトルが、すべて手元の SQLite と ChromaDB に閉じます。Fernet（対称鍵暗号方式の一つ）で raw tier の本文を <code>enc:</code> プレフィックス付きで暗号化保管しているため、ディスクごと持ち去られた場合の防御も最低限備わります。</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

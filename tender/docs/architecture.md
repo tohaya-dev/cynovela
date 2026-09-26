@@ -108,7 +108,7 @@ shape of an answer, and the main categories of the API.
         v                            v                       v
 +----------------+         +-------------------+    +-------------------+
 | SQLite DB      |         | ChromaDB          |    | LM Studio (LLM)   |
-| ~/.cynovela/   |         | ~/.cynovela/      |    | (HTTP /v1)        |
+| store/         |         | store/            |    | (HTTP /v1)        |
 | db/*.db        |         | vector/*/chroma   |    | or mock           |
 | 38 tables      |         | __raw / __masked  |    |                   |
 +----------------+         +-------------------+    +-------------------+
@@ -141,8 +141,8 @@ The LLM, embedding, reranker, classifier, and vector store are held as replaceab
 
 #### 1.2.6 Storage Layer
 
-- **SQLite**: Default `~/.cynovela/db/cynovela.db` (`~/.cynovela/db/demo.db` in demo mode). It can be overridden with the `CYNOVELA_DB` environment variable.
-- **ChromaDB**: Default `~/.cynovela/vector/default/chroma`. It can be overridden with the `CYNOVELA_CHROMA` environment variable. For each collection ID it is split into two: `{cid}__raw` and `{cid}__masked`.
+- **SQLite**: `store/db/cynovela.db` inside the folder Cynovela runs from (`store/db/demo.db` in demo mode); the `.app` form uses the same layout under `~/Library/Application Support/Cynovela`. The location comes from `paths` in `cynovela.yaml`; the `CYNOVELA_DB` environment variable is overwritten at startup.
+- **ChromaDB**: `store/vector/default/chroma` (`store/vector/demo/chroma` in demo mode), chosen the same way; the `CYNOVELA_CHROMA` environment variable is overwritten at startup. For each collection ID it is split into two: `{cid}__raw` and `{cid}__masked`.
 
 ### 1.3 Workspace and Collection
 
@@ -1035,7 +1035,7 @@ For the individual endpoints, see [reference/api.md](reference/api.md).
         v                            v                       v
 +----------------+         +-------------------+    +-------------------+
 | SQLite DB      |         | ChromaDB          |    | LM Studio (LLM)   |
-| ~/.cynovela/    |         | ~/.cynovela/       |    | (HTTP /v1)        |
+| store/         |         | store/            |    | (HTTP /v1)        |
 | db/*.db        |         | vector/*/chroma   |    | またはモック       |
 | 38 テーブル     |         | __raw / __masked  |    |                   |
 +----------------+         +-------------------+    +-------------------+
@@ -1068,8 +1068,8 @@ LLM・埋め込み・Reranker・分類器・ベクターストアを差し替え
 
 #### 1.2.6 ストレージ層
 
-- **SQLite**: 既定 `~/.cynovela/db/cynovela.db`（demo モード時は `~/.cynovela/db/demo.db`）。`CYNOVELA_DB` 環境変数で上書きできます。
-- **ChromaDB**: 既定 `~/.cynovela/vector/default/chroma`。`CYNOVELA_CHROMA` 環境変数で上書きできます。Collection ID ごとに `{cid}__raw` と `{cid}__masked` の 2 つに分かれます。
+- **SQLite**: Cynovela を動かすフォルダの中の `store/db/cynovela.db`（demo モード時は `store/db/demo.db`）。`.app` の形では同じ並びを `~/Library/Application Support/Cynovela` の下に置きます。場所は `cynovela.yaml` の `paths` で決まり、`CYNOVELA_DB` 環境変数は起動時に上書きされます。
+- **ChromaDB**: `store/vector/default/chroma`（demo モード時は `store/vector/demo/chroma`）。決まり方は SQLite と同じで、`CYNOVELA_CHROMA` 環境変数は起動時に上書きされます。Collection ID ごとに `{cid}__raw` と `{cid}__masked` の 2 つに分かれます。
 
 ### 1.3 Workspace と Collection
 

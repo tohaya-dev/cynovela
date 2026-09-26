@@ -449,7 +449,7 @@ a:hover { text-decoration: underline; }
         v                            v                       v
 +----------------+         +-------------------+    +-------------------+
 | SQLite DB      |         | ChromaDB          |    | LM Studio (LLM)   |
-| ~/.cynovela/   |         | ~/.cynovela/      |    | (HTTP /v1)        |
+| store/         |         | store/            |    | (HTTP /v1)        |
 | db/*.db        |         | vector/*/chroma   |    | or mock           |
 | 38 tables      |         | __raw / __masked  |    |                   |
 +----------------+         +-------------------+    +-------------------+</code></pre>
@@ -518,7 +518,7 @@ a:hover { text-decoration: underline; }
 <h4>1.2.5 Provider Abstraction (providers/)</h4>
 <p>The LLM, embedding, reranker, classifier, and vector store are held as replaceable abstractions. Fully implemented ones (LM Studio / BGE-M3 / Chroma / NoReranker / CrossEncoder / FlashRank / Ollama Reranker / RuleBased Classifier) and skeleton-only ones that raise <code>NotImplementedError</code> (MLX Embedding / MLX Reranker / Qdrant VectorStore / GraphRAG Strategy) coexist.</p>
 <h4>1.2.6 Storage Layer</h4>
-<ul><li><strong>SQLite</strong>: Default <code>~/.cynovela/db/cynovela.db</code> (<code>~/.cynovela/db/demo.db</code> in demo mode). It can be overridden with the <code>CYNOVELA_DB</code> environment variable.</li><li><strong>ChromaDB</strong>: Default <code>~/.cynovela/vector/default/chroma</code>. It can be overridden with the <code>CYNOVELA_CHROMA</code> environment variable. For each collection ID it is split into two: <code>{cid}__raw</code> and <code>{cid}__masked</code>.</li></ul>
+<ul><li><strong>SQLite</strong>: <code>store/db/cynovela.db</code> inside the folder Cynovela runs from (<code>store/db/demo.db</code> in demo mode); the <code>.app</code> form uses the same layout under <code>~/Library/Application Support/Cynovela</code>. The location comes from <code>paths</code> in <code>cynovela.yaml</code>; the <code>CYNOVELA_DB</code> environment variable is overwritten at startup.</li><li><strong>ChromaDB</strong>: <code>store/vector/default/chroma</code> (<code>store/vector/demo/chroma</code> in demo mode), chosen the same way; the <code>CYNOVELA_CHROMA</code> environment variable is overwritten at startup. For each collection ID it is split into two: <code>{cid}__raw</code> and <code>{cid}__masked</code>.</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2165,7 +2165,7 @@ LLM answer + citations ([1][2]...)</code></pre>
         v                            v                       v
 +----------------+         +-------------------+    +-------------------+
 | SQLite DB      |         | ChromaDB          |    | LM Studio (LLM)   |
-| ~/.cynovela/    |         | ~/.cynovela/       |    | (HTTP /v1)        |
+| store/         |         | store/            |    | (HTTP /v1)        |
 | db/*.db        |         | vector/*/chroma   |    | またはモック       |
 | 38 テーブル     |         | __raw / __masked  |    |                   |
 +----------------+         +-------------------+    +-------------------+</code></pre>
@@ -2234,7 +2234,7 @@ LLM answer + citations ([1][2]...)</code></pre>
 <h4>1.2.5 Provider 抽象（providers/）</h4>
 <p>LLM・埋め込み・Reranker・分類器・ベクターストアを差し替え可能な抽象として持ちます。実装が完了しているもの（LM Studio / BGE-M3 / Chroma / NoReranker / CrossEncoder / FlashRank / Ollama Reranker / RuleBased Classifier）と、骨格のみで <code>NotImplementedError</code> を返すもの（MLX Embedding / MLX Reranker / Qdrant VectorStore / GraphRAG Strategy）が混在しています。</p>
 <h4>1.2.6 ストレージ層</h4>
-<ul><li><strong>SQLite</strong>: 既定 <code>~/.cynovela/db/cynovela.db</code>（demo モード時は <code>~/.cynovela/db/demo.db</code>）。<code>CYNOVELA_DB</code> 環境変数で上書きできます。</li><li><strong>ChromaDB</strong>: 既定 <code>~/.cynovela/vector/default/chroma</code>。<code>CYNOVELA_CHROMA</code> 環境変数で上書きできます。Collection ID ごとに <code>{cid}__raw</code> と <code>{cid}__masked</code> の 2 つに分かれます。</li></ul>
+<ul><li><strong>SQLite</strong>: Cynovela を動かすフォルダの中の <code>store/db/cynovela.db</code>（demo モード時は <code>store/db/demo.db</code>）。<code>.app</code> の形では同じ並びを <code>~/Library/Application Support/Cynovela</code> の下に置きます。場所は <code>cynovela.yaml</code> の <code>paths</code> で決まり、<code>CYNOVELA_DB</code> 環境変数は起動時に上書きされます。</li><li><strong>ChromaDB</strong>: <code>store/vector/default/chroma</code>（demo モード時は <code>store/vector/demo/chroma</code>）。決まり方は SQLite と同じで、<code>CYNOVELA_CHROMA</code> 環境変数は起動時に上書きされます。Collection ID ごとに <code>{cid}__raw</code> と <code>{cid}__masked</code> の 2 つに分かれます。</li></ul>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

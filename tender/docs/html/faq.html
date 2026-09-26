@@ -269,7 +269,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-body">
     <p>In the default configuration of Cynovela, all of the following are completed in the local environment.</p>
     <ul>
-    <li><strong>Document body text</strong>: Stored in SQLite (<code>~/.cynovela/db/cynovela.db</code> and so on) and ChromaDB (<code>~/.cynovela/vector/default/chroma</code> and so on).</li>
+    <li><strong>Document body text</strong>: Stored in SQLite (<code>store/db/cynovela.db</code> and so on) and ChromaDB (<code>store/vector/default/chroma</code> and so on), inside the folder Cynovela runs from.</li>
     <li><strong>Embedding generation</strong>: In the default mode, BGE-M3 is run locally.</li>
     <li><strong>LLM inference</strong>: Sent with the OpenAI-compatible /v1 API to the local LLM specified by <code>--lmstudio-url</code> (default <code>http://localhost:1234</code>).</li>
     </ul>
@@ -547,7 +547,7 @@ a:hover { text-decoration: underline; }
 <div class="slide-body">
     <p>Cynovela の既定構成では、以下のすべてがローカル環境で完結します。</p>
     <ul>
-    <li><strong>文書本文</strong>: SQLite（<code>~/.cynovela/db/cynovela.db</code> 等）と ChromaDB（<code>~/.cynovela/vector/default/chroma</code> 等）に保存。</li>
+    <li><strong>文書本文</strong>: Cynovela を動かすフォルダの中の SQLite（<code>store/db/cynovela.db</code> 等）と ChromaDB（<code>store/vector/default/chroma</code> 等）に保存。</li>
     <li><strong>Embedding 生成</strong>: 既定モードでは BGE-M3 をローカルで実行。</li>
     <li><strong>LLM 推論</strong>: <code>--lmstudio-url</code>（既定 <code>http://localhost:1234</code>）で指定したローカル LLM に対して OpenAI 互換 /v1 API で送信。</li>
     </ul>

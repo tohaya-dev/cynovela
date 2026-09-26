@@ -36,7 +36,7 @@ See [concept.md](concept.md) for the comparison in detail.
 
 In the default configuration of Cynovela, all of the following are completed in the local environment.
 
-- **Document body text**: Stored in SQLite (`~/.cynovela/db/cynovela.db` and so on) and ChromaDB (`~/.cynovela/vector/default/chroma` and so on).
+- **Document body text**: Stored in SQLite (`store/db/cynovela.db` and so on) and ChromaDB (`store/vector/default/chroma` and so on), inside the folder Cynovela runs from.
 - **Embedding generation**: In the default mode, BGE-M3 is run locally.
 - **LLM inference**: Sent with the OpenAI-compatible /v1 API to the local LLM specified by `--lmstudio-url` (default `http://localhost:1234`).
 
@@ -163,7 +163,7 @@ Cynovela は、参照元の AI 基盤ツールが解こうとしているコン�
 
 Cynovela の既定構成では、以下のすべてがローカル環境で完結します。
 
-- **文書本文**: SQLite（`~/.cynovela/db/cynovela.db` 等）と ChromaDB（`~/.cynovela/vector/default/chroma` 等）に保存。
+- **文書本文**: Cynovela を動かすフォルダの中の SQLite（`store/db/cynovela.db` 等）と ChromaDB（`store/vector/default/chroma` 等）に保存。
 - **Embedding 生成**: 既定モードでは BGE-M3 をローカルで実行。
 - **LLM 推論**: `--lmstudio-url`（既定 `http://localhost:1234`）で指定したローカル LLM に対して OpenAI 互換 /v1 API で送信。
 
