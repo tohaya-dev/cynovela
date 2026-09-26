@@ -264,13 +264,13 @@ If models are missing, an interactive prompt is displayed.
 
 | Choice | Behavior |
 |------|------|
-| `[1]` | Downloads from the HuggingFace Hub into `~/.cynovela/models/` |
+| `[1]` | Downloads from the HuggingFace Hub into `store/models/` in the Cynovela folder |
 | `[2]` | Offers an alternative mode (in the order `full → text → lite → lite-en → minimal`) |
 | `[3+]` | Cancels startup |
 
-#### 2-5-3. Aborting startup in a non-interactive environment
+#### 2-5-3. Starting in a non-interactive environment
 
-When you do not want an interactive prompt, for example in CI, set the environment variable `CYNOVELA_NONINTERACTIVE=1`. It exits immediately when a model is absent.
+When you do not want an interactive prompt, for example in CI, set the environment variable `CYNOVELA_NONINTERACTIVE=1`. The prompt is then not shown: when a model is absent, startup takes the same path as `[1]` and downloads it (this also happens when there is no terminal). If the download fails, startup stops with exit code 2.
 
 ```bash
 CYNOVELA_NONINTERACTIVE=1 python server.py --mode text
@@ -278,8 +278,9 @@ CYNOVELA_NONINTERACTIVE=1 python server.py --mode text
 
 #### 2-5-4. Storage location
 
-- Download destination: `~/.cynovela/models/`
-- Naming rule: the slash in the HuggingFace repository name is replaced with `__` (e.g. `BAAI__bge-m3`)
+- Download destination: `store/models/` in the Cynovela folder (the .app form carries the models inside the app)
+- Naming rule: the HuggingFace cache form — `models--` followed by the repository name with the slash replaced by `--`, with the files under `snapshots/<version>/` (e.g. `store/models/models--BAAI--bge-m3/snapshots/<version>/`)
+- Search order when `cynovela.yaml` `models.*.path` is empty: `store/models/` in the Cynovela folder first, then a `models--…` folder placed next to the Cynovela folder, `~/.cynovela/models/`, `~/.cynovela/hf_cache/`, and `~/.cache/huggingface/hub/` (these later places are only read if a model is already there; downloads never go to them)
 
 #### 2-5-5. Overriding the model path
 
@@ -303,11 +304,13 @@ We recommend passing secrets through environment variables rather than writing t
 
 | Environment variable | Purpose |
 |---------|------|
-| `CYNOVELA_DB` | SQLite DB path (the default is `~/.cynovela/db/...`) |
-| `CYNOVELA_CHROMA` | ChromaDB directory |
-| `CYNOVELA_BACKUP_DIR` | Backup directory |
-| `CYNOVELA_LOG_DIR` | Log directory |
-| `CYNOVELA_DATA_DIR` | Application data root |
+| `CYNOVELA_DB` | SQLite DB path. The server overwrites it at startup from `paths:` in `cynovela.yaml` (`store/db/cynovela.db`, or `store/db/demo.db` with `--demo`), so setting it does not move the data |
+| `CYNOVELA_CHROMA` | ChromaDB directory. Overwritten at startup in the same way (`store/vector/default/chroma`, or `store/vector/demo/chroma` with `--demo`) |
+| `CYNOVELA_BACKUP_DIR` | Backup directory. Overwritten at startup in the same way (`store/backups`) |
+| `CYNOVELA_LOG_DIR` | Log directory. Read once, before the overwrite, only to decide where `server.log` is written; after that it is overwritten in the same way (`store/logs`) |
+| `CYNOVELA_DATA_DIR` | Application data root. Overwritten at startup in the same way (`store`) |
+
+These variables do not move the data. To move it, change `paths:` (`data_dir: ./store`) in `cynovela.yaml`. The .app form puts the data root at `~/Library/Application Support/Cynovela`; the app sets that itself.
 
 #### 2-6-2. LLM / Embedding / Reranker
 
@@ -329,7 +332,7 @@ We recommend passing secrets through environment variables rather than writing t
 
 | Environment variable | Purpose |
 |---------|------|
-| `CYNOVELA_NONINTERACTIVE` | `1` skips the preflight dialog and exits immediately |
+| `CYNOVELA_NONINTERACTIVE` | `1` skips the preflight dialog; a missing model is downloaded without asking (see 2-5-3) |
 | `CYNOVELA_DISABLE_RATE_LIMIT` | Disables the rate limit |
 | `CYNOVELA_MAX_UPLOAD_BYTES` | Maximum file upload size (default 100MB) |
 | `CYNOVELA_MCP_PYTHON` | Python path used to run the MCP server |
@@ -1154,19 +1157,21 @@ Even for verification and learning use, one of the following is recommended.
 
 ### 6-1. Default Storage Locations
 
-Cynovela's data is stored under `~/.cynovela/`.
+Cynovela's data is stored under `store/` in the folder where the package was extracted (`paths:` → `data_dir: ./store` in `cynovela.yaml`). In the .app form, `~/Library/Application Support/Cynovela` takes the place of `store/`. `~/.cynovela` is not used for data.
 
-| Use | Path | Environment variable for override |
+| Use | Path | Where it is set |
 |------|------|------------|
-| SQLite DB (normal) | `~/.cynovela/db/cynovela.db` | `CYNOVELA_DB` |
-| SQLite DB (demo) | `~/.cynovela/db/demo.db` | `CYNOVELA_DB` |
-| ChromaDB (normal) | `~/.cynovela/vector/default/chroma` | `CYNOVELA_CHROMA` |
-| ChromaDB (demo) | `~/.cynovela/vector/demo/chroma` | `CYNOVELA_CHROMA` |
-| Backups | `store/backups` under the folder where the package was extracted | `CYNOVELA_BACKUP_DIR` |
-| Models | `~/.cynovela/models` | (can be specified individually with `cynovela.yaml.models.*.path`) |
-| Logs | `~/.cynovela` | `CYNOVELA_LOG_DIR` |
+| SQLite DB (normal) | `store/db/cynovela.db` | `paths.db.clean` in `cynovela.yaml` |
+| SQLite DB (demo) | `store/db/demo.db` | `paths.db.demo` |
+| ChromaDB (normal) | `store/vector/default/chroma` | `paths.vector.default` |
+| ChromaDB (demo) | `store/vector/demo/chroma` | `paths.vector.demo` |
+| Backups | `store/backups` | `paths.backups` |
+| Models | `store/models` in the Cynovela folder (the .app form carries them inside the app) | (can be specified individually with `cynovela.yaml.models.*.path`) |
+| Logs | `store/logs` (`server.log`) | `paths.logs` |
 
-> The above are the storage locations of the host (conda) edition. The actual location for the host edition is `store/` under the folder where the package was extracted. In the container edition, the DB and vector data are stored in named volumes, and the ingest entry point bind-mounts the ingest sources passed at startup (multiple allowed) read-only at `/app/ingest/<inner name>`. The former default ingest folder `~/Cynovela` has been abolished.
+Environment variables such as `CYNOVELA_DB`, `CYNOVELA_CHROMA` and `CYNOVELA_BACKUP_DIR` do not move the data: the server overwrites them at startup from `paths:` (see 2-6-1).
+
+> The above apply to the host (conda) edition and the .app form. In the container edition, the DB and vector data are stored in named volumes, and the ingest entry point bind-mounts the ingest sources passed at startup (multiple allowed) read-only at `/app/ingest/<inner name>`. The former default ingest folder `~/Cynovela` has been abolished.
 
 ### 6-2. What `store/` Holds
 
@@ -1175,23 +1180,36 @@ The token-signing key for the passes (`store/db/jwt/secret.key`) is newly create
 
 ### 6-3. Manual Backup
 
-With the server stopped, copy the directories above.
+With the server stopped, copy the database file and the vector folder together. Run the commands in the Cynovela folder. The example is for a normal start; with `--demo`, use `store/db/demo.db` and `store/vector/demo/chroma`. `sqlite3 ... ".backup"` also takes in whatever is still in the journal (`-wal`), so the copy is complete on its own.
 
 ```bash
-# サーバー停止後に実行
+bash stop.sh
 TS=$(date +%Y%m%d-%H%M%S)
 mkdir -p ~/cynovela-backups/$TS
-cp -R ~/.cynovela/db ~/cynovela-backups/$TS/db
-cp -R ~/.cynovela/vector ~/cynovela-backups/$TS/vector
+sqlite3 store/db/cynovela.db ".backup '$HOME/cynovela-backups/$TS/cynovela.db'"
+cp -R store/vector/default/chroma ~/cynovela-backups/$TS/chroma
 ```
+
+This gives the same layout as a backup taken in the app (6-6): `cynovela.db` and a `chroma` folder.
 
 ### 6-4. Restore
 
+With the server stopped, move aside the database file together with its journal files (`-wal` / `-shm`) and the vector folder, then put the backup in their place. Do not replace the whole `store/db` folder: it also holds the token-signing key (`store/db/jwt/secret.key`). Do not leave the old `-wal` / `-shm` behind (see 6-9 for why).
+
 ```bash
-# サーバー停止後に実行
-cp -R ~/cynovela-backups/20260526-093000/db ~/.cynovela/db
-cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector
+bash stop.sh
+BK=~/cynovela-backups/20260526-093000            # the backup you want to go back to
+mkdir -p store/aside
+mv store/db/cynovela.db store/aside/
+mv store/db/cynovela.db-wal store/aside/ 2>/dev/null
+mv store/db/cynovela.db-shm store/aside/ 2>/dev/null
+mv store/vector/default/chroma store/aside/chroma
+cp "$BK/cynovela.db" store/db/cynovela.db
+cp -R "$BK/chroma" store/vector/default/chroma
+./launch.sh
 ```
+
+Check that what you expected is back before deleting `store/aside` (as in 6-9).
 
 ### 6-5. Points to Note
 
@@ -1355,10 +1373,10 @@ After logging in with the `admin` role, you can view them with filters on the "�
 
 ### 8-5. Extracting Directly from SQLite
 
-If you want to export to CSV or similar, SELECT directly from a SQLite client.
+If you want to export to CSV or similar, SELECT directly from a SQLite client. Run it in the Cynovela folder; with `--demo` the file is `store/db/demo.db`, and in the .app form it is `~/Library/Application Support/Cynovela/db/cynovela.db`.
 
 ```bash
-sqlite3 ~/.cynovela/db/cynovela.db \
+sqlite3 store/db/cynovela.db \
   "SELECT timestamp, action, target, detail FROM audit_logs ORDER BY timestamp DESC LIMIT 100;"
 ```
 
@@ -1787,13 +1805,13 @@ python server.py --demo --mode lite
 
 | 選択 | 動作 |
 |------|------|
-| `[1]` | HuggingFace Hub から `~/.cynovela/models/` 配下にダウンロード |
+| `[1]` | HuggingFace Hub から Cynovela のフォルダの `store/models/` 配下にダウンロード |
 | `[2]` | 代替モードを提示（`full → text → lite → lite-en → minimal` の順） |
 | `[3+]` | 起動キャンセル |
 
-#### 2-5-3. 非対話環境での起動中止
+#### 2-5-3. 非対話環境での起動
 
-CI などで対話プロンプトを出したくない場合は、環境変数 `CYNOVELA_NONINTERACTIVE=1` を設定します。モデル不在時は即座に終了します。
+CI などで対話プロンプトを出したくない場合は、環境変数 `CYNOVELA_NONINTERACTIVE=1` を設定します。このときプロンプトは出ず、モデルが無ければ `[1]` と同じ道でダウンロードしてから起動します（端末が無いときも同じです）。ダウンロードに失敗したときは終了コード 2 で止まります。
 
 ```bash
 CYNOVELA_NONINTERACTIVE=1 python server.py --mode text
@@ -1801,8 +1819,9 @@ CYNOVELA_NONINTERACTIVE=1 python server.py --mode text
 
 #### 2-5-4. 保存先
 
-- ダウンロード先: `~/.cynovela/models/`
-- 命名規則: HuggingFace のリポジトリ名のスラッシュを `__` に置換（例: `BAAI__bge-m3`）
+- ダウンロード先: Cynovela のフォルダの `store/models/`（.app の形ではモデルはアプリの中に入っています）
+- 命名規則: HuggingFace のキャッシュ形式。`models--` のあとにリポジトリ名のスラッシュを `--` に置き換えた名前を続け、中身は `snapshots/<版>/` の下に置かれます（例: `store/models/models--BAAI--bge-m3/snapshots/<版>/`）
+- `cynovela.yaml` の `models.*.path` が空のときの探す順: まず Cynovela のフォルダの `store/models/`、次に Cynovela のフォルダと並べて置いた `models--…` のフォルダ、`~/.cynovela/models/`、`~/.cynovela/hf_cache/`、`~/.cache/huggingface/hub/`（後ろの場所は、既にモデルが在れば読むだけです。ダウンロード先になることはありません）
 
 #### 2-5-5. モデルパスの上書き
 
@@ -1826,11 +1845,13 @@ models:
 
 | 環境変数 | 用途 |
 |---------|------|
-| `CYNOVELA_DB` | SQLite DB パス（既定は `~/.cynovela/db/...`） |
-| `CYNOVELA_CHROMA` | ChromaDB ディレクトリ |
-| `CYNOVELA_BACKUP_DIR` | バックアップディレクトリ |
-| `CYNOVELA_LOG_DIR` | ログディレクトリ |
-| `CYNOVELA_DATA_DIR` | アプリデータルート |
+| `CYNOVELA_DB` | SQLite DB パス。起動時にサーバが `cynovela.yaml` の `paths:` から入れ直す（`store/db/cynovela.db`、`--demo` では `store/db/demo.db`）ため、設定してもデータは動きません |
+| `CYNOVELA_CHROMA` | ChromaDB ディレクトリ。起動時に同じく入れ直されます（`store/vector/default/chroma`、`--demo` では `store/vector/demo/chroma`） |
+| `CYNOVELA_BACKUP_DIR` | バックアップディレクトリ。起動時に同じく入れ直されます（`store/backups`） |
+| `CYNOVELA_LOG_DIR` | ログディレクトリ。入れ直しの前に 1 度だけ読まれ、`server.log` の書き先を決めるのにだけ使われます。そのあとは同じく入れ直されます（`store/logs`） |
+| `CYNOVELA_DATA_DIR` | アプリデータルート。起動時に同じく入れ直されます（`store`） |
+
+これらの環境変数でデータは動きません。動かすときは `cynovela.yaml` の `paths:`（`data_dir: ./store`）を変えます。.app の形ではデータの保存先が `~/Library/Application Support/Cynovela` になります。これはアプリ自身が設定します。
 
 #### 2-6-2. LLM / Embedding / Reranker
 
@@ -1852,7 +1873,7 @@ models:
 
 | 環境変数 | 用途 |
 |---------|------|
-| `CYNOVELA_NONINTERACTIVE` | `1` で Preflight 対話をスキップして即終了 |
+| `CYNOVELA_NONINTERACTIVE` | `1` で Preflight 対話をスキップし、モデルが無ければ聞かずにダウンロード（2-5-3 参照） |
 | `CYNOVELA_DISABLE_RATE_LIMIT` | レートリミット無効化 |
 | `CYNOVELA_MAX_UPLOAD_BYTES` | ファイルアップロード最大サイズ（既定 100MB） |
 | `CYNOVELA_MCP_PYTHON` | MCP サーバー実行用 Python パス |
@@ -2653,19 +2674,21 @@ LAN 内の任意のユーザーからファイルアップロードを受け付�
 
 ### 6-1. 既定の保存場所
 
-Cynovela のデータは `~/.cynovela/` 配下に格納されます。
+Cynovela のデータは、配布物を展開したフォルダ配下の `store/` に格納されます（`cynovela.yaml` の `paths:` → `data_dir: ./store`）。.app の形では `store/` の代わりに `~/Library/Application Support/Cynovela` を使います。`~/.cynovela` はデータの保存には使いません。
 
-| 用途 | パス | 上書き用環境変数 |
+| 用途 | パス | 決めているところ |
 |------|------|------------|
-| SQLite DB（通常） | `~/.cynovela/db/cynovela.db` | `CYNOVELA_DB` |
-| SQLite DB（demo） | `~/.cynovela/db/demo.db` | `CYNOVELA_DB` |
-| ChromaDB（通常） | `~/.cynovela/vector/default/chroma` | `CYNOVELA_CHROMA` |
-| ChromaDB（demo） | `~/.cynovela/vector/demo/chroma` | `CYNOVELA_CHROMA` |
-| バックアップ | 配布物を展開したフォルダ配下の `store/backups` | `CYNOVELA_BACKUP_DIR` |
-| モデル | `~/.cynovela/models` | （`cynovela.yaml.models.*.path` で個別指定可） |
-| ログ | `~/.cynovela` | `CYNOVELA_LOG_DIR` |
+| SQLite DB（通常） | `store/db/cynovela.db` | `cynovela.yaml` の `paths.db.clean` |
+| SQLite DB（demo） | `store/db/demo.db` | `paths.db.demo` |
+| ChromaDB（通常） | `store/vector/default/chroma` | `paths.vector.default` |
+| ChromaDB（demo） | `store/vector/demo/chroma` | `paths.vector.demo` |
+| バックアップ | `store/backups` | `paths.backups` |
+| モデル | Cynovela のフォルダの `store/models`（.app の形ではアプリの中に入っています） | （`cynovela.yaml.models.*.path` で個別指定可） |
+| ログ | `store/logs`（`server.log`） | `paths.logs` |
 
-> 上記はホスト（conda）版の保存場所です。ホスト版の実体は配布物を展開したフォルダ配下の `store/` です。コンテナ版では DB／ベクターは名前付きボリュームに格納され、取り込みの入口は起動時に渡した取り込み元（複数可）を `/app/ingest/<中の名前>` へ読み取り専用で bind します。既定の取り込みフォルダ `~/Cynovela` は廃止しました。
+`CYNOVELA_DB`・`CYNOVELA_CHROMA`・`CYNOVELA_BACKUP_DIR` などの環境変数ではデータは動きません。起動時にサーバが `paths:` から入れ直します（2-6-1 参照）。
+
+> 上記はホスト（conda）版と .app の形の保存場所です。コンテナ版では DB／ベクターは名前付きボリュームに格納され、取り込みの入口は起動時に渡した取り込み元（複数可）を `/app/ingest/<中の名前>` へ読み取り専用で bind します。既定の取り込みフォルダ `~/Cynovela` は廃止しました。
 
 ### 6-2. `store/` に入っているもの
 
@@ -2674,23 +2697,36 @@ Cynovela のデータは `~/.cynovela/` 配下に格納されます。
 
 ### 6-3. 手動バックアップ
 
-サーバーを停止した状態で、上記ディレクトリをコピーします。
+サーバーを停止した状態で、データベースのファイルとベクターのフォルダを一緒にコピーします。コマンドは Cynovela のフォルダで実行します。例は通常の起動のものです。`--demo` では `store/db/demo.db` と `store/vector/demo/chroma` を使います。`sqlite3 ... ".backup"` は日誌（`-wal`）に残っている分も取り込むので、コピーはそれだけで完結します。
 
 ```bash
-# サーバー停止後に実行
+bash stop.sh
 TS=$(date +%Y%m%d-%H%M%S)
 mkdir -p ~/cynovela-backups/$TS
-cp -R ~/.cynovela/db ~/cynovela-backups/$TS/db
-cp -R ~/.cynovela/vector ~/cynovela-backups/$TS/vector
+sqlite3 store/db/cynovela.db ".backup '$HOME/cynovela-backups/$TS/cynovela.db'"
+cp -R store/vector/default/chroma ~/cynovela-backups/$TS/chroma
 ```
+
+アプリで取るバックアップ（6-6）と同じ形（`cynovela.db` と `chroma` フォルダ）になります。
 
 ### 6-4. 復元
 
+サーバーを停止した状態で、データベースのファイルをその日誌（`-wal` / `-shm`）と一緒に退け、ベクターのフォルダも退けてから、バックアップをその場所へ置きます。`store/db` を丸ごと差し替えてはいけません。トークン署名用の鍵（`store/db/jwt/secret.key`）も入っているためです。古い `-wal` / `-shm` を残さないでください（理由は 6-9 を参照）。
+
 ```bash
-# サーバー停止後に実行
-cp -R ~/cynovela-backups/20260526-093000/db ~/.cynovela/db
-cp -R ~/cynovela-backups/20260526-093000/vector ~/.cynovela/vector
+bash stop.sh
+BK=~/cynovela-backups/20260526-093000            # 戻したいバックアップ
+mkdir -p store/aside
+mv store/db/cynovela.db store/aside/
+mv store/db/cynovela.db-wal store/aside/ 2>/dev/null
+mv store/db/cynovela.db-shm store/aside/ 2>/dev/null
+mv store/vector/default/chroma store/aside/chroma
+cp "$BK/cynovela.db" store/db/cynovela.db
+cp -R "$BK/chroma" store/vector/default/chroma
+./launch.sh
 ```
+
+戻したいものが戻ったことを確かめてから `store/aside` を消します（6-9 と同じ）。
 
 ### 6-5. 注意点
 
@@ -2854,10 +2890,10 @@ Cynovela は重要操作を SQLite の `audit_logs` テーブルに記録しま�
 
 ### 8-5. SQLite から直接抽出
 
-CSV 等にエクスポートしたい場合は、SQLite クライアントから直接 SELECT します。
+CSV 等にエクスポートしたい場合は、SQLite クライアントから直接 SELECT します。Cynovela のフォルダで実行します。`--demo` ではファイルは `store/db/demo.db`、.app の形では `~/Library/Application Support/Cynovela/db/cynovela.db` です。
 
 ```bash
-sqlite3 ~/.cynovela/db/cynovela.db \
+sqlite3 store/db/cynovela.db \
   "SELECT timestamp, action, target, detail FROM audit_logs ORDER BY timestamp DESC LIMIT 100;"
 ```
 
