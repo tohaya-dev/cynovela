@@ -264,6 +264,7 @@ that one. The same documents are repeated below.
 | `docs/getting-started.md` | Never opened Terminal? From the downloaded file to the first answer, nothing skipped — and the day-to-day start and stop after that |
 | `docs/editions.md` | Which edition to take, on one page |
 | `docs/concept.md` | What this tool is for, and how it differs from the tools it refers to |
+| `docs/one-page.md` | This tool on one page, for business partners and study sessions — no technical background needed |
 | `docs/architecture.md` | How it works inside: ingest and classification, search, the scores, the shape of an answer |
 | `docs/security.md` | Roles and permissions, PII detection and masking, the guardrails, and the ways of use that are not recommended |
 | `docs/limits.md` | What it cannot do: what masking misses, formats it cannot read, features that are only a skeleton |
@@ -533,6 +534,7 @@ that one. The same documents are repeated below.
 | `docs/getting-started.md` | ターミナルを開いたことが無い方へ。落としたファイルから最初の答えまで。省略なし。その後の毎日の起動と停止も |
 | `docs/editions.md` | どの形を選ぶか。1枚 |
 | `docs/concept.md` | このツールが何のためのものか。参照元のツールとの違い |
+| `docs/one-page.md` | このツールを1枚で。パートナー勉強会など、技術者でない方向け |
 | `docs/architecture.md` | 内側の作り: 取り込みと分類・検索のしくみ・スコアの読み方・回答のかたち |
 | `docs/security.md` | 役割と権限・PII の検出とマスキング・ガードレール・推奨しない使用方法 |
 | `docs/limits.md` | できないこと: マスキングの取りこぼし・読み込めない形式・骨組みだけの機能 |
