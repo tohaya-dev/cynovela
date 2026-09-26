@@ -90,8 +90,8 @@ The implementation is entirely original and contains no source code of the refer
 
 ### 4-1. Recommended environment
 
-- macOS (Apple Silicon recommended), Linux, Windows
-- Python 3.10 or later
+- macOS on an Apple silicon Mac (M1 or later). Intel Macs, Windows and Linux are not verified
+- Python 3.12 or later (3.10 and 3.11 cannot be used; not needed for the package edition)
 - A conda environment (recommended environment name: `cynovela`)
 
 ### 4-2. Starting in demo mode
@@ -240,8 +240,8 @@ Cynovela は、AI 基盤ツールのコンセプトを個人が手を動かし�
 
 ### 4-1. 推奨環境
 
-- macOS（Apple Silicon 推奨）、Linux、Windows
-- Python 3.10 以上
+- Apple シリコン搭載の Mac（M1 以降）の macOS。Intel の Mac・Windows・Linux では動作を確認していません
+- Python 3.12 以上（3.10・3.11 は使えません。パッケージ版では不要）
 - conda 環境（推奨環境名: `cynovela`）
 
 ### 4-2. デモモードで起動

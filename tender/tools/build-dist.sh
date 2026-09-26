@@ -650,6 +650,9 @@ rm -rf "$STAGE/$NAME/instructions" "$STAGE/$NAME/docs/spec-raw" \
        "$STAGE/$NAME/tests"
 rm -f "$STAGE/$NAME/MANIFEST-anchor-candidate-20260713.md" \
       "$STAGE/$NAME/deploy/k8s/20-deployment.yaml"
+# docs-part3-20260926: docs/html/_conversion-rules.md は docs/*.md から docs/html/*.html を
+#   作るときの手順書で、読み手には使い道が無い。ツリー側には残し、ステージから落とす。
+rm -f "$STAGE/$NAME/docs/html/_conversion-rules.md"
 # bundled-data-20260731 (B11): 過去の実行の一覧文書は、当時の作業ツリーの
 #   数え上げ (資料30本 / 47,106 塊) をそのまま書いており、いま同梱するもの (dummy-corpus
 #   の資料と、そこから作った塊) とは別物である。過去の事実の記録なのでツリー側は

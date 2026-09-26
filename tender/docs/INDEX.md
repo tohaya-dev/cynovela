@@ -17,6 +17,7 @@ everything else.
 
 | If this is you | Open |
 |---|---|
+| It is your first time and you want the shortest path from the download to the first answer | [QUICKSTART.md](../QUICKSTART.md) |
 | You have just downloaded it and want it running | [getting-started.md](getting-started.md) |
 | You are still deciding which file to download | [editions.md](editions.md) |
 | It is running and you want to try it on the bundled material | [handson.md](handson.md) |
@@ -102,6 +103,7 @@ Start from [html/index.html](html/index.html).
 
 | こういう方 | 開くもの |
 |---|---|
+| はじめてで、落とすところから最初の答えまで最短で行きたい | [QUICKSTART.md](../QUICKSTART.md) |
 | 落としたばかりで、まず動かしたい | [getting-started.md](getting-started.md) |
 | どのファイルを落とすかまだ決めていない | [editions.md](editions.md) |
 | 動いたので、同梱の資料で試したい | [handson.md](handson.md) |
