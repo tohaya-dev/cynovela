@@ -17,7 +17,7 @@ of what it can do are in [getting-started.md](getting-started.md) and
 [concept.md](concept.md). Only the things that will disappoint you if you expect them are
 written here.
 
-The version is `1.2.0` (`APP_VERSION` in `core/version.py` is the only source, and
+The version is `2.0.0` (`APP_VERSION` in `core/version.py` is the only source, and
 `GET /api/health` and `/docs` read it from there).
 
 ---
@@ -476,11 +476,11 @@ is built (because if it were shared, a pass issued elsewhere would be accepted).
 If saving the key fails, the key is valid only for that one run.
 In that case, restarting invalidates any issued passes (logging in again works).
 
-**By default the pass has no expiry.** As in 1.0.7 to 1.2.0, a pass expires only when
+**By default the pass has no expiry (as since 1.0.7).** A pass expires only when
 `expires_in_hours` or `expires_in_seconds` is passed, or when the administrator has set
 the "session hours" (`session_hours` of `POST /api/auth/session-config`, default 0 =
-no expiry) to a positive number; then `POST /api/auth/login` and `POST /api/auth/refresh`
-use those hours when no lifetime is passed. What you should know:
+no expiry) to a positive number; from 2.0.0, `POST /api/auth/login` and `POST /api/auth/refresh`
+then use those hours when no lifetime is passed. What you should know:
 
 - **Signing out does not make the pass stop working.** `POST /api/auth/logout`
   removes the refresh token and the in-memory session, but the pass itself is
@@ -693,7 +693,7 @@ They are written here as the state of the current build, not as a schedule.
 できることの説明は [getting-started.md](getting-started.md) と
 [concept.md](concept.md) にあります。ここには、期待すると外れることだけを書きます。
 
-版は `1.2.0` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
+版は `2.0.0` です（`core/version.py` の `APP_VERSION` が唯一の入手元で、
 `GET /api/health` と `/docs` はここを読みます）。
 
 ---
@@ -1128,10 +1128,10 @@ MCP のツールには `search_across_collections`（複数のコレクション
 鍵の保存に失敗した場合は、その起動のあいだだけ有効な鍵になります。
 この場合、再起動すると発行済みの通行証は無効になります（再ログインで通ります）。
 
-**通行証は、既定では期限がありません。**
-1.0.7 から 1.2.0 までと同じく、切れるのは `expires_in_hours` か `expires_in_seconds` を渡したときか、
+**通行証は、既定では期限がありません（1.0.7 以降と同じです）。**
+切れるのは `expires_in_hours` か `expires_in_seconds` を渡したときか、
 管理者が「セッション時間」（`POST /api/auth/session-config` の `session_hours`。既定 0 = 期限なし）を
-正の数にしたときだけです。そのときは、期間を渡さない `POST /api/auth/login` と
+正の数にしたときだけです。そのときは 2.0.0 から、期間を渡さない `POST /api/auth/login` と
 `POST /api/auth/refresh` がその時間を使います。承知しておくべきことです。
 
 - **ログアウトしても、その通行証は使えなくなりません。** `POST /api/auth/logout` は

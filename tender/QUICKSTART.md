@@ -51,10 +51,10 @@ Python も conda も要りません。この Mac には何も入りません。�
 リリースのページから、次の**5つ**を**同じフォルダ**に落とします。
 
 ```
-cynovela-chewie-package-1.2.0.tar.gz          本体
-cynovela-chewie-models-1.2.0.tar.gz.part00    AIモデル（1/3）
-cynovela-chewie-models-1.2.0.tar.gz.part01    AIモデル（2/3）
-cynovela-chewie-models-1.2.0.tar.gz.part02    AIモデル（3/3）
+cynovela-tender-package-2.0.0.tar.gz          本体
+cynovela-tender-models-2.0.0.tar.gz.part00    AIモデル（1/3）
+cynovela-tender-models-2.0.0.tar.gz.part01    AIモデル（2/3）
+cynovela-tender-models-2.0.0.tar.gz.part02    AIモデル（3/3）
 SHA256SUMS                                    壊れていないか確かめるための一覧
 ```
 
@@ -77,7 +77,7 @@ cd ~/Downloads
 **2-2. AIモデルの3つをつなげて、1つにする**
 
 ```
-cat cynovela-chewie-models-1.2.0.tar.gz.part00 cynovela-chewie-models-1.2.0.tar.gz.part01 cynovela-chewie-models-1.2.0.tar.gz.part02 > cynovela-chewie-models-1.2.0.tar.gz
+cat cynovela-tender-models-2.0.0.tar.gz.part00 cynovela-tender-models-2.0.0.tar.gz.part01 cynovela-tender-models-2.0.0.tar.gz.part02 > cynovela-tender-models-2.0.0.tar.gz
 ```
 
 **2-3. 壊れていないか確かめる**
@@ -92,16 +92,16 @@ shasum -a 256 --ignore-missing -c SHA256SUMS
 **2-4. 本体を展開する**
 
 ```
-tar -xzf cynovela-chewie-package-1.2.0.tar.gz
+tar -xzf cynovela-tender-package-2.0.0.tar.gz
 ```
 
-`chewie` というフォルダができます。
+`tender` というフォルダができます。
 
 **2-5. AIモデルを、そのフォルダの中に展開する**
 
 ```
-cd chewie
-tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
+cd tender
+tar -xzf ../cynovela-tender-models-2.0.0.tar.gz
 ```
 
 `store/models/` ができます。**この場所でないと見つけられません。**
@@ -117,7 +117,7 @@ tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
 
 ## 3. 起動する
 
-展開してできた `chewie` フォルダを Finder で開きます。
+展開してできた `tender` フォルダを Finder で開きます。
 
 ### サンプルの資料で試す（おすすめ）
 
@@ -454,7 +454,7 @@ Apple シリコンの Mac で測った値です。同じページ数でも、図
 展開したフォルダの、主なものだけを挙げます。
 
 ```
-chewie/
+tender/
 ├── QUICKSTART.md               ← この文書
 ├── START-HERE.md               くわしい説明（導入・再起動・作り直し・削除）
 ├── cynovela.yaml               設定。初回の画面を見逃したときの控えもここにあります

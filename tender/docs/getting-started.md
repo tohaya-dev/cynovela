@@ -101,9 +101,9 @@ There are 2 forms, plus the AI models as a separate download. **The package edit
 
 | Package | Who it is for | What to do |
 |---|---|---|
-| **Package edition** `cynovela-chewie-package-1.2.0.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
+| **Package edition** `cynovela-tender-package-2.0.0.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
 | **Source edition** (not a download — the source is this repository) | Those who want to build the environment themselves | Clone the repository or use GitHub's "Download ZIP", take the `tender/` tree, add the AI models (last row), then follow section 7 below. |
-| **AI models** `cynovela-chewie-models-1.2.0.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` **inside the extracted chewie folder** — `store/models/` is created. |
+| **AI models** `cynovela-tender-models-2.0.0.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-tender-models-2.0.0.tar.gz` **inside the extracted tender folder** — `store/models/` is created. |
 
 With the source edition you choose, at startup, one of 2 ways to build the environment.
 
@@ -125,7 +125,7 @@ The AI models are downloaded separately (see section 8, "First run only").
 
 ## 2. The gentle way in — the package edition, step by step
 
-This section is for the **package edition** (`cynovela-chewie-package-1.2.0.tar.gz`).
+This section is for the **package edition** (`cynovela-tender-package-2.0.0.tar.gz`).
 It assumes you have never opened Terminal. Nothing is skipped.
 
 Do these in order. Do not read ahead for reasons; the reasons are in section 3.
@@ -135,10 +135,10 @@ Do these in order. Do not read ahead for reasons; the reasons are in section 3.
 On the releases page, download these into your **Downloads** folder:
 
 ```
-cynovela-chewie-package-1.2.0.tar.gz
-cynovela-chewie-models-1.2.0.tar.gz.part00
-cynovela-chewie-models-1.2.0.tar.gz.part01
-cynovela-chewie-models-1.2.0.tar.gz.part02
+cynovela-tender-package-2.0.0.tar.gz
+cynovela-tender-models-2.0.0.tar.gz.part00
+cynovela-tender-models-2.0.0.tar.gz.part01
+cynovela-tender-models-2.0.0.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -167,7 +167,7 @@ Nothing will be printed. That is correct.
 Type this as **one line** and press return:
 
 ```
-cat cynovela-chewie-models-1.2.0.tar.gz.part* > cynovela-chewie-models-1.2.0.tar.gz
+cat cynovela-tender-models-2.0.0.tar.gz.part* > cynovela-tender-models-2.0.0.tar.gz
 ```
 
 This takes **one to three minutes** and prints nothing while it works. When the
@@ -183,8 +183,8 @@ This takes **one to three minutes**. It then prints one line per file. Every lin
 must end in `OK`:
 
 ```
-cynovela-chewie-models-1.2.0.tar.gz: OK
-cynovela-chewie-package-1.2.0.tar.gz: OK
+cynovela-tender-models-2.0.0.tar.gz: OK
+cynovela-tender-package-2.0.0.tar.gz: OK
 ```
 
 If any line shows `FAILED`, download that file again and repeat from step 4. Do
@@ -193,16 +193,16 @@ not go on.
 #### Step 6. Unpack the program
 
 ```
-tar -xzf cynovela-chewie-package-1.2.0.tar.gz
+tar -xzf cynovela-tender-package-2.0.0.tar.gz
 ```
 
-This takes **three to ten minutes** and prints nothing. A folder named `chewie`
+This takes **three to ten minutes** and prints nothing. A folder named `tender`
 appears in Downloads.
 
 #### Step 7. Go into that folder
 
 ```
-cd chewie
+cd tender
 ```
 
 Nothing is printed.
@@ -210,7 +210,7 @@ Nothing is printed.
 #### Step 8. Unpack the AI models inside it
 
 ```
-tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
+tar -xzf ../cynovela-tender-models-2.0.0.tar.gz
 ```
 
 This takes **two to five minutes** and prints nothing.
@@ -234,7 +234,7 @@ because the startup messages are only in Japanese:
 このまま進みます。
 
 同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。
-記録はこのファイルへ書きます: /Users/…/Downloads/chewie/store/launch-app.log
+記録はこのファイルへ書きます: /Users/…/Downloads/tender/store/launch-app.log
 起動しています (本体はこのターミナルから切り離して動かします)
 ```
 
@@ -247,7 +247,7 @@ time. When it is ready you will see:
 ```
 立ち上がりました。
   開くところ : http://127.0.0.1:8765/
-  記録       : /Users/…/Downloads/chewie/store/launch-app.log
+  記録       : /Users/…/Downloads/tender/store/launch-app.log
 止めるときは、次のように叩いてください。
   bash stop.sh
 ```
@@ -335,7 +335,7 @@ Terminal always has one folder it is "standing in". `cd` moves it. `~` is
 shorthand for your home folder — the one with your name on it in Finder. So
 `~/Downloads` is the same Downloads folder Finder shows you. Every later command
 acts on files in the folder Terminal is standing in, which is why step 7 moves
-into `chewie` before unpacking the models: the models must land inside the
+into `tender` before unpacking the models: the models must land inside the
 program's folder, not next to it.
 
 #### Why nothing is printed
@@ -401,7 +401,7 @@ Closing the window does not stop it. That is why there is a separate
 
 ## 4. The short route, for those in a hurry
 
-These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `1.2.0` (working directory `<the folder where you extracted the package>`).
+These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `2.0.0` (working directory `<the folder where you extracted the package>`).
 
 ### 4-1. Setting up the environment (source edition only)
 
@@ -1054,7 +1054,7 @@ is printed.
 Open Terminal, go into the folder you unpacked, and run one line:
 
 ```
-cd ~/Downloads/chewie
+cd ~/Downloads/tender
 bash stop.sh
 ```
 
@@ -1076,7 +1076,7 @@ If you prefer clicking: double-click **`Cynovela-stop.command`** in the folder.
 #### Start it again
 
 ```
-cd ~/Downloads/chewie
+cd ~/Downloads/tender
 ./launch.sh --demo
 ```
 
@@ -1323,9 +1323,9 @@ More detail is in the bundled `README.md`.
 
 | 配布物 | 対象 | することは |
 |---|---|---|
-| **パッケージ版** `cynovela-chewie-package-1.2.0.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
+| **パッケージ版** `cynovela-tender-package-2.0.0.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
 | **ソース版**（ダウンロードではありません。ソースはこのリポジトリです） | 自分で環境を作りたい方 | リポジトリを clone するか GitHub の「Download ZIP」で取り、`tender/` の木に AIモデル（最終行）を重ねてから、下の7節へ。 |
-| **AIモデル** `cynovela-chewie-models-1.2.0.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの chewie フォルダの中で** `tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz` を実行します（`store/models/` が作られます）。 |
+| **AIモデル** `cynovela-tender-models-2.0.0.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの tender フォルダの中で** `tar -xzf ../cynovela-tender-models-2.0.0.tar.gz` を実行します（`store/models/` が作られます）。 |
 
 ソース版では、起動時に、環境の作り方を2つから選びます。
 
@@ -1347,7 +1347,7 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 
 ## 2. やさしい入口 — パッケージ版を一歩ずつ
 
-この節は**パッケージ版**（`cynovela-chewie-package-1.2.0.tar.gz`）向けです。
+この節は**パッケージ版**（`cynovela-tender-package-2.0.0.tar.gz`）向けです。
 ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。
 
 上から順に行ってください。理由は3節にあります。先に読む必要はありません。
@@ -1357,10 +1357,10 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 リリースのページから、次の5つを**ダウンロード**フォルダへ落とします。
 
 ```
-cynovela-chewie-package-1.2.0.tar.gz
-cynovela-chewie-models-1.2.0.tar.gz.part00
-cynovela-chewie-models-1.2.0.tar.gz.part01
-cynovela-chewie-models-1.2.0.tar.gz.part02
+cynovela-tender-package-2.0.0.tar.gz
+cynovela-tender-models-2.0.0.tar.gz.part00
+cynovela-tender-models-2.0.0.tar.gz.part01
+cynovela-tender-models-2.0.0.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -1389,7 +1389,7 @@ cd ~/Downloads
 次を**1行で**打って return を押します。
 
 ```
-cat cynovela-chewie-models-1.2.0.tar.gz.part* > cynovela-chewie-models-1.2.0.tar.gz
+cat cynovela-tender-models-2.0.0.tar.gz.part* > cynovela-tender-models-2.0.0.tar.gz
 ```
 
 **1〜3分**かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。
@@ -1404,8 +1404,8 @@ shasum -a 256 --ignore-missing -c SHA256SUMS
 終わっていなければなりません。
 
 ```
-cynovela-chewie-models-1.2.0.tar.gz: OK
-cynovela-chewie-package-1.2.0.tar.gz: OK
+cynovela-tender-models-2.0.0.tar.gz: OK
+cynovela-tender-package-2.0.0.tar.gz: OK
 ```
 
 `FAILED` と出た行があれば、そのファイルを落とし直して手順4からやり直します。
@@ -1414,16 +1414,16 @@ cynovela-chewie-package-1.2.0.tar.gz: OK
 #### 手順6. 本体を取り出す
 
 ```
-tar -xzf cynovela-chewie-package-1.2.0.tar.gz
+tar -xzf cynovela-tender-package-2.0.0.tar.gz
 ```
 
-**3〜10分**かかります。何も出ません。ダウンロードの中に `chewie` という名前の
+**3〜10分**かかります。何も出ません。ダウンロードの中に `tender` という名前の
 フォルダができます。
 
 #### 手順7. そのフォルダの中へ移る
 
 ```
-cd chewie
+cd tender
 ```
 
 何も出ません。
@@ -1431,7 +1431,7 @@ cd chewie
 #### 手順8. その中で AIモデルを取り出す
 
 ```
-tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
+tar -xzf ../cynovela-tender-models-2.0.0.tar.gz
 ```
 
 **2〜5分**かかります。何も出ません。
@@ -1455,7 +1455,7 @@ tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
 このまま進みます。
 
 同梱の conda-pack 環境 (.condapack-cynovela) が見つかりました。選択の画面は出さず、これを使って起動します。
-記録はこのファイルへ書きます: /Users/…/Downloads/chewie/store/launch-app.log
+記録はこのファイルへ書きます: /Users/…/Downloads/tender/store/launch-app.log
 起動しています (本体はこのターミナルから切り離して動かします)
 ```
 
@@ -1468,7 +1468,7 @@ tar -xzf ../cynovela-chewie-models-1.2.0.tar.gz
 ```
 立ち上がりました。
   開くところ : http://127.0.0.1:8765/
-  記録       : /Users/…/Downloads/chewie/store/launch-app.log
+  記録       : /Users/…/Downloads/tender/store/launch-app.log
 止めるときは、次のように叩いてください。
   bash stop.sh
 ```
@@ -1555,7 +1555,7 @@ GitHub は数ギガバイトを超える1本のファイルを置かせてくれ
 `~` は自分のホームフォルダ（Finder で自分の名前が付いているところ）の略記です。
 ∴ `~/Downloads` は Finder で見えているダウンロードと同じ場所です。
 以降の命令は、ターミナルが立っているフォルダのファイルに対して働きます。
-手順7で `chewie` の中へ移ってからモデルを取り出しているのはそのためです。
+手順7で `tender` の中へ移ってからモデルを取り出しているのはそのためです。
 モデルは本体のフォルダの**中**に置かれなければならず、隣ではいけません。
 
 #### なぜ何も出ないのか
@@ -1617,7 +1617,7 @@ Finder は隠します。これは「触らなくてよいもの」という mac
 
 ## 4. 急ぐ人のための最短の道
 
-Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `1.2.0`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
+Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `2.0.0`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
 
 ### 4-1. 環境のセットアップ（ソース版のみ）
 
@@ -2244,7 +2244,7 @@ python server.py --mode text 2>&1 | tee ~/cynovela.log
 ターミナルを開き、取り出したフォルダへ移って、1行打ちます。
 
 ```
-cd ~/Downloads/chewie
+cd ~/Downloads/tender
 bash stop.sh
 ```
 
@@ -2267,7 +2267,7 @@ PIDファイル(/Users/…/store/server.pid)がありません。停止対象な
 #### もう一度起こす
 
 ```
-cd ~/Downloads/chewie
+cd ~/Downloads/tender
 ./launch.sh --demo
 ```
 
