@@ -43,7 +43,7 @@ Cynovela lets you ask questions about your own documents in plain language and g
 - An **Apple silicon Mac** (M1 or later). Intel Macs, Windows and Linux are not verified. 8 GB of memory or more is recommended.
 - **Two downloads:** the package edition (about 830 MB) and the AI models (about 3.1 GB). Once unpacked they take about 3.1 GB and 4.84 GB. No Python and no conda are needed.
 - **A separate language model that writes the answers.** Cynovela finds the passages; the sentences are written by a language model that runs outside it (by default, one on the same Mac), such as LM Studio or anything with an OpenAI-compatible endpoint. Set that up separately.
-- On a company-managed Mac, double-click `check-managed-mac.command` first. It only checks whether the Mac will let you run it.
+- On a managed Mac (under MDM), double-click `check-managed-mac.command` first. It only checks whether the Mac will let you run it.
 
 ### Where to go next
 
@@ -63,7 +63,7 @@ Cynovela lets you ask questions about your own documents in plain language and g
 
 ### これは何か、誰のためのものか
 
-Cynovela は、手元の資料について普段の言葉で質問すると、答えを、その根拠になった箇所と一緒に返す道具です。資料は自分の Mac の中から出しません。参照元のAIツールが解こうとしている課題を、自分で動かして理解するために作った「縮小図」です。個人利用・小さな社内のお披露目・学習のためのもので、日本語の文書を想定して作っています。前提にしている問題は3つです。
+Cynovela は、手元の資料について普段の言葉で質問すると、答えを、その根拠になった箇所と一緒に返す道具です。資料は自分の Mac の中から出しません。参照元のAIツールが解こうとしている課題を、自分で動かして理解するために作った「縮小図」です。個人利用・少人数へのお披露目・学習のためのもので、日本語の文書を想定して作っています。前提にしている問題は3つです。
 
 - 汎用の AI は組織内の規程・手順・議事録を読んでいません。「うちの規程ではどうなっていますか」には答えられません。
 - 組織内の文書は個人情報や営業秘密を含むことが多く、外部のサービスに送れないのが普通です。
@@ -97,7 +97,7 @@ Cynovela は、手元の資料について普段の言葉で質問すると、�
 - **Apple シリコン搭載の Mac**（M1 以降）。Intel の Mac・Windows・Linux では動作を確認していません。メモリは 8 GB 以上を推奨します。
 - **ダウンロードは2つ:** パッケージ版（約 830 MB）と AIモデル（約 3.1 GB）。展開後はそれぞれ約 3.1 GB と 4.84 GB です。Python も conda も要りません。
 - **答えの文章を書く言語モデルを別に用意します。** Cynovela は根拠になる文を見つけるところまでを行い、文章そのものは外で動く言語モデル（既定では同じ Mac の上のもの）が書きます。LM Studio でも、OpenAI と同じ形の口を持つものでも構いません。
-- 会社で管理されている Mac では、先に `check-managed-mac.command` をダブルクリックしてください。この Mac で動かせるかを測るだけです。
+- 管理された Mac（MDM 配下）では、先に `check-managed-mac.command` をダブルクリックしてください。この Mac で動かせるかを測るだけです。
 
 ### 次に開くもの
 
