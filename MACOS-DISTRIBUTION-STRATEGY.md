@@ -48,7 +48,7 @@ Its actual model is a portable archive containing a `conda-pack` environment. To
 The inspected public package contains developer/build-machine absolute paths, including paths under:
 
 ```text
-/Users/toshi-mac-air/...
+/Users/<username>/...
 ```
 
 The large majority were found in Python bytecode (`.pyc`), with additional occurrences in two Mach-O Python extension modules.
@@ -58,13 +58,13 @@ Two relevant `.pyc` path forms were observed:
 ### Form A — original Conda environment prefix
 
 ```text
-/Users/toshi-mac-air/miniforge3/envs/cynovela-dist/...
+/Users/<username>/miniforge3/envs/cynovela-dist/...
 ```
 
 ### Form B — post-pack extraction/workspace prefix
 
 ```text
-/Users/toshi-mac-air/cynovela-work-.../chewie/.condapack-cynovela/...
+/Users/<username>/cynovela-work-.../chewie/.condapack-cynovela/...
 ```
 
 Form B strongly indicates that Python was executed after the original conda-pack archive was expanded into a work directory, generating fresh bytecode before the final release archive was created.
@@ -87,7 +87,7 @@ For release artifacts, the preferred policy is therefore:
 The two inspected `.so` files contain a real Mach-O load command:
 
 ```text
-LC_RPATH /Users/toshi-mac-air/miniforge3/envs/cynovela-dist/lib
+LC_RPATH /Users/<username>/miniforge3/envs/cynovela-dist/lib
 ```
 
 Their inspected `LC_LOAD_DYLIB` entries point to system libraries such as:
@@ -104,7 +104,7 @@ This path should still be removed from a public artifact because it is unnecessa
 The appropriate repair is **not manual byte patching**. Use the macOS Mach-O tooling, for example:
 
 ```bash
-install_name_tool -delete_rpath "/Users/toshi-mac-air/miniforge3/envs/cynovela-dist/lib" <binary>
+install_name_tool -delete_rpath "/Users/<username>/miniforge3/envs/cynovela-dist/lib" <binary>
 ```
 
 Then re-inspect the Mach-O load commands and rerun import/startup/E2E tests. Any future code signing must happen **after** Mach-O modification.
@@ -152,7 +152,7 @@ Before publication, both PKG contents and Portable contents should be expanded/i
 
 ```text
 /Users/
-toshi-mac-air
+<developer user name>
 local workspace names
 build directories
 private host names
