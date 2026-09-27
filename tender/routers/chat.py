@@ -2372,8 +2372,11 @@ async def chat_compare(request: Request):
 
 @router.post("/api/rag/query", response_model=None)
 async def rag_query(request: Request):
-    """fix061 A1: 軽量 RAG クエリ EP。query + workspace_id 必須。
-    内部的に /api/chat の最小サブセットを呼び出し citations 付き応答を返す。
+    """RAG クエリ EP。query は必須、workspace_id は省略できる。
+    内部で /api/chat の処理 (chat()) をそのまま呼ぶ。検索に加えて推論サーバで回答を
+    生成し、/api/chat と同じ形 (answer・citations・sources ほか) を返す。
+    推論サーバへ届かないときは /api/chat と同じく 400 になる。
+    サインイン済みなら閲覧者も呼べる (作業場所の所属などの判定は chat() 側で行う)。
     workspace_id 省略時はユーザーがアクセス可能な先頭 workspace を自動選択。
     """
     # 入口の資格を委譲先 /api/chat と揃える。本 EP は下で

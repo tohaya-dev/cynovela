@@ -359,6 +359,40 @@ if True:
 
         _default_rl_item = _rl_parse("200/minute")
         _default_rl = _RLFixedWindow(_RLMemoryStorage())
+        # 経路ごとの厳しい上限 (POST のみ)。デコレータ (routers/auth.py の _auth_rate_limit、
+        #   routers/chat.py の _chat_rate_limit) はそのまま残し、ここでも同じ値で数える。
+        #   デコレータの無い経路 (/api/chat/followups・/api/rag/query・/api/agent/chat・
+        #   /api/auth/refresh など) もここで上限が掛かる。
+        #   数え方は接続元アドレス × 経路。記憶はこのプロセスの中だけ (再起動で 0 に戻る)。
+        #   値の一覧は docs/operations.md の "Rate limits" に書く (変えるときは両方を直す)。
+        _strict_rl_items = {
+            "/api/auth/login": _rl_parse("5/minute"),
+            "/api/auth/change-password": _rl_parse("5/minute"),
+            "/api/auth/verify-password": _rl_parse("5/minute"),
+            "/api/auth/refresh": _rl_parse("30/minute"),
+            "/api/admin/users/*/reset-password": _rl_parse("10/minute"),
+            "/api/chat": _rl_parse("30/minute"),
+            "/api/rag/query": _rl_parse("30/minute"),
+            "/api/chat/compare": _rl_parse("30/minute"),
+            "/api/chat/compare-collections": _rl_parse("30/minute"),
+            "/api/chat/summarize": _rl_parse("30/minute"),
+            "/api/chat/followups": _rl_parse("30/minute"),
+            "/api/agent/chat": _rl_parse("30/minute"),
+            "/api/workspaces/*/chat/stream": _rl_parse("30/minute"),
+        }
+
+        def _strict_rl_key(path: str):
+            """POST の経路を _strict_rl_items の鍵へ寄せる。対象外は None。"""
+            _q = path.rstrip("/")
+            if _q in _strict_rl_items:
+                return _q
+            _parts = _q.split("/")
+            # /api/workspaces/{id}/chat/stream -> 作業場所の id によらず 1 つの枠で数える
+            if len(_parts) == 6 and _parts[1:3] == ["api", "workspaces"] and _parts[4:] == ["chat", "stream"]:
+                return "/api/workspaces/*/chat/stream"
+            if len(_parts) == 6 and _parts[1:4] == ["api", "admin", "users"] and _parts[5] == "reset-password":
+                return "/api/admin/users/*/reset-password"
+            return None
 
         @app.middleware("http")
         async def _default_rate_limit_mw(request: Request, call_next):
@@ -369,6 +403,12 @@ if True:
                     return _RLJSONResponse(
                         {"error": "Rate limit exceeded: 200 per 1 minute"}, status_code=429
                     )
+                if request.method == "POST":
+                    _k = _strict_rl_key(_p)
+                    if _k is not None and not _default_rl.hit(_strict_rl_items[_k], "strict", _ip, _k):
+                        return _RLJSONResponse(
+                            {"error": f"Rate limit exceeded: {_strict_rl_items[_k]}"}, status_code=429
+                        )
             return await call_next(request)
     except Exception as _e:
         logger.warning(f"SlowAPI 初期化失敗 (rate limit 無効): {_e}")

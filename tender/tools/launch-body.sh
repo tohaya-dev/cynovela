@@ -127,12 +127,11 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://localhost:8765   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初のパスワードは、この配布物の中の cynovela.yaml (launch.sh と
-             同じ場所) の auth.admin_initial_password に書いてあります
-             (閲覧者のぶんは auth.viewer_initial_password)。初回起動なら
-             画面にも1回出ます (--demo の初回起動でも同じです)。
-             管理者は最初に入ったときにパスワードの変更を求められます。
-             変え終わるまで管理の操作は通りません。
+             最初のパスワードは、ダウンロードのページの README.md /
+             README.ja.md (4 節) の表にあります。配布物の中には平文で
+             書いていません (cynovela.yaml にはハッシュ値だけがあります)。
+             管理者も閲覧者も、最初に入ったときにパスワードの変更を
+             求められます。変え終わるまで他の操作は通りません。
 
 共有の conda 環境 'cynovela' は読むだけで、書き換えません。
 
@@ -442,7 +441,8 @@ print_first_run_guide() {
     [ What happens next ]
       1. Choose the folders to search (you will be asked in a moment)
       2. It prepares what it needs to run (the first time takes about 10-20 min)
-      3. A browser opens. The sign-in name and password appear on this screen
+      3. A browser opens. The sign-in names appear on this screen; the first
+         passwords are in the table in README.md (section 4)
       4. You can start asking questions
 
     [ About the search targets ]
@@ -473,7 +473,8 @@ print_first_run_guide() {
     【 これから進む順番 】
       1. 検索の対象にするフォルダを決めます（このあと聞きます）
       2. 動かすのに必要なものを用意します（初回は 10〜20 分ほどかかります）
-      3. ブラウザが開きます。ログインに使う名前とパスワードは画面に出します
+      3. ブラウザが開きます。ログインに使う名前は画面に出します。最初のパスワードは
+         README.ja.md（4 節）の表にあります
       4. 質問できるようになります
 
     【 検索の対象について 】
@@ -1475,10 +1476,12 @@ do_setup() {
 #   パスワードの実値はここへ印字しない。同梱のバックアップの場所を示す。
 # ------------------------------------------------------------
 # ── はじめてのログインのガイド ────────────────────────────────
-#   平文のパスワードを配布物の文書に置くのをやめ、初回の起動だけ画面に出す。
-#   出すか出さないかの判定は「データベースのファイルがまだ無いこと」1つだけ。
-#   値は同梱の cynovela.yaml から読む (新しい設定は増やさない)。
-#   db.py には触らない。認証の動きは変えていない。表示だけである。
+#   平文のパスワードは配布物に置かない (cynovela.yaml にはハッシュ値だけ)。
+#   ∴ 値は画面にも出さず、README の表を指す。
+#   出すか出さないかの判定は「データベースのファイルがまだ無いこと」と
+#   「cynovela.yaml に最初のパスワード (ハッシュ値か平文) があること」。
+#   どちらも空なら db.py が乱数で作り、その値を自分で画面に出すので、ここは黙る。
+#   枠は 区切り線 + 7 行 + 区切り線 の 9 行 (macos-app/main.swift がこの行数で畳む)。
 print_first_login() {
     local _db _pw _dir
     _dir="${DATA_DIR:-$SCRIPT_DIR/store}"
@@ -1490,16 +1493,18 @@ print_first_login() {
         _db="$_dir/db/cynovela.db"
     fi
     [ -f "$_db" ] && return 0          # 2回目からは出さない
-    _pw="$(conf_get auth admin_initial_password 2>/dev/null || true)"
-    [ -n "$_pw" ] || return 0          # 値が無ければ黙る (乱数が使われる)
+    _pw="$(conf_get auth admin_initial_password_hash 2>/dev/null || true)"
+    [ -n "$_pw" ] || _pw="$(conf_get auth admin_initial_password 2>/dev/null || true)"
+    [ -n "$_pw" ] || return 0          # 値が無ければ黙る (乱数が使われ、db.py が画面に出す)
+    _pw=""
     echo ""
     echo "  ────────────────────────────────────────────────"
     echo "    First login / はじめてのログイン"
     echo "      Open / ひらく          : http://localhost:$PORT"
-    echo "      User name / ユーザー名 : cynovela"
-    echo "      Password / パスワード  : $_pw"
-    echo "    You will be asked to change it on the first sign-in."
-    echo "    最初のログインで変更を求められます。"
+    echo "      User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)"
+    echo "      Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)"
+    echo "    Both are asked to change the password on the first sign-in."
+    echo "    管理者・閲覧者とも、最初のログインで変更を求められます。"
     echo "    Shown only this once. / この表示が出るのは初回だけです。"
     echo "  ────────────────────────────────────────────────"
 }
@@ -1517,14 +1522,11 @@ print_next_steps() {
     echo "  ■ 入り方"
     echo "      管理者の利用者名: cynovela"
     echo "      閲覧者の利用者名: demo"
-    # dd0202 (決定 §103-2): 管理者と閲覧者で、パスワードの在りかを分けて書く。
-    #   管理者の値は print_first_login が初回だけ画面に出す。閲覧者の値は画面に出さない。
-    echo "      The administrator's password is shown on this screen once, the first time it starts."
-    echo "      管理者のパスワードは、はじめて起動したときにこの画面へ1回だけ表示されます。"
-    echo "      (2回目からは出ません。別便で受け取るファイルはありません。)"
-    echo '      The viewer (`demo`) password is in `auth.viewer_initial_password` in `cynovela.yaml`.'
-    echo '      閲覧者（`demo`）のパスワードは `cynovela.yaml` の `auth.viewer_initial_password` にあります。'
-    echo "      管理者は初回にパスワードの変更を求められます。"
+    # 最初のパスワードは README の表にだけ載せる (配布物の中には平文で置かない)。
+    echo "      The first passwords are in the table in README.md (section 4) on the download page."
+    echo "      最初のパスワードは、ダウンロードのページの README.ja.md（4 節）の表にあります。"
+    echo "      Both users are asked to change the password on the first sign-in."
+    echo "      管理者・閲覧者とも、最初のログインでパスワードの変更を求められます。"
     echo ""
     print_first_login
     echo "  ■ 気をつけること"

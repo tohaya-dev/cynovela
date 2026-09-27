@@ -174,6 +174,12 @@ recent audit log entries
 
 search; shows source fragments only (no answer)
 
+It sends the question to `POST /api/chat`. The server searches and also generates an
+answer with the inference server; the command prints only the matching fragments
+(the `citations` of the answer), not the answer text. **Without a reachable inference
+server the server answers 400 and the command exits with 4**, printing no fragments.
+Any signed-in user can use it, a viewer too.
+
 | Argument | Required | What it is |
 |---|---|---|
 | `--workspace` | yes | workspace_id (see: workspaces) |
@@ -626,6 +632,11 @@ cd <展開したフォルダ>
 #### `search`
 
 探す。答えは出さず、当たった断片だけを出す
+
+質問を `POST /api/chat` へ送ります。サーバは検索に加えて、推論サーバで回答も作ります。
+この命令が出すのは当たった断片（回答の `citations`）だけで、回答の文は出しません。
+**推論サーバに届かないときはサーバが 400 を返し、この命令は 4 で終わります**（断片も出ません）。
+サインインしていれば誰でも使えます（閲覧者も）。
 
 | 引数 | 要る？ | 何か |
 |---|---|---|

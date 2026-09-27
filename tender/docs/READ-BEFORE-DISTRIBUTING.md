@@ -11,14 +11,14 @@ A package comes in one of two forms — the **package edition** (a single file,
 about 800MB; no Python and no conda needed: unpack it and run `./launch.sh`)
 and the **source edition** (not a download: the source is the repository —
 clone it or use GitHub's "Download ZIP" and take the `tender/` tree) — plus the
-**models split files** (`cynovela-tender-models-2.0.1.tar.gz.part00`–`part02`).
+**models split files** (`cynovela-tender-models-2.0.2.tar.gz.part00`–`part02`).
 Neither form contains the AI models:
 download the models parts too, join them in part order with `cat`, and run
-`tar -xzf ../cynovela-tender-models-2.0.1.tar.gz` inside the unpacked tender
+`tar -xzf ../cynovela-tender-models-2.0.2.tar.gz` inside the unpacked tender
 folder — that alone places them in the correct shape under `store/models/`
 (`models--BAAI--bge-m3/snapshots/<rev>/`; nowhere else). The joining and
 verification guide is `HOW-TO-ASSEMBLE.md`, published next to the files.
-All forms are version `2.0.1`. Where the forms differ, this document states so.
+All forms are version `2.0.2`. Where the forms differ, this document states so.
 The `store/` folder holds the ingested material's index, the database, the
 settings and the key files — back it up as a whole. The key files — the
 encryption key (`store/secret.key`) and the token-signing key
@@ -44,16 +44,29 @@ and builds them on this machine.
    different accounts see different material). Every person, organisation,
    address, phone number, email address and number in them is invented and
    bears no relation to anyone real. See `BUNDLED-DATA.md` for the breakdown.
-4. **The recipient does not need to look for the administrator's initial password.
-   It is printed once, on the terminal screen, at the first start.** (`launch.sh`
-   prints it — in both forms, `--demo` and production: neither database ships in
-   the package, so both routes count as a first start. From the second start on it
-   is not printed.) **The viewer's value is in this package's own `cynovela.yaml`**
-   (`auth.viewer_initial_password`, next to `launch.sh`); the administrator's value
-   is also there (`auth.admin_initial_password`) if the screen was missed. They are
-   fixed values; nothing is delivered separately, and they are not written into any
-   of the documents. **The administrator is required to change the password at
-   first sign-in** — tell the recipient to do that first.
+4. **The first passwords of the administrator (`cynovela`) and the viewer (`demo`)
+   are published only in `README.md` / `README.ja.md`, section 4 (the table
+   "Role | User name | First password").** The package does not contain them in
+   plaintext. At the first start `launch.sh` shows the user names once and points
+   to that table (in both forms, `--demo` and production: neither database ships in
+   the package, so both routes count as a first start); it does not print the
+   password. Nothing is delivered separately.
+
+   When the package is built, the plaintext values are read from
+   `tools/dist-initial-credentials.local` (not tracked by git, mode 0600), hashed
+   with the app's own hash function (`db.hash_password`), and only the hashes are
+   written into the package's `cynovela.yaml` (`auth.admin_initial_password_hash`,
+   `auth.viewer_initial_password_hash`). The plaintext keys
+   (`auth.admin_initial_password`, `auth.viewer_initial_password`) are left empty;
+   an operator may fill them to choose their own first value. Without the
+   `.local` file the build stops. The package check (`dist_inspect`) stops the
+   build if a plaintext first password appears anywhere in the package; there are
+   no exceptions.
+
+   **Both the administrator and the viewer are required to change the password at
+   first sign-in**; other operations are refused (403) until then. Tell the
+   recipient to do that first. An existing installation keeps its current
+   passwords; nothing is reset on update.
 5. **In production mode, no ingest source is registered.** You must register one
    before your own material can be read. See `getting-started.md`. With
    `--demo`, one source (`./dummy-corpus`) is already registered, and the first
@@ -68,7 +81,7 @@ and builds them on this machine.
 
 この文書は、本配布物を受け取った方・配布する方に最初に読んでいただくガイドです。
 
-配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`tender/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど明記します。版はいずれも `2.0.1` です。
+配布物には**パッケージ版**（1本・約800MB。Python も conda も不要で、展開して `./launch.sh` だけで動く形）と**ソース版**（ダウンロードではなく、リポジトリのソースを clone か「Download ZIP」で取り、`tender/` の木から始める形）の 2 つの形があり、これに **AIモデルだけの分割ファイル（models）** が加わります。どちらの形にも AIモデルは入っていないので、models も落として重ねます。形によって話が違うところは、そのつど明記します。版はいずれも `2.0.2` です。
 
 ## 1. この配布物の位置づけ
 
@@ -88,7 +101,7 @@ and builds them on this machine.
 **どちらも再起動して消えることはありません。**場所が分かれているので、デモで試したあとに本番を使い始めても、デモの中身が本番に混ざることはありません。
 
 > **起動の前にモデルを置いてください。**
-> どちらの形にも、検索に使う埋め込みモデルは入っていません。models の分割ファイル（`cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02`）を part の順に `cat` で 1 本につないだうえで、**展開済みの tender フォルダの中で `tar -xzf ../cynovela-tender-models-2.0.1.tar.gz` を実行**してください。それだけで `store/models/` の正しい形（`models--BAAI--bge-m3/snapshots/<版>/`）に置かれます。宛先は `store/models/` 配下だけです。つなぎ方と検証の手引きは、Releases に一緒に置いてある `HOW-TO-ASSEMBLE.md` にあります。置かないまま起動すると、検索や取り込みをしようとしたところで失敗します。
+> どちらの形にも、検索に使う埋め込みモデルは入っていません。models の分割ファイル（`cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02`）を part の順に `cat` で 1 本につないだうえで、**展開済みの tender フォルダの中で `tar -xzf ../cynovela-tender-models-2.0.2.tar.gz` を実行**してください。それだけで `store/models/` の正しい形（`models--BAAI--bge-m3/snapshots/<版>/`）に置かれます。宛先は `store/models/` 配下だけです。つなぎ方と検証の手引きは、Releases に一緒に置いてある `HOW-TO-ASSEMBLE.md` にあります。置かないまま起動すると、検索や取り込みをしようとしたところで失敗します。
 >
 > なお `store/` フォルダには、取り込んだ資料の索引・データベース・設定・鍵ファイルが入っています。控えを取るなら `store/` ごと取ってください。鍵ファイル（暗号化用の `store/secret.key` と、通行証のトークン署名用の `store/db/jwt/secret.key`）は初回起動時にその機械で新しく作られます（配布物には入っていないため、別々のインストールが同じ鍵を持つことはありません）。デモのデータベースとインデックスも配布物には入っておらず、`--demo` の初回起動時にサーバが同梱の `dummy-corpus/` をその場で取り込んで、その機械の上で作ります。
 
@@ -98,17 +111,13 @@ and builds them on this machine.
 
 デモのデータベースとインデックスは配布物に入っていません。**`--demo` の初回起動時に、この配布物の中の `dummy-corpus/` だけから、受け取った機械の上で作られます**。作る側の作業用の資料やインデックスは入っていません。内訳は同梱の `BUNDLED-DATA.md` に書いてあります。
 
-## 4. 管理者の初期パスワードは初回起動のときに画面へ出ます（閲覧者の値と控えは `cynovela.yaml`）
+## 4. 最初のパスワードは README の 4 節だけに載せています（配布物の `cynovela.yaml` はハッシュだけ）
 
-**受け取り手は管理者の初期パスワードを探さなくてよい。初回起動のときにターミナルの画面へ1回だけ出る。**`launch.sh` が出します（`tools/launch-body.sh` の `print_first_login`。2 回目からは出ません）。配布物にはどちらのデータベースも入っていないため、`--demo` でも本番でも初回起動で出ます。**閲覧者の値は、この配布物の `cynovela.yaml`（`auth.viewer_initial_password`・`launch.sh` と同じ場所）にあります。**管理者の値の控えも同じファイル（`auth.admin_initial_password`）にあります。
+**管理者（`cynovela`）と閲覧者（`demo`）の最初のパスワードは、`README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にだけ載せています。**配布物には平文では入っていません。初回起動のとき、`launch.sh`（`tools/launch-body.sh` の `print_first_login`。2 回目からは出ません）が利用者名を1回だけ出して、その表を案内します。パスワードは画面に出しません。配布物にはどちらのデータベースも入っていないため、`--demo` でも本番でも初回起動で出ます。**別便で渡すファイルはありません。**
 
-管理者の値を画面で見逃した場合は、**この配布物の `cynovela.yaml`**（`launch.sh` と同じ場所）の `auth.admin_initial_password` に書き込まれています。管理者と閲覧者の初期パスワードは**固定値**で、同梱の文書には書かれていません。**別便で渡すファイルはありません**（2026-08-02 に、乱数を作って別便で渡す形から変えました。受け取り手が入れない配布物を作らないためです）。
+配布物を作るときに、平文を `tools/dist-initial-credentials.local`（git 追跡外・0600）から読み込み、アプリ自身のハッシュ関数（`db.hash_password`）でハッシュにして、同梱の `cynovela.yaml` にはハッシュだけを書き込みます（`auth.admin_initial_password_hash` / `auth.viewer_initial_password_hash`）。平文のキー（`auth.admin_initial_password` / `auth.viewer_initial_password`）は空にします。運用する側が自分で最初の値を決めたいときは、平文のキーに書くこともできます。`.local` のファイルが無いと配布物は作れません（途中で止まります）。配布物の検査（`dist_inspect`）は、平文の最初のパスワードが配布物のどこかに出てくると、配布物の作成を止めます。例外はありません。
 
-平文はこのリポジトリには置いていません。配布物を作るときに `tools/dist-initial-credentials.local`（git 追跡外・0600）から読み込み、同梱の `cynovela.yaml` の `auth.admin_initial_password` / `auth.viewer_initial_password` へ書き込みます。このファイルが無いと配布物は作れません（途中で止まります）。
-
-**管理者は初回ログインでパスワードの変更を求められます。** 受け取った方には、まず管理者のパスワードを変えるようにお伝えください。
-
-初回ログイン時に**管理者パスワードの変更が必須**です。画面のガイドに従って新しいパスワードを設定してください。
+**管理者も閲覧者も、初回ログインでパスワードの変更を求められます。**変えるまでほかの操作は断られます（403）。受け取った方には、まずパスワードを変えるようにお伝えください。すでに使っている環境は今のパスワードのままです。更新してもパスワードは戻りません。
 
 ## 5. 本番で起動すると、取り込み元（ソースのルート）は登録 0 件から始まります
 

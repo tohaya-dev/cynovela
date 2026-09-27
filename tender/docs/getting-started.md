@@ -76,12 +76,12 @@ restore, changing the port, and reading the logs — are in [operations.md](oper
 
 ## 0. Read this first (this is where most people get stuck)
 
-- **The first time you sign in as the administrator, you will always be told to change
-  your password.**
-- **Until you have finished changing it, every administrative operation (adding an
+- **The first time you sign in as the administrator or as the viewer, you will always be
+  told to change your password.** The first passwords are in `README.md` /
+  `README.ja.md`, section 4.
+- **Until you have finished changing it, every other operation (adding an
   ingest source, ingesting documents, changing settings) is rejected.** Change it first.
-- The viewer (`demo`) is not asked to change anything. However, a viewer cannot ingest
-  documents.
+- A viewer cannot ingest documents.
 
 This package runs directly on your own machine.
 
@@ -101,9 +101,9 @@ There are 2 forms, plus the AI models as a separate download. **The package edit
 
 | Package | Who it is for | What to do |
 |---|---|---|
-| **Package edition** `cynovela-tender-package-2.0.1.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
+| **Package edition** `cynovela-tender-package-2.0.2.tar.gz` (1 file, about 800 MB) | Apple silicon Macs. **No Python and no conda are needed. Nothing is installed on this Mac.** | Extract it, add the AI models (last row), then run `./launch.sh`. To remove it, delete the folder. |
 | **Source edition** (not a download — the source is this repository) | Those who want to build the environment themselves | Clone the repository or use GitHub's "Download ZIP", take the `tender/` tree, add the AI models (last row), then follow section 7 below. |
-| **AI models** `cynovela-tender-models-2.0.1.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-tender-models-2.0.1.tar.gz` **inside the extracted tender folder** — `store/models/` is created. |
+| **AI models** `cynovela-tender-models-2.0.2.tar.gz.part00`–`part02` (3 split files) | Needed with the package edition and the source edition. Despite the name, these are the AI models themselves, not conda packages. | Join the parts into one file, then run `tar -xzf ../cynovela-tender-models-2.0.2.tar.gz` **inside the extracted tender folder** — `store/models/` is created. |
 
 With the source edition you choose, at startup, one of 2 ways to build the environment.
 
@@ -125,7 +125,7 @@ The AI models are downloaded separately (see section 8, "First run only").
 
 ## 2. The gentle way in — the package edition, step by step
 
-This section is for the **package edition** (`cynovela-tender-package-2.0.1.tar.gz`).
+This section is for the **package edition** (`cynovela-tender-package-2.0.2.tar.gz`).
 It assumes you have never opened Terminal. Nothing is skipped.
 
 Do these in order. Do not read ahead for reasons; the reasons are in section 3.
@@ -135,10 +135,10 @@ Do these in order. Do not read ahead for reasons; the reasons are in section 3.
 On the releases page, download these into your **Downloads** folder:
 
 ```
-cynovela-tender-package-2.0.1.tar.gz
-cynovela-tender-models-2.0.1.tar.gz.part00
-cynovela-tender-models-2.0.1.tar.gz.part01
-cynovela-tender-models-2.0.1.tar.gz.part02
+cynovela-tender-package-2.0.2.tar.gz
+cynovela-tender-models-2.0.2.tar.gz.part00
+cynovela-tender-models-2.0.2.tar.gz.part01
+cynovela-tender-models-2.0.2.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -167,7 +167,7 @@ Nothing will be printed. That is correct.
 Type this as **one line** and press return:
 
 ```
-cat cynovela-tender-models-2.0.1.tar.gz.part* > cynovela-tender-models-2.0.1.tar.gz
+cat cynovela-tender-models-2.0.2.tar.gz.part* > cynovela-tender-models-2.0.2.tar.gz
 ```
 
 This takes **one to three minutes** and prints nothing while it works. When the
@@ -183,8 +183,8 @@ This takes **one to three minutes**. It then prints one line per file. Every lin
 must end in `OK`:
 
 ```
-cynovela-tender-models-2.0.1.tar.gz: OK
-cynovela-tender-package-2.0.1.tar.gz: OK
+cynovela-tender-models-2.0.2.tar.gz: OK
+cynovela-tender-package-2.0.2.tar.gz: OK
 ```
 
 If any line shows `FAILED`, download that file again and repeat from step 4. Do
@@ -193,7 +193,7 @@ not go on.
 #### Step 6. Unpack the program
 
 ```
-tar -xzf cynovela-tender-package-2.0.1.tar.gz
+tar -xzf cynovela-tender-package-2.0.2.tar.gz
 ```
 
 This takes **three to ten minutes** and prints nothing. A folder named `tender`
@@ -210,7 +210,7 @@ Nothing is printed.
 #### Step 8. Unpack the AI models inside it
 
 ```
-tar -xzf ../cynovela-tender-models-2.0.1.tar.gz
+tar -xzf ../cynovela-tender-models-2.0.2.tar.gz
 ```
 
 This takes **two to five minutes** and prints nothing.
@@ -261,25 +261,25 @@ A sign-in screen appears.
 
 #### Step 11. Sign in
 
-**First sign-in. You do not need to look for the password.**
-**It is printed on screen, once, the first time you start.**
+**First sign-in. The first passwords are in `README.md` / `README.ja.md`, section 4 (the table "Role | User name | First password").**
+**The first start shows the user names on screen, once, and points to that table.**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela
-        Password / パスワード  : (it appears here)
-      You will be asked to change it on the first sign-in.
-      Shown only this once.
+        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
+        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
+      Both are asked to change the password on the first sign-in.
+      管理者・閲覧者とも、最初のログインで変更を求められます。
+      Shown only this once. / この表示が出るのは初回だけです。
     ────────────────────────────────────────────────
 
 - **Shown on the first start only.** It does not appear again.
 - **The administrator is `cynovela`; the viewer account is `demo`.**
-- **The administrator is asked to change the password on first sign-in.** The viewer is not.
-- **Nothing is sent to you separately.**
-- **If you missed that screen**, the same value is in `cynovela.yaml` in the folder you
-  unpacked, next to `launch.sh`: `auth.admin_initial_password`
-  (`auth.viewer_initial_password` for the viewer).
+- **Both the administrator and the viewer are asked to change the password on first sign-in.**
+  Until it is changed, other operations are refused.
+- **Nothing is sent to you separately.** The password is not printed on screen,
+  and `cynovela.yaml` holds only hashes of the first passwords.
 
 It will ask you to choose a new password straight away. Do that.
 
@@ -372,15 +372,16 @@ into memory — several gigabytes — before a single word comes back. The tool
 waits up to 120 seconds per request for that. If you get a message about a
 timeout, load the model in LM Studio first and ask again.
 
-#### Why the password is also in a file
+#### Why the password is not in a file
 
-The first password appears on the terminal screen once, the very first time you
-start — you do not need to look for it. The same value is also written into
-`cynovela.yaml` at packaging time, so you can still find it there if you missed
-that screen. Each package is built with a different first password: if it were
-the same for everyone, anyone who had downloaded the tool would know yours.
-Changing it on first sign-in is required for the same reason: administrator
-actions are rejected until you do.
+The first passwords are published in `README.md` / `README.ja.md`, section 4.
+The package's `cynovela.yaml` holds only their hashes
+(`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`), so the
+values cannot be read out of the package, and the terminal does not print them.
+Because the published values are the same for everyone who has the README,
+changing them on first sign-in is required: for both the administrator and the
+viewer, other operations are rejected until you do. An existing installation
+keeps its current passwords; nothing is reset on update.
 
 #### Why you should not put the folder in iCloud Drive, Dropbox or OneDrive
 
@@ -401,7 +402,7 @@ Closing the window does not stop it. That is why there is a separate
 
 ## 4. The short route, for those in a hurry
 
-These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `2.0.1` (working directory `<the folder where you extracted the package>`).
+These are the shortest steps to start Cynovela for the first time and throw your first RAG question. The target is version `2.0.2` (working directory `<the folder where you extracted the package>`).
 
 ### 4-1. Setting up the environment (source edition only)
 
@@ -604,28 +605,25 @@ What to check when it does not work:
 | Viewer user name | `demo` |
 
 The default user names are **administrator `cynovela`** / **viewer `demo`** (not `admin`).
-**The administrator's initial password appears on the terminal screen once, the
-very first time `./launch.sh` starts — you do not need to look for it.** It
-appears on the `--demo` start as well as on the ordinary start, because neither
-database ships in the package. **The viewer's value is in this package's own
-`cynovela.yaml`** (`viewer_initial_password:`). **If you missed that screen**,
-the administrator's value is also written into `cynovela.yaml` — read it with
-`grep admin_initial_password cynovela.yaml`. They are not written in this
-documentation, so that a copy of the documentation cannot be used to sign in.
+**The first passwords of both users are in `README.md` / `README.ja.md`, section 4
+(the table "Role | User name | First password").** They are not printed on the
+terminal, and the package's `cynovela.yaml` holds only their hashes. The first
+start of `./launch.sh` (on the `--demo` start as well as on the ordinary start)
+shows the user names once and points to that table.
 
 1. Enter **`cynovela`** as the user name.
-2. For the password, enter the administrator value shown on the terminal at the
-   first start (if you missed it, read it out of `cynovela.yaml`).
+2. For the password, enter the administrator value from the table in
+   `README.md` / `README.ja.md`, section 4.
 3. When you log in, "**初回パスワードの変更**" (change your initial password) appears.
    Enter the value you received in "現在のパスワード" (current password), a value of your own choosing in
    "新しいパスワード（8文字以上）" (new password, 8 characters or more), enter the same value in the confirmation
    field as well, and press "**パスワードを変更して続行**" (change the password and continue).
 
-**Until you finish this change, administrative operations such as settings will not go through** (only the change operation goes through).
+**Until you finish this change, other operations such as settings will not go through** (only the change operation goes through).
 Be sure to change it here.
 
-The administrator is asked to change the password at the first login. After changing it, enter with the new value.
-The viewer can be used as it is. **After you receive it, change the administrator password first.**
+Both the administrator and the viewer are asked to change the password at the first login. After changing it, enter with the new value.
+An existing installation keeps its current passwords; nothing is reset on update.
 
 What to check when it does not work:
 
@@ -648,8 +646,8 @@ With `--demo`, demo users are inserted automatically, but authentication is enfo
 
 | User name (default. It is not `admin`) | Role | Password |
 |---|---|---|
-| `cynovela` | admin | The first value is printed on the terminal once, at the first start. If you missed it: this package's `cynovela.yaml` (`admin_initial_password:`). A change is forced at the first login |
-| `demo` | viewer | The first value is in this package's `cynovela.yaml` (`viewer_initial_password:`) |
+| `cynovela` | admin | The first value is in `README.md` / `README.ja.md`, section 4. A change is forced at the first login |
+| `demo` | viewer | The first value is in `README.md` / `README.ja.md`, section 4. A change is forced at the first login |
 
 ### How to create a viewer when you started with nothing loaded
 
@@ -1300,10 +1298,11 @@ More detail is in the bundled `README.md`.
 
 ## 0. 先に知っておくこと（ここでつまずく人が一番多いところ）
 
-- **管理者で最初に入ると、必ず「パスワードを変えてください」と出ます。**
-- **変え終わるまで、管理の操作（取り込み元を足す・資料を取り込む・設定を変える）は
+- **管理者でも閲覧者でも、最初に入ると必ず「パスワードを変えてください」と出ます。**
+  最初のパスワードは `README.md` / `README.ja.md` の 4 節にあります。
+- **変え終わるまで、ほかの操作（取り込み元を足す・資料を取り込む・設定を変える）は
   すべて拒否されます。** 先に変えてください。
-- 閲覧者（demo）は変更を求められません。ただし閲覧者は取り込みができません。
+- 閲覧者は取り込みができません。
 
 この配布物は、お使いの機械の上で直接動きます。
 
@@ -1323,9 +1322,9 @@ More detail is in the bundled `README.md`.
 
 | 配布物 | 対象 | することは |
 |---|---|---|
-| **パッケージ版** `cynovela-tender-package-2.0.1.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
+| **パッケージ版** `cynovela-tender-package-2.0.2.tar.gz`（1本・約800MB） | Apple silicon の Mac。**Python も conda も要りません。この Mac には何も入れません。** | 展開し、AIモデル（最終行）を重ねてから `./launch.sh` を叩きます。消すときはフォルダごと削除します。 |
 | **ソース版**（ダウンロードではありません。ソースはこのリポジトリです） | 自分で環境を作りたい方 | リポジトリを clone するか GitHub の「Download ZIP」で取り、`tender/` の木に AIモデル（最終行）を重ねてから、下の7節へ。 |
-| **AIモデル** `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの tender フォルダの中で** `tar -xzf ../cynovela-tender-models-2.0.1.tar.gz` を実行します（`store/models/` が作られます）。 |
+| **AIモデル** `cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02`（分割3本） | パッケージ版とソース版に必要です。名前は models ですが、conda のパッケージではなく **AIモデル本体**です。 | part を 1 本につないでから、**展開済みの tender フォルダの中で** `tar -xzf ../cynovela-tender-models-2.0.2.tar.gz` を実行します（`store/models/` が作られます）。 |
 
 ソース版では、起動時に、環境の作り方を2つから選びます。
 
@@ -1347,7 +1346,7 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 
 ## 2. やさしい入口 — パッケージ版を一歩ずつ
 
-この節は**パッケージ版**（`cynovela-tender-package-2.0.1.tar.gz`）向けです。
+この節は**パッケージ版**（`cynovela-tender-package-2.0.2.tar.gz`）向けです。
 ターミナルを一度も開いたことが無い方を想定して書いています。省略はしていません。
 
 上から順に行ってください。理由は3節にあります。先に読む必要はありません。
@@ -1357,10 +1356,10 @@ AIモデルは別に落とします（8節「初回だけ」を参照）。
 リリースのページから、次の5つを**ダウンロード**フォルダへ落とします。
 
 ```
-cynovela-tender-package-2.0.1.tar.gz
-cynovela-tender-models-2.0.1.tar.gz.part00
-cynovela-tender-models-2.0.1.tar.gz.part01
-cynovela-tender-models-2.0.1.tar.gz.part02
+cynovela-tender-package-2.0.2.tar.gz
+cynovela-tender-models-2.0.2.tar.gz.part00
+cynovela-tender-models-2.0.2.tar.gz.part01
+cynovela-tender-models-2.0.2.tar.gz.part02
 SHA256SUMS
 ```
 
@@ -1389,7 +1388,7 @@ cd ~/Downloads
 次を**1行で**打って return を押します。
 
 ```
-cat cynovela-tender-models-2.0.1.tar.gz.part* > cynovela-tender-models-2.0.1.tar.gz
+cat cynovela-tender-models-2.0.2.tar.gz.part* > cynovela-tender-models-2.0.2.tar.gz
 ```
 
 **1〜3分**かかります。そのあいだ何も出ません。カーソルが戻ってきたら終わりです。
@@ -1404,8 +1403,8 @@ shasum -a 256 --ignore-missing -c SHA256SUMS
 終わっていなければなりません。
 
 ```
-cynovela-tender-models-2.0.1.tar.gz: OK
-cynovela-tender-package-2.0.1.tar.gz: OK
+cynovela-tender-models-2.0.2.tar.gz: OK
+cynovela-tender-package-2.0.2.tar.gz: OK
 ```
 
 `FAILED` と出た行があれば、そのファイルを落とし直して手順4からやり直します。
@@ -1414,7 +1413,7 @@ cynovela-tender-package-2.0.1.tar.gz: OK
 #### 手順6. 本体を取り出す
 
 ```
-tar -xzf cynovela-tender-package-2.0.1.tar.gz
+tar -xzf cynovela-tender-package-2.0.2.tar.gz
 ```
 
 **3〜10分**かかります。何も出ません。ダウンロードの中に `tender` という名前の
@@ -1431,7 +1430,7 @@ cd tender
 #### 手順8. その中で AIモデルを取り出す
 
 ```
-tar -xzf ../cynovela-tender-models-2.0.1.tar.gz
+tar -xzf ../cynovela-tender-models-2.0.2.tar.gz
 ```
 
 **2〜5分**かかります。何も出ません。
@@ -1482,25 +1481,25 @@ Chrome のアドレス欄にそのまま打ち込みます。
 
 #### 手順11. ログインする
 
-**最初のログイン。パスワードを探す必要はありません。**
-**はじめて起動したとき、ターミナルの画面に1回だけ出ます。**
+**最初のログイン。最初のパスワードは `README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。**
+**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を案内します。**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela
-        Password / パスワード  : （ここに出ます）
-      最初のログインで変更を求められます。
-      この表示が出るのは初回だけです。
+        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
+        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
+      Both are asked to change the password on the first sign-in.
+      管理者・閲覧者とも、最初のログインで変更を求められます。
+      Shown only this once. / この表示が出るのは初回だけです。
     ────────────────────────────────────────────────
 
 - **出るのは初回だけです。**2回目からは出ません。
 - **管理者は `cynovela`、閲覧者は `demo` です。**
-- **管理者は最初のログインでパスワードの変更を求められます。**閲覧者には求めません。
-- **別便で届くものはありません。**
-- **この画面を見逃した場合**は、展開したフォルダの `cynovela.yaml`
-  （`launch.sh` と同じ場所）の `auth.admin_initial_password` に同じ値が書いてあります
-  （閲覧者のぶんは `auth.viewer_initial_password`）。
+- **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**
+  変えるまでほかの操作はできません。
+- **別便で届くものはありません。**パスワードは画面には出ません。`cynovela.yaml` に
+  入っているのは最初のパスワードのハッシュだけです。
 
 入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。
 
@@ -1591,14 +1590,14 @@ Finder は隠します。これは「触らなくてよいもの」という mac
 知らせが出たときは、先に LM Studio でモデルを読み込んでから、もう一度
 聞いてください。
 
-#### なぜ合言葉がファイルにも書いてあるのか
+#### なぜパスワードがファイルに書いていないのか
 
-最初の合言葉は、はじめて起動したときにターミナルの画面へ1回だけ出ます。探す
-必要はありません。同じ値がパッケージングのときに `cynovela.yaml` へも書き込まれる
-ので、画面を見逃した場合でもそこで確かめられます。配布物は1本ごとに違う最初の
-合言葉を持って作られます。全員同じだったら、この道具をダウンロードした人は
-誰でもあなたの合言葉を知っていることになります。最初のログインで変えるよう
-求めるのも同じ理由です。変えるまで、管理の操作は通しません。
+最初のパスワードは `README.md` / `README.ja.md` の 4 節に載せています。配布物の
+`cynovela.yaml` に入っているのはハッシュだけです（`auth.admin_initial_password_hash`、
+`auth.viewer_initial_password_hash`）。そのため配布物の中から値は読めず、ターミナルにも
+出ません。載せている値は README を持っている人なら誰でも同じなので、最初のログインで
+変えることを求めます。管理者も閲覧者も、変えるまでほかの操作は通しません。すでに
+使っている環境は今のパスワードのままで、更新しても戻りません。
 
 #### なぜ iCloud Drive・Dropbox・OneDrive の中に置いてはいけないのか
 
@@ -1617,7 +1616,7 @@ Finder は隠します。これは「触らなくてよいもの」という mac
 
 ## 4. 急ぐ人のための最短の道
 
-Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `2.0.1`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
+Cynovela を初めて起動し、最初の RAG 質問を投げるまでの最短手順です。対象は版 `2.0.2`（作業ディレクトリ `<配布物を展開したフォルダ>`）です。
 
 ### 4-1. 環境のセットアップ（ソース版のみ）
 
@@ -1816,26 +1815,22 @@ http://localhost:8765
 | 閲覧者の利用者名 | `demo` |
 
 既定の利用者名は **管理者 `cynovela`** / **閲覧者 `demo`** です（`admin` ではありません）。
-**管理者の初期パスワードは、はじめて `./launch.sh` を起動したときにターミナルの
-画面へ1回だけ出ます。探す必要はありません。** 配布物にはどちらのデータベースも
-入っていないため、`--demo` の起動でも普通の起動でも初回に出ます。
-**閲覧者の値は、この配布物自身の `cynovela.yaml`（`viewer_initial_password:`）に
-あります。** 画面を見逃した場合は、管理者の値も同じ `cynovela.yaml` で読めます
-（`grep admin_initial_password cynovela.yaml`）。この文書には書いて
-いません。文書のコピーだけでログインできてしまうのを避けるためです。
+**2人の最初のパスワードは、`README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 |
+最初のパスワード）にあります。** ターミナルの画面には出ません。配布物の
+`cynovela.yaml` に入っているのはハッシュだけです。`./launch.sh` を初めて起動したとき
+（`--demo` の起動でも普通の起動でも）、利用者名が1回だけ出て、その表を案内します。
 
 1. ユーザー名に **`cynovela`** を入力します。
-2. パスワードは、初回起動のときにターミナルへ出た管理者の値を入力します
-   （見逃した場合は `cynovela.yaml` から読み取ります）。
+2. パスワードは、`README.md` / `README.ja.md` の 4 節の表にある管理者の値を入力します。
 3. ログインすると「**初回パスワードの変更**」が出ます。
    「現在のパスワード」に受け取った値、「新しいパスワード（8文字以上）」に自分で決めた値を入れ、
    確認欄にも同じ値を入れて「**パスワードを変更して続行**」を押します。
 
-**この変更を済ませるまで、設定などの管理操作は通りません**（変更操作だけが通ります）。
+**この変更を済ませるまで、設定などのほかの操作は通りません**（変更操作だけが通ります）。
 必ずここで変更してください。
 
-管理者は初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。
-閲覧者はそのまま使えます。**受け取ったあと、最初に管理者のパスワードを変えてください。**
+管理者も閲覧者も、初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。
+すでに使っている環境は、今のパスワードのままです。更新してもパスワードは戻りません。
 
 うまくいかないときに確認すること:
 
@@ -1858,8 +1853,8 @@ http://localhost:8765
 
 | ユーザー名（既定。`admin` ではありません） | ロール | パスワード |
 |---|---|---|
-| `cynovela` | admin | 最初の値は初回起動のときにターミナルへ1回だけ出ます。見逃した場合はこの配布物の `cynovela.yaml`（`admin_initial_password:`）に在ります。初回ログイン時に変更を強制 |
-| `demo` | viewer | 最初の値はこの配布物の `cynovela.yaml`（`viewer_initial_password:`）に在ります |
+| `cynovela` | admin | 最初の値は `README.md` / `README.ja.md` の 4 節にあります。初回ログイン時に変更を強制 |
+| `demo` | viewer | 最初の値は `README.md` / `README.ja.md` の 4 節にあります。初回ログイン時に変更を強制 |
 
 ### 何も入れずに始めた場合の、閲覧者の作り方
 

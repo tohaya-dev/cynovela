@@ -32,13 +32,13 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 ### 1. 落とす（5つ・同じフォルダへ）
 
 [リリースのページ](https://github.com/tohaya-dev/cynovela/releases) から落とします。
-ここに並べたのは 2.0.1 のファイルです。前の版 v1.2.0 も、
+ここに並べたのは 2.0.2 のファイルです。前の版 v1.2.0 も、
 リリースのページに残っています。
 
 | ファイル | 何か |
 |---|---|
-| `cynovela-tender-package-2.0.1.tar.gz` | **Cynovela 本体。**`package` と付いているものが本体です |
-| `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` | **Cynovela が使う AIモデル。**資料をベクターにする埋め込みモデル（BGE-M3 ほか）と、検索結果を並べ替えるモデルです。**答えを作る LLM は入っていません**（5節で別に用意します）。GitHub は1ファイル 2 GiB までのため、3つに分けてあります |
+| `cynovela-tender-package-2.0.2.tar.gz` | **Cynovela 本体。**`package` と付いているものが本体です |
+| `cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02` | **Cynovela が使う AIモデル。**資料をベクターにする埋め込みモデル（BGE-M3 ほか）と、検索結果を並べ替えるモデルです。**答えを作る LLM は入っていません**（5節で別に用意します）。GitHub は1ファイル 2 GiB までのため、3つに分けてあります |
 | `SHA256SUMS` | 壊れていないか確かめる一覧 |
 
 管理された Mac（MDM 配下）をお使いの方は、先に `check-managed-mac.command` を落として
@@ -52,7 +52,7 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 **2-1. 3つをつなぎます。**
 
     cd ~/Downloads
-    cat cynovela-tender-models-2.0.1.tar.gz.part00 cynovela-tender-models-2.0.1.tar.gz.part01 cynovela-tender-models-2.0.1.tar.gz.part02 > cynovela-tender-models-2.0.1.tar.gz
+    cat cynovela-tender-models-2.0.2.tar.gz.part00 cynovela-tender-models-2.0.2.tar.gz.part01 cynovela-tender-models-2.0.2.tar.gz.part02 > cynovela-tender-models-2.0.2.tar.gz
 
 **2-2. 壊れていないか確かめます。**出た行が全部 `OK` なら成功です。
 
@@ -60,12 +60,12 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 
 **2-3. 本体を展開します。**`tender` フォルダができます。
 
-    tar -xzf cynovela-tender-package-2.0.1.tar.gz
+    tar -xzf cynovela-tender-package-2.0.2.tar.gz
 
 **2-4. AIモデルを、本体の中で展開します。**
 
     cd tender
-    tar -xzf ../cynovela-tender-models-2.0.1.tar.gz
+    tar -xzf ../cynovela-tender-models-2.0.2.tar.gz
 
 **`tender/store/models/` ができます。この場所でないと見つけられません。**
 先に別の場所で展開してしまった場合は、できた `models` フォルダを `tender/store/` の中へ
@@ -89,16 +89,17 @@ Publish し、出典つきの答えを返す。そして役割ごとに見える
 | **管理者**（全部できる） | `cynovela` | `Cynovela1!` |
 | **閲覧者**（見るだけ） | `demo` | `demo1234` |
 
-**管理者の値は、はじめて起動したときにターミナルの画面へ1回だけ出ます。閲覧者の値は `cynovela.yaml` の `auth:` にあります。**
-展開したフォルダの `cynovela.yaml`（`launch.sh` と同じ場所）の `auth:` にもあります。
+**最初のパスワードは、上の表の値です。**ターミナルの画面には出ません。配布物の
+`cynovela.yaml` にはハッシュだけが入っています（`auth.admin_initial_password_hash`、
+`auth.viewer_initial_password_hash`）。
 
-🔴 **管理者は、最初のログインでパスワードの変更を求められます。**変えるまで管理の操作は
-できません。**必ず変えてください。**
+🔴 **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**変えるまで
+ほかの操作はできません。**必ず変えてください。**
+すでに使っている環境は、今のパスワードのままです。更新してもパスワードは戻りません。
 
-**閲覧者（`demo`）には変更を求めません。**そして **Cynovela は既定で、同じネットワークの
-他の端末からも開けます。**これは、別の Mac から試せるようにするための既定です。
-**共有のネットワークで試すときは、`Settings` から閲覧者のパスワードも変えてください。**
-この Mac の中だけに閉じたい場合は `./launch.sh --local-only` で起動します。
+**Cynovela は既定で、同じネットワークの他の端末からも開けます。**これは、別の Mac
+から試せるようにするための既定です。この Mac の中だけに閉じたい場合は
+`./launch.sh --local-only` で起動します。
 
 ### 5. 答えを作る LLM をつなぐ
 
@@ -156,20 +157,20 @@ API キーが要ります）。
 
 ## 1.2.0 から入れ替える
 
-2.0.1 は新しい `tender` フォルダへ展開され、1.2.0 の `chewie` フォルダの `store/` は
-読みません。資料・利用者・設定を引き継ぐには、2.0.1 をはじめて起動する前に
+2.0.2 は新しい `tender` フォルダへ展開され、1.2.0 の `chewie` フォルダの `store/` は
+読みません。資料・利用者・設定を引き継ぐには、2.0.2 をはじめて起動する前に
 `chewie/store/` の中身を `tender/store/` へコピーしてください。手順は
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える) にあります。1.2.0 と比べて
 動きの変わったところ（最初のパスワードの変更・回数の上限・取り込み元・トークン）も
 あります。一覧は [RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26-1) の 2.0.0 の節に
-あります。2.0.0 から入れ替える手順は
-[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#200-から入れ替える) にあります。
+あります。2.0.0・2.0.1 から入れ替える手順は
+[HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#200201-から入れ替える) にあります。
 
 ## このリポジトリにあるもの
 
 | フォルダ | 何か | 配布物 |
 |---|---|---|
-| `tender` | Mac の上で直に動く形 | GitHub Releases (v2.0.1) で公開しています。v2.0.1 のファイル名は `cynovela-tender-…` で、展開すると `tender` フォルダができます。v1.2.0 までは以前の名前 `chewie` でした |
+| `tender` | Mac の上で直に動く形 | GitHub Releases (v2.0.2) で公開しています。v2.0.2 のファイル名は `cynovela-tender-…` で、展開すると `tender` フォルダができます。v1.2.0 までは以前の名前 `chewie` でした |
 
 コンテナ版（Falcon）はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
 
@@ -187,7 +188,7 @@ API キーが要ります）。
 
 ## 落とすもの
 
-すべて GitHub Releases (v2.0.1) にあります。
+すべて GitHub Releases (v2.0.2) にあります。
 https://github.com/tohaya-dev/cynovela/releases
 
 「どれを落とすか」の1枚での答えは
@@ -196,9 +197,9 @@ https://github.com/tohaya-dev/cynovela/releases
 | 形 | 動き方 | モデルの同梱 | ダウンロードの形 | 要るもの |
 |---|---|---|---|---|
 | **アプリ版**（`.pkg`） | — | — | **準備中です。** この版には入っていません | — |
-| **パッケージ版** `cynovela-tender-package-2.0.1.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
+| **パッケージ版** `cynovela-tender-package-2.0.2.tar.gz` | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | 1つのファイル | **Python も `conda` も要りません。** この Mac には何も入れません |
 | **ソース版** | 置いた場所のフォルダで直に | 入っていません。AIモデルも一緒に落とします | ダウンロードではありません。ソースはこのリポジトリです（clone するか、GitHub の「Download ZIP」で取れます） | Python 3.12 以降、または conda |
-| **AIモデル** `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
+| **AIモデル** `cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02` | — | — | 分割ファイル（組み立てが要る） | 名前は models ですが、`conda` のパッケージではなく AIモデル本体です |
 
 **アプリ版**（`.pkg`）＝ **準備中です。** この版には入っていません。
 
@@ -235,25 +236,24 @@ https://github.com/tohaya-dev/cynovela/releases
 
 手引きはすべて英語と日本語の併記です（英語が先・日本語が後ろ）。
 
-**最初のログイン。パスワードを探す必要はありません。**
-**はじめて起動したとき、ターミナルの画面に1回だけ出ます。**
+**最初のログイン。最初のパスワードは下の表にあります。**
+**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、この表を案内します。**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela
-        Password / パスワード  : （ここに出ます）
-      最初のログインで変更を求められます。
-      この表示が出るのは初回だけです。
+        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
+        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
+      Both are asked to change the password on the first sign-in.
+      管理者・閲覧者とも、最初のログインで変更を求められます。
+      Shown only this once. / この表示が出るのは初回だけです。
     ────────────────────────────────────────────────
 
 - **出るのは初回だけです。**2回目からは出ません。
 - **管理者は `cynovela`、閲覧者は `demo` です。**
-- **管理者は最初のログインでパスワードの変更を求められます。**閲覧者には求めません。
-- **別便で届くものはありません。**
-- **この画面を見逃した場合**は、展開したフォルダの `cynovela.yaml`
-  （`launch.sh` と同じ場所）の `auth.admin_initial_password` に同じ値が書いてあります
-  （閲覧者のぶんは `auth.viewer_initial_password`）。
+- **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**
+- **別便で届くものはありません。**パスワードは画面には出ません。`cynovela.yaml` に
+  入っているのは最初のパスワードのハッシュだけです。
 
 | 役割 | 利用者名 | 最初のパスワード |
 |---|---|---|

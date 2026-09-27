@@ -76,16 +76,22 @@ classifier:
   api_url: ''
   api_key: ''
 pii_mode: standard
-# 初期 admin 認証。admin_initial_password を指定すると初回シードでその値を使う。
-# 未指定 (空) なら起動時にランダム生成し、平文を標準出力へ 1 回表示する。
-# G-1: どちらの場合も管理者には初回変更を求めるフラグが設定される (配布仕様書 §5-4)。
-# G-2: 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
+# 初期の利用者 (管理者 cynovela・閲覧者 demo) の最初のパスワード。
+# 初回の seed (データベースに利用者の値がまだ無いとき) だけが読む。既にある利用者の
+# パスワードは変えない。どの場合も、管理者と閲覧者の両方に初回ログインでの変更を求める。
+# 値を決める順:
+#   1) *_initial_password       平文。運用者が自分で値を決めたいときだけ書く。
+#   2) *_initial_password_hash  ハッシュ値だけ (db.hash_password の形式 salt:hex)。
+#                               配布物を作るとき (tools/build-dist.sh) がここへ書く。
+#                               平文は配布物にも、このリポジトリの他の文書にも置かない
+#                               (最初のパスワードを載せるのは README.md / README.ja.md だけ)。
+#   3) どちらも空なら、初回起動時に乱数で作り、平文を標準出力へ 1 回だけ出す。
+# 環境変数からは受け取らない (設定の置き場はこのファイル 1 本)。
 auth:
   admin_initial_password: ''
-  # N-4: 閲覧者の初期の合言葉。配布物を作るとき (tools/build-dist.sh) が
-  #   この行へ値を書く。同梱の文書には書かない (受け取り手には launch.sh が
-  #   初回起動時に画面へ出す)。空のままだと初回起動時に乱数が使われる (db.py)。
+  admin_initial_password_hash: ''
   viewer_initial_password: ''
+  viewer_initial_password_hash: ''
 vector_store:
   provider: chromadb
   path: ''

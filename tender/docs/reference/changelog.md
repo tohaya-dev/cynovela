@@ -16,6 +16,54 @@ This records the main changes to Cynovela in chronological order.
 
 ---
 
+## v2.0.2 (2026-09-27)
+
+2.0.2 fixes the points below. The upgrade keeps your data, users and passwords.
+
+- **Rate limits on more paths.** Besides the existing limits on the route
+  functions, the server now counts the `POST` paths below in its HTTP
+  middleware, per client address and per path, in the memory of the server
+  process. Requests without a token are counted too.
+  - 5 per minute: `/api/auth/login`, `/api/auth/change-password`,
+    `/api/auth/verify-password`
+  - 10 per minute: `/api/admin/users/{id}/reset-password`
+  - 30 per minute: `/api/auth/refresh`, `/api/chat`, `/api/rag/query`,
+    `/api/chat/compare`, `/api/chat/compare-collections`,
+    `/api/chat/summarize`, `/api/chat/followups`, `/api/agent/chat`,
+    `/api/workspaces/{id}/chat/stream`
+
+  `/api/chat/followups`, `/api/agent/chat` and `/api/auth/refresh` had only the
+  general limit of 200 per minute before. The list is in
+  `docs/operations.md`, "Rate limits".
+- **The embedding status banner no longer calls the server before sign-in or for
+  a viewer.** It asked `/api/settings/embedding` (administrators only) every 5
+  seconds from the moment the page opened, and each refused call added an
+  `auth_failed` row to the audit log. It now asks only with a token and only for
+  an administrator, and stops for a token that received 403.
+- **The command-line client creates its token file with mode 600 from the
+  start.** `~/.cynovela_cli.env` was written first and set to 600 afterwards.
+- **First passwords.** The package no longer contains the first passwords in
+  plaintext. Its `cynovela.yaml` holds only their hashes
+  (`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`);
+  the values are in the table in README.md (section 4). The viewer, like the
+  administrator, must change the password at the first sign-in.
+  `launch.sh` no longer prints the password; it points to the README.
+  An existing installation keeps its passwords: the first values are used only
+  for a user that has no password yet.
+- **Documents.** `/api/rag/query` is described as it works: it generates an
+  answer with the inference server, a viewer can call it, `workspace_id` is
+  optional, and without an inference server it answers 400 (the CLI `search`
+  then exits with 4). The automatic deletion of old audit-log rows
+  (`log_retention_days`, default 90 days, 7 to 365, at start and every 24 hours)
+  is described. Environment variables that the program does not read
+  (`CYNOVELA_DISABLE_RATE_LIMIT`, `CYNOVELA_ADMIN_INITIAL_PASSWORD`,
+  `CYNOVELA_ADMIN_USERNAME`) were removed from the tables.
+- Version 2.0.2 replaces 2.0.1. The release files are
+  `cynovela-tender-package-2.0.2.tar.gz` and
+  `cynovela-tender-models-2.0.2.tar.gz.part00`–`part02`; the models parts hold
+  the same content as the 2.0.1 models.
+- Upgrading from 2.0.0 or 2.0.1 is described in `HOW-TO-ASSEMBLE.md` at the repository root.
+
 ## v2.0.1 (2026-09-26)
 
 - **2.0.1 replaces 2.0.0; the program is unchanged.** It behaves the same as 2.0.0; only
@@ -393,6 +441,49 @@ The following are recorded as unfinished. They describe the state of the current
 Cynovela の主要な変更内容を時系列で記録します。
 
 ---
+
+## v2.0.2（2026-09-27）
+
+2.0.2 は次の点を直した版です。入れ替えても、資料・利用者・パスワードはそのまま残ります。
+
+- **回数の上限を掛ける口を増やしました。** 受け口の関数に付いていた上限はそのまま残し、
+  サーバの HTTP の入口でも、次の `POST` の口を接続元のアドレスごと・口ごとに数えます。
+  数はサーバのプロセスのメモリの中にあります。トークンの無い要求も数えます。
+  - 1分あたり 5回: `/api/auth/login`・`/api/auth/change-password`・
+    `/api/auth/verify-password`
+  - 1分あたり 10回: `/api/admin/users/{id}/reset-password`
+  - 1分あたり 30回: `/api/auth/refresh`・`/api/chat`・`/api/rag/query`・
+    `/api/chat/compare`・`/api/chat/compare-collections`・
+    `/api/chat/summarize`・`/api/chat/followups`・`/api/agent/chat`・
+    `/api/workspaces/{id}/chat/stream`
+
+  `/api/chat/followups`・`/api/agent/chat`・`/api/auth/refresh` には、これまで
+  1分あたり 200回の全体の上限しかありませんでした。一覧は
+  `docs/operations.md` の「回数の上限」にあります。
+- **埋め込みの状態の帯が、ログインの前と閲覧者の画面ではサーバに問い合わせなくなりました。**
+  画面を開いた時点から 5 秒ごとに `/api/settings/embedding`（管理者だけの口）へ問い合わせ、
+  断られるたびに監査ログへ `auth_failed` が 1 行ずつ増えていました。いまはトークンが
+  あって管理者のときだけ問い合わせ、403 を受けたトークンでは問い合わせをやめます。
+- **CLI がトークンのファイルを最初から mode 600 で作るようにしました。**
+  `~/.cynovela_cli.env` は、書いたあとで 600 に変えていました。
+- **最初のパスワード。** 配布物に最初のパスワードを平文で入れるのをやめました。
+  配布物の `cynovela.yaml` にはハッシュ値だけ（`auth.admin_initial_password_hash`・
+  `auth.viewer_initial_password_hash`）があり、値は README.ja.md（4 節）の表にあります。
+  閲覧者も、管理者と同じく最初のログインでパスワードの変更を求められます。
+  `launch.sh` はパスワードを画面に出さず、README を指すようになりました。
+  使っている環境のパスワードはそのまま残ります（最初の値を使うのは、まだパスワードの
+  無い利用者だけです）。
+- **文書。** `/api/rag/query` の説明を実際の動きに合わせました（推論サーバで回答を作る、
+  閲覧者も呼べる、`workspace_id` は省ける、推論サーバが無いと 400、そのとき CLI の
+  `search` は 4 で終わる）。監査ログの古い行の自動削除（`log_retention_days`、既定 90 日、
+  7〜365、起動時と 24 時間ごと）を書きました。プログラムが読まない環境変数
+  （`CYNOVELA_DISABLE_RATE_LIMIT`・`CYNOVELA_ADMIN_INITIAL_PASSWORD`・
+  `CYNOVELA_ADMIN_USERNAME`）を表から外しました。
+- 版は 2.0.2 で、2.0.1 に置き換わります。リリースのファイルは
+  `cynovela-tender-package-2.0.2.tar.gz` と
+  `cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02` です。AIモデルの分割
+  ファイルの中身は 2.0.1 のモデルと同じです。
+- 2.0.0・2.0.1 からの入れ替えは、リポジトリのルートの `HOW-TO-ASSEMBLE.md` にあります。
 
 ## v2.0.1（2026-09-26）
 

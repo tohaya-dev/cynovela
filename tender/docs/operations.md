@@ -87,13 +87,13 @@ Sections:
   - [7-4. Watching the Server Log](#7-4-watching-the-server-log)
 - [8. Exporting the Audit Log](#8-exporting-the-audit-log)
   - [8-1. What the Audit Log Is](#8-1-what-the-audit-log-is)
-  - [8-2. Tamper Prevention](#8-2-tamper-prevention)
+  - [8-2. Tamper Prevention and Retention](#8-2-tamper-prevention-and-retention)
   - [8-3. Viewing from the GUI](#8-3-viewing-from-the-gui)
   - [8-4. Via the API](#8-4-via-the-api)
   - [8-5. Extracting Directly from SQLite](#8-5-extracting-directly-from-sqlite)
 - [9. User Management](#9-user-management)
   - [9-1. Roles](#9-1-roles)
-  - [9-2. The Initial Administrator](#9-2-the-initial-administrator)
+  - [9-2. The Initial Users](#9-2-the-initial-users)
   - [9-3. Login Information of the Demo Database](#9-3-login-information-of-the-demo-database)
   - [9-4. Adding and Deleting Users, and Changing Passwords](#9-4-adding-and-deleting-users-and-changing-passwords)
   - [9-5. Vault Access and Masking by Role](#9-5-vault-access-and-masking-by-role)
@@ -333,7 +333,6 @@ These variables do not move the data. To move it, change `paths:` (`data_dir: ./
 | Environment variable | Purpose |
 |---------|------|
 | `CYNOVELA_NONINTERACTIVE` | `1` skips the preflight dialog; a missing model is downloaded without asking (see 2-5-3) |
-| `CYNOVELA_DISABLE_RATE_LIMIT` | Disables the rate limit |
 | `CYNOVELA_MAX_UPLOAD_BYTES` | Maximum file upload size (default 100MB) |
 | `CYNOVELA_MCP_PYTHON` | Python path used to run the MCP server |
 | `CYNOVELA_SECRET_KEY` | Fernet encryption key (recommended in production) |
@@ -342,9 +341,9 @@ These variables do not move the data. To move it, change `paths:` (`data_dir: ./
 
 | Environment variable | Purpose |
 |---------|------|
-| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | The admin password at first startup |
-| `CYNOVELA_ADMIN_USERNAME` | The admin user name at first startup (default: `cynovela`) |
 | `CYNOVELA_SMTP_PASSWORD` | SMTP password |
+
+The first users and their first passwords are not set with environment variables; see 9-2.
 
 ### 2-7. Overall Startup Flow Diagram
 
@@ -1141,6 +1140,37 @@ Even for verification and learning use, one of the following is recommended.
 - Personal VPN: add only `--allow-tailscale` and avoid exposure to the LAN
 - Restricted LAN: narrow the sources strictly with `--lan --allow-subnet`
 
+#### 5-4-6. Rate limits
+
+Cynovela limits how often one client address may call the API. Beyond a limit the
+server answers 429 with `{"error": "Rate limit exceeded: <n> per 1 minute"}`.
+Requests without a token are counted too, so failed sign-ins and calls made before
+signing in use up the same allowance.
+
+| Path (`POST` only, except the first row) | Limit per client address |
+|---|---|
+| every path under `/api/` (all methods; counted per method and path) | 200 per minute |
+| `/api/auth/login` | 5 per minute |
+| `/api/auth/change-password` | 5 per minute |
+| `/api/auth/verify-password` | 5 per minute |
+| `/api/admin/users/{id}/reset-password` (all users counted together) | 10 per minute |
+| `/api/auth/refresh` | 30 per minute |
+| `/api/chat` | 30 per minute |
+| `/api/rag/query` | 30 per minute |
+| `/api/chat/compare` | 30 per minute |
+| `/api/chat/compare-collections` | 30 per minute |
+| `/api/chat/summarize` | 30 per minute |
+| `/api/chat/followups` | 30 per minute |
+| `/api/agent/chat` | 30 per minute |
+| `/api/workspaces/{id}/chat/stream` (all workspaces counted together) | 30 per minute |
+
+- The counters are kept **per client address and per path**, in fixed one-minute
+  windows. Clients behind one proxy or one NAT address share one allowance.
+- The counters are kept **in the memory of the server process**. They start again
+  at 0 when Cynovela restarts, and they are not shared between processes.
+- The limits are fixed in the code (`server.py`). There is no setting or
+  environment variable that turns them off.
+
 ### 5-5. Summary of related startup flags
 
 | Flag | Default | Description |
@@ -1357,9 +1387,24 @@ Main recorded targets:
 - Prompt injection detection (`PROMPT_INJECTION_BLOCKED`)
 - Authentication failures
 
-### 8-2. Tamper Prevention
+### 8-2. Tamper Prevention and Retention
 
 `audit_logs` cannot be deleted or modified through the API. Keep this principle in your operating policy as well.
+
+**Old rows are deleted automatically.** When the server starts, and then every 24 hours,
+it deletes the rows of `audit_logs` and `admin_change_log` that are older than
+`log_retention_days` days.
+
+| Setting | Default | Allowed | Where it is kept |
+|---|---|---|---|
+| `log_retention_days` | 90 | 7 to 365 (a value outside is moved to the nearest end; a value that is not a whole number means 90) | the `settings` table of the database, not `cynovela.yaml` |
+
+- Change it as an administrator with `PUT /api/settings` and the body
+  `{"log_retention_days": 180}`. The new value is used at the next clean-up (the next
+  start, or at most 24 hours later).
+- If you must keep entries longer, export them (8-4, 8-5) before they reach the limit.
+- Restoring an old backup (6-4, 6-8, 6-9) brings back its old rows, and the first start
+  after the restore deletes those older than the limit. The backup file itself keeps them.
 
 ### 8-3. Viewing from the GUI
 
@@ -1395,23 +1440,36 @@ Cynovela has 2 kinds of roles.
 
 > Names such as `curator` / `data-scientist` are accepted as backward-compatible values, but in the current implementation they are normalized to `viewer` and have no specific permissions. The roles held by the DB are the 2 values `admin` / `viewer`.
 
-### 9-2. The Initial Administrator
+### 9-2. The Initial Users
 
-An administrator user is created at first startup. The user name and password can be overridden with environment variables.
+Two users are created at the first start: the administrator `cynovela` and the viewer
+`demo`. The user names are fixed; environment variables are not read for them.
 
-| Environment variable | Use | Default |
-|---------|------|------|
-| `CYNOVELA_ADMIN_USERNAME` | User name of the first administrator | `cynovela` |
-| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | Password of the first administrator | (The value is printed on the terminal once, at the very first start. The shipped packages write a fixed value into their own `cynovela.yaml` at `auth.admin_initial_password` — read it there if you missed the terminal. If neither the env var nor that key is set — which is the state of the repository source, not of a shipped package — a password change is forced at first login. Set the env var only if you want to override it.) |
+Their first passwords come from the `auth:` section of `cynovela.yaml`, in this order:
+
+| Key | Use |
+|---|---|
+| `admin_initial_password` / `viewer_initial_password` | Plaintext. Fill it only when you want to choose the first value yourself. |
+| `admin_initial_password_hash` / `viewer_initial_password_hash` | A hash only (the form of `db.hash_password`, `salt:hex`). The shipped packages use this. |
+| (both empty) | A random value is made and printed on the terminal once, at the first start. This is the state of the repository source. |
+
+- **For a shipped package, the first passwords are in the table in README.md /
+  README.ja.md (section 4).** The package itself holds only their hashes.
+- **Both users are asked to change the password at the first sign-in.** Until then,
+  every call other than `/api/auth/me`, `/api/auth/logout` and
+  `/api/auth/change-password` is refused with 403.
+- These keys are read only when the user has no password yet (a fresh database).
+  An existing installation keeps its passwords; updating Cynovela does not reset them.
 
 ### 9-3. Login Information of the Demo Database
 
-The `demo.db` created at the first `--demo` startup has the following accounts.
+The `demo.db` created at the first `--demo` startup has the same two accounts, made in
+the same way as in 9-2.
 
 | User name | Role | Password |
 |-----------|--------|-----------|
-| `cynovela` | admin | The first value is printed on the terminal once, at the very first start. If you missed it, it is in this package's `cynovela.yaml` (`auth.admin_initial_password`). A change is forced at first login |
-| `demo` | viewer | The first value is in this package's `cynovela.yaml` (`auth.viewer_initial_password`). Nothing is delivered separately |
+| `cynovela` | admin | The first value is in the table in README.md / README.ja.md (section 4). A change is forced at first login |
+| `demo` | viewer | The first value is in the table in README.md / README.ja.md (section 4). A change is forced at first login |
 
 ### 9-4. Adding and Deleting Users, and Changing Passwords
 
@@ -1628,13 +1686,13 @@ Using a privileged port such as 80 or 443 requires administrator privileges, so 
   - [7-4. サーバーログを流しながら見る](#7-4-サーバーログを流しながら見る)
 - [8. 監査ログの Export](#8-監査ログの-export)
   - [8-1. 監査ログとは](#8-1-監査ログとは)
-  - [8-2. 改ざん防止](#8-2-改ざん防止)
+  - [8-2. 改ざん防止と保持期間](#8-2-改ざん防止と保持期間)
   - [8-3. GUI からの参照](#8-3-gui-からの参照)
   - [8-4. API 経由](#8-4-api-経由)
   - [8-5. SQLite から直接抽出](#8-5-sqlite-から直接抽出)
 - [9. 利用者の管理](#9-利用者の管理)
   - [9-1. ロール](#9-1-ロール)
-  - [9-2. 初期 admin](#9-2-初期-admin)
+  - [9-2. 最初の利用者](#9-2-最初の利用者)
   - [9-3. デモのデータベースのログイン情報](#9-3-デモのデータベースのログイン情報)
   - [9-4. ユーザー追加・削除・パスワード変更](#9-4-ユーザー追加削除パスワード変更)
   - [9-5. ロール別の保管庫アクセスとマスキング](#9-5-ロール別の保管庫アクセスとマスキング)
@@ -1874,7 +1932,6 @@ models:
 | 環境変数 | 用途 |
 |---------|------|
 | `CYNOVELA_NONINTERACTIVE` | `1` で Preflight 対話をスキップし、モデルが無ければ聞かずにダウンロード（2-5-3 参照） |
-| `CYNOVELA_DISABLE_RATE_LIMIT` | レートリミット無効化 |
 | `CYNOVELA_MAX_UPLOAD_BYTES` | ファイルアップロード最大サイズ（既定 100MB） |
 | `CYNOVELA_MCP_PYTHON` | MCP サーバー実行用 Python パス |
 | `CYNOVELA_SECRET_KEY` | Fernet 暗号化鍵（本番推奨） |
@@ -1883,9 +1940,9 @@ models:
 
 | 環境変数 | 用途 |
 |---------|------|
-| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | 初回起動時の admin パスワード |
-| `CYNOVELA_ADMIN_USERNAME` | 初回起動時の admin ユーザー名（既定: `cynovela`） |
 | `CYNOVELA_SMTP_PASSWORD` | SMTP パスワード |
+
+最初の利用者と最初のパスワードは環境変数では決めません。9-2 を見てください。
 
 ### 2-7. 起動フロー全体図
 
@@ -2658,6 +2715,35 @@ LAN 内の任意のユーザーからファイルアップロードを受け付�
 - 個人 VPN: `--allow-tailscale` のみ付与、LAN への暴露は避ける
 - 限定 LAN: `--lan --allow-subnet` で接続元を厳密に絞る
 
+#### 5-4-6. 回数の上限
+
+1 つの接続元のアドレスが API を呼べる回数に上限があります。超えると 429 と
+`{"error": "Rate limit exceeded: <数> per 1 minute"}` を返します。
+トークンの無い要求も数えます。ログインの失敗や、ログイン前の呼び出しも同じ枠を使います。
+
+| 口（1 行目を除き `POST` だけ） | 接続元のアドレスごとの上限 |
+|---|---|
+| `/api/` の下のすべての口（動作を問わない。動作と口ごとに数える） | 1分あたり 200回 |
+| `/api/auth/login` | 1分あたり 5回 |
+| `/api/auth/change-password` | 1分あたり 5回 |
+| `/api/auth/verify-password` | 1分あたり 5回 |
+| `/api/admin/users/{id}/reset-password`（利用者を問わず合わせて数える） | 1分あたり 10回 |
+| `/api/auth/refresh` | 1分あたり 30回 |
+| `/api/chat` | 1分あたり 30回 |
+| `/api/rag/query` | 1分あたり 30回 |
+| `/api/chat/compare` | 1分あたり 30回 |
+| `/api/chat/compare-collections` | 1分あたり 30回 |
+| `/api/chat/summarize` | 1分あたり 30回 |
+| `/api/chat/followups` | 1分あたり 30回 |
+| `/api/agent/chat` | 1分あたり 30回 |
+| `/api/workspaces/{id}/chat/stream`（作業場所を問わず合わせて数える） | 1分あたり 30回 |
+
+- 数は**接続元のアドレスごと・口ごと**に、1分ごとの区切りで数えます。同じプロキシや
+  同じ NAT のアドレスの後ろにいる利用者は、1 つの枠を分け合います。
+- 数は**サーバのプロセスのメモリの中**にだけあります。Cynovela を起動し直すと 0 に戻り、
+  プロセスの間で共有されません。
+- 上限の値はコード（`server.py`）で決まっています。止める設定や環境変数はありません。
+
 ### 5-5. 関連する起動フラグまとめ
 
 | フラグ | 既定 | 説明 |
@@ -2874,9 +2960,22 @@ Cynovela は重要操作を SQLite の `audit_logs` テーブルに記録しま�
 - プロンプトインジェクション検出（`PROMPT_INJECTION_BLOCKED`）
 - 認証失敗
 
-### 8-2. 改ざん防止
+### 8-2. 改ざん防止と保持期間
 
 `audit_logs` は API 経由での削除・変更ができません。運用ポリシー上もこの原則を守ってください。
+
+**古い行は自動で消えます。**サーバは起動したときと、その後 24 時間ごとに、
+`audit_logs` と `admin_change_log` のうち `log_retention_days` 日より古い行を削除します。
+
+| 設定 | 既定 | 取れる値 | 置き場所 |
+|---|---|---|---|
+| `log_retention_days` | 90 | 7〜365（外れた値は近い端に寄せます。整数でない値は 90 として扱います） | データベースの `settings` 表（`cynovela.yaml` ではありません） |
+
+- 変えるときは、管理者で `PUT /api/settings` に `{"log_retention_days": 180}` を送ります。
+  新しい値は次の削除のとき（次の起動か、遅くとも 24 時間後）から使われます。
+- もっと長く残す必要がある記録は、期限に達する前に書き出してください（8-4・8-5）。
+- 古い控えを戻すと（6-4・6-8・6-9）その古い行も戻り、戻したあとの最初の起動で、
+  期限より古い行が削除されます。控えのファイルそのものには残っています。
 
 ### 8-3. GUI からの参照
 
@@ -2912,23 +3011,34 @@ Cynovela には 2 種類のロールがあります。
 
 > `curator` / `data-scientist` 等の名称は後方互換の値として受理されますが、現行実装では `viewer` に正規化され、固有権限はありません。DB が保持するロールは `admin` / `viewer` の 2 値です。
 
-### 9-2. 初期 admin
+### 9-2. 最初の利用者
 
-初回起動時に admin ユーザーが作成されます。ユーザー名とパスワードは環境変数で上書きできます。
+初回起動のときに、管理者 `cynovela` と閲覧者 `demo` の 2 人が作られます。利用者名は固定で、
+環境変数は読みません。
 
-| 環境変数 | 用途 | 既定値 |
-|---------|------|------|
-| `CYNOVELA_ADMIN_USERNAME` | 初回 admin ユーザー名 | `cynovela` |
-| `CYNOVELA_ADMIN_INITIAL_PASSWORD` | 初回 admin パスワード | （値は初回起動のときにターミナルへ1回出ます。配布物は固定値を配布物自身の `cynovela.yaml` の `auth.admin_initial_password` へ書き込んで出荷します。見逃した場合はそこで読めます。env・当該キーのいずれも未設定＝リポジトリのソースそのままの状態なら、初回ログインでパスワード変更を強制します。上書きしたい場合のみ env に値を設定） |
+最初のパスワードは `cynovela.yaml` の `auth:` から、次の順で決めます。
+
+| キー | 使い方 |
+|---|---|
+| `admin_initial_password` / `viewer_initial_password` | 平文。最初の値を自分で決めたいときだけ書きます。 |
+| `admin_initial_password_hash` / `viewer_initial_password_hash` | ハッシュ値だけ（`db.hash_password` の形 `salt:hex`）。配布物はこちらを使います。 |
+| （どちらも空） | 乱数で作り、初回起動のときにターミナルへ 1 回だけ出します。リポジトリのソースそのままの状態です。 |
+
+- **配布物の最初のパスワードは、README.md / README.ja.md（4 節）の表にあります。**
+  配布物の中にはハッシュ値だけがあります。
+- **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**変えるまでは、
+  `/api/auth/me`・`/api/auth/logout`・`/api/auth/change-password` 以外の呼び出しは 403 で断られます。
+- これらのキーを読むのは、利用者にまだパスワードが無いとき（新しいデータベース）だけです。
+  使っている環境のパスワードはそのまま残り、Cynovela を更新しても元に戻りません。
 
 ### 9-3. デモのデータベースのログイン情報
 
-`--demo` の初回起動時に作られる `demo.db` には次のアカウントがあります。
+`--demo` の初回起動時に作られる `demo.db` にも、9-2 と同じ作り方で同じ 2 人がいます。
 
 | ユーザー名 | ロール | パスワード |
 |-----------|--------|-----------|
-| `cynovela` | admin | 最初の値は初回起動のときにターミナルへ1回だけ出ます。見逃した場合はこの配布物の `cynovela.yaml`（`auth.admin_initial_password`）に在ります。初回ログイン時に変更を強制 |
-| `demo` | viewer | 最初の値はこの配布物の `cynovela.yaml`（`auth.viewer_initial_password`）に在ります。別便で渡すファイルはありません |
+| `cynovela` | admin | 最初の値は README.md / README.ja.md（4 節）の表にあります。初回ログイン時に変更を強制 |
+| `demo` | viewer | 最初の値は README.md / README.ja.md（4 節）の表にあります。初回ログイン時に変更を強制 |
 
 ### 9-4. ユーザー追加・削除・パスワード変更
 

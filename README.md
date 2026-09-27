@@ -35,13 +35,13 @@ installed on this Mac.**
 ### 1. Download (5 files, into the same folder)
 
 Download them from the [releases page](https://github.com/tohaya-dev/cynovela/releases).
-These are the 2.0.1 files. The previous version, v1.2.0, remains available on
+These are the 2.0.2 files. The previous version, v1.2.0, remains available on
 the releases page.
 
 | File | What it is |
 |---|---|
-| `cynovela-tender-package-2.0.1.tar.gz` | **Cynovela itself.** `package` is the application itself |
-| `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` | **The AI models Cynovela uses.** The embedding models that turn documents into vectors (BGE-M3 and others) and the model that reranks search results — **not the answering LLM** (you set that up separately in step 5). GitHub caps a release file at 2 GiB, so they are split into three parts |
+| `cynovela-tender-package-2.0.2.tar.gz` | **Cynovela itself.** `package` is the application itself |
+| `cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02` | **The AI models Cynovela uses.** The embedding models that turn documents into vectors (BGE-M3 and others) and the model that reranks search results — **not the answering LLM** (you set that up separately in step 5). GitHub caps a release file at 2 GiB, so they are split into three parts |
 | `SHA256SUMS` | The list for checking that nothing is corrupted |
 
 If you are on a managed Mac (under MDM), download `check-managed-mac.command` first
@@ -56,7 +56,7 @@ folder you downloaded into, in order.
 **2-1. Join the three parts.**
 
     cd ~/Downloads
-    cat cynovela-tender-models-2.0.1.tar.gz.part00 cynovela-tender-models-2.0.1.tar.gz.part01 cynovela-tender-models-2.0.1.tar.gz.part02 > cynovela-tender-models-2.0.1.tar.gz
+    cat cynovela-tender-models-2.0.2.tar.gz.part00 cynovela-tender-models-2.0.2.tar.gz.part01 cynovela-tender-models-2.0.2.tar.gz.part02 > cynovela-tender-models-2.0.2.tar.gz
 
 **2-2. Check that nothing is corrupted.** If every printed line says `OK`, it
 worked.
@@ -65,12 +65,12 @@ worked.
 
 **2-3. Extract the application.** A `tender` folder appears.
 
-    tar -xzf cynovela-tender-package-2.0.1.tar.gz
+    tar -xzf cynovela-tender-package-2.0.2.tar.gz
 
 **2-4. Unpack the AI models inside the application.**
 
     cd tender
-    tar -xzf ../cynovela-tender-models-2.0.1.tar.gz
+    tar -xzf ../cynovela-tender-models-2.0.2.tar.gz
 
 **This creates `tender/store/models/` — it will not be found anywhere else.**
 If you already extracted the models somewhere else, move the resulting `models`
@@ -94,18 +94,18 @@ taken, another number is chosen and shown on screen.**
 | **Administrator** (full control) | `cynovela` | `Cynovela1!` |
 | **Viewer** (read-only) | `demo` | `demo1234` |
 
-**The administrator's value is printed on the terminal once, at the first start. The viewer's value is in `cynovela.yaml` (`auth.viewer_initial_password`) in the folder you extracted.**
-They are also under `auth:` in `cynovela.yaml` in the folder you unpacked (next
-to `launch.sh`).
+**The first passwords are the values in the table above.** They are not printed
+on the terminal, and the package's `cynovela.yaml` holds only their hashes
+(`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`).
 
-🔴 **The administrator must change the password on first sign-in.** No
-administrative operation is possible until it is changed. **Change it.**
+🔴 **Both the administrator and the viewer must change the password on first
+sign-in.** Until it is changed, other operations are refused. **Change it.**
+An existing installation keeps its current passwords; nothing is reset on update.
 
-**The viewer (`demo`) is not asked to.** And **Cynovela listens on the local
-network by default** — other machines on the same network can open it. That
-default exists so you can try it from another Mac. **When trying it on a shared
-network, change the viewer's password too, from `Settings`.** To keep it closed
-inside this Mac only, start with `./launch.sh --local-only`.
+**Cynovela listens on the local network by default** — other machines on the
+same network can open it. That default exists so you can try it from another
+Mac. To keep it closed inside this Mac only, start with
+`./launch.sh --local-only`.
 
 ### 5. Connect the answering LLM
 
@@ -173,20 +173,20 @@ search) in `Settings`.
 
 ## Upgrading from 1.2.0
 
-2.0.1 unpacks into a new folder, `tender`, and does not read the `store/` of
+2.0.2 unpacks into a new folder, `tender`, and does not read the `store/` of
 your 1.2.0 `chewie` folder. To keep your documents, users and settings, copy
-`chewie/store/` into `tender/store/` before the first start of 2.0.1. The steps
+`chewie/store/` into `tender/store/` before the first start of 2.0.2. The steps
 are in [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-120). Compared
 with 1.2.0, some behaviour also changes (the first-password change, rate limits,
 ingest roots, tokens); the list is in the 2.0.0 section of
-[RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26). Upgrading from 2.0.0 is
-covered in [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-200).
+[RELEASE-NOTES.md](RELEASE-NOTES.md#200-2026-09-26). Upgrading from 2.0.0 or
+2.0.1 is covered in [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-200-or-201).
 
 ## What is in this repository
 
 | Directory | What it is | Distribution package |
 |---|---|---|
-| `tender` | Runs directly on macOS. | Published on GitHub Releases (v2.0.1). The v2.0.1 files are named `cynovela-tender-…` and unpack into a folder named `tender`. v1.2.0 and earlier used the former name `chewie`. |
+| `tender` | Runs directly on macOS. | Published on GitHub Releases (v2.0.2). The v2.0.2 files are named `cynovela-tender-…` and unpack into a folder named `tender`. v1.2.0 and earlier used the former name `chewie`. |
 
 The container edition (Falcon) is not included from this version; if you need it, see the v1.2.0 release on the Releases page.
 
@@ -208,7 +208,7 @@ The container edition (Falcon) is not included from this version; if you need it
 
 ## Downloads
 
-Everything is on GitHub Releases (v2.0.1):
+Everything is on GitHub Releases (v2.0.2):
 https://github.com/tohaya-dev/cynovela/releases
 
 The one-page answer to "which of these do I take" is in
@@ -217,9 +217,9 @@ The one-page answer to "which of these do I take" is in
 | Edition | Runs as | Models bundled | Download shape | What it needs |
 |---|---|---|---|---|
 | **App edition** (`.pkg`) | — | — | **In preparation.** Not part of this release | — |
-| **Package edition** `cynovela-tender-package-2.0.1.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
+| **Package edition** `cynovela-tender-package-2.0.2.tar.gz` | a folder you run in place | no — take the AI models as well | single file | **Neither Python nor conda.** Nothing is installed on this Mac |
 | **Source edition** | a folder you run in place | no — take the AI models as well | not a download — the source is this repository (clone it, or use GitHub's "Download ZIP") | Python 3.12 or later, or conda |
-| **AI models** `cynovela-tender-models-2.0.1.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
+| **AI models** `cynovela-tender-models-2.0.2.tar.gz.part00`–`part02` | — | — | split into parts — needs assembling | Despite the name, these are the AI models themselves, not conda packages |
 
 The **App edition** (`.pkg`) is **in preparation** and is not part of this
 release.
@@ -261,25 +261,24 @@ the map of every other document.
 
 Every guide is bilingual: English first, Japanese after.
 
-**First sign-in. You do not need to look for the password.**
-**It is printed on screen, once, the first time you start.**
+**First sign-in. The first passwords are in the table below.**
+**The first start shows the user names on screen, once, and points to this table.**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela
-        Password / パスワード  : (it appears here)
-      You will be asked to change it on the first sign-in.
-      Shown only this once.
+        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
+        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
+      Both are asked to change the password on the first sign-in.
+      管理者・閲覧者とも、最初のログインで変更を求められます。
+      Shown only this once. / この表示が出るのは初回だけです。
     ────────────────────────────────────────────────
 
 - **Shown on the first start only.** It does not appear again.
 - **The administrator is `cynovela`; the viewer account is `demo`.**
-- **The administrator is asked to change the password on first sign-in.** The viewer is not.
-- **Nothing is sent to you separately.**
-- **If you missed that screen**, the same value is in `cynovela.yaml` in the folder you
-  unpacked, next to `launch.sh`: `auth.admin_initial_password`
-  (`auth.viewer_initial_password` for the viewer).
+- **Both the administrator and the viewer are asked to change the password on first sign-in.**
+- **Nothing is sent to you separately.** The password is not printed on screen,
+  and `cynovela.yaml` holds only hashes of the first passwords.
 
 | Role | User name | First password |
 |---|---|---|

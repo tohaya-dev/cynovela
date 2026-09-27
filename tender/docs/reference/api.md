@@ -38,11 +38,13 @@ Content-Type: application/json
 | 403 | Signed in, but not allowed to do this (or the first password still has to be changed). |
 | 404 | No such workspace / collection / source / file. |
 | 409 | It clashes with something that already exists or is already running. |
-| 429 | Too many attempts. Every `/api/` path is limited to 200 per minute per address (counted per method and path); sign-in, `change-password` and `verify-password` to 5 per minute per address. |
+| 429 | Too many attempts. Every `/api/` path is limited to 200 per minute per address (counted per method and path). Some `POST` paths have a lower limit per address and path: sign-in, `change-password` and `verify-password` 5 per minute; `/api/admin/users/{id}/reset-password` 10 per minute; `/api/auth/refresh` and the question paths (`/api/chat`, `/api/rag/query`, `/api/chat/compare`, `/api/chat/compare-collections`, `/api/chat/summarize`, `/api/chat/followups`, `/api/agent/chat`, `/api/workspaces/{id}/chat/stream`) 30 per minute. The full list is in operations.md, "Rate limits". |
 | 500 | The server failed. The reason is in `store/logs/server.log`. |
 
-The body of a failure is `{"detail": "..."}`. The 429 of the 200-per-minute limit
-is `{"error": "Rate limit exceeded: 200 per 1 minute"}`.
+The body of a failure is `{"detail": "..."}`. The 429 of a rate limit is
+`{"error": "Rate limit exceeded: 200 per 1 minute"}` (the number and period are
+those of the limit that was reached, for example `5 per 1 minute`). Requests
+without a token are counted too.
 
 ### Endpoints worth spelling out
 
@@ -114,6 +116,24 @@ Without `purge`, the account is only switched off (`is_active = 0`) and the row
 stays. Switching an account off (here or with `PATCH ... is_active=false`) or on
 again makes every token already issued to it stop working. With `?purge=true` the row is removed for good, along with its workspace
 assignments, refresh tokens and sessions. Audit log entries are kept either way.
+
+#### `POST /api/rag/query`
+
+```json
+{ "query": "...", "workspace_id": "...", "collection_ids": ["..."] }
+```
+
+It runs the same processing as `POST /api/chat`: it searches **and generates an
+answer with the inference server**, and returns the same shape as `/api/chat`
+(`answer`, `citations`, `sources` and the other keys). It is not a search-only call.
+
+- Any signed-in user can call it, a viewer too. Workspace membership and the
+  masking for viewers are applied as in `/api/chat`.
+- `query` (or `message`) is required, up to 4000 characters. `workspace_id` is
+  optional: without it the first workspace the caller can use is chosen (404 when
+  there is none).
+- **Without a reachable inference server it answers 400** and returns no
+  fragments, like `/api/chat`. It is limited to 30 per minute per address.
 
 #### `POST /api/sources`
 
@@ -239,7 +259,7 @@ Asking a question and getting an answer with its sources.
 | `POST` | `/api/chat/compare-collections` | any signed-in user; some paths need an administrator |
 | `POST` | `/api/chat/followups` | any signed-in user; some paths need an administrator |
 | `POST` | `/api/chat/summarize` | any signed-in user |
-| `POST` | `/api/rag/query` | administrator |
+| `POST` | `/api/rag/query` | any signed-in user (a viewer too) |
 | `POST` | `/api/workspaces/import` | administrator |
 | `POST` | `/api/workspaces/{workspace_id}/chat/stream` | any signed-in user |
 | `GET` | `/api/workspaces/{workspace_id}/full-export` | administrator |
@@ -596,11 +616,12 @@ Content-Type: application/json
 | 403 | ログインはしているが、その操作は許されていません（または最初の合言葉をまだ変えていません）。 |
 | 404 | その作業場所・まとまり・取り込み元・資料がありません。 |
 | 409 | 既に在るもの、または既に走っているものとぶつかります。 |
-| 429 | 試しすぎです。`/api/` の口はどれも 1分あたり 200回まで（接続元ごと・動作と口ごとに数えます）。ログイン・`change-password`・`verify-password` は 1分あたり 5回まで・接続元ごと。 |
+| 429 | 試しすぎです。`/api/` の口はどれも 1分あたり 200回まで（接続元ごと・動作と口ごとに数えます）。一部の `POST` の口は、接続元ごと・口ごとにもっと低い上限があります。ログイン・`change-password`・`verify-password` は 1分あたり 5回、`/api/admin/users/{id}/reset-password` は 10回、`/api/auth/refresh` と質問の口（`/api/chat`・`/api/rag/query`・`/api/chat/compare`・`/api/chat/compare-collections`・`/api/chat/summarize`・`/api/chat/followups`・`/api/agent/chat`・`/api/workspaces/{id}/chat/stream`）は 30回です。一覧は operations.md の「回数の上限」にあります。 |
 | 500 | サーバ側で失敗しました。理由は `store/logs/server.log` にあります。 |
 
-失敗の本文は `{"detail": "…"}` の形です。1分あたり 200回の上限による 429 は
-`{"error": "Rate limit exceeded: 200 per 1 minute"}` です。
+失敗の本文は `{"detail": "…"}` の形です。回数の上限による 429 は
+`{"error": "Rate limit exceeded: 200 per 1 minute"}` の形です（数と期間は、当たった上限の
+ものになります。例: `5 per 1 minute`）。トークンの無い要求も数えます。
 
 ### 細かく書いておく口
 
@@ -670,6 +691,22 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 その人に出したトークンがすべて使えなくなります。
 `?purge=true` を付けると行そのものを消し、作業場所の割り当て・リフレッシュトークン・
 入室の記録も一緒に消えます。監査の記録はどちらの場合も残ります。
+
+#### `POST /api/rag/query`
+
+```json
+{ "query": "…", "workspace_id": "…", "collection_ids": ["…"] }
+```
+
+`POST /api/chat` と同じ処理をします。検索し、**推論サーバで回答を作り**、
+`/api/chat` と同じ形（`answer`・`citations`・`sources` など）で返します。検索だけの口ではありません。
+
+- サインインしていれば誰でも呼べます（閲覧者も）。作業場所の所属の判定と、閲覧者向けの伏せ字は
+  `/api/chat` と同じくかかります。
+- `query`（または `message`）は必須で、4000 文字まで。`workspace_id` は省けます。省くと、
+  呼んだ人が使える最初の作業場所が選ばれます（無ければ 404）。
+- **推論サーバに届かないときは 400** を返し、断片も返しません（`/api/chat` と同じ）。
+  回数の上限は接続元ごとに 1分あたり 30回です。
 
 #### `POST /api/sources`
 
@@ -794,7 +831,7 @@ multipart で、欄の名前は `file`、中身は上の ZIP です。管理者�
 | `POST` | `/api/chat/compare-collections` | 利用者（管理者・閲覧者のいずれか）・管理者 | 2 つの Collection に同じ質問を並列投入 → 左右に並べて返す. |
 | `POST` | `/api/chat/followups` | 利用者（管理者・閲覧者のいずれか）・管理者 | 直前の回答からフォローアップ質問を3件生成して返す (LLM生成、JSON抽出)。 |
 | `POST` | `/api/chat/summarize` | 利用者（管理者・閲覧者のいずれか） | chat 履歴のサマリーを LLM で生成 (引き継ぎ用). |
-| `POST` | `/api/rag/query` | 管理者 | fix061 A1: 軽量 RAG クエリ EP。query + workspace_id 必須。 |
+| `POST` | `/api/rag/query` | 利用者（管理者・閲覧者のいずれか） | 検索して、推論サーバで回答を作る（`/api/chat` と同じ処理・同じ形の応答）。query は必須、workspace_id は省ける。推論サーバに届かないと 400。 |
 | `POST` | `/api/workspaces/import` | 管理者 | ZIP をインポートして Workspace / Collection / 関連設定を復元する。 |
 | `POST` | `/api/workspaces/{workspace_id}/chat/stream` | 利用者（管理者・閲覧者のいずれか） |  |
 | `GET` | `/api/workspaces/{workspace_id}/full-export` | 管理者 | ベクター込みのフルエクスポート。 |

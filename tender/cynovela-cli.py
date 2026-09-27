@@ -185,11 +185,22 @@ def _save_env_file(path: Path, updates: dict) -> None:
     for key, value in updates.items():
         if key not in seen and value is not None:
             out.append(f"{key}={value}")
-    path.write_text("\n".join(out).rstrip("\n") + "\n", encoding="utf-8")
+    data = ("\n".join(out).rstrip("\n") + "\n").encode("utf-8")
+    # Create the file with mode 600 from the start (no window in which a new
+    # file has the umask default), and set 600 on an existing file before the
+    # token is written into it.
+    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     try:
-        os.chmod(path, 0o600)
-    except Exception:
-        pass
+        try:
+            os.fchmod(fd, 0o600)
+        except (AttributeError, OSError):
+            pass  # os.fchmod is not available on Windows
+        with os.fdopen(fd, "wb") as fh:
+            fd = -1
+            fh.write(data)
+    finally:
+        if fd != -1:
+            os.close(fd)
 
 
 # ─── tiny cynovela.yaml reader (doctor only; no yaml dependency) ─

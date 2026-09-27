@@ -1925,11 +1925,23 @@ body.lang-ja .en-block { display: none !important; }
     // 素の識別子で存在を確かめる。
     try{ return (typeof API !== 'undefined' && API && API.get) ? API : null; }catch(e){ return null; }
   }
+  // 403 を受けたトークン。同じトークンの間は問い合わせない (別の利用者でログインし直せば再開)。
+  var deniedToken = null;
   async function check(){
     try{
       var _a = _api();
-      if(!_a) return;
-      var info = await _a.get('/api/settings/embedding');   // 管理者のみ。閲覧者は 403 で何も出ない
+      // ログインする前 (トークンが無い) は問い合わせない。未認証の要求は監査ログに
+      // auth_failed として 1 行ずつ残るため、ログイン画面を開いているだけで増え続けていた。
+      if(!_a || !_a.token) return;
+      if(deniedToken !== null && deniedToken === _a.token) return;
+      // 管理者だけが読める受け口。閲覧者の画面では問い合わせない。
+      try{ if(typeof State !== 'undefined' && State.user && State.user.role && State.user.role !== 'admin') return; }catch(_e){}
+      var _tok = _a.token;
+      var res = await fetch(_a.base + '/api/settings/embedding', { headers: _a.headers() });   // 管理者のみ
+      if(res.status === 403){ deniedToken = _tok; hide(); return; }   // 以後このトークンでは問い合わせない
+      if(res.status === 401){ if(_a._handleSessionExpired) _a._handleSessionExpired(); hide(); return; }
+      if(!res.ok){ hide(); return; }
+      var info = await res.json();
       if(!info) { hide(); return; }
       var fb  = info.fallback || {};
       var mle = fb.model_load_error || {};
@@ -1956,7 +1968,7 @@ body.lang-ja .en-block { display: none !important; }
         return;
       }
       hide();
-    }catch(e){ /* 閲覧者の 403・未ログインなどでは何も出さない */ }
+    }catch(e){ /* 通信の失敗などでは何も出さない */ }
   }
   function start(){
     // ログイン前は API が未配線・受け口も 403 になる。出せる状態になるまで短い間隔で
