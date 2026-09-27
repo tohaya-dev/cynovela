@@ -174,8 +174,9 @@ search) in `Settings`.
 ## Upgrading from 1.2.0
 
 2.0.2 unpacks into a new folder, `tender`, and does not read the `store/` of
-your 1.2.0 `chewie` folder. To keep your documents, users and settings, copy
-`chewie/store/` into `tender/store/` before the first start of 2.0.2. The steps
+the folder of 1.2.0 (the folder that 1.2.0 was unpacked into). To keep your
+documents, users and settings, copy that `store/` into `tender/store/` before
+the first start of 2.0.2. The steps
 are in [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-120). Compared
 with 1.2.0, some behaviour also changes (the first-password change, rate limits,
 ingest roots, tokens); the list is in the 2.0.0 section of
@@ -186,9 +187,9 @@ ingest roots, tokens); the list is in the 2.0.0 section of
 
 | Directory | What it is | Distribution package |
 |---|---|---|
-| `tender` | Runs directly on macOS. | Published on GitHub Releases (v2.0.2). The v2.0.2 files are named `cynovela-tender-…` and unpack into a folder named `tender`. v1.2.0 and earlier used the former name `chewie`. |
+| `tender` | Runs directly on macOS. | Published on GitHub Releases (v2.0.2). The v2.0.2 files are named `cynovela-tender-…` and unpack into a folder named `tender`. v1.2.0 and earlier used a former name. |
 
-The container edition (Falcon) is not included from this version; if you need it, see the v1.2.0 release on the Releases page.
+The container edition is not included from this version; if you need it, see the v1.2.0 release on the Releases page.
 
 ## Requirements
 

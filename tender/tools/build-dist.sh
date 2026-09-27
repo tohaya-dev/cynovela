@@ -126,6 +126,26 @@ dist_inspect() {   # dist_inspect <STAGE/$NAME 相当のディレクトリ> <検
         ! -path '*/node_modules/*' ! -path '*/__pycache__/*' -print0 \
         | xargs -0 grep -lIE -e "$DIST_DOC_RE" -- /dev/null) \
         | sed 's|^\./||' || true)"
+  # 2.0.2: 配布物の設定 (cynovela.yaml) の auth.admin_initial_password_hash /
+  #   auth.viewer_initial_password_hash には、パッケージングのときに
+  #   「塩 32 桁の 16 進 : ハッシュ 64 桁の 16 進」を書く (初期のパスワードの平文を置かないため)。
+  #   塩の 32 桁は上の 32 桁の 16 進の検出語に当たるが、内部の文書の識別子ではない。
+  #   そこで、cynovela.yaml の中の「このキー 2 つで、値がこの形のものだけ」の行を除いてから数える。
+  #   同じファイルのほかの行や、ほかのファイルに当たれば従来どおり止める。許した行の数は必ず出す。
+  local c2_allow_re c2_rest="" c2_allowed=0 c2_a c2_r
+  c2_allow_re="$(printf "^[ \t]+(admin|viewer)_initial_password_hash:[ \t]*'[0-9a-f]{32}:[0-9a-f]{64}'[ \t]*\$")"
+  while IFS= read -r c2_f; do
+    [ -n "$c2_f" ] || continue
+    if [ "$c2_f" = "cynovela.yaml" ]; then
+      c2_a="$( { grep -E -e "$c2_allow_re" -- "$stage/$c2_f" || true; } | wc -l | tr -d ' ')"
+      c2_r="$( { grep -vE -e "$c2_allow_re" -- "$stage/$c2_f" | grep -oIE -e "$DIST_DOC_RE" || true; } | wc -l | tr -d ' ')"
+      c2_allowed=$((c2_allowed + c2_a))
+      [ "$c2_r" = "0" ] && continue
+    fi
+    c2_rest="${c2_rest}${c2_f}"$'\n'
+  done <<< "$c2_hits"
+  c2_hits="${c2_rest%$'\n'}"
+  echo "[inspect] (c-2)     許可: cynovela.yaml の auth.*_initial_password_hash の行 ${c2_allowed} 行 (値が「塩 32 桁 : ハッシュ 64 桁」の形のものだけ)"
   if [ -n "$c2_hits" ]; then
     n="$(printf '%s\n' "$c2_hits" | wc -l | tr -d ' ')"
     echo "[inspect] (c-2) 中身に残った内部の文書への参照を検出: $n ファイル (表示は先頭20件まで)" >&2

@@ -5209,7 +5209,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <h3>8-2. 改ざん防止と保持期間（続き）</h3>
     <p><strong>古い行は自動で消えます。</strong>サーバは起動したときと、その後 24 時間ごとに、<code>audit_logs</code> と <code>admin_change_log</code> のうち <code>log_retention_days</code> 日より古い行を削除します。</p>
     <table>
-    <thead><tr><th>設定</th><th>既定</th><th>取れる値</th><th>置き場所</th></tr></thead>
+    <thead><tr><th>設定</th><th>既定</th><th>取れる値</th><th>保存先</th></tr></thead>
     <tbody>
     <tr><td><code>log_retention_days</code></td><td>90</td><td>7〜365（外れた値は近い端に寄せます。整数でない値は 90 として扱います）</td><td>データベースの <code>settings</code> 表（<code>cynovela.yaml</code> ではありません）</td></tr>
     </tbody>
@@ -5217,7 +5217,7 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <ul>
     <li>変えるときは、管理者で <code>PUT /api/settings</code> に <code>{"log_retention_days": 180}</code> を送ります。新しい値は次の削除のとき（次の起動か、遅くとも 24 時間後）から使われます。</li>
     <li>もっと長く残す必要がある記録は、期限に達する前に書き出してください（8-4・8-5）。</li>
-    <li>古い控えを戻すとその古い行も戻り、戻したあとの最初の起動で期限より古い行が削除されます。控えのファイルそのものには残っています。</li>
+    <li>古いバックアップを戻すとその古い行も戻り、戻したあとの最初の起動で期限より古い行が削除されます。バックアップのファイルそのものには残っています。</li>
     </ul>
 </div>
 <div class="slide-footer">

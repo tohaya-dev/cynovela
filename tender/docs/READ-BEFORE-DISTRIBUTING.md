@@ -113,7 +113,7 @@ and builds them on this machine.
 
 ## 4. 最初のパスワードは README の 4 節だけに載せています（配布物の `cynovela.yaml` はハッシュだけ）
 
-**管理者（`cynovela`）と閲覧者（`demo`）の最初のパスワードは、`README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にだけ載せています。**配布物には平文では入っていません。初回起動のとき、`launch.sh`（`tools/launch-body.sh` の `print_first_login`。2 回目からは出ません）が利用者名を1回だけ出して、その表を案内します。パスワードは画面に出しません。配布物にはどちらのデータベースも入っていないため、`--demo` でも本番でも初回起動で出ます。**別便で渡すファイルはありません。**
+**管理者（`cynovela`）と閲覧者（`demo`）の最初のパスワードは、`README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にだけ載せています。**配布物には平文では入っていません。初回起動のとき、`launch.sh`（`tools/launch-body.sh` の `print_first_login`。2 回目からは出ません）が利用者名を1回だけ出して、その表を見るよう示します。パスワードは画面に出しません。配布物にはどちらのデータベースも入っていないため、`--demo` でも本番でも初回起動で出ます。**別便で渡すファイルはありません。**
 
 配布物を作るときに、平文を `tools/dist-initial-credentials.local`（git 追跡外・0600）から読み込み、アプリ自身のハッシュ関数（`db.hash_password`）でハッシュにして、同梱の `cynovela.yaml` にはハッシュだけを書き込みます（`auth.admin_initial_password_hash` / `auth.viewer_initial_password_hash`）。平文のキー（`auth.admin_initial_password` / `auth.viewer_initial_password`）は空にします。運用する側が自分で最初の値を決めたいときは、平文のキーに書くこともできます。`.local` のファイルが無いと配布物は作れません（途中で止まります）。配布物の検査（`dist_inspect`）は、平文の最初のパスワードが配布物のどこかに出てくると、配布物の作成を止めます。例外はありません。
 

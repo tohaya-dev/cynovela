@@ -2,12 +2,12 @@
   "version": 1,
   "roots": [
     {
-      "name": "chewie-dummy-corpus",
+      "name": "tender-dummy-corpus",
       "host_path": "@app/dummy-corpus",
       "label": "dummy-corpus"
     }
   ],
   "used_names": {
-    "chewie-dummy-corpus": "@app/dummy-corpus"
+    "tender-dummy-corpus": "@app/dummy-corpus"
   }
 }

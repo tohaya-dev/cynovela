@@ -23,7 +23,8 @@
   `tender/docs/operations.md`, "Rate limits".
 - **The embedding status banner no longer calls the server before sign-in or for
   a viewer.** It asked `/api/settings/embedding` (administrators only) every 5
-  seconds from the moment the page opened, and each refused call added an
+  seconds for the first 5 minutes after the page opened and every minute after
+  that, and each refused call added an
   `auth_failed` row to the audit log. It now asks only with a token and only for
   an administrator, and stops for a token that received 403.
 - **The command-line client creates its token file with mode 600 from the
@@ -44,6 +45,8 @@
   is described. Environment variables that the program does not read
   (`CYNOVELA_DISABLE_RATE_LIMIT`, `CYNOVELA_ADMIN_INITIAL_PASSWORD`,
   `CYNOVELA_ADMIN_USERNAME`) were removed from the tables.
+  The getting-started guide now says that an empty production database already
+  has the administrator and the viewer `demo` (it said there was no viewer).
 - Version 2.0.2 replaces 2.0.1. The release files are
   `cynovela-tender-package-2.0.2.tar.gz` and
   `cynovela-tender-models-2.0.2.tar.gz.part00`–`part02`; the models parts hold
@@ -68,7 +71,7 @@ only comments and documents differ.
 
 The previous version v1.2.0 remains available on the Releases page.
 
-The container edition (Falcon) is not included from this version; if you need it, see v1.2.0 on the Releases page.
+The container edition is not included from this version; if you need it, see v1.2.0 on the Releases page.
 
 Upgrading from 1.2.0 or from 2.0.0: see [Upgrading from 1.2.0](HOW-TO-ASSEMBLE.md#upgrading-from-120) or [Upgrading from 2.0.0 or 2.0.1](HOW-TO-ASSEMBLE.md#upgrading-from-200-or-201) in HOW-TO-ASSEMBLE.md.
 
@@ -84,8 +87,8 @@ remains available on the releases page.
 ### Upgrading from 1.2.0
 
 The package now unpacks into `tender/`, and the new folder does not read the
-old `chewie/store/`. Copy `chewie/store/` into `tender/store/` before the first
-start of the new version; the steps are in
+`store/` of the folder of 1.2.0 (the folder that 1.2.0 was unpacked into). Copy
+that `store/` into `tender/store/` before the first start of the new version; the steps are in
 [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#upgrading-from-120). At the first start
 the database gains a `token_version` column by itself. Tokens issued by 1.2.0
 keep working after the upgrade.
@@ -135,7 +138,8 @@ keep working after the upgrade.
 - The package unpacks into `tender/` instead of the former folder, and the new
   folder does not read the old `store/` (see "Upgrading from 1.2.0" above).
 - In a new installation, the bundled demo's ingest root is named
-  `tender-dummy-corpus` (was `chewie-dummy-corpus`).
+  `tender-dummy-corpus` (in 1.2.0 it was another name ending with
+  `-dummy-corpus`).
 - A user who still has to change the first password gets 403 on every API
   except `/api/auth/me`, `/api/auth/logout` and `/api/auth/change-password`,
   administrators and viewers alike.
@@ -530,7 +534,7 @@ from the old folder into the new one before starting.
   1分あたり 200回の全体の上限しかありませんでした。一覧は
   `tender/docs/operations.md` の「回数の上限」にあります。
 - **埋め込みの状態の帯が、ログインの前と閲覧者の画面ではサーバに問い合わせなくなりました。**
-  画面を開いた時点から 5 秒ごとに `/api/settings/embedding`（管理者だけの口）へ問い合わせ、
+  画面を開いてから 5 分のあいだは 5 秒ごと、その後は 1 分ごとに `/api/settings/embedding`（管理者だけの口）へ問い合わせ、
   断られるたびに監査ログへ `auth_failed` が 1 行ずつ増えていました。いまはトークンが
   あって管理者のときだけ問い合わせ、403 を受けたトークンでは問い合わせをやめます。
 - **CLI がトークンのファイルを最初から mode 600 で作るようにしました。**
@@ -548,6 +552,8 @@ from the old folder into the new one before starting.
   7〜365、起動時と 24 時間ごと）を書きました。プログラムが読まない環境変数
   （`CYNOVELA_DISABLE_RATE_LIMIT`・`CYNOVELA_ADMIN_INITIAL_PASSWORD`・
   `CYNOVELA_ADMIN_USERNAME`）を表から外しました。
+  はじめてのガイドに、空の本番のデータベースにも管理者と閲覧者 `demo` が最初からあると
+  書きました（以前は「閲覧者は居ない」と書いていました）。
 - 版は 2.0.2 で、2.0.1 に置き換わります。リリースのファイルは
   `cynovela-tender-package-2.0.2.tar.gz` と
   `cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02` です。AIモデルの分割
@@ -571,7 +577,7 @@ from the old folder into the new one before starting.
 
 前の版 v1.2.0 は Releases に引き続き残っています。
 
-コンテナ版（Falcon）はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
+コンテナ版はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
 
 1.2.0 または 2.0.0 からの入れ替えは、HOW-TO-ASSEMBLE.md の [1.2.0 から入れ替える](HOW-TO-ASSEMBLE.md#120-から入れ替える) か [2.0.0・2.0.1 から入れ替える](HOW-TO-ASSEMBLE.md#200201-から入れ替える) を見てください。
 
@@ -585,9 +591,9 @@ from the old folder into the new one before starting.
 
 ### 1.2.0 から入れ替える
 
-配布物は `tender/` へ展開されるようになり、新しいフォルダは古い `chewie/store/` を
-読みません。新しい版をはじめて起動する前に、`chewie/store/` の中身を `tender/store/` へ
-コピーしてください。手順は [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える)
+配布物は `tender/` へ展開されるようになり、新しいフォルダは 1.2.0 のフォルダ（1.2.0 を
+展開したフォルダ）の `store/` を読みません。新しい版をはじめて起動する前に、その
+`store/` の中身を `tender/store/` へコピーしてください。手順は [HOW-TO-ASSEMBLE.md](HOW-TO-ASSEMBLE.md#120-から入れ替える)
 にあります。データベースには、初回の起動時に `token_version` の列が自動で足されます。
 1.2.0 が出したトークンは、入れ替えたあとも使えます。
 
@@ -634,7 +640,7 @@ from the old folder into the new one before starting.
 - 配布物の展開先が以前のフォルダから `tender/` に変わりました。新しいフォルダは
   古い `store/` を読みません（上の「1.2.0 から入れ替える」を参照）。
 - 新しく入れた場合、同梱デモの取り込み元のルートの名前は `tender-dummy-corpus`
-  です（以前は `chewie-dummy-corpus`）。
+  です（1.2.0 では `-dummy-corpus` で終わる別の名前）。
 - 最初のパスワードを変えていない利用者は、`/api/auth/me`・`/api/auth/logout`・
   `/api/auth/change-password` 以外で 403 を受けます（管理者も閲覧者も）。
 - `POST /api/sources` と `POST /api/folder-scan-preview` は、登録済みのルートの

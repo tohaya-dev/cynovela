@@ -122,39 +122,43 @@ If you have never used Terminal before, open **`docs/getting-started.md`** inste
 
 ### Upgrading from 1.2.0
 
-2.0.2 unpacks into a folder named `tender`; 1.2.0 unpacked into `chewie`. The
-new folder does not read `chewie/store/`, which holds the database, the search
+2.0.2 unpacks into a new folder named `tender`. It does not read the store of
+the folder of 1.2.0 (the folder that 1.2.0 was unpacked into; it contains
+1.2.0's `stop.sh` and `store/`). That `store/` holds the database, the search
 index, the key files, the list of ingest roots (`ingest-roots.json`) and the AI
 models. To carry them over:
 
-1. **Stop 1.2.0.** In the `chewie` folder, run `bash stop.sh`, or double-click
+1. **Stop 1.2.0.** In the folder of 1.2.0, run `bash stop.sh`, or double-click
    `Cynovela-stop.command`.
-2. **Unpack 2.0.2 next to it**, in the folder that holds `chewie`. Do not start
-   it yet.
+2. **Unpack 2.0.2 next to it**, in the folder that holds the folder of 1.2.0.
+   Do not start it yet.
 
        tar -xzf cynovela-tender-package-2.0.2.tar.gz      # creates tender/
 
 3. **Before the first start of 2.0.2, copy the old `store/` into the new one:**
 
-       cp -Rp chewie/store/. tender/store/
+       cp -Rp <folder of 1.2.0>/store/. tender/store/
 
+   Replace `<folder of 1.2.0>` with the folder that 1.2.0 was unpacked into
+   (the folder that contains 1.2.0's `stop.sh` and `store/`).
    A freshly unpacked `tender/store/` holds only `ingest-roots.json`, which
    registers the bundled sample folder under the name `tender-dummy-corpus`.
    Let the copy overwrite it with your old `ingest-roots.json`: material you
    already ingested is found through the root names recorded in that file.
-   The old file's sample root, `chewie-dummy-corpus`, is recorded relative to
-   the app folder, so after the copy it points at `tender/dummy-corpus`.
+   The sample root of 1.2.0 (its name ends with `-dummy-corpus`) is recorded
+   relative to the app folder, so after the copy it points at
+   `tender/dummy-corpus`.
    `store/models/` is copied as well, so you do not need to download or
    assemble the models parts.
 4. **Start from `tender/`:** `cd tender`, then `./launch.sh` (or
    `./launch.sh --demo`, or the `.command` files in that folder). Your existing
    user names and passwords work, and tokens issued by 1.2.0 keep working.
 5. **Check your ingest roots.** A folder you added yourself is recorded by its
-   full path. If it was inside the old `chewie/` folder, it still points there.
-   Keep the `chewie` folder until you have added those folders again from
+   full path. If it was inside the folder of 1.2.0, it still points there.
+   Keep the folder of 1.2.0 until you have added those folders again from
    `tender/`, and remove it only after that.
 
-If you changed `cynovela.yaml` in the `chewie` folder, make the same changes in
+If you changed `cynovela.yaml` in the folder of 1.2.0, make the same changes in
 `tender/cynovela.yaml` by hand; do not copy the old file over the new one.
 
 ### Upgrading from 2.0.0 or 2.0.1
@@ -251,7 +255,7 @@ models は**取り出した `tender` フォルダの中で**展開します（�
 はじめてなら、展開したフォルダの **`QUICKSTART.md`** を開いてください。起動から最初の答えまでを案内します。くわしくは **`START-HERE.md`** へ。セットアップ・再起動・再インストール・アンインストールはすべてそこにあります。
 
 **最初のログイン。最初のパスワードは `README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。**
-**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を案内します。**
+**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を見るよう示します。**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
@@ -276,37 +280,41 @@ models は**取り出した `tender` フォルダの中で**展開します（�
 
 ### 1.2.0 から入れ替える
 
-2.0.2 は `tender` というフォルダへ展開されます（1.2.0 は `chewie` でした）。新しい
-フォルダは `chewie/store/` を読みません。`chewie/store/` には、データベース・検索用
-インデックス・鍵ファイル・取り込み元の一覧（`ingest-roots.json`）・AIモデルが
-入っています。引き継ぐには、次の順に進めます。
+2.0.2 は `tender` という新しいフォルダへ展開されます。新しいフォルダは、1.2.0 の
+フォルダ（1.2.0 を展開したフォルダ。1.2.0 の `stop.sh` と `store/` が入っています）の
+`store/` を読みません。この `store/` には、データベース・検索用インデックス・鍵ファイル・
+取り込み元の一覧（`ingest-roots.json`）・AIモデルが入っています。引き継ぐには、
+次の順に進めます。
 
-1. **1.2.0 を止めます。** `chewie` フォルダで `bash stop.sh` を叩くか、
+1. **1.2.0 を止めます。** 1.2.0 のフォルダで `bash stop.sh` を実行するか、
    `Cynovela-stop.command` をダブルクリックします。
-2. **2.0.2 を隣に展開します。** `chewie` のあるフォルダで展開します。まだ起動しません。
+2. **2.0.2 を隣に展開します。** 1.2.0 のフォルダがあるフォルダで展開します。
+   まだ起動しません。
 
        tar -xzf cynovela-tender-package-2.0.2.tar.gz      # tender/ ができます
 
 3. **2.0.2 をはじめて起動する前に、古い `store/` の中身を新しい方へコピーします。**
 
-       cp -Rp chewie/store/. tender/store/
+       cp -Rp <1.2.0 のフォルダ>/store/. tender/store/
 
+   `<1.2.0 のフォルダ>` は、1.2.0 を展開したフォルダ（1.2.0 の `stop.sh` と `store/` が
+   入っているフォルダ）に置き換えてください。
    展開したばかりの `tender/store/` には `ingest-roots.json` だけが入っており、
    同梱のサンプル資料のフォルダを `tender-dummy-corpus` という名前で登録しています。
    これは古い `ingest-roots.json` で上書きしてください。取り込み済みの資料は、この
-   ファイルに書かれたルートの名前でたどるためです。古いファイルのサンプル資料のルート
-   `chewie-dummy-corpus` は本体のフォルダからの相対で書かれているので、コピーしたあとは
-   `tender/dummy-corpus` を指します。
+   ファイルに書かれたルートの名前でたどるためです。1.2.0 のサンプル資料のルート
+   （名前が `-dummy-corpus` で終わるもの）は本体のフォルダからの相対で書かれているので、
+   コピーしたあとは `tender/dummy-corpus` を指します。
    `store/models/` も一緒にコピーされるため、AIモデルの分割ファイルを落としてつなぐ手順は
    要りません。
 4. **`tender/` から起動します。** `cd tender` のあと `./launch.sh`（または
    `./launch.sh --demo`、そのフォルダの `.command`）。これまでの利用者名とパスワードで
    ログインでき、1.2.0 が出したトークンもそのまま使えます。
 5. **取り込み元を確かめます。** 自分で足したフォルダは、フルパスで記録されています。
-   古い `chewie/` フォルダの中にあったものは、そのまま古い場所を指します。
-   `tender/` から足し直すまで `chewie` フォルダは残し、足し直してから消してください。
+   1.2.0 のフォルダの中にあったものは、そのまま古い場所を指します。
+   `tender/` から足し直すまで 1.2.0 のフォルダは残し、足し直してから消してください。
 
-`chewie` フォルダの `cynovela.yaml` を書き換えていた場合は、同じ変更を
+1.2.0 のフォルダの `cynovela.yaml` を書き換えていた場合は、同じ変更を
 `tender/cynovela.yaml` へ手で入れてください。古いファイルで上書きはしません。
 
 ### 2.0.0・2.0.1 から入れ替える

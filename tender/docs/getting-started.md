@@ -651,9 +651,9 @@ With `--demo`, demo users are inserted automatically, but authentication is enfo
 
 ### How to create a viewer when you started with nothing loaded
 
-If you started with nothing loaded, at first only the administrator exists. You create the viewer yourself.
-Enter as the administrator, add a new user from user management, and choose viewer as the role.
-If you started with the trial documents, a viewer is prepared in advance.
+The viewer `demo` exists from the first start, also when you started with nothing loaded
+(production). Its first password is in `README.md` / `README.ja.md`, section 4, and it must be changed at the first sign-in.
+To add more viewers, enter as the administrator, add a new user from user management, and choose viewer as the role.
 
 ---
 
@@ -905,8 +905,9 @@ Right after it opens, you can ask questions about the bundled documents. Both th
 administrator and the viewer can sign in with the passwords described in section 10.
 
 To use it with your own documents only, run it from the terminal **with no arguments**.
-That starts from an **empty database** (production). There is no viewer in an empty
-production database (you sign in as the administrator and ingest documents first).
+That starts from an **empty database** (production). An empty production database has no
+documents, but it already has the administrator and the viewer `demo` (both must change the
+password at the first sign-in). Sign in as the administrator and ingest documents first.
 
 | What starts | What happens | How to get it |
 |---|---|---|
@@ -1482,7 +1483,7 @@ Chrome のアドレス欄にそのまま打ち込みます。
 #### 手順11. ログインする
 
 **最初のログイン。最初のパスワードは `README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。**
-**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を案内します。**
+**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を見るよう示します。**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
@@ -1818,7 +1819,7 @@ http://localhost:8765
 **2人の最初のパスワードは、`README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 |
 最初のパスワード）にあります。** ターミナルの画面には出ません。配布物の
 `cynovela.yaml` に入っているのはハッシュだけです。`./launch.sh` を初めて起動したとき
-（`--demo` の起動でも普通の起動でも）、利用者名が1回だけ出て、その表を案内します。
+（`--demo` の起動でも普通の起動でも）、利用者名が1回だけ出て、その表を見るよう示します。
 
 1. ユーザー名に **`cynovela`** を入力します。
 2. パスワードは、`README.md` / `README.ja.md` の 4 節の表にある管理者の値を入力します。
@@ -1858,9 +1859,9 @@ http://localhost:8765
 
 ### 何も入れずに始めた場合の、閲覧者の作り方
 
-何も入れずに始めた場合、最初に居るのは管理者だけです。閲覧者はご自身で作ります。
-管理者で入り、利用者の管理から新しい利用者を追加し、役割に閲覧者を選んでください。
-お試しの資料で始めた場合は、閲覧者があらかじめ用意されています。
+何も入れずに始めた場合（本番）も、閲覧者 `demo` は最初の起動のときからあります。
+最初のパスワードは `README.md` / `README.ja.md` の 4 節にあり、最初のログインで変更を求められます。
+閲覧者を増やすときは、管理者で入り、利用者の管理から新しい利用者を追加し、役割に閲覧者を選んでください。
 
 ---
 
@@ -2099,7 +2100,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 開いてすぐ、同梱の資料に質問できます。管理者・閲覧者とも、10節のパスワードでそのまま入れます。
 
 自分の資料だけで使いたいときは、ターミナルから**引数なし**で叩きます。こちらは**中身が空のデータベース**
-（本番）から始まります。空の本番に閲覧者は居ません（管理者で入って資料を取り込んでから使います）。
+（本番）から始まります。空の本番には資料はありませんが、管理者と閲覧者 `demo` は最初からあります（どちらも最初のログインでパスワードの変更を求められます）。管理者で入って資料を取り込んでから使います。
 
 | 起動の中身 | どうなるか | 出し方 |
 |---|---|---|

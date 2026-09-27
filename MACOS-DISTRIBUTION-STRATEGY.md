@@ -222,9 +222,9 @@ Not forced into one file format:
 
 Therefore **PKG + Portable does not mean two products or two editions**. It means two artifacts of the same OSS release for different installation constraints.
 
-## 13. Relationship to Kyber and CynoCarina
+## 13. Relationship to other products
 
-The release-engineering principles discovered here should also be considered for Kyber and CynoCarina:
+The release-engineering principles discovered here should also be considered for other products:
 
 - scan final artifacts, not just source;
 - do not leak developer/build-machine paths;

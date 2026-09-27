@@ -1115,7 +1115,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <div class="slide-body">
 <table><thead><tr><th>User name (default. It is not <code>admin</code>)</th><th>Role</th><th>Password</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>The first value is in <code>README.md</code> / <code>README.ja.md</code>, section 4. A change is forced at the first login</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>The first value is in <code>README.md</code> / <code>README.ja.md</code>, section 4. A change is forced at the first login</td></tr></tbody></table>
 <h3>How to create a viewer when you started with nothing loaded</h3>
-<p>If you started with nothing loaded, at first only the administrator exists. You create the viewer yourself. Enter as the administrator, add a new user from user management, and choose viewer as the role. If you started with the trial documents, a viewer is prepared in advance.</p>
+<p>The viewer <code>demo</code> exists from the first start, also when you started with nothing loaded (production). Its first password is in <code>README.md</code> / <code>README.ja.md</code>, section 4, and it must be changed at the first sign-in. To add more viewers, enter as the administrator, add a new user from user management, and choose viewer as the role.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1521,7 +1521,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <p><strong>This procedure starts up with an empty database (production).</strong> To try it with the bundled dummy documents, double-click <strong><code>Cynovela-demo.command</code></strong> (or run <code>./launch.sh --demo</code> from the terminal). Right after it opens, you can ask questions about the bundled documents. Both the administrator and the viewer can sign in with the passwords described in section 10.</p>
-<p>To use it with your own documents only, run it from the terminal <strong>with no arguments</strong>. That starts from an <strong>empty database</strong> (production). There is no viewer in an empty production database (you sign in as the administrator and ingest documents first).</p>
+<p>To use it with your own documents only, run it from the terminal <strong>with no arguments</strong>. That starts from an <strong>empty database</strong> (production). An empty production database has no documents, but it already has the administrator and the viewer <code>demo</code> (both must change the password at the first sign-in). Sign in as the administrator and ingest documents first.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2404,7 +2404,7 @@ cynovela-tender-package-2.0.2.tar.gz: OK</code></pre>
 </div>
 <div class="slide-body">
 <h4>手順11. ログインする</h4>
-<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>パスワード:</strong> <code>README.md</code> / <code>README.ja.md</code> の 4 節の表（役割 | 利用者名 | 最初のパスワード）にある管理者の値です。ターミナルの画面には出ません。<code>cynovela.yaml</code> に入っているのはハッシュだけです。初回の起動（この <code>--demo</code> の起動でも普通の起動でも）では、利用者名 <code>cynovela</code>（管理者）/ <code>demo</code>（閲覧者）が1回だけ出て、その表を案内します。管理者も閲覧者も、最初のログインで変更を求められます。</li></ul>
+<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>パスワード:</strong> <code>README.md</code> / <code>README.ja.md</code> の 4 節の表（役割 | 利用者名 | 最初のパスワード）にある管理者の値です。ターミナルの画面には出ません。<code>cynovela.yaml</code> に入っているのはハッシュだけです。初回の起動（この <code>--demo</code> の起動でも普通の起動でも）では、利用者名 <code>cynovela</code>（管理者）/ <code>demo</code>（閲覧者）が1回だけ出て、その表を見るよう示します。管理者も閲覧者も、最初のログインで変更を求められます。</li></ul>
 <p>入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。</p>
 <h4>手順12. 最初の質問をする</h4>
 <p><code>--demo</code> で起こしたので、お試しの資料は初回起動時に自動で取り込まれ、探せる状態になっています（起動ログに取り込みの進捗がまだ出ている間は、終わるのを待ってください）。ふつうの言葉で枠に打ち込んで return を押します。たとえば次のようにです。</p>
@@ -2811,7 +2811,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>管理者の利用者名</td><td><code>cynovela</code></td></tr><tr><td>閲覧者の利用者名</td><td><code>demo</code></td></tr></tbody></table>
-<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>2人の最初のパスワードは、<code>README.md</code> / <code>README.ja.md</code> の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。</strong>ターミナルの画面には出ません。配布物の <code>cynovela.yaml</code> に入っているのはハッシュだけです。<code>./launch.sh</code> を初めて起動したとき（<code>--demo</code> の起動でも普通の起動でも）、利用者名が1回だけ出て、その表を案内します。</p>
+<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>2人の最初のパスワードは、<code>README.md</code> / <code>README.ja.md</code> の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。</strong>ターミナルの画面には出ません。配布物の <code>cynovela.yaml</code> に入っているのはハッシュだけです。<code>./launch.sh</code> を初めて起動したとき（<code>--demo</code> の起動でも普通の起動でも）、利用者名が1回だけ出て、その表を見るよう示します。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2875,7 +2875,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <h3>何も入れずに始めた場合の、閲覧者の作り方</h3>
-<p>何も入れずに始めた場合、最初に居るのは管理者だけです。閲覧者はご自身で作ります。管理者で入り、利用者の管理から新しい利用者を追加し、役割に閲覧者を選んでください。お試しの資料で始めた場合は、閲覧者があらかじめ用意されています。</p>
+<p>何も入れずに始めた場合（本番）も、閲覧者 <code>demo</code> は最初の起動のときからあります。最初のパスワードは <code>README.md</code> / <code>README.ja.md</code> の 4 節にあり、最初のログインで変更を求められます。閲覧者を増やすときは、管理者で入り、利用者の管理から新しい利用者を追加し、役割に閲覧者を選んでください。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -3202,7 +3202,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <div class="slide-body">
 <p>展開したフォルダの中の <strong><code>Cynovela-start.command</code></strong> をダブルクリックします。止めるときは <strong><code>Cynovela-stop.command</code></strong> をダブルクリックします。読み込むフォルダを足すときは <strong><code>Cynovela-add-folder.command</code></strong> をダブルクリックします（はじめて使うときは、先に <code>Cynovela-start.command</code> を一度押してください。フォルダのバックアップを扱う Python はその最初の一度で用意されます）。</p>
 <p><strong>この操作手順は、中身が空のデータベース（本番）で立ち上がります。</strong> 同梱のダミー資料で試すときは、<strong><code>Cynovela-demo.command</code></strong> をダブルクリックします（またはターミナルから <code>./launch.sh --demo</code>）。開いてすぐ、同梱の資料に質問できます。管理者・閲覧者とも、10節のパスワードでそのまま入れます。</p>
-<p>自分の資料だけで使いたいときは、ターミナルから<strong>引数なし</strong>で叩きます。こちらは<strong>中身が空のデータベース</strong>（本番）から始まります。空の本番に閲覧者は居ません（管理者で入って資料を取り込んでから使います）。</p>
+<p>自分の資料だけで使いたいときは、ターミナルから<strong>引数なし</strong>で叩きます。こちらは<strong>中身が空のデータベース</strong>（本番）から始まります。空の本番には資料はありませんが、管理者と閲覧者 <code>demo</code> は最初からあります（どちらも最初のログインでパスワードの変更を求められます）。管理者で入って資料を取り込んでから使います。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

@@ -37,7 +37,8 @@ This records the main changes to Cynovela in chronological order.
   `docs/operations.md`, "Rate limits".
 - **The embedding status banner no longer calls the server before sign-in or for
   a viewer.** It asked `/api/settings/embedding` (administrators only) every 5
-  seconds from the moment the page opened, and each refused call added an
+  seconds for the first 5 minutes after the page opened and every minute after
+  that, and each refused call added an
   `auth_failed` row to the audit log. It now asks only with a token and only for
   an administrator, and stops for a token that received 403.
 - **The command-line client creates its token file with mode 600 from the
@@ -58,6 +59,8 @@ This records the main changes to Cynovela in chronological order.
   is described. Environment variables that the program does not read
   (`CYNOVELA_DISABLE_RATE_LIMIT`, `CYNOVELA_ADMIN_INITIAL_PASSWORD`,
   `CYNOVELA_ADMIN_USERNAME`) were removed from the tables.
+  The getting-started guide now says that an empty production database already
+  has the administrator and the viewer `demo` (it said there was no viewer).
 - Version 2.0.2 replaces 2.0.1. The release files are
   `cynovela-tender-package-2.0.2.tar.gz` and
   `cynovela-tender-models-2.0.2.tar.gz.part00`–`part02`; the models parts hold
@@ -71,8 +74,8 @@ This records the main changes to Cynovela in chronological order.
   and `cynovela-tender-models-2.0.1.tar.gz.part00`–`part02`; the models parts hold the same
   content as the 1.2.0 and 2.0.0 models.
 - **The container editions were removed from the repository.** The repository now carries only
-  tender. The container edition (Falcon) is not included from this version; if you need it, see
-  v1.2.0 on the Releases page.
+  tender. The container edition is not included from this version; if you need it, see v1.2.0
+  on the Releases page.
 - **Old names were removed from code comments and documents.**
 - **The rename tool and its ledger were removed from the repository.**
 - The previous version v1.2.0 remains available on the Releases page. Upgrading from 1.2.0 or
@@ -127,11 +130,11 @@ This records the main changes to Cynovela in chronological order.
   registered and read. The CLI `ingest` and the MCP `ingest_source` go through the same
   check. During a scan, a file link inside the folder that points outside it is skipped
   and logged.
-- **Upgrading from 1.2.0.** The new `tender` folder does not read the old `chewie/store/`; copy it into
-  `tender/store/` before the first start (the steps are in `HOW-TO-ASSEMBLE.md` at the repository
+- **Upgrading from 1.2.0.** The new `tender` folder does not read the `store/` of the folder of 1.2.0;
+  copy it into `tender/store/` before the first start (the steps are in `HOW-TO-ASSEMBLE.md` at the repository
   root). The `users` table gains a `token_version` column by itself at startup, and tokens issued
   by 1.2.0 keep working. In a new installation the bundled demo's ingest root is named
-  `tender-dummy-corpus` (was `chewie-dummy-corpus`). Environment variable names, CLI commands, MCP
+  `tender-dummy-corpus` (in 1.2.0 it was another name ending with `-dummy-corpus`). Environment variable names, CLI commands, MCP
   tool names and script names are unchanged.
 - **Documentation fixes.** `confidence_threshold` is described as what it does: below it, the
   LLM is not called. The reranker is described as enabled by the shipped `cynovela.yaml`, falling
@@ -461,7 +464,7 @@ Cynovela の主要な変更内容を時系列で記録します。
   1分あたり 200回の全体の上限しかありませんでした。一覧は
   `docs/operations.md` の「回数の上限」にあります。
 - **埋め込みの状態の帯が、ログインの前と閲覧者の画面ではサーバに問い合わせなくなりました。**
-  画面を開いた時点から 5 秒ごとに `/api/settings/embedding`（管理者だけの口）へ問い合わせ、
+  画面を開いてから 5 分のあいだは 5 秒ごと、その後は 1 分ごとに `/api/settings/embedding`（管理者だけの口）へ問い合わせ、
   断られるたびに監査ログへ `auth_failed` が 1 行ずつ増えていました。いまはトークンが
   あって管理者のときだけ問い合わせ、403 を受けたトークンでは問い合わせをやめます。
 - **CLI がトークンのファイルを最初から mode 600 で作るようにしました。**
@@ -479,6 +482,8 @@ Cynovela の主要な変更内容を時系列で記録します。
   7〜365、起動時と 24 時間ごと）を書きました。プログラムが読まない環境変数
   （`CYNOVELA_DISABLE_RATE_LIMIT`・`CYNOVELA_ADMIN_INITIAL_PASSWORD`・
   `CYNOVELA_ADMIN_USERNAME`）を表から外しました。
+  はじめてのガイドに、空の本番のデータベースにも管理者と閲覧者 `demo` が最初からあると
+  書きました（以前は「閲覧者は居ない」と書いていました）。
 - 版は 2.0.2 で、2.0.1 に置き換わります。リリースのファイルは
   `cynovela-tender-package-2.0.2.tar.gz` と
   `cynovela-tender-models-2.0.2.tar.gz.part00`〜`part02` です。AIモデルの分割
@@ -492,7 +497,7 @@ Cynovela の主要な変更内容を時系列で記録します。
   `cynovela-tender-models-2.0.1.tar.gz.part00`〜`part02` で、AIモデルの分割ファイルの中身は
   1.2.0・2.0.0 のモデルと同じ。
 - **コンテナ版をリポジトリから外した。** リポジトリにあるのは tender だけになった。
-  コンテナ版（Falcon）はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
+  コンテナ版はこの版から含みません。必要な場合は Releases の v1.2.0 を参照してください。
 - **コードのコメントと文書から、以前の名前を外した。**
 - **名前の変更に使ったツールとその記録を、リポジトリから外した。**
 - 前の版 v1.2.0 は Releases に引き続き残っています。1.2.0 または 2.0.0 からの入れ替えは、
@@ -541,11 +546,11 @@ Cynovela の主要な変更内容を時系列で記録します。
   見ていなかったので、それ以外の場所（`/Volumes/…`・他の利用者のフォルダ）を登録して
   読めてしまった。CLI の `ingest` と MCP の `ingest_source` も同じ確認を通る。走査のとき、
   フォルダの中にあってフォルダの外を指すファイルのリンクは飛ばし、記録に残す。
-- **1.2.0 からの入れ替え。** 新しい `tender` のフォルダは古い `chewie/store/` を読まない。はじめて起動する前に
-  `tender/store/` へコピーする（手順はリポジトリの直下の `HOW-TO-ASSEMBLE.md`）。`users` の表には
+- **1.2.0 からの入れ替え。** 新しい `tender` のフォルダは、1.2.0 のフォルダの `store/` を読まない。
+  はじめて起動する前に `tender/store/` へコピーする（手順はリポジトリの直下の `HOW-TO-ASSEMBLE.md`）。`users` の表には
   起動時に `token_version` の列が自動で足され、1.2.0 が出したトークンはそのまま使える。新しく
-  入れた場合、同梱デモの取り込み元のルートの名前は `tender-dummy-corpus`（以前は
-  `chewie-dummy-corpus`）。環境変数の名前・CLI の命令・MCP の道具の名前・スクリプトの名前は
+  入れた場合、同梱デモの取り込み元のルートの名前は `tender-dummy-corpus`（1.2.0 では
+  `-dummy-corpus` で終わる別の名前）。環境変数の名前・CLI の命令・MCP の道具の名前・スクリプトの名前は
   変わらない。
 - **文書の修正。** `confidence_threshold` を、実際の働きどおり「これを下回ると LLM を呼ばない」と
   書いた。再ランクは、同梱の `cynovela.yaml` で有効で、外部の推論サーバ → 本体内 → 再ランクなし
