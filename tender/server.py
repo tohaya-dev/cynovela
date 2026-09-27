@@ -85,6 +85,20 @@ try:
     _rid_filter = _RequestIDDefaultFilter()
     for _h in logging.getLogger("cynovela").handlers:
         _h.addFilter(_rid_filter)
+
+    # Every log record gets request_id="-" when it is created. The filters above cover only the
+    # handlers present at this point; a record written from a background thread while logging
+    # is being reconfigured could otherwise reach a handler without them and fail to format
+    # ("--- Logging error --- KeyError: 'request_id'"), and the message was lost.
+    _base_record_factory = logging.getLogRecordFactory()
+
+    def _record_factory_with_request_id(*args, **kwargs):
+        record = _base_record_factory(*args, **kwargs)
+        if not hasattr(record, "request_id"):
+            record.request_id = "-"
+        return record
+
+    logging.setLogRecordFactory(_record_factory_with_request_id)
 except Exception as _log_setup_err:
     # 起動初期の logging 設定失敗は致命でないので継続 (既存 lastResort へフォールバック)
     print(f"[FIX-047] logging dictConfig setup failed: {_log_setup_err}")

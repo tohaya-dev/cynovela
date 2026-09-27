@@ -37,6 +37,9 @@
   `launch.sh` no longer prints the password; it points to the README.
   An existing installation keeps its passwords: the first values are used only
   for a user that has no password yet.
+- **A lost log line at the first start.** The first start could print
+  "--- Logging error ---" (KeyError: 'request_id') for one line written by the
+  startup scan, and that line was lost. Every log line now carries a request id.
 - **Documents.** `/api/rag/query` is described as it works: it generates an
   answer with the inference server, a viewer can call it, `workspace_id` is
   optional, and without an inference server it answers 400 (the CLI `search`
@@ -546,6 +549,9 @@ from the old folder into the new one before starting.
   `launch.sh` はパスワードを画面に出さず、README を指すようになりました。
   使っている環境のパスワードはそのまま残ります（最初の値を使うのは、まだパスワードの
   無い利用者だけです）。
+- **最初の起動でログが 1 行失われることがありました。** 起動時の走査が書く 1 行で
+  「--- Logging error ---」（KeyError: 'request_id'）が出て、その行が残りませんでした。
+  どのログの行にも request_id が付くようにしました。
 - **文書。** `/api/rag/query` の説明を実際の動きに合わせました（推論サーバで回答を作る、
   閲覧者も呼べる、`workspace_id` は省ける、推論サーバが無いと 400、そのとき CLI の
   `search` は 4 で終わる）。監査ログの古い行の自動削除（`log_retention_days`、既定 90 日、
