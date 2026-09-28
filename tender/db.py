@@ -797,49 +797,6 @@ def verify_password(password: str, stored_hash: str) -> bool:
     return secrets.compare_digest(h.hex(), expected)
 
 
-def _is_password_hash(value: str) -> bool:
-    """hash_password の形式 (32 桁の16進の salt ":" 64 桁の16進) かどうか。"""
-    if not isinstance(value, str) or value.count(":") != 1:
-        return False
-    salt, digest = value.split(":", 1)
-    try:
-        int(salt, 16)
-        int(digest, 16)
-    except ValueError:
-        return False
-    return len(salt) == 32 and len(digest) == 64
-
-
-def _initial_password_from_yaml(kind: str):
-    """cynovela.yaml の auth: から、初回 seed に使う最初のパスワードを決める。
-
-    kind は "admin" または "viewer"。戻り値は (password_hash, 平文または None)。
-    どちらも None のときは呼び元が乱数で作る。
-      1) auth.<kind>_initial_password       平文 (運用者が明示したとき)
-      2) auth.<kind>_initial_password_hash  ハッシュ値だけ (配布物はこちらを使う)
-    形式の合わないハッシュ値は使わない (乱数へ倒す。入れない利用者を作らない)。
-    """
-    try:
-        from core.config import get_yaml_config as _gyc
-
-        auth = _gyc().get("auth") or {}
-    except Exception:
-        auth = {}
-    plain = auth.get(f"{kind}_initial_password") or None
-    if plain:
-        return hash_password(str(plain)), str(plain)
-    stored = str(auth.get(f"{kind}_initial_password_hash") or "").strip()
-    if stored and _is_password_hash(stored):
-        return stored, None
-    if stored:
-        import logging as _logging
-
-        _logging.getLogger("cynovela.db").warning(
-            f"[Cynovela] cynovela.yaml auth.{kind}_initial_password_hash の形式が正しくないため使いません"
-        )
-    return None, None
-
-
 def get_db() -> sqlite3.Connection:
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     # check_same_thread=False: FastAPIのStreamingResponseが同期ジェネレータを
@@ -1108,19 +1065,28 @@ def init_db(demo: bool = False):
                 import logging as _logging
 
                 # G-2: 環境変数からは受け取らない。初期のパスワードの入手元は
-                #   cynovela.yaml の auth: の 1 か所だけである (平文 → ハッシュ値 → 乱数 の順。
-                #   _initial_password_from_yaml を参照)。利用者名は既定値 cynovela に固定する。
-                # G-1: 初回シードで作られる管理者には、値の入手元によらず
-                #   初回変更を求める印を立てる。
-                #   稼働側の既存の管理者は _need_seed=False でこのブロックに入らず、影響しない。
+                #   cynovela.yaml (auth.admin_initial_password) の 1 本だけである。
+                #   利用者名は仕様の既定値 cynovela に固定する (配布仕様書 §5-4)。
+                try:
+                    from core.config import get_yaml_config as _gyc
+
+                    _admin_password = ((_gyc().get("auth") or {}).get("admin_initial_password")) or None
+                except Exception:
+                    _admin_password = None
                 _admin_username = "cynovela"
-                _admin_hash, _admin_password = _initial_password_from_yaml("admin")
-                _must_change = 1
-                if _admin_hash is None:
+                # G-1: 初回シードで作られる管理者には、値の入手元によらず
+                #   初回変更を求める印を立てる (配布仕様書 §5-4)。従来は yaml で明示指定した
+                #   場合に印を立てず、配布物の本番 (空) 側だけ印の無い管理者ができていた
+                #   (配布物は cynovela.yaml に初期のパスワードを書き込むため)。
+                #   稼働側の既存の管理者は _need_seed=False でこのブロックに入らず、影響しない。
+                if _admin_password:
+                    _must_change = 1
+                else:
                     _admin_password = _secrets.token_urlsafe(16)
+                    _must_change = 1
                     _seed_msg = (
                         "[Cynovela] 初期 admin パスワードを自動生成しました "
-                        "(cynovela.yaml auth.admin_initial_password / admin_initial_password_hash とも未指定)。\n"
+                        "(env CYNOVELA_ADMIN_INITIAL_PASSWORD / cynovela.yaml auth.admin_initial_password とも未指定)。\n"
                         f"          username={_admin_username}  password={_admin_password}\n"
                         "          初回ログイン後に必ず変更してください。"
                     )
@@ -1134,7 +1100,7 @@ def init_db(demo: bool = False):
                     )
                     _logging.getLogger("cynovela.db").warning(_seed_msg_log)
                     print(_seed_msg, flush=True)
-                    _admin_hash = hash_password(_admin_password)
+                _admin_hash = hash_password(_admin_password)
                 conn.execute(
                     "UPDATE users SET username = ?, password_hash = ?, must_change_password = ?, updated_at = ? WHERE id = ?",
                     (_admin_username, _admin_hash, _must_change, _now, "user-admin"),
@@ -1210,19 +1176,19 @@ def init_db(demo: bool = False):
             import logging as _logging
 
             _viewer_username = "demo"
-            # 管理者と同じく、閲覧者にも初回ログインでの変更を求める。
-            #   従来は must_change_password = 0 で作っており、配布物に書いた既知の値のまま
-            #   閲覧者として入れ続けられた (LAN に出したときに効く)。
-            #   発火条件 (username か password_hash が空) は従来のままなので、既存の閲覧者
-            #   (変更済みの値を含む) には何もしない。
-            _viewer_hash, _viewer_password = _initial_password_from_yaml("viewer")
-            if _viewer_hash is None:
+            try:
+                from core.config import get_yaml_config as _gyc
+
+                _viewer_password = ((_gyc().get("auth") or {}).get("viewer_initial_password")) or None
+            except Exception:
+                _viewer_password = None
+            if not _viewer_password:
                 _viewer_password = _secrets.token_urlsafe(12)
                 print(
                     "[Cynovela] 閲覧者の初期パスワードを自動生成しました "
-                    "(cynovela.yaml auth.viewer_initial_password / viewer_initial_password_hash とも未指定)。\n"
+                    "(cynovela.yaml auth.viewer_initial_password 未指定)。\n"
                     f"          username={_viewer_username}  password={_viewer_password}\n"
-                    "          この表示は初回起動時の 1 回だけです。初回ログイン後に変更を求められます。",
+                    "          この表示は初回起動時の 1 回だけです。",
                     flush=True,
                 )
                 _logging.getLogger("cynovela.db").warning(
@@ -1230,11 +1196,10 @@ def init_db(demo: bool = False):
                     f"(username={_viewer_username})。パスワードは初回起動時のコンソール出力のみに"
                     "表示します (セキュリティのためログファイルには記録しません)。"
                 )
-                _viewer_hash = hash_password(_viewer_password)
             conn.execute(
-                "UPDATE users SET username = ?, password_hash = ?, must_change_password = 1, "
+                "UPDATE users SET username = ?, password_hash = ?, must_change_password = 0, "
                 "updated_at = ? WHERE id = ?",
-                (_viewer_username, _viewer_hash, _now, "user-scientist"),
+                (_viewer_username, hash_password(_viewer_password), _now, "user-scientist"),
             )
 
         if demo:

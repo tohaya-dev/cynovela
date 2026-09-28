@@ -126,26 +126,6 @@ dist_inspect() {   # dist_inspect <STAGE/$NAME 相当のディレクトリ> <検
         ! -path '*/node_modules/*' ! -path '*/__pycache__/*' -print0 \
         | xargs -0 grep -lIE -e "$DIST_DOC_RE" -- /dev/null) \
         | sed 's|^\./||' || true)"
-  # 2.0.2: 配布物の設定 (cynovela.yaml) の auth.admin_initial_password_hash /
-  #   auth.viewer_initial_password_hash には、パッケージングのときに
-  #   「塩 32 桁の 16 進 : ハッシュ 64 桁の 16 進」を書く (初期のパスワードの平文を置かないため)。
-  #   塩の 32 桁は上の 32 桁の 16 進の検出語に当たるが、内部の文書の識別子ではない。
-  #   そこで、cynovela.yaml の中の「このキー 2 つで、値がこの形のものだけ」の行を除いてから数える。
-  #   同じファイルのほかの行や、ほかのファイルに当たれば従来どおり止める。許した行の数は必ず出す。
-  local c2_allow_re c2_rest="" c2_allowed=0 c2_a c2_r
-  c2_allow_re="$(printf "^[ \t]+(admin|viewer)_initial_password_hash:[ \t]*'[0-9a-f]{32}:[0-9a-f]{64}'[ \t]*\$")"
-  while IFS= read -r c2_f; do
-    [ -n "$c2_f" ] || continue
-    if [ "$c2_f" = "cynovela.yaml" ]; then
-      c2_a="$( { grep -E -e "$c2_allow_re" -- "$stage/$c2_f" || true; } | wc -l | tr -d ' ')"
-      c2_r="$( { grep -vE -e "$c2_allow_re" -- "$stage/$c2_f" | grep -oIE -e "$DIST_DOC_RE" || true; } | wc -l | tr -d ' ')"
-      c2_allowed=$((c2_allowed + c2_a))
-      [ "$c2_r" = "0" ] && continue
-    fi
-    c2_rest="${c2_rest}${c2_f}"$'\n'
-  done <<< "$c2_hits"
-  c2_hits="${c2_rest%$'\n'}"
-  echo "[inspect] (c-2)     許可: cynovela.yaml の auth.*_initial_password_hash の行 ${c2_allowed} 行 (値が「塩 32 桁 : ハッシュ 64 桁」の形のものだけ)"
   if [ -n "$c2_hits" ]; then
     n="$(printf '%s\n' "$c2_hits" | wc -l | tr -d ' ')"
     echo "[inspect] (c-2) 中身に残った内部の文書への参照を検出: $n ファイル (表示は先頭20件まで)" >&2
@@ -207,10 +187,17 @@ run_re = re.compile(r"[!-~]+")
 delim_re = re.compile(r"""[\s"'`=:;,()<>\[\]{}|/\\]+""")
 ctx_re = re.compile(r"""(?i)(password|passwd|\bpw\b|パスワード)[^\n]{0,20}?[=:：][ \t]*["'`]?$""")
 word_re = re.compile(r"[\w.\-]")
-# 初期のパスワードの平文は、配布物のどこにも置かない (設定 cynovela.yaml にはハッシュ値だけを書く)。
-#   平文を載せるのはリポジトリの README.md / README.ja.md だけで、それらは配布物に入らない。
-#   ∴ 許す場所は無い。どこに出ても止める。
-allowed_paths = {}      # 記号 -> 出てよい相対パスの集合 (空: どこにも許さない)
+# fixed-initial-credentials-20260802 (§3-2):
+#   初期のパスワードは固定値になり、受け取り手が入れるように配布物の中のガイドへ明記する。
+#   ∴ その2つは「設定 (cynovela.yaml)」に限って許す。
+#   それ以外の場所 (データベース・記録・コード・作業の残りかす) に出たら従来どおり止める。
+#   許した箇所も件数と場所を必ず画面へ出す (黙って通さない)。
+allowed_paths = {          # 記号 -> 出てよい相対パスの集合
+    "T3": {"cynovela.yaml"},                      # 管理者の初期のパスワード
+    # N-4 連動: 閲覧者の値も設定 (auth.viewer_initial_password) に書く形に
+    #   なったため、管理者と同じく cynovela.yaml を許す。他の場所は従来どおり止める。
+    "T4": {"cynovela.yaml"},                      # 閲覧者の初期のパスワード
+}
 hits = {}               # (記号, 相対パス) -> 箇所数
 allowed_hits = {}       # (記号, 相対パス) -> 箇所数 (許した分。止めないが必ず出す)
 
@@ -273,11 +260,11 @@ for dirpath, dirnames, filenames in os.walk(stage):
                     scan_line(raw.decode("utf-8", "replace"), rel)
 
 print("[inspect] (a) 走査: %d ファイル / 検査値 %d 件 (照合はハッシュのみ)" % (nfiles, len(targets)))
-# 許した分は必ず出す (いまは許す場所が無いので、常に 0 件と出る)。
+# 許した分は必ず出す。0 件なら「ガイドにパスワードが入っていない」ということなので、それも出す。
 for (sym, rel), cnt in sorted(allowed_hits.items()):
-    print("[inspect] (a)     許可: 記号 %s %d 箇所 %s" % (sym, cnt, rel))
+    print("[inspect] (a)     許可: 記号 %s %d 箇所 %s (ガイドに明記する既定のパスワード)" % (sym, cnt, rel))
 if not allowed_hits:
-    print("[inspect] (a)     許可した箇所: 0件 (配布物に初期のパスワードの平文が入っていない)")
+    print("[inspect] (a)     許可した箇所: 0件 (ガイドに既定のパスワードが入っていない)")
 if hits:
     for i, ((sym, rel), cnt) in enumerate(sorted(hits.items())):
         if i >= 20:
@@ -519,13 +506,14 @@ else
   echo "[dist] container.volume_prefix はこの系統に無い (この Mac の中で直接動く形態のため)"
 fi
 
-# ── 初期のパスワードを固定値にする ──
-#   受け取り手が入れない配布物を作らないため、管理者と閲覧者の初期のパスワードは固定値にする。
-#   値は README.md / README.ja.md に載せる。配布物の設定 (cynovela.yaml) には
-#   ハッシュ値だけ (auth.*_initial_password_hash) を書き、平文は書かない。
-#   平文の元は tools/dist-initial-credentials.local (1 行 = 記号 TAB 値・git 追跡外・mode 600)。
+# ── 初期のパスワードを固定値にする (fixed-initial-credentials-20260802・§3-2) ──
+#   受け取り手が入れない配布物を作らないため、管理者と閲覧者の初期のパスワードは固定値にし、
+#   配布物の中の設定 (cynovela.yaml) に書く。乱数は使わない。
+#   平文はこのリポジトリのどこにも置かない。tools/dist-initial-credentials.local
+#   (1 行 = 記号 TAB 値・git 追跡外・mode 600) から読み、ここで staging へ書き込む。
 #   このファイルが無いときは決められないので止める (フェイルクローズ)。
-# このディレクトリツリーの下 → リポジトリのルートディレクトリ の順で探す。
+# (版7): 検査値と同じく、このディレクトリツリーの下 → リポジトリのルートディレクトリ の順で探す。
+#   1 つのリポジトリにディレクトリツリーが複数並ぶ形では、ルートの tools/ に 1 本だけ置く運用である。
 CRED_FILE=""
 for _cf in "$ROOT/tools/dist-initial-credentials.local" "$REPO/tools/dist-initial-credentials.local"; do
   [ -f "$_cf" ] && { CRED_FILE="$_cf"; break; }
@@ -545,43 +533,50 @@ if [ -z "$ADMIN_PW" ] || [ -z "$VIEWER_PW" ]; then
 fi
 echo "[dist] 初期のパスワード: 固定値を使う (値は画面に出さない。長さ 管理者=${#ADMIN_PW} 閲覧者=${#VIEWER_PW})"
 
-# 同梱の設定に、アプリ自身のハッシュ関数 (ステージの db.py の hash_password) で作った
-#   ハッシュ値を書く。平文のキー (auth.*_initial_password) は空にする。
-#   平文は引数や環境変数ではなく、ファイル記述子 3 のパイプで渡す (プロセスの一覧に出さない)。
-#   データベースと利用者は初回起動時に db.py がこのハッシュ値から作り、管理者・閲覧者とも
-#   初回ログインで変更を求める (must_change_password=1)。
-python -B - "$STAGE/$NAME" "$STAGE/$NAME/cynovela.yaml" 3< <(printf '%s\n%s\n' "$ADMIN_PW" "$VIEWER_PW") <<'PYHASH' || exit 1
-import os, re, sys
-sys.dont_write_bytecode = True
-stage_root, path = sys.argv[1], sys.argv[2]
-sys.path.insert(0, stage_root)
-from db import hash_password, verify_password
-with os.fdopen(3, encoding="utf-8") as fh:
-    lines = fh.read().split("\n")
-admin_pw, viewer_pw = lines[0], lines[1]
+# first-run-ingest-20260901: demo.db を同梱しなくなったため、ここに在った
+#   tools/build_clean_demo_db.py によるクリーン化の工程は外した。上で読んだ
+#   固定の初期パスワードは、引き続き下で同梱の設定 (cynovela.yaml) に書く。
+#   デモも本番も、データベースと利用者は初回起動時に db.py がこの設定の値から作る。
+#   ここを空のままにすると、db.py が起動のたびに乱数を作って画面へ出す形になり、
+#   ガイドに書いた値では入れない。設定の1行だけを staging に書き込む。
+python - "$STAGE/$NAME/cynovela.yaml" "$ADMIN_PW" <<'PYYAML'
+import re, sys
+path, pw = sys.argv[1], sys.argv[2]
 src = open(path, encoding="utf-8").read()
-def put(src, key, value):
-    pat = r"""(?m)^([ \t]+""" + re.escape(key) + r""":[ \t]*)(?:'[^'\n]*'|"[^"\n]*"|[^\n#]*?)[ \t]*$"""
-    new, n = re.subn(pat, lambda m: m.group(1) + "'" + value + "'", src)
-    if n != 1:
-        print("[dist] cynovela.yaml の auth.%s を書き換えられなかった (%d 箇所)" % (key, n))
-        sys.exit(1)
-    return new
-ah, vh = hash_password(admin_pw), hash_password(viewer_pw)
-assert verify_password(admin_pw, ah) and verify_password(viewer_pw, vh)
-src = put(src, "admin_initial_password", "")
-src = put(src, "viewer_initial_password", "")
-src = put(src, "admin_initial_password_hash", ah)
-src = put(src, "viewer_initial_password_hash", vh)
-if admin_pw in src or viewer_pw in src:
-    print("[dist] cynovela.yaml に平文が残っている")
+# (版7): 空 ('') のときだけでなく、既に値が書かれているときも揃える。
+#   追跡下の cynovela.yaml に値が入ったまま commit された状態では、旧式 ('' だけを
+#   狙う) は 0 箇所となりパッケージングがフェイルクローズで止まっていた (実測 20260817)。
+#   パッケージングは「元が何であれ、正本の値に揃える」のが正しい。
+new, n = re.subn(r"(?m)^(auth:\n(?:[ \t]+.*\n)*?[ \t]+admin_initial_password:[ \t]*)'[^'\n]*'[ \t]*$",
+                 lambda m: m.group(1) + "'" + pw.replace("'", "''") + "'", src)
+if n != 1:
+    print("[dist] cynovela.yaml の auth.admin_initial_password を書き換えられなかった (%d 箇所)" % n)
     sys.exit(1)
-open(path, "w", encoding="utf-8").write(src)
-print("[dist] 同梱の設定に初期のパスワードのハッシュ値を書いた (cynovela.yaml auth.admin_initial_password_hash / viewer_initial_password_hash。平文は書かない)")
-PYHASH
-unset ADMIN_PW VIEWER_PW
+open(path, "w", encoding="utf-8").write(new)
+print("[dist] 同梱の設定に管理者の初期のパスワードを書いた (cynovela.yaml auth.admin_initial_password)")
+PYYAML
 
-# パスワードは同梱の文書にも設定にも平文で書かない。受け取り手は README の表で値を知る。
+# N-4: 閲覧者の初期のパスワードも同じ形で書く。従来は管理者だけを書いており、
+#   引数なし (本番) の閲覧者 seed (db.py・N-4 で demo 分岐の外へ移した) が乱数へ倒れ、
+#   同梱の設定に書いた値では入れなかった。新しい値は作らない (設定と同じ値)。
+python - "$STAGE/$NAME/cynovela.yaml" "$VIEWER_PW" <<'PYYAML'
+import re, sys
+path, pw = sys.argv[1], sys.argv[2]
+src = open(path, encoding="utf-8").read()
+# (版7): 管理者側と同じく、既に値が入っていても正本へ揃える。
+new, n = re.subn(r"(?m)^([ \t]+viewer_initial_password:[ \t]*)'[^'\n]*'[ \t]*$",
+                 lambda m: m.group(1) + "'" + pw.replace("'", "''") + "'", src)
+if n != 1:
+    print("[dist] cynovela.yaml の auth.viewer_initial_password を書き換えられなかった (%d 箇所)" % n)
+    sys.exit(1)
+open(path, "w", encoding="utf-8").write(new)
+print("[dist] 同梱の設定に閲覧者の初期のパスワードを書いた (cynovela.yaml auth.viewer_initial_password)")
+PYYAML
+
+# パスワードは同梱の文書に書かない (画面に出す形へ変えた)。
+#   以前はここでガイドの平文の2行を実際の値へ置き換えていたが、平文を持たせない
+#   ことにしたため、その処理を外した。値は上の cynovela.yaml へ書くだけで足り、
+#   受け取り手には launch.sh が初回起動時に画面へ出す。
 
 # first-run-ingest-20260901: ここに在った「金庫鍵と demo.db の試験復号」は、
 #   どちらも同梱しなくなったため外した。鍵と中身の噛み合わせは、初回起動時に

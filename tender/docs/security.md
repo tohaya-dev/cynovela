@@ -203,7 +203,7 @@ role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))
 
 > The DB CHECK constraint allows `role IN ('admin', 'curator', 'viewer')` for backward compatibility, but in the current implementation `curator` (and `data-scientist` and so on) is normalized to `viewer` and has no permissions of its own. The effective roles are the two values `admin` / `viewer`.
 
-Authentication is by username and password. One-click entry (unauthenticated login from a user card) has been completely removed. Both initial users (administrator `cynovela` and viewer `demo`) have to change the initial password on the first sign-in; other operations are refused (403) until then. The first passwords are published in `README.md` / `README.ja.md`, section 4, and the package's `cynovela.yaml` holds only their hashes.
+Authentication is by username and password. One-click entry (unauthenticated login from a user card) has been completely removed. The initial password of the first user has to be changed on the first sign-in.
 
 ### 3.2 Role check helpers
 
@@ -1035,7 +1035,7 @@ role TEXT NOT NULL CHECK(role IN ('admin', 'curator', 'viewer'))
 
 > DB の CHECK 制約は後方互換のため `role IN ('admin', 'curator', 'viewer')` を許容しますが、現行実装では `curator`（および `data-scientist` 等）は `viewer` に正規化され、固有の権限はありません。実効ロールは `admin` / `viewer` の 2 値です。
 
-認証は username と password で行います。ワンクリック入室（ユーザーカードからの未認証ログイン）は完全撤去済みです。最初の2人（管理者 `cynovela`・閲覧者 `demo`）とも、初回のサインインで初期パスワードの変更を求められます。変えるまでほかの操作は断られます（403）。最初のパスワードは `README.md` / `README.ja.md` の 4 節に載せており、配布物の `cynovela.yaml` にはハッシュだけが入っています。
+認証は username と password で行います。ワンクリック入室（ユーザーカードからの未認証ログイン）は完全撤去済みです。最初の利用者の初期パスワードは、初回のサインインで変更を求められます。
 
 ### 3.2 ロール検査ヘルパー
 

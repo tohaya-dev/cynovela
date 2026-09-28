@@ -1445,19 +1445,20 @@ Cynovela has 2 kinds of roles.
 Two users are created at the first start: the administrator `cynovela` and the viewer
 `demo`. The user names are fixed; environment variables are not read for them.
 
-Their first passwords come from the `auth:` section of `cynovela.yaml`, in this order:
+Their first passwords come from the `auth:` section of `cynovela.yaml`
+(`admin_initial_password` / `viewer_initial_password`).
 
-| Key | Use |
-|---|---|
-| `admin_initial_password` / `viewer_initial_password` | Plaintext. Fill it only when you want to choose the first value yourself. |
-| `admin_initial_password_hash` / `viewer_initial_password_hash` | A hash only (the form of `db.hash_password`, `salt:hex`). The shipped packages use this. |
-| (both empty) | A random value is made and printed on the terminal once, at the first start. This is the state of the repository source. |
-
-- **For a shipped package, the first passwords are in the table in README.md /
-  README.ja.md (section 4).** The package itself holds only their hashes.
-- **Both users are asked to change the password at the first sign-in.** Until then,
-  every call other than `/api/auth/me`, `/api/auth/logout` and
-  `/api/auth/change-password` is refused with 403.
+- **For a shipped package, the login information is at the top of README.md /
+  README.ja.md.** The packaging step writes the same fixed values into the package's
+  own `cynovela.yaml` (`auth.admin_initial_password`, `auth.viewer_initial_password`).
+- The administrator's value is printed on the terminal once, at the first start.
+  If you missed it, read it from `cynovela.yaml`.
+- If a key is empty (the state of the repository source), a random value is made at
+  the first start and printed on the terminal once.
+- **The administrator is asked to change the password at the first sign-in**;
+  administrative operations do not go through until then. The viewer is not asked
+  to change it. When you use Cynovela on a shared network, change the viewer's
+  password too.
 - These keys are read only when the user has no password yet (a fresh database).
   An existing installation keeps its passwords; updating Cynovela does not reset them.
 
@@ -1468,8 +1469,8 @@ the same way as in 9-2.
 
 | User name | Role | Password |
 |-----------|--------|-----------|
-| `cynovela` | admin | The first value is in the table in README.md / README.ja.md (section 4). A change is forced at first login |
-| `demo` | viewer | The first value is in the table in README.md / README.ja.md (section 4). A change is forced at first login |
+| `cynovela` | admin | At the top of README.md / README.ja.md; also printed on the terminal once at the first start, and in this package's `cynovela.yaml` (`auth.admin_initial_password`). A change is forced at first login |
+| `demo` | viewer | At the top of README.md / README.ja.md, and in this package's `cynovela.yaml` (`auth.viewer_initial_password`). No change is forced |
 
 ### 9-4. Adding and Deleting Users, and Changing Passwords
 
@@ -3016,18 +3017,15 @@ Cynovela には 2 種類のロールがあります。
 初回起動のときに、管理者 `cynovela` と閲覧者 `demo` の 2 人が作られます。利用者名は固定で、
 環境変数は読みません。
 
-最初のパスワードは `cynovela.yaml` の `auth:` から、次の順で決めます。
+最初のパスワードは `cynovela.yaml` の `auth:`（`admin_initial_password` / `viewer_initial_password`）から読みます。
 
-| キー | 使い方 |
-|---|---|
-| `admin_initial_password` / `viewer_initial_password` | 平文。最初の値を自分で決めたいときだけ書きます。 |
-| `admin_initial_password_hash` / `viewer_initial_password_hash` | ハッシュ値だけ（`db.hash_password` の形 `salt:hex`）。配布物はこちらを使います。 |
-| （どちらも空） | 乱数で作り、初回起動のときにターミナルへ 1 回だけ出します。リポジトリのソースそのままの状態です。 |
-
-- **配布物の最初のパスワードは、README.md / README.ja.md（4 節）の表にあります。**
-  配布物の中にはハッシュ値だけがあります。
-- **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**変えるまでは、
-  `/api/auth/me`・`/api/auth/logout`・`/api/auth/change-password` 以外の呼び出しは 403 で断られます。
+- **配布物のログイン情報は、README.md / README.ja.md の冒頭にあります。**
+  配布物を作るときに、同じ固定の値を配布物の `cynovela.yaml`
+  （`auth.admin_initial_password`・`auth.viewer_initial_password`）へ書き込みます。
+- 管理者の値は、初回起動のときにターミナルへ 1 回だけ出ます。見逃した場合は `cynovela.yaml` で読めます。
+- キーが空（リポジトリのソースそのままの状態）なら、初回起動のときに乱数で作り、ターミナルへ 1 回だけ出します。
+- **管理者は、最初のログインでパスワードの変更を求められます。**変えるまで管理の操作は通りません。
+  閲覧者には変更を求めません。共有のネットワークで使う場合は、閲覧者のパスワードも変えてください。
 - これらのキーを読むのは、利用者にまだパスワードが無いとき（新しいデータベース）だけです。
   使っている環境のパスワードはそのまま残り、Cynovela を更新しても元に戻りません。
 
@@ -3037,8 +3035,8 @@ Cynovela には 2 種類のロールがあります。
 
 | ユーザー名 | ロール | パスワード |
 |-----------|--------|-----------|
-| `cynovela` | admin | 最初の値は README.md / README.ja.md（4 節）の表にあります。初回ログイン時に変更を強制 |
-| `demo` | viewer | 最初の値は README.md / README.ja.md（4 節）の表にあります。初回ログイン時に変更を強制 |
+| `cynovela` | admin | README.md / README.ja.md の冒頭にあります。初回起動のときにターミナルへ1回だけ出て、この配布物の `cynovela.yaml`（`auth.admin_initial_password`）にもあります。初回ログイン時に変更を強制 |
+| `demo` | viewer | README.md / README.ja.md の冒頭と、この配布物の `cynovela.yaml`（`auth.viewer_initial_password`）にあります。変更は求めません |
 
 ### 9-4. ユーザー追加・削除・パスワード変更
 

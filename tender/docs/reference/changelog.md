@@ -43,14 +43,6 @@ This records the main changes to Cynovela in chronological order.
   an administrator, and stops for a token that received 403.
 - **The command-line client creates its token file with mode 600 from the
   start.** `~/.cynovela_cli.env` was written first and set to 600 afterwards.
-- **First passwords.** The package no longer contains the first passwords in
-  plaintext. Its `cynovela.yaml` holds only their hashes
-  (`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`);
-  the values are in the table in README.md (section 4). The viewer, like the
-  administrator, must change the password at the first sign-in.
-  `launch.sh` no longer prints the password; it points to the README.
-  An existing installation keeps its passwords: the first values are used only
-  for a user that has no password yet.
 - **A lost log line at the first start.** The first start could print
   "--- Logging error ---" (KeyError: 'request_id') for one line written by the
   startup scan, and that line was lost. Every log line now carries a request id.
@@ -472,13 +464,6 @@ Cynovela の主要な変更内容を時系列で記録します。
   あって管理者のときだけ問い合わせ、403 を受けたトークンでは問い合わせをやめます。
 - **CLI がトークンのファイルを最初から mode 600 で作るようにしました。**
   `~/.cynovela_cli.env` は、書いたあとで 600 に変えていました。
-- **最初のパスワード。** 配布物に最初のパスワードを平文で入れるのをやめました。
-  配布物の `cynovela.yaml` にはハッシュ値だけ（`auth.admin_initial_password_hash`・
-  `auth.viewer_initial_password_hash`）があり、値は README.ja.md（4 節）の表にあります。
-  閲覧者も、管理者と同じく最初のログインでパスワードの変更を求められます。
-  `launch.sh` はパスワードを画面に出さず、README を指すようになりました。
-  使っている環境のパスワードはそのまま残ります（最初の値を使うのは、まだパスワードの
-  無い利用者だけです）。
 - **最初の起動でログが 1 行失われることがありました。** 起動時の走査が書く 1 行で
   「--- Logging error ---」（KeyError: 'request_id'）が出て、その行が残りませんでした。
   どのログの行にも request_id が付くようにしました。

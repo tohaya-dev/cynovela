@@ -76,12 +76,12 @@ restore, changing the port, and reading the logs — are in [operations.md](oper
 
 ## 0. Read this first (this is where most people get stuck)
 
-- **The first time you sign in as the administrator or as the viewer, you will always be
-  told to change your password.** The first passwords are in `README.md` /
-  `README.ja.md`, section 4.
-- **Until you have finished changing it, every other operation (adding an
+- **The first time you sign in as the administrator, you will always be told to change
+  your password.**
+- **Until you have finished changing it, every administrative operation (adding an
   ingest source, ingesting documents, changing settings) is rejected.** Change it first.
-- A viewer cannot ingest documents.
+- The viewer (`demo`) is not asked to change anything. However, a viewer cannot ingest
+  documents.
 
 This package runs directly on your own machine.
 
@@ -261,25 +261,27 @@ A sign-in screen appears.
 
 #### Step 11. Sign in
 
-**First sign-in. The first passwords are in `README.md` / `README.ja.md`, section 4 (the table "Role | User name | First password").**
-**The first start shows the user names on screen, once, and points to that table.**
+The login information is at the top of the README (`README.md` / `README.ja.md`).
+
+**First sign-in. You do not need to look for the password.**
+**It is printed on screen, once, the first time you start.**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
-        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
-      Both are asked to change the password on the first sign-in.
-      管理者・閲覧者とも、最初のログインで変更を求められます。
-      Shown only this once. / この表示が出るのは初回だけです。
+        User name / ユーザー名 : cynovela
+        Password / パスワード  : (it appears here)
+      You will be asked to change it on the first sign-in.
+      Shown only this once.
     ────────────────────────────────────────────────
 
 - **Shown on the first start only.** It does not appear again.
 - **The administrator is `cynovela`; the viewer account is `demo`.**
-- **Both the administrator and the viewer are asked to change the password on first sign-in.**
-  Until it is changed, other operations are refused.
-- **Nothing is sent to you separately.** The password is not printed on screen,
-  and `cynovela.yaml` holds only hashes of the first passwords.
+- **The administrator is asked to change the password on first sign-in.** The viewer is not.
+- **Nothing is sent to you separately.**
+- **If you missed that screen**, the same value is in `cynovela.yaml` in the folder you
+  unpacked, next to `launch.sh`: `auth.admin_initial_password`
+  (`auth.viewer_initial_password` for the viewer).
 
 It will ask you to choose a new password straight away. Do that.
 
@@ -372,16 +374,15 @@ into memory — several gigabytes — before a single word comes back. The tool
 waits up to 120 seconds per request for that. If you get a message about a
 timeout, load the model in LM Studio first and ask again.
 
-#### Why the password is not in a file
+#### Why the password is also in a file
 
-The first passwords are published in `README.md` / `README.ja.md`, section 4.
-The package's `cynovela.yaml` holds only their hashes
-(`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`), so the
-values cannot be read out of the package, and the terminal does not print them.
-Because the published values are the same for everyone who has the README,
-changing them on first sign-in is required: for both the administrator and the
-viewer, other operations are rejected until you do. An existing installation
-keeps its current passwords; nothing is reset on update.
+The first password appears on the terminal screen once, the very first time you
+start — you do not need to look for it. The same value is also written into
+`cynovela.yaml` at packaging time, so you can still find it there if you missed
+that screen. The login information is also at the top of the README. The first
+passwords are fixed values, the same for everyone who has this version, so the
+administrator is required to change the password on first sign-in:
+administrator actions are rejected until you do.
 
 #### Why you should not put the folder in iCloud Drive, Dropbox or OneDrive
 
@@ -605,25 +606,28 @@ What to check when it does not work:
 | Viewer user name | `demo` |
 
 The default user names are **administrator `cynovela`** / **viewer `demo`** (not `admin`).
-**The first passwords of both users are in `README.md` / `README.ja.md`, section 4
-(the table "Role | User name | First password").** They are not printed on the
-terminal, and the package's `cynovela.yaml` holds only their hashes. The first
-start of `./launch.sh` (on the `--demo` start as well as on the ordinary start)
-shows the user names once and points to that table.
+**The administrator's initial password appears on the terminal screen once, the
+very first time `./launch.sh` starts — you do not need to look for it.** It
+appears on the `--demo` start as well as on the ordinary start, because neither
+database ships in the package. **The viewer's value is in this package's own
+`cynovela.yaml`** (`viewer_initial_password:`). **If you missed that screen**,
+the administrator's value is also written into `cynovela.yaml` — read it with
+`grep admin_initial_password cynovela.yaml`. They are not written in this
+documentation, so that a copy of the documentation cannot be used to sign in.
 
 1. Enter **`cynovela`** as the user name.
-2. For the password, enter the administrator value from the table in
-   `README.md` / `README.ja.md`, section 4.
+2. For the password, enter the administrator value shown on the terminal at the
+   first start (if you missed it, read it out of `cynovela.yaml`).
 3. When you log in, "**初回パスワードの変更**" (change your initial password) appears.
    Enter the value you received in "現在のパスワード" (current password), a value of your own choosing in
    "新しいパスワード（8文字以上）" (new password, 8 characters or more), enter the same value in the confirmation
    field as well, and press "**パスワードを変更して続行**" (change the password and continue).
 
-**Until you finish this change, other operations such as settings will not go through** (only the change operation goes through).
+**Until you finish this change, administrative operations such as settings will not go through** (only the change operation goes through).
 Be sure to change it here.
 
-Both the administrator and the viewer are asked to change the password at the first login. After changing it, enter with the new value.
-An existing installation keeps its current passwords; nothing is reset on update.
+The administrator is asked to change the password at the first login. After changing it, enter with the new value.
+The viewer can be used as it is. **After you receive it, change the administrator password first.**
 
 What to check when it does not work:
 
@@ -646,13 +650,13 @@ With `--demo`, demo users are inserted automatically, but authentication is enfo
 
 | User name (default. It is not `admin`) | Role | Password |
 |---|---|---|
-| `cynovela` | admin | The first value is in `README.md` / `README.ja.md`, section 4. A change is forced at the first login |
-| `demo` | viewer | The first value is in `README.md` / `README.ja.md`, section 4. A change is forced at the first login |
+| `cynovela` | admin | The first value is printed on the terminal once, at the first start. If you missed it: this package's `cynovela.yaml` (`admin_initial_password:`). A change is forced at the first login |
+| `demo` | viewer | The first value is in this package's `cynovela.yaml` (`viewer_initial_password:`) |
 
 ### How to create a viewer when you started with nothing loaded
 
 The viewer `demo` exists from the first start, also when you started with nothing loaded
-(production). Its first password is in `README.md` / `README.ja.md`, section 4, and it must be changed at the first sign-in.
+(production). The login information is at the top of the README; the viewer is not asked to change the password.
 To add more viewers, enter as the administrator, add a new user from user management, and choose viewer as the role.
 
 ---
@@ -906,8 +910,8 @@ administrator and the viewer can sign in with the passwords described in section
 
 To use it with your own documents only, run it from the terminal **with no arguments**.
 That starts from an **empty database** (production). An empty production database has no
-documents, but it already has the administrator and the viewer `demo` (both must change the
-password at the first sign-in). Sign in as the administrator and ingest documents first.
+documents, but it already has the administrator and the viewer `demo`. Sign in as the
+administrator and ingest documents first.
 
 | What starts | What happens | How to get it |
 |---|---|---|
@@ -1299,11 +1303,10 @@ More detail is in the bundled `README.md`.
 
 ## 0. 先に知っておくこと（ここでつまずく人が一番多いところ）
 
-- **管理者でも閲覧者でも、最初に入ると必ず「パスワードを変えてください」と出ます。**
-  最初のパスワードは `README.md` / `README.ja.md` の 4 節にあります。
-- **変え終わるまで、ほかの操作（取り込み元を足す・資料を取り込む・設定を変える）は
+- **管理者で最初に入ると、必ず「パスワードを変えてください」と出ます。**
+- **変え終わるまで、管理の操作（取り込み元を足す・資料を取り込む・設定を変える）は
   すべて拒否されます。** 先に変えてください。
-- 閲覧者は取り込みができません。
+- 閲覧者（demo）は変更を求められません。ただし閲覧者は取り込みができません。
 
 この配布物は、お使いの機械の上で直接動きます。
 
@@ -1482,25 +1485,27 @@ Chrome のアドレス欄にそのまま打ち込みます。
 
 #### 手順11. ログインする
 
-**最初のログイン。最初のパスワードは `README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。**
-**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を見るよう示します。**
+ログイン情報は README（`README.md` / `README.ja.md`）の冒頭にあります。
+
+**最初のログイン。パスワードを探す必要はありません。**
+**はじめて起動したとき、ターミナルの画面に1回だけ出ます。**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
-        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
-      Both are asked to change the password on the first sign-in.
-      管理者・閲覧者とも、最初のログインで変更を求められます。
-      Shown only this once. / この表示が出るのは初回だけです。
+        User name / ユーザー名 : cynovela
+        Password / パスワード  : （ここに出ます）
+      最初のログインで変更を求められます。
+      この表示が出るのは初回だけです。
     ────────────────────────────────────────────────
 
 - **出るのは初回だけです。**2回目からは出ません。
 - **管理者は `cynovela`、閲覧者は `demo` です。**
-- **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**
-  変えるまでほかの操作はできません。
-- **別便で届くものはありません。**パスワードは画面には出ません。`cynovela.yaml` に
-  入っているのは最初のパスワードのハッシュだけです。
+- **管理者は最初のログインでパスワードの変更を求められます。**閲覧者には求めません。
+- **別便で届くものはありません。**
+- **この画面を見逃した場合**は、展開したフォルダの `cynovela.yaml`
+  （`launch.sh` と同じ場所）の `auth.admin_initial_password` に同じ値が書いてあります
+  （閲覧者のぶんは `auth.viewer_initial_password`）。
 
 入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。
 
@@ -1591,14 +1596,13 @@ Finder は隠します。これは「触らなくてよいもの」という mac
 知らせが出たときは、先に LM Studio でモデルを読み込んでから、もう一度
 聞いてください。
 
-#### なぜパスワードがファイルに書いていないのか
+#### なぜ合言葉がファイルにも書いてあるのか
 
-最初のパスワードは `README.md` / `README.ja.md` の 4 節に載せています。配布物の
-`cynovela.yaml` に入っているのはハッシュだけです（`auth.admin_initial_password_hash`、
-`auth.viewer_initial_password_hash`）。そのため配布物の中から値は読めず、ターミナルにも
-出ません。載せている値は README を持っている人なら誰でも同じなので、最初のログインで
-変えることを求めます。管理者も閲覧者も、変えるまでほかの操作は通しません。すでに
-使っている環境は今のパスワードのままで、更新しても戻りません。
+最初の合言葉は、はじめて起動したときにターミナルの画面へ1回だけ出ます。探す
+必要はありません。同じ値がパッケージングのときに `cynovela.yaml` へも書き込まれる
+ので、画面を見逃した場合でもそこで確かめられます。ログイン情報は README の冒頭にも
+あります。最初の合言葉は固定の値で、この版を持っている人には同じ値です。そのため
+管理者には最初のログインで変えるよう求めます。変えるまで、管理の操作は通しません。
 
 #### なぜ iCloud Drive・Dropbox・OneDrive の中に置いてはいけないのか
 
@@ -1816,22 +1820,26 @@ http://localhost:8765
 | 閲覧者の利用者名 | `demo` |
 
 既定の利用者名は **管理者 `cynovela`** / **閲覧者 `demo`** です（`admin` ではありません）。
-**2人の最初のパスワードは、`README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 |
-最初のパスワード）にあります。** ターミナルの画面には出ません。配布物の
-`cynovela.yaml` に入っているのはハッシュだけです。`./launch.sh` を初めて起動したとき
-（`--demo` の起動でも普通の起動でも）、利用者名が1回だけ出て、その表を見るよう示します。
+**管理者の初期パスワードは、はじめて `./launch.sh` を起動したときにターミナルの
+画面へ1回だけ出ます。探す必要はありません。** 配布物にはどちらのデータベースも
+入っていないため、`--demo` の起動でも普通の起動でも初回に出ます。
+**閲覧者の値は、この配布物自身の `cynovela.yaml`（`viewer_initial_password:`）に
+あります。** 画面を見逃した場合は、管理者の値も同じ `cynovela.yaml` で読めます
+（`grep admin_initial_password cynovela.yaml`）。この文書には書いて
+いません。文書のコピーだけでログインできてしまうのを避けるためです。
 
 1. ユーザー名に **`cynovela`** を入力します。
-2. パスワードは、`README.md` / `README.ja.md` の 4 節の表にある管理者の値を入力します。
+2. パスワードは、初回起動のときにターミナルへ出た管理者の値を入力します
+   （見逃した場合は `cynovela.yaml` から読み取ります）。
 3. ログインすると「**初回パスワードの変更**」が出ます。
    「現在のパスワード」に受け取った値、「新しいパスワード（8文字以上）」に自分で決めた値を入れ、
    確認欄にも同じ値を入れて「**パスワードを変更して続行**」を押します。
 
-**この変更を済ませるまで、設定などのほかの操作は通りません**（変更操作だけが通ります）。
+**この変更を済ませるまで、設定などの管理操作は通りません**（変更操作だけが通ります）。
 必ずここで変更してください。
 
-管理者も閲覧者も、初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。
-すでに使っている環境は、今のパスワードのままです。更新してもパスワードは戻りません。
+管理者は初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。
+閲覧者はそのまま使えます。**受け取ったあと、最初に管理者のパスワードを変えてください。**
 
 うまくいかないときに確認すること:
 
@@ -1854,13 +1862,13 @@ http://localhost:8765
 
 | ユーザー名（既定。`admin` ではありません） | ロール | パスワード |
 |---|---|---|
-| `cynovela` | admin | 最初の値は `README.md` / `README.ja.md` の 4 節にあります。初回ログイン時に変更を強制 |
-| `demo` | viewer | 最初の値は `README.md` / `README.ja.md` の 4 節にあります。初回ログイン時に変更を強制 |
+| `cynovela` | admin | 最初の値は初回起動のときにターミナルへ1回だけ出ます。見逃した場合はこの配布物の `cynovela.yaml`（`admin_initial_password:`）に在ります。初回ログイン時に変更を強制 |
+| `demo` | viewer | 最初の値はこの配布物の `cynovela.yaml`（`viewer_initial_password:`）に在ります |
 
 ### 何も入れずに始めた場合の、閲覧者の作り方
 
 何も入れずに始めた場合（本番）も、閲覧者 `demo` は最初の起動のときからあります。
-最初のパスワードは `README.md` / `README.ja.md` の 4 節にあり、最初のログインで変更を求められます。
+ログイン情報は README の冒頭にあります。閲覧者には変更を求めません。
 閲覧者を増やすときは、管理者で入り、利用者の管理から新しい利用者を追加し、役割に閲覧者を選んでください。
 
 ---
@@ -2100,7 +2108,7 @@ Publish では テキスト抽出 → チャンク分割 → PII 検出/マス�
 開いてすぐ、同梱の資料に質問できます。管理者・閲覧者とも、10節のパスワードでそのまま入れます。
 
 自分の資料だけで使いたいときは、ターミナルから**引数なし**で叩きます。こちらは**中身が空のデータベース**
-（本番）から始まります。空の本番には資料はありませんが、管理者と閲覧者 `demo` は最初からあります（どちらも最初のログインでパスワードの変更を求められます）。管理者で入って資料を取り込んでから使います。
+（本番）から始まります。空の本番には資料はありませんが、管理者と閲覧者 `demo` は最初からあります。管理者で入って資料を取り込んでから使います。
 
 | 起動の中身 | どうなるか | 出し方 |
 |---|---|---|

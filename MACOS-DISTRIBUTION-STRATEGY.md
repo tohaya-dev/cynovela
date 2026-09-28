@@ -427,8 +427,7 @@ rather than the one in the data root. The `.app` never invokes those; folders ar
 added through the running application. It is recorded here rather than fixed,
 because changing that file was out of scope for this change.
 
-The same `DATA_DIR` also decides whether the first-login frame is shown (in 1.1.2
-that frame printed the first password).
+The same `DATA_DIR` also decides whether the first password is shown.
 `print_first_login()` (`tools/launch-body.sh:1478`) prints it only when the
 database file under `DATA_DIR` does **not** yet exist, and `print_next_steps()`
 tells the reader it will appear "the first time you start". Two consequences,
@@ -444,15 +443,12 @@ neither of them fixed in 1.1.2:
   the real database is created under `CYNOVELA_DATA_ROOT`, which the shell does
   not read (only `server.py:165` does).
 
-Current state: the first-start frame no longer prints a password in any form.
-It shows the user names (`cynovela` administrator, `demo` viewer) and points to
-`README.md` / `README.ja.md`, section 4, which is the only place the first
-passwords are published. The package's `cynovela.yaml` holds only their hashes
-(`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`), which
-`tools/build-dist.sh` writes at packaging time; the plaintext keys
-`auth.admin_initial_password` / `auth.viewer_initial_password` are empty. Both
-users must change the password at the first sign-in. The first-start detection
-described above therefore only decides whether that frame is shown.
+The reliable source in every form is the package's own `cynovela.yaml`, key
+`auth.admin_initial_password` (`auth.viewer_initial_password` for the viewer),
+which `tools/build-dist.sh` writes at packaging time. The public documents say
+that instead, and the login information is also at the top of `README.md` /
+`README.ja.md`; the code was left alone because the Portable startup path was
+under a non-regression condition.
 
 ### 15.10 The finished `.pkg` is split for transport only
 

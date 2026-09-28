@@ -2661,18 +2661,11 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 </div>
 <div class="slide-body">
     <h3>9-2. The Initial Users</h3>
-    <p>Two users are created at the first start: the administrator <code>cynovela</code> and the viewer <code>demo</code>. The user names are fixed; environment variables are not read for them. Their first passwords come from <code>auth:</code> in <code>cynovela.yaml</code>, in this order:</p>
-    <table>
-    <thead><tr><th>Key</th><th>Use</th></tr></thead>
-    <tbody>
-    <tr><td><code>admin_initial_password</code> / <code>viewer_initial_password</code></td><td>Plaintext. Fill it only when you want to choose the first value yourself.</td></tr>
-    <tr><td><code>admin_initial_password_hash</code> / <code>viewer_initial_password_hash</code></td><td>A hash only (<code>salt:hex</code>, as made by <code>db.hash_password</code>). The shipped packages use this.</td></tr>
-    <tr><td>(both empty)</td><td>A random value is made and printed on the terminal once, at the first start (the repository source).</td></tr>
-    </tbody>
-    </table>
+    <p>Two users are created at the first start: the administrator <code>cynovela</code> and the viewer <code>demo</code>. The user names are fixed; environment variables are not read for them. Their first passwords come from <code>auth:</code> in <code>cynovela.yaml</code> (<code>admin_initial_password</code> / <code>viewer_initial_password</code>).</p>
     <ul>
-    <li><strong>For a shipped package, the first passwords are in the table in README.md / README.ja.md (section 4).</strong> The package holds only their hashes.</li>
-    <li><strong>Both users are asked to change the password at the first sign-in.</strong> Until then, every call other than <code>/api/auth/me</code>, <code>/api/auth/logout</code> and <code>/api/auth/change-password</code> is refused with 403.</li>
+    <li><strong>For a shipped package, the login information is at the top of README.md / README.ja.md.</strong> The packaging step writes the same fixed values into the package's own <code>cynovela.yaml</code>.</li>
+    <li>The administrator's value is printed on the terminal once, at the first start. If you missed it, read it from <code>cynovela.yaml</code>. If a key is empty (the repository source), a random value is made and printed once.</li>
+    <li><strong>The administrator is asked to change the password at the first sign-in</strong>; administrative operations do not go through until then. The viewer is not asked to change it; on a shared network, change the viewer's password too.</li>
     <li>These keys are read only for a fresh database. An existing installation keeps its passwords; an update does not reset them.</li>
     </ul>
 </div>
@@ -2693,8 +2686,8 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <table>
     <thead><tr><th>User name</th><th>Role</th><th>Password</th></tr></thead>
     <tbody>
-    <tr><td><code>cynovela</code></td><td>admin</td><td>The first value is in the table in README.md / README.ja.md (section 4). A change is forced at first login</td></tr>
-    <tr><td><code>demo</code></td><td>viewer</td><td>The first value is in the table in README.md / README.ja.md (section 4). A change is forced at first login</td></tr>
+    <tr><td><code>cynovela</code></td><td>admin</td><td>At the top of README.md / README.ja.md; also printed on the terminal once at the first start, and in this package's <code>cynovela.yaml</code> (<code>auth.admin_initial_password</code>). A change is forced at first login</td></tr>
+    <tr><td><code>demo</code></td><td>viewer</td><td>At the top of README.md / README.ja.md, and in this package's <code>cynovela.yaml</code> (<code>auth.viewer_initial_password</code>). No change is forced</td></tr>
     </tbody>
     </table>
     <h3>9-4. Adding and Deleting Users, and Changing Passwords</h3>
@@ -5294,18 +5287,11 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
 </div>
 <div class="slide-body">
     <h3>9-2. 最初の利用者</h3>
-    <p>初回起動のときに、管理者 <code>cynovela</code> と閲覧者 <code>demo</code> の 2 人が作られます。利用者名は固定で、環境変数は読みません。最初のパスワードは <code>cynovela.yaml</code> の <code>auth:</code> から、次の順で決めます。</p>
-    <table>
-    <thead><tr><th>キー</th><th>使い方</th></tr></thead>
-    <tbody>
-    <tr><td><code>admin_initial_password</code> / <code>viewer_initial_password</code></td><td>平文。最初の値を自分で決めたいときだけ書きます。</td></tr>
-    <tr><td><code>admin_initial_password_hash</code> / <code>viewer_initial_password_hash</code></td><td>ハッシュ値だけ（<code>db.hash_password</code> の形 <code>salt:hex</code>）。配布物はこちらを使います。</td></tr>
-    <tr><td>（どちらも空）</td><td>乱数で作り、初回起動のときにターミナルへ 1 回だけ出します（リポジトリのソース）。</td></tr>
-    </tbody>
-    </table>
+    <p>初回起動のときに、管理者 <code>cynovela</code> と閲覧者 <code>demo</code> の 2 人が作られます。利用者名は固定で、環境変数は読みません。最初のパスワードは <code>cynovela.yaml</code> の <code>auth:</code>（<code>admin_initial_password</code> / <code>viewer_initial_password</code>）から読みます。</p>
     <ul>
-    <li><strong>配布物の最初のパスワードは、README.md / README.ja.md（4 節）の表にあります。</strong>配布物の中にはハッシュ値だけがあります。</li>
-    <li><strong>管理者も閲覧者も、最初のログインでパスワードの変更を求められます。</strong>変えるまでは、<code>/api/auth/me</code>・<code>/api/auth/logout</code>・<code>/api/auth/change-password</code> 以外の呼び出しは 403 で断られます。</li>
+    <li><strong>配布物のログイン情報は、README.md / README.ja.md の冒頭にあります。</strong>配布物を作るときに、同じ固定の値を配布物の <code>cynovela.yaml</code> へ書き込みます。</li>
+    <li>管理者の値は、初回起動のときにターミナルへ 1 回だけ出ます。見逃した場合は <code>cynovela.yaml</code> で読めます。キーが空（リポジトリのソースそのまま）なら、乱数で作って 1 回だけ出します。</li>
+    <li><strong>管理者は、最初のログインでパスワードの変更を求められます。</strong>変えるまで管理の操作は通りません。閲覧者には変更を求めません。共有のネットワークで使う場合は、閲覧者のパスワードも変えてください。</li>
     <li>これらのキーを読むのは新しいデータベースのときだけです。使っている環境のパスワードはそのまま残り、更新しても元に戻りません。</li>
     </ul>
 </div>
@@ -5326,8 +5312,8 @@ python server.py --mode text 2&gt;&amp;1 | tee ~/cynovela.log</code></pre>
     <table>
     <thead><tr><th>ユーザー名</th><th>ロール</th><th>パスワード</th></tr></thead>
     <tbody>
-    <tr><td><code>cynovela</code></td><td>admin</td><td>最初の値は README.md / README.ja.md（4 節）の表にあります。初回ログイン時に変更を強制</td></tr>
-    <tr><td><code>demo</code></td><td>viewer</td><td>最初の値は README.md / README.ja.md（4 節）の表にあります。初回ログイン時に変更を強制</td></tr>
+    <tr><td><code>cynovela</code></td><td>admin</td><td>README.md / README.ja.md の冒頭にあります。初回起動のときにターミナルへ1回だけ出て、この配布物の <code>cynovela.yaml</code>（<code>auth.admin_initial_password</code>）にもあります。初回ログイン時に変更を強制</td></tr>
+    <tr><td><code>demo</code></td><td>viewer</td><td>README.md / README.ja.md の冒頭と、この配布物の <code>cynovela.yaml</code>（<code>auth.viewer_initial_password</code>）にあります。変更は求めません</td></tr>
     </tbody>
     </table>
     <h3>9-4. ユーザー追加・削除・パスワード変更</h3>

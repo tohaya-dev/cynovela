@@ -808,6 +808,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     //     ・包みの中身は 1 バイトも書き換わらない (DD-CYN-0187 で差分 0 を実測)
     //     ・止め方は bash stop.sh ではなく Cmd+Q である
     //     ・置き場所は /Applications 固定で、クラウド同期の注意は当たらない
+    //     ・初回のパスワードの案内が、この .app では成り立たない (下の (2) に詳しい)
     //
     //   🔴 直せる場所はここしかない。tools/launch-body.sh を書き換えると Portable
     //      版の文言まで変わる。この関数は .app 経路にしか無い (Portable は
@@ -846,8 +847,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return " 保存先: \(layout.dataRoot.path)"
         }
 
-        // (2) 初回パスワードの案内は差し替えない。launch-body.sh は値を画面に出さず、
-        //     README の表を指すだけになったため、.app でもそのまま成り立つ。
+        // (2)「■ 入り方」の中の、初回パスワードの案内 (2行)
+        //     この 2 行は「初回だけ画面に出る・2回目からは出ない」と言うが、.app では
+        //     そのどちらも成り立たない。print_first_login (launch-body.sh:1478-1487) が
+        //     「2回目かどうか」を測るのは $DATA_DIR/db/{demo|cynovela}.db の在る無しで、
+        //       ・$DATA_DIR は paths.data_dir (= ./store) から決まり、包みの中を指す。
+        //         シェル側は CYNOVELA_DATA_ROOT を 1 度も読まない。
+        //       ・.app は --demo を付けないので、測る先は store/db/cynovela.db になる。
+        //         配布物に同梱されるのは store/db/demo.db だけであり、しかも包みは
+        //         読み取り専用なので cynovela.db がそこに現れることは無い。
+        //     🔴 ∴ 早期 return は一度も起きず、First login の枠は毎回出る。一方で本物の
+        //        データベースは dataRoot の側に作られ、初回のログインで変更を求められる。
+        //        ∴ 2 回目からは、枠に出ている値では入れない。
+        //     受け取り手が値を確かめられる場所は同梱の設定 1 つだけなので、そこを指す。
+        if t.hasPrefix("最初のパスワードは、はじめて起動したときにこの画面へ出ます。") {
+            suppressRemaining = 1   // 続く「(2回目からは出ません。… )」の 1 行を捨てる
+            return ["      最初のパスワードは、この .app の中の設定に書かれています。",
+                    "        \(layout.treeDir.appendingPathComponent("cynovela.yaml").path)",
+                    "        の auth.admin_initial_password",
+                    "      (別便で受け取るファイルはありません。下に出る First login の枠は",
+                    "       毎回出ますが、初回にパスワードを変えたあとはその値では入れません。)"]
+                .joined(separator: "\n")
+        }
 
         // (3)「気をつけること」項目1 (2行) — 逆のことが書いてある
         if t.hasPrefix("1. 起動すると、この配布物の中身が書き換わります。") {

@@ -2,6 +2,17 @@
 
 # Cynovela
 
+## Login (read this first)
+
+This is a tool for trying things out. The initial login information is:
+
+- URL: http://localhost:8765
+- Administrator: user name `cynovela` / password `Cynovela1!` (you are asked to change it at the first sign-in)
+- Viewer: user name `demo` / password `demo1234` (you are not asked to change it)
+
+If you use it on a shared network, change the viewer's password too.
+To keep other machines from opening it, start it with `./launch.sh --local-only`.
+
 A small-scale model of an enterprise AI data pipeline: ingest files, mask
 personal information, publish them, and get answers with citations, with what
 each role can see kept separate.
@@ -28,9 +39,7 @@ installed on this Mac.**
 
 > 🔴 **This is a tool for trying things out and checking them.** It is not
 > something to put on a production site. Do not put real confidential material
-> through it, and do not treat its answers as authoritative. **The initial user
-> names and passwords written in this section are there so you can try it right
-> away.**
+> through it, and do not treat its answers as authoritative.
 
 ### 1. Download (5 files, into the same folder)
 
@@ -89,23 +98,19 @@ taken, another number is chosen and shown on screen.**
 
 ### 4. Sign in and change the password
 
-| Role | User name | First password |
-|---|---|---|
-| **Administrator** (full control) | `cynovela` | `Cynovela1!` |
-| **Viewer** (read-only) | `demo` | `demo1234` |
+Sign in with the user names and passwords in "Login (read this first)" at the
+top of this page. The administrator's password is also printed on the terminal
+once, at the first start, and both values are under `auth:` in `cynovela.yaml`
+in the folder you unpacked (next to `launch.sh`).
 
-**The first passwords are the values in the table above.** They are not printed
-on the terminal, and the package's `cynovela.yaml` holds only their hashes
-(`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`).
+🔴 **The administrator must change the password on first sign-in.** No
+administrative operation is possible until it is changed. **Change it.**
 
-🔴 **Both the administrator and the viewer must change the password on first
-sign-in.** Until it is changed, other operations are refused. **Change it.**
-An existing installation keeps its current passwords; nothing is reset on update.
-
-**Cynovela listens on the local network by default** — other machines on the
-same network can open it. That default exists so you can try it from another
-Mac. To keep it closed inside this Mac only, start with
-`./launch.sh --local-only`.
+**The viewer (`demo`) is not asked to.** And **Cynovela listens on the local
+network by default** — other machines on the same network can open it. That
+default exists so you can try it from another Mac. **When trying it on a shared
+network, change the viewer's password too, from `Settings`.** To keep it closed
+inside this Mac only, start with `./launch.sh --local-only`.
 
 ### 5. Connect the answering LLM
 
@@ -262,29 +267,26 @@ the map of every other document.
 
 Every guide is bilingual: English first, Japanese after.
 
-**First sign-in. The first passwords are in the table below.**
-**The first start shows the user names on screen, once, and points to this table.**
+**First sign-in.** The login information is in "Login (read this first)" at the
+top of this page. The administrator's password is also printed on screen, once,
+the first time you start:
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
-        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
-      Both are asked to change the password on the first sign-in.
-      管理者・閲覧者とも、最初のログインで変更を求められます。
-      Shown only this once. / この表示が出るのは初回だけです。
+        User name / ユーザー名 : cynovela
+        Password / パスワード  : (it appears here)
+      You will be asked to change it on the first sign-in.
+      Shown only this once.
     ────────────────────────────────────────────────
 
 - **Shown on the first start only.** It does not appear again.
 - **The administrator is `cynovela`; the viewer account is `demo`.**
-- **Both the administrator and the viewer are asked to change the password on first sign-in.**
-- **Nothing is sent to you separately.** The password is not printed on screen,
-  and `cynovela.yaml` holds only hashes of the first passwords.
-
-| Role | User name | First password |
-|---|---|---|
-| **Administrator** (full control) | `cynovela` | `Cynovela1!` |
-| **Viewer** (read-only) | `demo` | `demo1234` |
+- **The administrator is asked to change the password on first sign-in.** The viewer is not.
+- **Nothing is sent to you separately.**
+- **If you missed that screen**, the same value is in `cynovela.yaml` in the folder you
+  unpacked, next to `launch.sh`: `auth.admin_initial_password`
+  (`auth.viewer_initial_password` for the viewer).
 
 ## What it does not do
 

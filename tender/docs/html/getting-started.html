@@ -346,7 +346,7 @@ a:hover { text-decoration: underline; }
 <span class="continued">(1/2)</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>The first time you sign in as the administrator or as the viewer, you will always be told to change your password.</strong> The first passwords are in <code>README.md</code> / <code>README.ja.md</code>, section 4.</li><li><strong>Until you have finished changing it, every other operation (adding an ingest source, ingesting documents, changing settings) is rejected.</strong> Change it first.</li><li>A viewer cannot ingest documents.</li></ul>
+<ul><li><strong>The first time you sign in as the administrator, you will always be told to change your password.</strong></li><li><strong>Until you have finished changing it, every administrative operation (adding an ingest source, ingesting documents, changing settings) is rejected.</strong> Change it first.</li><li>The viewer (<code>demo</code>) is not asked to change anything. However, a viewer cannot ingest documents.</li></ul>
 <p>This package runs directly on your own machine.</p>
 <p>Two things that will look wrong, and are not:</p>
 </div>
@@ -617,7 +617,8 @@ cynovela-tender-package-2.0.2.tar.gz: OK</code></pre>
 <p>Hold <strong>⌘</strong> and click <code>http://127.0.0.1:8765/</code>, or type that address into Safari or Chrome yourself.</p>
 <p>A sign-in screen appears.</p>
 <h4>Step 11. Sign in</h4>
-<ul><li><strong>User name:</strong> <code>cynovela</code></li><li><strong>Password:</strong> the administrator value in the table in <code>README.md</code> / <code>README.ja.md</code>, section 4 ("Role | User name | First password"). It is not printed on the terminal, and <code>cynovela.yaml</code> holds only its hash. The first start (on this <code>--demo</code> start as well as on the ordinary start) shows the user names <code>cynovela</code> (administrator) / <code>demo</code> (viewer) once and points to that table. Both are asked to change the password on the first sign-in.</li></ul>
+<p>The login information is at the top of the README (<code>README.md</code> / <code>README.ja.md</code>).</p>
+<ul><li><strong>User name:</strong> <code>cynovela</code></li><li><strong>Password:</strong> it is printed on the terminal screen once, the very first time — on this <code>--demo</code> start as well as on the ordinary start, because neither database ships in the package. There is no need to go looking for it. If you missed it, it is written in the file <code>cynovela.yaml</code> inside the folder you unpacked, on the line that begins <code>admin_initial_password:</code>. To see it, type this in Terminal:<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>(Reading <code>cynovela.yaml</code> works at any time, later as well.)</p></li></ul>
 <p>It will ask you to choose a new password straight away. Do that.</p>
 </div>
 <div class="slide-footer">
@@ -735,8 +736,8 @@ cynovela-tender-package-2.0.2.tar.gz: OK</code></pre>
 <span class="continued">(5/6)</span>
 </div>
 <div class="slide-body">
-<h4>Why the password is not in a file</h4>
-<p>The first passwords are published in <code>README.md</code> / <code>README.ja.md</code>, section 4. The package's <code>cynovela.yaml</code> holds only their hashes (<code>auth.admin_initial_password_hash</code>, <code>auth.viewer_initial_password_hash</code>), so the values cannot be read out of the package, and the terminal does not print them. Because the published values are the same for everyone who has the README, changing them on first sign-in is required: for both the administrator and the viewer, other operations are rejected until you do. An existing installation keeps its current passwords; nothing is reset on update.</p>
+<h4>Why the password is in a file</h4>
+<p>The first passwords are written into <code>cynovela.yaml</code> at packaging time, and the login information is also at the top of the README. They are fixed values, the same for everyone who has this version, so the administrator is required to change the password on first sign-in: administrator actions are rejected until you do.</p>
 <h4>Why you should not put the folder in iCloud Drive, Dropbox or OneDrive</h4>
 <p>Those services copy every file to a server and can replace local files with placeholders. Several gigabytes of libraries would be uploaded, and a placeholder cannot be executed, so the tool stops working in ways that are hard to diagnose. <code>./launch.sh</code> warns you if it detects one of those folders, but it lets you go on. Put the folder somewhere plain instead — <code>~/Downloads</code> or directly in your home folder is fine.</p>
 </div>
@@ -1051,7 +1052,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>Administrator user name</td><td><code>cynovela</code></td></tr><tr><td>Viewer user name</td><td><code>demo</code></td></tr></tbody></table>
-<p>The default user names are <strong>administrator <code>cynovela</code></strong> / <strong>viewer <code>demo</code></strong> (not <code>admin</code>). <strong>The first passwords of both users are in <code>README.md</code> / <code>README.ja.md</code>, section 4 (the table "Role | User name | First password").</strong> They are not printed on the terminal, and the package's <code>cynovela.yaml</code> holds only their hashes. The first start of <code>./launch.sh</code> (on the <code>--demo</code> start as well as on the ordinary start) shows the user names once and points to that table.</p>
+<p>The default user names are <strong>administrator <code>cynovela</code></strong> / <strong>viewer <code>demo</code></strong> (not <code>admin</code>). <strong>The administrator's initial password appears on the terminal screen once, the very first time <code>./launch.sh</code> starts — you do not need to look for it.</strong> It appears on the <code>--demo</code> start as well as on the ordinary start, because neither database ships in the package. <strong>The viewer's value is in this package's own <code>cynovela.yaml</code></strong> (<code>viewer_initial_password:</code>). <strong>If you missed that screen</strong>, the administrator's value is also written into <code>cynovela.yaml</code> — read it with <code>grep admin_initial_password cynovela.yaml</code>. They are not written in this documentation, so that a copy of the documentation cannot be used to sign in.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1065,8 +1066,8 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(2/5)</span>
 </div>
 <div class="slide-body">
-<ol><li>Enter <strong><code>cynovela</code></strong> as the user name.</li><li>For the password, enter the administrator value from the table in <code>README.md</code> / <code>README.ja.md</code>, section 4.</li><li>When you log in, "<strong>初回パスワードの変更</strong>" (change your initial password) appears. Enter the value you received in "現在のパスワード" (current password), a value of your own choosing in "新しいパスワード（8文字以上）" (new password, 8 characters or more), enter the same value in the confirmation field as well, and press "<strong>パスワードを変更して続行</strong>" (change the password and continue).</li></ol>
-<p><strong>Until you finish this change, other operations such as settings will not go through</strong> (only the change operation goes through). Be sure to change it here.</p>
+<ol><li>Enter <strong><code>cynovela</code></strong> as the user name.</li><li>For the password, enter the administrator value read out of <code>cynovela.yaml</code>.</li><li>When you log in, "<strong>初回パスワードの変更</strong>" (change your initial password) appears. Enter the value you received in "現在のパスワード" (current password), a value of your own choosing in "新しいパスワード（8文字以上）" (new password, 8 characters or more), enter the same value in the confirmation field as well, and press "<strong>パスワードを変更して続行</strong>" (change the password and continue).</li></ol>
+<p><strong>Until you finish this change, administrative operations such as settings will not go through</strong> (only the change operation goes through). Be sure to change it here.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1080,7 +1081,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(3/5)</span>
 </div>
 <div class="slide-body">
-<p>Both the administrator and the viewer are asked to change the password at the first login. After changing it, enter with the new value. An existing installation keeps its current passwords; nothing is reset on update.</p>
+<p>The administrator is asked to change the password at the first login. After changing it, enter with the new value. The viewer can be used as it is. <strong>After you receive it, change the administrator password first.</strong></p>
 <p>What to check when it does not work:</p>
 <ul><li>"ユーザー名またはパスワードが正しくありません" (the user name or password is incorrect) → Copy and paste the value and enter it again (leading/trailing spaces and newlines easily get mixed in here).</li><li>After the change, the admin screen shows "初回パスワードの変更が必要です" (the initial password must be changed) → Log out once and log in again with the new password.</li><li>You forgot the admin password → It can be reissued with <code>conda run -n cynovela-dist python server.py --reset-admin</code>.</li></ul>
 </div>
@@ -1113,9 +1114,9 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(5/5)</span>
 </div>
 <div class="slide-body">
-<table><thead><tr><th>User name (default. It is not <code>admin</code>)</th><th>Role</th><th>Password</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>The first value is in <code>README.md</code> / <code>README.ja.md</code>, section 4. A change is forced at the first login</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>The first value is in <code>README.md</code> / <code>README.ja.md</code>, section 4. A change is forced at the first login</td></tr></tbody></table>
+<table><thead><tr><th>User name (default. It is not <code>admin</code>)</th><th>Role</th><th>Password</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>The first value is printed on the terminal once, at the very first start. If you missed it, it is in this package's <code>cynovela.yaml</code> (<code>admin_initial_password:</code>). A change is forced at the first login</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>The first value is in this package's <code>cynovela.yaml</code> (<code>viewer_initial_password:</code>)</td></tr></tbody></table>
 <h3>How to create a viewer when you started with nothing loaded</h3>
-<p>The viewer <code>demo</code> exists from the first start, also when you started with nothing loaded (production). Its first password is in <code>README.md</code> / <code>README.ja.md</code>, section 4, and it must be changed at the first sign-in. To add more viewers, enter as the administrator, add a new user from user management, and choose viewer as the role.</p>
+<p>The viewer <code>demo</code> exists from the first start, also when you started with nothing loaded (production). The login information is at the top of the README; the viewer is not asked to change the password. To add more viewers, enter as the administrator, add a new user from user management, and choose viewer as the role.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -1521,7 +1522,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <p><strong>This procedure starts up with an empty database (production).</strong> To try it with the bundled dummy documents, double-click <strong><code>Cynovela-demo.command</code></strong> (or run <code>./launch.sh --demo</code> from the terminal). Right after it opens, you can ask questions about the bundled documents. Both the administrator and the viewer can sign in with the passwords described in section 10.</p>
-<p>To use it with your own documents only, run it from the terminal <strong>with no arguments</strong>. That starts from an <strong>empty database</strong> (production). An empty production database has no documents, but it already has the administrator and the viewer <code>demo</code> (both must change the password at the first sign-in). Sign in as the administrator and ingest documents first.</p>
+<p>To use it with your own documents only, run it from the terminal <strong>with no arguments</strong>. That starts from an <strong>empty database</strong> (production). An empty production database has no documents, but it already has the administrator and the viewer <code>demo</code>. Sign in as the administrator and ingest documents first.</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2146,7 +2147,7 @@ conda run -n cynovela-dist python -m pytest -x -q</code></pre>
 <span class="slide-title">0. 先に知っておくこと（ここでつまずく人が一番多いところ）</span>
 </div>
 <div class="slide-body">
-<ul><li><strong>管理者でも閲覧者でも、最初に入ると必ず「パスワードを変えてください」と出ます。</strong>最初のパスワードは <code>README.md</code> / <code>README.ja.md</code> の 4 節にあります。</li><li><strong>変え終わるまで、ほかの操作（取り込み元を足す・資料を取り込む・設定を変える）はすべて拒否されます。</strong> 先に変えてください。</li><li>閲覧者は取り込みができません。</li></ul>
+<ul><li><strong>管理者で最初に入ると、必ず「パスワードを変えてください」と出ます。</strong></li><li><strong>変え終わるまで、管理の操作（取り込み元を足す・資料を取り込む・設定を変える）はすべて拒否されます。</strong> 先に変えてください。</li><li>閲覧者（demo）は変更を求められません。ただし閲覧者は取り込みができません。</li></ul>
 <p>この配布物は、お使いの機械の上で直接動きます。</p>
 <p>壊れて見えるが壊れていない2つのこと:</p>
 <ol><li><strong>ここに出てくる命令は、うまくいったときほど何も出しません。</strong> 成功すると、何も言わずに次の行を打てる状態に戻るだけです。ここでは沈黙が成功です。しゃべるのは失敗したときだけです。</li><li><strong>数分のあいだ、まったく反応が無い場面があります。</strong> モデルのファイルをつなぐところと、最初の起動がそれです。固まっていません。触らずに待ってください。</li></ol>
@@ -2404,7 +2405,8 @@ cynovela-tender-package-2.0.2.tar.gz: OK</code></pre>
 </div>
 <div class="slide-body">
 <h4>手順11. ログインする</h4>
-<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>パスワード:</strong> <code>README.md</code> / <code>README.ja.md</code> の 4 節の表（役割 | 利用者名 | 最初のパスワード）にある管理者の値です。ターミナルの画面には出ません。<code>cynovela.yaml</code> に入っているのはハッシュだけです。初回の起動（この <code>--demo</code> の起動でも普通の起動でも）では、利用者名 <code>cynovela</code>（管理者）/ <code>demo</code>（閲覧者）が1回だけ出て、その表を見るよう示します。管理者も閲覧者も、最初のログインで変更を求められます。</li></ul>
+<p>ログイン情報は README（<code>README.md</code> / <code>README.ja.md</code>）の冒頭にあります。</p>
+<ul><li><strong>利用者の名前:</strong> <code>cynovela</code></li><li><strong>合言葉:</strong> はじめての1回だけ、ターミナルの画面に出ます。配布物にはどちらのデータベースも入っていないため、この <code>--demo</code> の起動でも普通の起動でも初回に出ます。探す必要はありません。見逃した場合は、取り出したフォルダの中の <code>cynovela.yaml</code> というファイルの、<code>admin_initial_password:</code> で始まる行から読めます。見るには、ターミナルで次を打ちます。<pre><code>grep admin_initial_password cynovela.yaml</code></pre><p>（<code>cynovela.yaml</code> を見る道は、あとからでもいつでも使えます。）</p></li></ul>
 <p>入るとすぐに、新しい合言葉を決めるよう求められます。決めてください。</p>
 <h4>手順12. 最初の質問をする</h4>
 <p><code>--demo</code> で起こしたので、お試しの資料は初回起動時に自動で取り込まれ、探せる状態になっています（起動ログに取り込みの進捗がまだ出ている間は、終わるのを待ってください）。ふつうの言葉で枠に打ち込んで return を押します。たとえば次のようにです。</p>
@@ -2522,8 +2524,8 @@ cynovela-tender-package-2.0.2.tar.gz: OK</code></pre>
 <span class="continued">(5/6)</span>
 </div>
 <div class="slide-body">
-<h4>なぜパスワードがファイルに書いていないのか</h4>
-<p>最初のパスワードは <code>README.md</code> / <code>README.ja.md</code> の 4 節に載せています。配布物の <code>cynovela.yaml</code> に入っているのはハッシュだけです（<code>auth.admin_initial_password_hash</code>、<code>auth.viewer_initial_password_hash</code>）。そのため配布物の中から値は読めず、ターミナルにも出ません。載せている値は README を持っている人なら誰でも同じなので、最初のログインで変えることを求めます。管理者も閲覧者も、変えるまでほかの操作は通しません。すでに使っている環境は今のパスワードのままで、更新しても戻りません。</p>
+<h4>なぜ合言葉がファイルに書いてあるのか</h4>
+<p>最初の合言葉は、パッケージングのときに <code>cynovela.yaml</code> へ書き込まれます。ログイン情報は README の冒頭にもあります。最初の合言葉は固定の値で、この版を持っている人には同じ値です。そのため管理者には最初のログインで変えるよう求めます。変えるまで、管理の操作は通しません。</p>
 <h4>なぜ iCloud Drive・Dropbox・OneDrive の中に置いてはいけないのか</h4>
 <p>これらは全てのファイルを向こうのサーバへ写し、手元のファイルを実体のない代わりのファイルだけに置き換えることがあります。数ギガバイトの部品がまるごと送られますし、その代わりのファイルは実行できないので、原因の分かりにくい形で動かなくなります。<code>./launch.sh</code> はそういう場所を見つけると知らせますが、止めはしません。<code>~/Downloads</code> かホームフォルダの直下のような、素直な場所へ置いてください。</p>
 </div>
@@ -2811,7 +2813,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>管理者の利用者名</td><td><code>cynovela</code></td></tr><tr><td>閲覧者の利用者名</td><td><code>demo</code></td></tr></tbody></table>
-<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>2人の最初のパスワードは、<code>README.md</code> / <code>README.ja.md</code> の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。</strong>ターミナルの画面には出ません。配布物の <code>cynovela.yaml</code> に入っているのはハッシュだけです。<code>./launch.sh</code> を初めて起動したとき（<code>--demo</code> の起動でも普通の起動でも）、利用者名が1回だけ出て、その表を見るよう示します。</p>
+<p>既定の利用者名は <strong>管理者 <code>cynovela</code></strong> / <strong>閲覧者 <code>demo</code></strong> です（<code>admin</code> ではありません）。<strong>管理者の初期パスワードは、はじめて <code>./launch.sh</code> を起動したときにターミナルの画面へ1回だけ出ます。探す必要はありません。</strong>配布物にはどちらのデータベースも入っていないため、<code>--demo</code> の起動でも普通の起動でも初回に出ます。<strong>閲覧者の値は、この配布物自身の <code>cynovela.yaml</code>（<code>viewer_initial_password:</code>）にあります。</strong>画面を見逃した場合は、管理者の値も同じ <code>cynovela.yaml</code> で読めます（<code>grep admin_initial_password cynovela.yaml</code>）。この文書には書いていません。文書のコピーだけでログインできてしまうのを避けるためです。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2825,9 +2827,9 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <span class="continued">(2/5)</span>
 </div>
 <div class="slide-body">
-<ol><li>ユーザー名に <strong><code>cynovela</code></strong> を入力します。</li><li>パスワードは、<code>README.md</code> / <code>README.ja.md</code> の 4 節の表にある管理者の値を入力します。</li><li>ログインすると「<strong>初回パスワードの変更</strong>」が出ます。「現在のパスワード」に受け取った値、「新しいパスワード（8文字以上）」に自分で決めた値を入れ、確認欄にも同じ値を入れて「<strong>パスワードを変更して続行</strong>」を押します。</li></ol>
-<p><strong>この変更を済ませるまで、設定などのほかの操作は通りません</strong>（変更操作だけが通ります）。必ずここで変更してください。</p>
-<p>管理者も閲覧者も、初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。すでに使っている環境は、今のパスワードのままです。更新してもパスワードは戻りません。</p>
+<ol><li>ユーザー名に <strong><code>cynovela</code></strong> を入力します。</li><li>パスワードは、<code>cynovela.yaml</code> から読み取った管理者の値を入力します。</li><li>ログインすると「<strong>初回パスワードの変更</strong>」が出ます。「現在のパスワード」に受け取った値、「新しいパスワード（8文字以上）」に自分で決めた値を入れ、確認欄にも同じ値を入れて「<strong>パスワードを変更して続行</strong>」を押します。</li></ol>
+<p><strong>この変更を済ませるまで、設定などの管理操作は通りません</strong>（変更操作だけが通ります）。必ずここで変更してください。</p>
+<p>管理者は初回ログインでパスワードの変更を求められます。変更したあとは新しい値で入ってください。閲覧者はそのまま使えます。<strong>受け取ったあと、最初に管理者のパスワードを変えてください。</strong></p>
 <p>うまくいかないときに確認すること:</p>
 </div>
 <div class="slide-footer">
@@ -2860,7 +2862,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <div class="slide-body">
 <table><thead><tr><th>ロール</th><th>権限</th><th>検索対象</th></tr></thead><tbody><tr><td><code>admin</code></td><td>全機能</td><td>raw 保管庫（出力マスクなし）</td></tr><tr><td><code>viewer</code></td><td>閲覧中心</td><td>masked 保管庫（出口マスクあり）</td></tr></tbody></table>
 <blockquote><code>curator</code> / <code>data-scientist</code> 等の名称は内部的に <code>viewer</code> へ正規化されます。</blockquote>
-<table><thead><tr><th>ユーザー名（既定。<code>admin</code> ではありません）</th><th>ロール</th><th>パスワード</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>最初の値は <code>README.md</code> / <code>README.ja.md</code> の 4 節にあります。初回ログイン時に変更を強制</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>最初の値は <code>README.md</code> / <code>README.ja.md</code> の 4 節にあります。初回ログイン時に変更を強制</td></tr></tbody></table>
+<table><thead><tr><th>ユーザー名（既定。<code>admin</code> ではありません）</th><th>ロール</th><th>パスワード</th></tr></thead><tbody><tr><td><code>cynovela</code></td><td>admin</td><td>最初の値は、初回起動のときにターミナルの画面へ1回だけ出ます。見逃した場合は、この配布物の <code>cynovela.yaml</code>（<code>admin_initial_password:</code>）から読めます。初回ログイン時に変更を強制</td></tr><tr><td><code>demo</code></td><td>viewer</td><td>最初の値はこの配布物の <code>cynovela.yaml</code>（<code>viewer_initial_password:</code>）に在ります</td></tr></tbody></table>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -2875,7 +2877,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 </div>
 <div class="slide-body">
 <h3>何も入れずに始めた場合の、閲覧者の作り方</h3>
-<p>何も入れずに始めた場合（本番）も、閲覧者 <code>demo</code> は最初の起動のときからあります。最初のパスワードは <code>README.md</code> / <code>README.ja.md</code> の 4 節にあり、最初のログインで変更を求められます。閲覧者を増やすときは、管理者で入り、利用者の管理から新しい利用者を追加し、役割に閲覧者を選んでください。</p>
+<p>何も入れずに始めた場合（本番）も、閲覧者 <code>demo</code> は最初の起動のときからあります。ログイン情報は README の冒頭にあります。閲覧者には変更を求めません。閲覧者を増やすときは、管理者で入り、利用者の管理から新しい利用者を追加し、役割に閲覧者を選んでください。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
@@ -3202,7 +3204,7 @@ Cynovela を起動します... (http://localhost:8765)</code></pre>
 <div class="slide-body">
 <p>展開したフォルダの中の <strong><code>Cynovela-start.command</code></strong> をダブルクリックします。止めるときは <strong><code>Cynovela-stop.command</code></strong> をダブルクリックします。読み込むフォルダを足すときは <strong><code>Cynovela-add-folder.command</code></strong> をダブルクリックします（はじめて使うときは、先に <code>Cynovela-start.command</code> を一度押してください。フォルダのバックアップを扱う Python はその最初の一度で用意されます）。</p>
 <p><strong>この操作手順は、中身が空のデータベース（本番）で立ち上がります。</strong> 同梱のダミー資料で試すときは、<strong><code>Cynovela-demo.command</code></strong> をダブルクリックします（またはターミナルから <code>./launch.sh --demo</code>）。開いてすぐ、同梱の資料に質問できます。管理者・閲覧者とも、10節のパスワードでそのまま入れます。</p>
-<p>自分の資料だけで使いたいときは、ターミナルから<strong>引数なし</strong>で叩きます。こちらは<strong>中身が空のデータベース</strong>（本番）から始まります。空の本番には資料はありませんが、管理者と閲覧者 <code>demo</code> は最初からあります（どちらも最初のログインでパスワードの変更を求められます）。管理者で入って資料を取り込んでから使います。</p>
+<p>自分の資料だけで使いたいときは、ターミナルから<strong>引数なし</strong>で叩きます。こちらは<strong>中身が空のデータベース</strong>（本番）から始まります。空の本番には資料はありませんが、管理者と閲覧者 <code>demo</code> は最初からあります。管理者で入って資料を取り込んでから使います。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>

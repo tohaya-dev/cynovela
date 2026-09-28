@@ -89,25 +89,27 @@ Then:
 
 1. **Sign in.**
 
-   **First sign-in. The first passwords are in `README.md` / `README.ja.md`, section 4 (the table "Role | User name | First password").**
-   **The first start shows the user names on screen, once, and points to that table.**
+   The login information is at the top of the README (`README.md` / `README.ja.md`).
+
+   **First sign-in. You do not need to look for the password.**
+   **It is printed on screen, once, the first time you start.**
 
        ────────────────────────────────────────────────
          First login / はじめてのログイン
            Open / ひらく          : http://localhost:8765
-           User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
-           Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
-         Both are asked to change the password on the first sign-in.
-         管理者・閲覧者とも、最初のログインで変更を求められます。
-         Shown only this once. / この表示が出るのは初回だけです。
+           User name / ユーザー名 : cynovela
+           Password / パスワード  : (it appears here)
+         You will be asked to change it on the first sign-in.
+         Shown only this once.
        ────────────────────────────────────────────────
 
    - **Shown on the first start only.** It does not appear again.
    - **The administrator is `cynovela`; the viewer account is `demo`.**
-   - **Both the administrator and the viewer are asked to change the password on first sign-in.**
-     Until it is changed, other operations are refused.
-   - **Nothing is sent to you separately.** The password is not printed on screen,
-     and `cynovela.yaml` holds only hashes of the first passwords.
+   - **The administrator is asked to change the password on first sign-in.** The viewer is not.
+   - **Nothing is sent to you separately.**
+   - **If you missed that screen**, the same value is in `cynovela.yaml` in the folder you
+     unpacked, next to `launch.sh`: `auth.admin_initial_password`
+     (`auth.viewer_initial_password` for the viewer).
 2. **Add search targets.** Answer the question shown at startup; or use "Add a search folder" under "Settings" in the app screen; or run `./launch.sh --add` (list with `./launch.sh --list`; icon: `Cynovela-add-folder.command`).
 3. **Ask a question.** Open `http://localhost:8765` and type in plain language. Every answer carries the passage it came from — open it and check.
 4. **Stop it.** Double-click `Cynovela-stop.command` (or run `bash stop.sh`).
@@ -359,25 +361,27 @@ that one. The same documents are repeated below.
 
 1. **ログインする。**
 
-   **最初のログイン。最初のパスワードは `README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。**
-   **はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を見るよう示します。**
+   ログイン情報は README（`README.md` / `README.ja.md`）の冒頭にあります。
+
+   **最初のログイン。パスワードを探す必要はありません。**
+   **はじめて起動したとき、ターミナルの画面に1回だけ出ます。**
 
        ────────────────────────────────────────────────
          First login / はじめてのログイン
            Open / ひらく          : http://localhost:8765
-           User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
-           Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
-         Both are asked to change the password on the first sign-in.
-         管理者・閲覧者とも、最初のログインで変更を求められます。
-         Shown only this once. / この表示が出るのは初回だけです。
+           User name / ユーザー名 : cynovela
+           Password / パスワード  : （ここに出ます）
+         最初のログインで変更を求められます。
+         この表示が出るのは初回だけです。
        ────────────────────────────────────────────────
 
    - **出るのは初回だけです。**2回目からは出ません。
    - **管理者は `cynovela`、閲覧者は `demo` です。**
-   - **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**
-     変えるまでほかの操作はできません。
-   - **別便で届くものはありません。**パスワードは画面には出ません。`cynovela.yaml` に
-     入っているのは最初のパスワードのハッシュだけです。
+   - **管理者は最初のログインでパスワードの変更を求められます。**閲覧者には求めません。
+   - **別便で届くものはありません。**
+   - **この画面を見逃した場合**は、展開したフォルダの `cynovela.yaml`
+     （`launch.sh` と同じ場所）の `auth.admin_initial_password` に同じ値が書いてあります
+     （閲覧者のぶんは `auth.viewer_initial_password`）。
 2. **検索の対象を足す。** 起動したときに聞かれる画面で足す / アプリ画面の「設定」の「検索の対象フォルダを足す」から足す / ターミナルで `./launch.sh --add`（一覧は `./launch.sh --list`。アイコンなら `Cynovela-add-folder.command`）。
 3. **質問する。** `http://localhost:8765` を開き、普通の言葉で聞きます。答えには必ず根拠にした箇所が付きます。開いて原文を確かめてください。
 4. **止める。** `Cynovela-stop.command` をダブルクリックします（または

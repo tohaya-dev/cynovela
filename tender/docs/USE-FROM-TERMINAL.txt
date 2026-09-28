@@ -30,12 +30,12 @@ Cynovela entry point — this is the only one the recipient runs.
 ● Where to open and how to log in
   Where to open : http://localhost:8765   (the number you gave when you used --port)
   How to log in : administrator cynovela / viewer demo
-                  The first passwords are in README.md / README.ja.md, section 4
-                  (the table "Role | User name | First password"). They are not
-                  printed on the terminal, and cynovela.yaml holds only their hashes.
-                  Both the administrator and the viewer are asked to change the
-                  password on the first login. Other operations do not go through
-                  until the change is finished.
+                  The initial passwords are written inside this package, in
+                  cynovela.yaml next to launch.sh: read auth.admin_initial_password
+                  (the viewer's is auth.viewer_initial_password). The first start
+                  also prints them once (the --demo first start does too).
+                  The administrator is asked to change the password on the first login.
+                  Administrative operations do not go through until the change is finished.
 
 The shared conda environment 'cynovela' is only read, never rewritten.
 
@@ -73,11 +73,12 @@ Cynovela 入口 — 受け取り手が叩くのはこの1本だけです。
 ● 開く場所と入り方
   開く場所 : http://localhost:8765   (--port を使ったときはその番号)
   入り方   : 管理者 cynovela / 閲覧者 demo
-             最初のパスワードは README.md / README.ja.md の 4 節の表
-             (役割 | 利用者名 | 最初のパスワード) にあります。画面には出ません。
-             cynovela.yaml に入っているのはハッシュだけです。
-             管理者も閲覧者も、最初に入ったときにパスワードの変更を求められます。
-             変え終わるまでほかの操作は通りません。
+             最初のパスワードは、この配布物の中の cynovela.yaml (launch.sh と
+             同じ場所) の auth.admin_initial_password に書いてあります
+             (閲覧者のぶんは auth.viewer_initial_password)。初回起動なら
+             画面にも1回出ます (--demo の初回起動でも同じです)。
+             管理者は最初に入ったときにパスワードの変更を求められます。
+             変え終わるまで管理の操作は通りません。
 
 共有の conda 環境 'cynovela' は読むだけで、書き換えません。
 

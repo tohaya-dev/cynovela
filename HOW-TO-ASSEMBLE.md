@@ -96,25 +96,27 @@ needs this step too):
 
 If this is your first time, open **`QUICKSTART.md`** in the unpacked folder — it takes you from starting the tool to your first answer. For the details, open **`START-HERE.md`** — setup, restart, reinstall and uninstall are all there.
 
-**First sign-in. The first passwords are in `README.md` / `README.ja.md`, section 4 (the table "Role | User name | First password").**
-**The first start shows the user names on screen, once, and points to that table.**
+The login information is at the top of the README (`README.md` / `README.ja.md`).
+
+**First sign-in. You do not need to look for the password.**
+**It is printed on screen, once, the first time you start.**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
-        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
-      Both are asked to change the password on the first sign-in.
-      管理者・閲覧者とも、最初のログインで変更を求められます。
-      Shown only this once. / この表示が出るのは初回だけです。
+        User name / ユーザー名 : cynovela
+        Password / パスワード  : (it appears here)
+      You will be asked to change it on the first sign-in.
+      Shown only this once.
     ────────────────────────────────────────────────
 
 - **Shown on the first start only.** It does not appear again.
 - **The administrator is `cynovela`; the viewer account is `demo`.**
-- **Both the administrator and the viewer are asked to change the password on first sign-in.**
-  Until it is changed, other operations are refused.
-- **Nothing is sent to you separately.** The password is not printed on screen,
-  and `cynovela.yaml` holds only hashes of the first passwords.
+- **The administrator is asked to change the password on first sign-in.** The viewer is not.
+- **Nothing is sent to you separately.**
+- **If you missed that screen**, the same value is in `cynovela.yaml` in the folder you
+  unpacked, next to `launch.sh`: `auth.admin_initial_password`
+  (`auth.viewer_initial_password` for the viewer).
 
 If you have never used Terminal before, open **`docs/getting-started.md`** instead. It goes from the downloaded file to your first answer without skipping a keystroke.
 
@@ -254,25 +256,27 @@ models は**取り出した `tender` フォルダの中で**展開します（�
 
 はじめてなら、展開したフォルダの **`QUICKSTART.md`** を開いてください。起動から最初の答えまでを案内します。くわしくは **`START-HERE.md`** へ。セットアップ・再起動・再インストール・アンインストールはすべてそこにあります。
 
-**最初のログイン。最初のパスワードは `README.md` / `README.ja.md` の 4 節の表（役割 | 利用者名 | 最初のパスワード）にあります。**
-**はじめて起動したとき、ターミナルの画面に利用者名が1回だけ出て、その表を見るよう示します。**
+ログイン情報は README（`README.md` / `README.ja.md`）の冒頭にあります。
+
+**最初のログイン。パスワードを探す必要はありません。**
+**はじめて起動したとき、ターミナルの画面に1回だけ出ます。**
 
     ────────────────────────────────────────────────
       First login / はじめてのログイン
         Open / ひらく          : http://localhost:8765
-        User name / ユーザー名 : cynovela (administrator 管理者) / demo (viewer 閲覧者)
-        Password / パスワード  : README.md / README.ja.md, section 4 (4 節の表)
-      Both are asked to change the password on the first sign-in.
-      管理者・閲覧者とも、最初のログインで変更を求められます。
-      Shown only this once. / この表示が出るのは初回だけです。
+        User name / ユーザー名 : cynovela
+        Password / パスワード  : （ここに出ます）
+      最初のログインで変更を求められます。
+      この表示が出るのは初回だけです。
     ────────────────────────────────────────────────
 
 - **出るのは初回だけです。**2回目からは出ません。
 - **管理者は `cynovela`、閲覧者は `demo` です。**
-- **管理者も閲覧者も、最初のログインでパスワードの変更を求められます。**
-  変えるまでほかの操作はできません。
-- **別便で届くものはありません。**パスワードは画面には出ません。`cynovela.yaml` に
-  入っているのは最初のパスワードのハッシュだけです。
+- **管理者は最初のログインでパスワードの変更を求められます。**閲覧者には求めません。
+- **別便で届くものはありません。**
+- **この画面を見逃した場合**は、展開したフォルダの `cynovela.yaml`
+  （`launch.sh` と同じ場所）の `auth.admin_initial_password` に同じ値が書いてあります
+  （閲覧者のぶんは `auth.viewer_initial_password`）。
 
 ターミナルを開いたことが一度も無い方は、代わりに **`docs/getting-started.md`** を開いてください。落としたファイルから最初の答えが返るまでを、打つ文字を省かずに書いてあります。
 

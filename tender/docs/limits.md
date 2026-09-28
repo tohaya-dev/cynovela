@@ -402,15 +402,14 @@ If you want to run on Kubernetes, you need to write the Deployment definition yo
   part of this release — the installed bundle is read-only, so the launcher sets
   `CYNOVELA_DATA_ROOT` and the same paths are taken relative to
   `~/Library/Application Support/Cynovela/` instead.
-- **The first sign-in names are shown on screen at the first startup — in both forms
-  (`--demo` and production). The first passwords are not printed; they are in
-  `README.md` / `README.ja.md`, section 4.** The startup script decides "this is a
+- **The first sign-in name and password are printed on screen at the first startup —
+  in both forms (`--demo` and production).** The startup script decides "this is a
   first run" by asking whether the database file already exists, and neither database
-  ships in the package, so the first startup shows the user names either way. The
-  package's `cynovela.yaml` holds only hashes of the first passwords
-  (`auth.admin_initial_password_hash`, `auth.viewer_initial_password_hash`), so the
-  values cannot be read from it. Both the administrator and the viewer are asked to
-  change the password at the first sign-in either way.
+  ships in the package, so the first startup prints them either way. If you missed
+  that screen, the same value can be read from the `cynovela.yaml` next to the
+  startup script, on the `admin_initial_password:` line under `auth:`
+  (`grep admin_initial_password cynovela.yaml`). You are asked to change the password at
+  the first sign-in either way.
 
 ### Cross-collection search
 
@@ -1058,14 +1057,13 @@ Kubernetes で動かしたい場合は、Deployment の定義を自分で書く�
   中の `store/` です。アプリ版（準備中。この版には入っていません）は入れたあとの包みが
   読み取り専用のため、入口が `CYNOVELA_DATA_ROOT` を与え、上の道筋は
   `~/Library/Application Support/Cynovela/` からの相対として扱われます。
-- **最初のユーザー名は、初回起動時に画面へ出ます（`--demo` でも本番でも初回に出ます）。
-  最初のパスワードは画面には出ません。`README.md` / `README.ja.md` の 4 節にあります。**
-  起動用スクリプトはデータベースのファイルがすでに在るかどうかで「初回である」と
-  判定します。配布物にはどちらのデータベースも入っていないため、どちらの形でも初回起動で
-  利用者名が出ます。配布物の `cynovela.yaml` に入っているのは最初のパスワードのハッシュ
-  だけです（`auth.admin_initial_password_hash`、`auth.viewer_initial_password_hash`）。
-  そこから値は読めません。どちらの道でも、管理者も閲覧者も最初のログインで変更を
-  求められます。
+- **最初のユーザー名とパスワードは、初回起動時に画面へ出ます（`--demo` でも本番でも
+  初回に出ます）。** 起動用スクリプトはデータベースのファイルがすでに在るかどうかで
+  「初回である」と判定します。配布物にはどちらのデータベースも入っていないため、
+  どちらの形でも初回起動でちゃんと出ます。この表示を見逃した場合は、起動用スクリプトと
+  同じ場所にある `cynovela.yaml` の `auth:` の下、`admin_initial_password:` の行から
+  読めます（`grep admin_initial_password cynovela.yaml`）。どちらの道でも、最初の
+  ログインで変更を求められる点は同じです。
 
 ### 横断検索
 

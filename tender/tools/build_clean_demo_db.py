@@ -24,7 +24,7 @@
   (画面・端末の記録・作業ログに平文が残らないようにするため)。
   いずれかを生成する場合に --admin-password-out が無ければエラーで止める (逃げ道を作らない)。
   バックアップは配布物 tar の外に置かれるので、配る人はこのファイルだけを見て初期パスワードを知る。
-  管理者と閲覧者は must_change_password=1 で初回ログイン時に変更を強制する。
+  管理者は must_change_password=1 で初回ログイン時に変更を強制する。
 """
 import os
 import re
@@ -474,9 +474,8 @@ def main(src: str, out: str, dump_dir: str | None = None,
         print(f"[credentials] 生成値を書き出しました: {admin_password_out} (mode 600・画面には出しません)")
 
     # 1) 閲覧者 (user-scientist) を再シード (陳腐化ハッシュ解消)。
-    #    管理者と同じく must_change_password=1 (初回ログインで変更を求める)。
     conn.execute(
-        "UPDATE users SET username = ?, password_hash = ?, must_change_password = 1, "
+        "UPDATE users SET username = ?, password_hash = ?, must_change_password = 0, "
         "name = 'Viewer', display_name = 'Viewer', role = 'viewer' WHERE id = ?",
         (VIEWER_USERNAME, hash_password(viewer_pw), "user-scientist"),
     )
@@ -529,7 +528,7 @@ def main(src: str, out: str, dump_dir: str | None = None,
     conn.commit()
 
     # --- 検証 ---
-    vrow = conn.execute("SELECT username, password_hash, must_change_password FROM users WHERE id='user-scientist'").fetchone()
+    vrow = conn.execute("SELECT username, password_hash FROM users WHERE id='user-scientist'").fetchone()
     arow = conn.execute("SELECT username, password_hash, must_change_password FROM users WHERE id='user-admin'").fetchone()
     # pw-out-of-code-20260729 (C-B9): 閲覧者も上でシードした値(引数または乱数)に対して検証する。
     viewer_ok = (vrow and vrow["username"] == VIEWER_USERNAME
@@ -538,7 +537,6 @@ def main(src: str, out: str, dump_dir: str | None = None,
     # 平文をコードに書かない。配布物は must_change_password=1 で初回変更を強制する。
     admin_ok = arow and arow["username"] == ADMIN_USERNAME and verify_password(admin_pw, arow["password_hash"])
     admin_must_change = bool(arow and arow["must_change_password"] == 1)
-    viewer_must_change = bool(vrow and vrow["must_change_password"] == 1)
     after_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
     ws = [r[0] for r in conn.execute("SELECT id FROM workspaces ORDER BY id")]
     nchunks = conn.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]
@@ -567,7 +565,6 @@ def main(src: str, out: str, dump_dir: str | None = None,
     print(f"[verify] viewer {VIEWER_USERNAME}/(初期パスワードは引数または乱数・再表示しない) = {viewer_ok}")
     print(f"[verify] admin {ADMIN_USERNAME}/(初期パスワードは引数または乱数・再表示しない) = {admin_ok}")
     print(f"[verify] admin must_change_password = {admin_must_change}")
-    print(f"[verify] viewer must_change_password = {viewer_must_change}")
     print(f"[verify] FK violations: {len(fk_violations)} {fk_violations[:5]}")
     _lost_ws = [w for w in before_ws if w not in ws and w not in SEED_WS_REMOVED]
     protected_ok = not _lost_ws
@@ -585,7 +582,6 @@ def main(src: str, out: str, dump_dir: str | None = None,
         viewer_ok
         and admin_ok
         and admin_must_change
-        and viewer_must_change
         and not fk_violations
         and protected_ok
         and history_clean

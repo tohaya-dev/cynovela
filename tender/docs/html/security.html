@@ -542,7 +542,7 @@ if user_role and _acl_filter_enabled():
 <span class="continued">(3/11)</span>
 </div>
 <div class="slide-body">
-<p>Authentication is by username and password. One-click entry (unauthenticated login from a user card) has been completely removed. Both initial users (administrator <code>cynovela</code> and viewer <code>demo</code>) have to change the initial password on the first sign-in; other operations are refused (403) until then. The first passwords are published in <code>README.md</code> / <code>README.ja.md</code>, section 4, and the package's <code>cynovela.yaml</code> holds only their hashes.</p>
+<p>Authentication is by username and password. One-click entry (unauthenticated login from a user card) has been completely removed. The initial password of the first user has to be changed on the first sign-in.</p>
 <h3>3.2 Role check helpers</h3>
 <p><code>core/auth.py</code> provides four role check functions, and each endpoint in the router layer calls them to perform authorization (permission checking).</p>
 </div>
@@ -1884,7 +1884,7 @@ if user_role and _acl_filter_enabled():
 <div class="slide-body">
 <table><thead><tr><th>ロール</th><th>想定する利用者像</th><th>主な権限</th></tr></thead><tbody><tr><td><strong>admin</strong></td><td>システム管理者</td><td>API 全エンドポイント。ユーザー管理、システム設定変更、監査ログ閲覧、PII（個人情報）原本の閲覧</td></tr><tr><td><strong>viewer</strong></td><td>一般利用者</td><td>RAG（検索拡張生成）の問い合わせ、レポート閲覧などの読み取り操作</td></tr></tbody></table>
 <blockquote>DB の CHECK 制約は後方互換のため <code>role IN ('admin', 'curator', 'viewer')</code> を許容しますが、現行実装では <code>curator</code>（および <code>data-scientist</code> 等）は <code>viewer</code> に正規化され、固有の権限はありません。実効ロールは <code>admin</code> / <code>viewer</code> の 2 値です。</blockquote>
-<p>認証は username と password で行います。ワンクリック入室（ユーザーカードからの未認証ログイン）は完全撤去済みです。最初の2人（管理者 <code>cynovela</code>・閲覧者 <code>demo</code>）とも、初回のサインインで初期パスワードの変更を求められます。変えるまでほかの操作は断られます（403）。最初のパスワードは <code>README.md</code> / <code>README.ja.md</code> の 4 節に載せており、配布物の <code>cynovela.yaml</code> にはハッシュだけが入っています。</p>
+<p>認証は username と password で行います。ワンクリック入室（ユーザーカードからの未認証ログイン）は完全撤去済みです。最初の利用者の初期パスワードは、初回のサインインで変更を求められます。</p>
 </div>
 <div class="slide-footer">
 <span class="brand">Cyno<span class="accent">vela</span></span>
